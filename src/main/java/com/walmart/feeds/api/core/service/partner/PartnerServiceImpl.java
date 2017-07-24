@@ -1,10 +1,10 @@
 package com.walmart.feeds.api.core.service.partner;
 
-import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
-import com.walmart.feeds.api.core.repository.partner.PartnershipRepository;
-import com.walmart.feeds.api.core.repository.partner.model.Partner;
-import com.walmart.feeds.api.core.repository.partner.model.Partnership;
-import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
@@ -12,10 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
+import com.walmart.feeds.api.core.repository.partner.PartnershipRepository;
+import com.walmart.feeds.api.core.repository.partner.model.Partner;
+import com.walmart.feeds.api.core.repository.partner.model.Partnership;
+import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 
 @Service
 public class PartnerServiceImpl implements PartnerService {
@@ -31,7 +32,7 @@ public class PartnerServiceImpl implements PartnerService {
     public boolean savePartner(PartnerRequest pRequest) {
 
         Partner partner = buildPartner(pRequest);
-//        partner.setCreationDate(Calendar.getInstance());
+        partner.setCreationDate(Calendar.getInstance());
         partner.setActive(true);
 
         partner = repository.save(partner);
@@ -48,6 +49,20 @@ public class PartnerServiceImpl implements PartnerService {
         return partners;
 
     }
+    
+    public void updatePartner(PartnerRequest pRequest) {
+		savePartner(pRequest);
+	}
+
+	public PartnerRequest findByReference(String reference) {
+		logger.info("PartnerRequest {} find.", reference.toString());
+		
+		Partner partner = repository.findByReference(reference);
+		if (partner == null) 
+			return null;
+		
+		return buildPartnerRequest(partner);
+	}
 
     /**
      *
@@ -72,7 +87,7 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     private List<Partnership> fetchPartnerships(List<String> partnerships) {
-        List<Partnership> partnershipList = new ArrayList();
+        List<Partnership> partnershipList = new ArrayList<>();
 
         if (null == partnerships)
             return partnershipList;
@@ -90,8 +105,26 @@ public class PartnerServiceImpl implements PartnerService {
                 logger.error("Partnership " + type + " not found!", ex);
             }
         }
-
         return partnershipList;
+        
     }
 
+	private PartnerRequest buildPartnerRequest(Partner partner) {
+        if (partner == null)
+            throw new IllegalArgumentException("Partner not provided.");
+
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.addMappings(new PropertyMap<Partner, PartnerRequest>() {
+            @Override
+            protected void configure() {
+            		List<String> partnerships = 
+            				partner.getPartnership().stream().map(Partnership::getName).collect(Collectors.toList());
+                            
+                map().setPartnership(partnerships);
+            }
+        });
+
+        return modelMapper.map(partner, PartnerRequest.class);
+    }
+    
 }
