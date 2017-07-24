@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.request;
+package com.walmart.feeds.api.resources.feed.request;
 
 import java.util.Arrays;
 
@@ -19,6 +19,6 @@ public enum FeedGenerationStrategy {
     }
 
     public static FeedGenerationStrategy getFromCode(String type) {
-        return Arrays.stream(FeedGenerationStrategy.values()).filter(f -> f.getType().equals(type)).findFirst().orElseThrow(() -> new RuntimeException("Feed generation strategy not found for strategy=" + type));
+        return Arrays.stream(FeedGenerationStrategy.values()).filter(f -> f.getType().equals(type)).findFirst().orElseThrow(() -> new RuntimeException("FeedTO generation strategy not found for strategy=" + type));
     }
 }

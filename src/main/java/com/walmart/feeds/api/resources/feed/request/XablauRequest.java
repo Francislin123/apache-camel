@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.request;
+package com.walmart.feeds.api.resources.feed.request;
 
 import lombok.Data;
 

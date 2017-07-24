@@ -1,7 +1,7 @@
-package com.walmart.feeds.api.resources.response;
+package com.walmart.feeds.api.resources.feed.response;
 
-import com.walmart.feeds.api.resources.request.FeedType;
-import com.walmart.feeds.api.resources.request.UTM;
+import com.walmart.feeds.api.resources.feed.request.FeedType;
+import com.walmart.feeds.api.resources.feed.request.UTM;
 import lombok.Data;
 
 import java.util.List;

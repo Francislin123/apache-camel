@@ -1,7 +1,7 @@
-package com.walmart.feeds.api.resources;
+package com.walmart.feeds.api.resources.feed;
 
-import com.walmart.feeds.api.resources.request.FeedRequest;
-import com.walmart.feeds.api.resources.response.FeedResponse;
+import com.walmart.feeds.api.resources.feed.request.FeedRequest;
+import com.walmart.feeds.api.resources.feed.response.FeedResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
