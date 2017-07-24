@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.service.feed;
 
+import com.walmart.feeds.api.core.service.feed.model.FeedTO;
 import org.springframework.stereotype.Service;
 
 /**
@@ -8,4 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface FeedService {
+
+    FeedTO createFeed(FeedTO feedTO);
+
 }
