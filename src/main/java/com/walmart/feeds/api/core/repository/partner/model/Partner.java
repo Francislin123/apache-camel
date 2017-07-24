@@ -9,7 +9,10 @@ import java.util.Calendar;
 import java.util.List;
 
 @Entity
-@Table(name = "partner")
+@Table(name = "partner", uniqueConstraints = {
+        @UniqueConstraint(name = "name_constraint", columnNames = "name"),
+        @UniqueConstraint(name = "reference_constraint", columnNames = "reference")
+})
 @Data
 public class Partner {
 
@@ -18,10 +21,10 @@ public class Partner {
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
 
-    @Column(unique = true)
+    @Column
     private String name;
 
-    @Column(unique = true)
+    @Column
     private String reference;
 
     @Column
