@@ -12,32 +12,35 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 
 @Service
-public class PartnerService {
+public class PartnerServiceImpl implements PartnerService {
 
-    private Logger logger = LoggerFactory.getLogger(PartnerService.class);
+    private Logger logger = LoggerFactory.getLogger(PartnerServiceImpl.class);
 
     @Autowired
     private PartnerRepository repository;
     @Autowired
     private PartnershipRepository partnershipRepository;
 
-    public void savePartner(PartnerRequest pRequest) {
+    @Override
+    public boolean savePartner(PartnerRequest pRequest) {
 
         Partner partner = buildPartner(pRequest);
-        partner.setCreationDate(Calendar.getInstance());
+//        partner.setCreationDate(Calendar.getInstance());
         partner.setActive(true);
 
         partner = repository.save(partner);
         logger.info("Partner {} saved.", partner.getName());
 
+        return partner != null;
     }
 
+    @Override
     public List<Partner> getAllPartners() {
 
         List<Partner> partners = repository.findAll();
@@ -46,18 +49,33 @@ public class PartnerService {
 
     }
 
-    private Partner buildPartner(PartnerRequest pRequest) {
+    /**
+     *
+     * @param partnerRequest
+     * @return new {@link Partner} based on {@link PartnerRequest}
+     * @throws IllegalArgumentException if {@link PartnerRequest} is not provided
+     */
+    private Partner buildPartner(PartnerRequest partnerRequest) {
+        if (partnerRequest == null)
+            throw new IllegalArgumentException("PartnerRequest not provided.");
+
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(() -> {
-            List<Partnership> partnerships = fetchPartnerships(pRequest.getPartnership());
-            map().setPartnership(partnerships);
+        modelMapper.addMappings(new PropertyMap<PartnerRequest, Partner>() {
+            @Override
+            protected void configure() {
+                List<Partnership> partnerships = fetchPartnerships(partnerRequest.getPartnership());
+                map().setPartnership(partnerships);
+            }
         });
 
-        return modelMapper.map(pRequest, Partner.class);
+        return modelMapper.map(partnerRequest, Partner.class);
     }
 
     private List<Partnership> fetchPartnerships(List<String> partnerships) {
         List<Partnership> partnershipList = new ArrayList();
+
+        if (null == partnerships)
+            return partnershipList;
 
         for (String type : partnerships) {
             try {

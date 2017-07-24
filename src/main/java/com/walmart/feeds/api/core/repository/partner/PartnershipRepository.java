@@ -1,9 +1,10 @@
 package com.walmart.feeds.api.core.repository.partner;
 
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
+import com.walmart.feeds.api.core.repository.partner.model.Partnership;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PartnerRepository extends JpaRepository<Partner, Long> {
+public interface PartnershipRepository extends JpaRepository<Partnership, String> {
 }
