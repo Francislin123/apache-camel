@@ -10,6 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface FeedService {
 
-    FeedTO createFeed(FeedTO feedTO);
+    void createFeed(FeedTO feedTO);
 
 }

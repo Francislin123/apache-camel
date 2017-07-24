@@ -6,7 +6,6 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by vn0y942 on 21/07/17.
@@ -17,10 +16,10 @@ import java.util.UUID;
 public class FeedEntity {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue(generator = "feed_uuid_generator")
+    @GenericGenerator(name = "feed_uuid_generator", strategy = "uuid2")
     @Column(name = "id")
-    private UUID id;
+    private String id;
 
     @Column(name = "reference")
     private String reference;
@@ -32,8 +31,9 @@ public class FeedEntity {
     @Column(name = "partner_id")
     private String partnerId;
 
-    @Column(name = "notification_strategy")
-    private FeedGenerationStrategy strategy;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private FeedType type;
 
     @Column(name = "notification_method")
     private String notificationMethod;
@@ -44,7 +44,8 @@ public class FeedEntity {
     @Column(name = "notification_url")
     private String notificationUrl;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "feed_id")
     private List<UTM> utms;
 
     @Column(name = "creation_date")
@@ -55,4 +56,9 @@ public class FeedEntity {
 
     @Column(name = "flag_active")
     private boolean active;
+
+    public FeedEntity() {
+        this.creationDate = LocalDateTime.now();
+        this.active = true;
+    }
 }

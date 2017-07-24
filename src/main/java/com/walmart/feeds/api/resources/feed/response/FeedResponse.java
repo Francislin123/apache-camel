@@ -1,6 +1,6 @@
 package com.walmart.feeds.api.resources.feed.response;
 
-import com.walmart.feeds.api.resources.feed.request.FeedType;
+import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.resources.feed.request.UTM;
 import lombok.Data;
 
@@ -13,4 +13,5 @@ public class FeedResponse {
     private String name;
     private FeedType feedType;
     private List<UTM> utms;
+
 }

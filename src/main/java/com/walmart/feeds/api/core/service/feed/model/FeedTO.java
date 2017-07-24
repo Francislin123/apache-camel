@@ -1,6 +1,6 @@
 package com.walmart.feeds.api.core.service.feed.model;
 
-import com.walmart.feeds.api.core.repository.feed.model.UTM;
+import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import lombok.Data;
 
 import java.util.List;
@@ -11,9 +11,11 @@ import java.util.List;
 @Data
 public class FeedTO {
 
-    private String id;
+    private String reference;
     private String name;
-    private FeedType feedType;
-    private List<UTM> utms;
+    private String partnerReference;
+    private FeedNotificationDataTO notificationData;
+    private FeedType type;
+    private List<UTMTO> utms;
 
 }
