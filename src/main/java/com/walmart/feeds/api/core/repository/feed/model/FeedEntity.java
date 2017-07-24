@@ -1,10 +1,12 @@
 package com.walmart.feeds.api.core.repository.feed.model;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by vn0y942 on 21/07/17.
@@ -15,13 +17,20 @@ import java.util.List;
 public class FeedEntity {
 
     @Id
-    private String id;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @Column(name = "id")
+    private UUID id;
 
     @Column(name = "reference")
     private String reference;
 
     @Column(name = "name")
     private String name;
+
+    // FIXME: 24/07/17 Referenciar Objeto partner
+    @Column(name = "partner_id")
+    private String partnerId;
 
     @Column(name = "notification_strategy")
     private FeedGenerationStrategy strategy;
@@ -35,8 +44,7 @@ public class FeedEntity {
     @Column(name = "notification_url")
     private String notificationUrl;
 
-    @OneToMany
-    @JoinColumn(name = "feed")
+    @OneToMany(cascade = CascadeType.PERSIST)
     private List<UTM> utms;
 
     @Column(name = "creation_date")
