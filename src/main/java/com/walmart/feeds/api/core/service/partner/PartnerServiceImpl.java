@@ -30,11 +30,10 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Override
     public boolean savePartner(PartnerRequest pRequest) {
-
         Partner partner = buildPartner(pRequest);
         partner.setCreationDate(Calendar.getInstance());
         partner.setActive(true);
-
+        
         partner = repository.save(partner);
         logger.info("Partner {} saved.", partner.getName());
 
@@ -49,9 +48,25 @@ public class PartnerServiceImpl implements PartnerService {
         return partners;
 
     }
+    
+    public boolean updatePartner(PartnerRequest pRequest) {
+    		Partner currentPartner = repository.findByReference(pRequest.getReference());
+        Partner partner = buildPartner(pRequest);
 
-    public void updatePartner(PartnerRequest pRequest) {
-		savePartner(pRequest);
+        if (currentPartner == null) {
+            return false;
+		}
+        
+        if(partner.getDescription() != null)
+        		currentPartner.setDescription(partner.getDescription());
+        if(partner.getPartnership() != null)
+        		currentPartner.setPartnership(partner.getPartnership());
+
+        currentPartner.setUpdateDate(Calendar.getInstance());
+        
+        partner = repository.save(currentPartner);
+        logger.info("Partner {} updated.", partner.getName());
+        return true;
 	}
 
 	public void setPartnerStatus(String reference, boolean newStatus) {

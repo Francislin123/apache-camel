@@ -16,7 +16,7 @@ public interface PartnerService {
      */
     boolean savePartner(PartnerRequest pRequest);
     
-    void updatePartner(PartnerRequest pRequest);
+    boolean updatePartner(PartnerRequest pRequest);
 
     void setPartnerStatus(String reference, boolean status);
 

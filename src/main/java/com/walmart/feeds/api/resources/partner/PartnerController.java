@@ -1,8 +1,10 @@
 package com.walmart.feeds.api.resources.partner;
 
-import com.walmart.feeds.api.core.service.partner.PartnerService;
-import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
-import com.walmart.feeds.api.resources.response.ErrorResponse;
+import java.net.URI;
+
+import javax.servlet.ServletContext;
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +12,15 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.ServletContext;
-import javax.validation.Valid;
-import java.net.URI;
+import com.walmart.feeds.api.core.service.partner.PartnerService;
+import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
+import com.walmart.feeds.api.resources.response.ErrorResponse;
 
 @RestController
 @RequestMapping("/partners")
@@ -51,10 +57,27 @@ public class PartnerController {
 	public ResponseEntity<?> getPartner(@PathVariable("reference") String reference) {
 		PartnerRequest partnerRequest = service.findByReference(reference);
 		if (partnerRequest == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Partner " + reference + " not found!"));
+		}
+		return new ResponseEntity<PartnerRequest>(partnerRequest, HttpStatus.OK);
+	}
+	
+	// Method to change partner fields
+	@RequestMapping(value = "/{reference}", method = RequestMethod.PATCH, consumes = "application/json")
+	public ResponseEntity<?> updatePartner(@PathVariable("reference") String reference, @RequestBody PartnerRequest partnerRequest) {
+		logger.info("Updating partners with reference {}", reference);
+		
+		partnerRequest.setReference(reference);
+		boolean result = service.updatePartner(partnerRequest);
+
+		if (result) {
+			return ResponseEntity.ok().build(); 
+		} else {
+			logger.error("Partner with reference {} not found.", reference);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Partner " + reference + " not found!"));
 		}
-		return new ResponseEntity<PartnerRequest>(partnerRequest, HttpStatus.OK);
+    
 	}
 
     // Method to find the partner by your reference
