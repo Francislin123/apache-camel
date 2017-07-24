@@ -23,7 +23,7 @@ import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 import com.walmart.feeds.api.resources.response.ErrorResponse;
 
 @RestController
-@RequestMapping("/partners")
+@RequestMapping("/v1/partners")
 public class PartnerController {
 
     private Logger logger = LoggerFactory.getLogger(PartnerController.class);
@@ -80,7 +80,6 @@ public class PartnerController {
     
 	}
 
-    // Method to find the partner by your reference
     @RequestMapping(value = "/{reference}/{status}", method = RequestMethod.PATCH)
     public ResponseEntity<?> changePartnerStatus(@PathVariable("reference") String reference,
                                                  @PathVariable("status") String status) {
@@ -88,7 +87,6 @@ public class PartnerController {
         try {
             boolean newStatus = "1".equals(status);
 
-            logger.info("Change status to {} for partner {}", newStatus, reference);
             service.setPartnerStatus(reference, newStatus);
 
             // improvement: check which partner was modified

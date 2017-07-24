@@ -70,6 +70,7 @@ public class PartnerServiceImpl implements PartnerService {
 	}
 
 	public void setPartnerStatus(String reference, boolean newStatus) {
+        logger.info("Changing partner {} status to {}", reference, newStatus);
         repository.changePartnerStatus(reference, newStatus);
     }
 
