@@ -49,10 +49,14 @@ public class PartnerServiceImpl implements PartnerService {
         return partners;
 
     }
-    
+
     public void updatePartner(PartnerRequest pRequest) {
 		savePartner(pRequest);
 	}
+
+	public void setPartnerStatus(String reference, boolean newStatus) {
+        repository.changePartnerStatus(reference, newStatus);
+    }
 
 	public PartnerRequest findByReference(String reference) {
 		logger.info("PartnerRequest {} find.", reference.toString());

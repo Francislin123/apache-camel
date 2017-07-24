@@ -48,7 +48,7 @@ public class PartnerController {
 
     // Method to find the partner by your reference
 	@RequestMapping(value = "/{reference}", method = RequestMethod.GET)
-	public ResponseEntity<?> getPartnerRequest(@PathVariable("reference") String reference) {
+	public ResponseEntity<?> getPartner(@PathVariable("reference") String reference) {
 		PartnerRequest partnerRequest = service.findByReference(reference);
 		if (partnerRequest == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -57,4 +57,21 @@ public class PartnerController {
 		return new ResponseEntity<PartnerRequest>(partnerRequest, HttpStatus.OK);
 	}
 
+    // Method to find the partner by your reference
+    @RequestMapping(value = "/{reference}/{status}", method = RequestMethod.PATCH)
+    public ResponseEntity<?> changePartnerStatus(@PathVariable("reference") String reference,
+                                                 @PathVariable("status") String status) {
+
+        try {
+            service.setPartnerStatus(reference, "1".equals(status));
+
+            // improvement: check which partner was modified
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            logger.error("Failure on change partner status", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Some error occurred on processing partner status change.");
+        }
+
+    }
 }
