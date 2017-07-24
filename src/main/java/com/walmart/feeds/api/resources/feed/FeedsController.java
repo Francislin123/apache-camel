@@ -1,7 +1,12 @@
 package com.walmart.feeds.api.resources.feed;
 
+import com.walmart.feeds.api.core.service.feed.FeedService;
+import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
+import com.walmart.feeds.api.core.service.feed.model.FeedTO;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 import com.walmart.feeds.api.resources.feed.response.FeedResponse;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,22 +19,21 @@ public class FeedsController {
 
     static final String V1_FEEDS = "/v1/feeds";
 
+    @Autowired
+    private FeedService feedService;
+
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<FeedResponse> createFeed(@RequestBody FeedRequest request, UriComponentsBuilder builder) {
+    public ResponseEntity createFeed(@RequestBody FeedRequest request, UriComponentsBuilder builder) {
 
-        System.out.println(request);
+        FeedTO feedTO = new FeedTO();
 
-        // TODO[r0i001q]: Call service to create feed
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.map(request, feedTO);
 
-        FeedResponse feedResponse = new FeedResponse();
-
-        feedResponse.setFeedType(request.getFeedType());
-        feedResponse.setId(request.getId());
-        feedResponse.setName(request.getName());
-        feedResponse.setUtms(request.getUtms());
+        feedService.createFeed(feedTO);
 
         UriComponents uriComponents =
-                builder.path(V1_FEEDS.concat("/{id}")).buildAndExpand(request.getId());
+                builder.path(V1_FEEDS.concat("/{id}")).buildAndExpand(request.getReference());
 
         return ResponseEntity.created(uriComponents.toUri()).build();
 
