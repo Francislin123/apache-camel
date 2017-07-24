@@ -63,7 +63,10 @@ public class PartnerController {
                                                  @PathVariable("status") String status) {
 
         try {
-            service.setPartnerStatus(reference, "1".equals(status));
+            boolean newStatus = "1".equals(status);
+
+            logger.info("Change status to {} for partner {}", newStatus, reference);
+            service.setPartnerStatus(reference, newStatus);
 
             // improvement: check which partner was modified
             return ResponseEntity.noContent().build();
