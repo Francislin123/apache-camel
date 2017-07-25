@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.repository.feed.model;
 
+import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -27,9 +28,8 @@ public class FeedEntity {
     @Column(name = "name")
     private String name;
 
-    // FIXME: 24/07/17 Referenciar Objeto partner
-    @Column(name = "partner_id")
-    private String partnerId;
+    @ManyToOne
+    private Partner partner;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
@@ -44,8 +44,7 @@ public class FeedEntity {
     @Column(name = "notification_url")
     private String notificationUrl;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "feed_id")
+    @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
     private List<UTM> utms;
 
     @Column(name = "creation_date")

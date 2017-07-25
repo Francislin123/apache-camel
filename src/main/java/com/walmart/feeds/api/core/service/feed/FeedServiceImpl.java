@@ -2,9 +2,13 @@ package com.walmart.feeds.api.core.service.feed;
 
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
-import com.walmart.feeds.api.core.repository.feed.model.UTM;
+import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
+import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
+import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,42 +23,30 @@ import java.util.stream.Collectors;
 @Service
 public class FeedServiceImpl implements FeedService {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private FeedRepository feedRepository;
 
-//    private PartnerRepository partnerRepository;
-
+    @Autowired
+    private PartnerRepository partnerRepository;
 
     @Override
-    public void createFeed(FeedTO feedTO) {
+    public void createFeed(FeedTO feedTO) throws NotFoundException {
 
-        // TODO[r0i001q]: validate if exists partner by reference
+        ModelMapper modelMapper = new ModelMapper();
 
-//        partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(RuntimeException::new);
+        Partner partner = partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(() -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartnerReference())));
 
         FeedEntity feedEntity = new FeedEntity();
-
-        feedEntity.setPartnerId(feedTO.getPartnerReference());
-
-        feedEntity.setUtms(feedTO.getUtms().stream().map(u -> {
-            UTM utmRepo = new UTM();
-            utmRepo.setValue(u.getValue());
-            utmRepo.setType(u.getType());
-            utmRepo.setFeed(feedEntity);
-            return utmRepo;
-        }).collect(Collectors.toList()));
-
-        feedEntity.setType(feedTO.getType());
-        feedEntity.setReference(feedTO.getReference());
-        feedEntity.setType(feedTO.getType());
-        feedEntity.setNotificationUrl(feedTO.getNotificationData().getUrl());
-        feedEntity.setNotificationMethod(feedTO.getNotificationData().getMethod());
-        feedEntity.setNotificationFormat(feedTO.getNotificationData().getFormat());
-        feedEntity.setName(feedTO.getName());
+        modelMapper.map(feedTO, feedEntity);
+        feedEntity.getUtms().stream().forEach(u -> u.setFeed(feedEntity));
+        feedEntity.setPartner(partner);
 
         feedRepository.save(feedEntity);
 
     }
+
     @Override
     public List<FeedTO> fetchActive(FeedTO feedTo){
         //TODO THIAGO LIMA: Retirar Mock
@@ -63,6 +55,7 @@ public class FeedServiceImpl implements FeedService {
         ModelMapper mapper = new ModelMapper();
         return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
     }
+
     @Override
     public List<FeedTO> fetchByPartner(FeedTO feedTO){
         //TODO THIAGO LIMA: Retirar Mock
@@ -71,6 +64,7 @@ public class FeedServiceImpl implements FeedService {
         ModelMapper mapper = new ModelMapper();
         return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
     }
+
     @Override
     public List<FeedTO> fetch(){
         //TODO THIAGO LIMA: Retirar Mock
@@ -80,7 +74,6 @@ public class FeedServiceImpl implements FeedService {
         return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
 
     }
-
 
     private List<FeedEntity> mockFeed(){
         //TODO THIAGO LIMA: Retirar Mock

@@ -8,6 +8,7 @@ import com.walmart.feeds.api.core.service.feed.model.FeedTO;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 import com.walmart.feeds.api.resources.feed.response.FeedResponse;
+import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -35,17 +36,22 @@ public class FeedsController {
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder) {
 
-        FeedTO feedTO = new ModelMapper().map(request, FeedTO.class);
-        feedTO.setPartnerReference(partnerReference);
-        feedTO.setType(FeedType.getFromCode(request.getType()));
+        try {
 
-        feedService.createFeed(feedTO);
+            FeedTO feedTO = new ModelMapper().map(request, FeedTO.class);
+            feedTO.setPartnerReference(partnerReference);
+            feedTO.setType(FeedType.getFromCode(request.getType()));
 
-        UriComponents uriComponents =
-                builder.path(V1_FEEDS.concat("/{reference}")).buildAndExpand(partnerReference, request.getReference());
+            feedService.createFeed(feedTO);
 
-        return ResponseEntity.created(uriComponents.toUri()).build();
+            UriComponents uriComponents =
+                    builder.path(V1_FEEDS.concat("/{reference}")).buildAndExpand(partnerReference, request.getReference());
 
+            return ResponseEntity.created(uriComponents.toUri()).build();
+
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @RequestMapping(value = "{reference}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -76,6 +82,7 @@ public class FeedsController {
 
         return ResponseEntity.ok().body(feedResponse);
     }
+
     @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<FeedResponse>> fetchAll(@PathVariable("partnerReference") String partnerReference){
         ModelMapper mapper = new ModelMapper();
@@ -85,10 +92,4 @@ public class FeedsController {
         return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
     }
 
-    @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<FeedResponse>> fetch(){
-        ModelMapper mapper = new ModelMapper();
-        List<FeedTO> listFeed = feedService.fetch();
-        return ResponseEntity.ok(listFeed.stream().map(feedTO -> mapper.map(feedTO, FeedResponse.class)).collect(Collectors.toList()));
-    }
 }
