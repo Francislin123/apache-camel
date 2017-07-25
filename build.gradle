@@ -17,6 +17,7 @@ apply plugin: 'docker'
 
 ext {
     springBootVersion = '1.5.4.RELEASE'
+    springFoxVersion = '2.4.0'
 }
 
 repositories {
@@ -52,6 +53,9 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
     compile "org.modelmapper:modelmapper:1.1.0"
     compile "com.h2database:h2"
+    
+    compile "io.springfox:springfox-swagger2:${springFoxVersion}"
+    compile "io.springfox:springfox-swagger-ui:${springFoxVersion}"
 
 }
 
