@@ -4,6 +4,7 @@ import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.UTM;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.UUID;
 import java.util.stream.Collectors;
