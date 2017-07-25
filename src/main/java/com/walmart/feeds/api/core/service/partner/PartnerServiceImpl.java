@@ -139,13 +139,11 @@ public class PartnerServiceImpl implements PartnerService {
 
         for (String type : partnerships) {
             try {
-
                 Partnership partnership = partnershipRepository.findOne(type);
                 if (null == partnership) {
                     continue;
                 }
                 partnershipList.add(partnership);
-
             } catch (IllegalArgumentException ex) {
                 logger.error("Partnership " + type + " not found!", ex);
             }
