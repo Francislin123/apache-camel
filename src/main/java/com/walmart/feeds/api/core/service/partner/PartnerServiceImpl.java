@@ -27,7 +27,8 @@ public class PartnerServiceImpl implements PartnerService {
     private Logger logger = LoggerFactory.getLogger(PartnerServiceImpl.class);
 
     @Autowired
-    private PartnerRepository repository;
+    private PartnerRepository partnerRepository;
+
     @Autowired
     private PartnershipRepository partnershipRepository;
 
@@ -36,15 +37,15 @@ public class PartnerServiceImpl implements PartnerService {
         Partner partner = buildPartner(partnerRequest);
         partner.setCreationDate(Calendar.getInstance());
         partner.setActive(true);
-        
-        partner = repository.save(partner);
+
+        partner = partnerRepository.save(partner);
         logger.info("Partner {} saved.", partner.getName());
     }
 
     @Override
     public List<Partner> getAllPartners() {
 
-        List<Partner> partners = repository.findAll();
+        List<Partner> partners = partnerRepository.findAll();
         logger.info("Total of fetched partners: {}", partners.size());
         return partners;
 
@@ -52,7 +53,7 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Override
     public List<Partner> findPartnerActives() {
-        return repository.findPartnerActives();
+        return partnerRepository.findPartnerActives();
     }
 
     /**
@@ -69,7 +70,7 @@ public class PartnerServiceImpl implements PartnerService {
             return false;
         }
 
-        Partner currentPartner = repository.findByReference(partnerRequest.getReference())
+        Partner currentPartner = partnerRepository.findByReference(partnerRequest.getReference())
                 .orElseThrow(NoResultException::new);
 
         if (currentPartner == null) {
@@ -85,29 +86,26 @@ public class PartnerServiceImpl implements PartnerService {
         		currentPartner.setPartnership(partner.getPartnership());
 
         currentPartner.setUpdateDate(Calendar.getInstance());
-        
-        repository.save(currentPartner);
+
+        partnerRepository.save(currentPartner);
         logger.info("Partner {} updated.", partner.getName());
         return true;
 	}
 
 	public boolean setPartnerStatus(String reference, boolean newStatus) {
-        if (repository.findByReference(reference) == null) return false;
+        if (partnerRepository.findByReference(reference) == null) return false;
 
         logger.info("Changing partner {} status to {}", reference, newStatus);
-        repository.changePartnerStatus(reference, newStatus);
+        partnerRepository.changePartnerStatus(reference, newStatus);
         return true;
     }
 
 	public PartnerResponse findByReference(String reference) {
 		logger.info("PartnerRequest {} find.", reference.toString());
-		
-		Partner partner = repository.findByReference(reference)
+
+        Partner partner = partnerRepository.findByReference(reference)
                 .orElseThrow(NoResultException::new);
 
-		if (partner == null) 
-			return null;
-		
 		return buildPartnerResponse(partner);
 	}
 

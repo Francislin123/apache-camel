@@ -20,6 +20,6 @@ public interface PartnerRepository extends JpaRepository<Partner, Long> {
 	@Query("UPDATE Partner p SET p.active = ?2 WHERE p.reference = ?1")
 	void changePartnerStatus(String reference, boolean status);
 
-	@Query("SELECT * FROM Partner WHERE active = true")
-	List<Partner> findPartnerActives();
+    @Query("SELECT p FROM Partner p WHERE active = true")
+    List<Partner> findPartnerActives();
 }
