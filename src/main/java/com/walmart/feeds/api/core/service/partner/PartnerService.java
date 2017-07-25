@@ -4,23 +4,35 @@ import java.util.List;
 
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 
 public interface PartnerService {
 
     /**
      *
-     * @param pRequest
+     * @param partnerRequest
      * @return true if partner was saved
      */
-    boolean savePartner(PartnerRequest pRequest);
-    
-    boolean updatePartner(PartnerRequest pRequest);
+    void savePartner(PartnerRequest partnerRequest);
 
-    void setPartnerStatus(String reference, boolean status);
+    /**
+     *
+     * @param partnerRequest
+     * @return false if
+     */
+    boolean updatePartner(PartnerRequest partnerRequest);
 
-    PartnerRequest findByReference(String reference);
+    /**
+     *
+     * @param reference
+     * @param status
+     * @return true if exists the partner
+     */
+    boolean setPartnerStatus(String reference, boolean status);
+
+    PartnerResponse findByReference(String reference);
 
     List<Partner> getAllPartners();
+
+    List<Partner> findPartnerActives();
 }

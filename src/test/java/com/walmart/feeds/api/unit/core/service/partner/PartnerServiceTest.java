@@ -12,18 +12,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.hamcrest.Matchers.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PartnerServiceTest {
@@ -79,7 +81,7 @@ public class PartnerServiceTest {
             PartnerRequest partnerRequest = null;
             Partner partner = (Partner) buildPartnerMethod.invoke(service, partnerRequest);
         } catch (InvocationTargetException e) {
-            if(e.getCause() instanceof IllegalArgumentException)
+            if (e.getCause() instanceof IllegalArgumentException)
                 throw (IllegalArgumentException) e.getCause();
         }
 
@@ -114,6 +116,45 @@ public class PartnerServiceTest {
         assertEquals(partnerRequest.getDescription(), partner.getDescription());
         assertThat("Partnership list should be empty",
                 partner.getPartnership(), empty());
+    }
+
+    @Test
+    public void testUpdatePartnerFromNullPartnerRequestShouldReturnFalse() {
+        boolean updated = this.service.updatePartner(null);
+
+        verify(repository, times(0)).findByReference(anyString());
+        verify(repository, times(0)).save(Mockito.any(Partner.class));
+
+        assertFalse(updated);
+    }
+
+    @Test
+    public void testUpdateInexistentPartnerShouldReturnFalse() {
+        when(repository.findByReference(anyString()))
+                .thenReturn(null);
+        PartnerRequest request = new PartnerRequest();
+
+        boolean updated = this.service.updatePartner(request);
+
+        verify(repository, times(1)).findByReference(anyString());
+        verify(repository, times(0)).save(Mockito.any(Partner.class));
+
+        assertFalse("Update should return false, because the partner not exists.",
+                updated);
+    }
+
+    @Test
+    public void testUpdatePartnerShouldReturnTrue() {
+        when(repository.findByReference(anyString()))
+                .thenReturn(new Partner());
+        PartnerRequest request = new PartnerRequest();
+
+        boolean updated = this.service.updatePartner(request);
+
+        verify(repository, times(1)).findByReference(anyString());
+        verify(repository, times(1)).save(Mockito.any(Partner.class));
+
+        assertTrue(updated);
     }
 
     private PartnerRequest createPartnerRequest() {
