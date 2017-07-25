@@ -1,6 +1,6 @@
 package com.walmart.feeds.api.resources.feed.response;
 
-import com.walmart.feeds.api.resources.feed.request.FeedGenerationStrategy;
+import com.walmart.feeds.api.core.repository.feed.model.FeedGenerationStrategy;
 import com.walmart.feeds.api.resources.feed.request.UTM;
 import lombok.Data;
 

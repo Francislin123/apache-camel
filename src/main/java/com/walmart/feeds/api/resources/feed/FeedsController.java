@@ -1,8 +1,11 @@
 package com.walmart.feeds.api.resources.feed;
 
+import com.walmart.feeds.api.core.repository.feed.FeedRepository;
+import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
+import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.service.feed.FeedService;
-import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
+import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 import com.walmart.feeds.api.resources.feed.response.FeedResponse;
 import org.modelmapper.ModelMapper;
@@ -13,43 +16,64 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
+import javax.validation.Valid;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(FeedsController.V1_FEEDS)
 public class FeedsController {
 
-    static final String V1_FEEDS = "/v1/partners/{partner_reference}/feeds";
+    static final String V1_FEEDS = "/v1/partners/{partnerReference}/feeds";
+
+    @Autowired
+    private FeedRepository feedRepository;
 
     @Autowired
     private FeedService feedService;
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createFeed(@RequestBody FeedRequest request, UriComponentsBuilder builder) {
+    public ResponseEntity createFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder) {
 
-        FeedTO feedTO = new FeedTO();
-
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.map(request, feedTO);
+        FeedTO feedTO = new ModelMapper().map(request, FeedTO.class);
+        feedTO.setPartnerReference(partnerReference);
+        feedTO.setType(FeedType.getFromCode(request.getType()));
 
         feedService.createFeed(feedTO);
 
         UriComponents uriComponents =
-                builder.path(V1_FEEDS.concat("/{id}")).buildAndExpand(request.getReference());
+                builder.path(V1_FEEDS.concat("/{reference}")).buildAndExpand(partnerReference, request.getReference());
 
         return ResponseEntity.created(uriComponents.toUri()).build();
 
     }
 
-    @RequestMapping(value = "{feedId}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<FeedResponse> fetchFeed(@PathVariable("feedId") String feedId) {
+    @RequestMapping(value = "{reference}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<FeedResponse> fetchFeed(@PathVariable("reference") String reference) {
 
-        System.out.println(feedId);
+        System.out.println(reference);
 
-        // TODO[r0i001q]: Call service to create feed
+        FeedEntity feedEntity = feedRepository.findByReference(reference).orElseThrow(RuntimeException::new);
 
-        return ResponseEntity.ok().build();
+        FeedResponse feedResponse = new FeedResponse();
+
+        feedResponse.setName(feedEntity.getName());
+        feedResponse.setReference(feedEntity.getReference());
+
+        FeedNotificationData notification = new FeedNotificationData();
+        notification.setFormat(feedEntity.getNotificationFormat());
+        notification.setMethod(feedEntity.getNotificationMethod());
+        notification.setUrl(feedEntity.getNotificationUrl());
+
+        feedResponse.setFeedType(feedEntity.getType());
+
+        feedResponse.setUtms(feedEntity.getUtms().stream().map(utm -> {
+            com.walmart.feeds.api.resources.feed.request.UTM utmResponse = new com.walmart.feeds.api.resources.feed.request.UTM();
+            utmResponse.setType(utm.getType());
+            utmResponse.setValue(utm.getValue());
+            return utmResponse;
+        }).collect(Collectors.toList()));
+
+        return ResponseEntity.ok().body(feedResponse);
     }
     @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<FeedResponse>> fetchAll(){

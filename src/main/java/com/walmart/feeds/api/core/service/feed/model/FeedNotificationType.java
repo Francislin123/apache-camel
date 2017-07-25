@@ -7,5 +7,6 @@ public class FeedNotificationType {
 
     private String method;
     private String format;
+    private String url;
 
 }

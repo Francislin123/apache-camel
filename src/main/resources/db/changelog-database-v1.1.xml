@@ -11,7 +11,8 @@
             <column name="id" valueComputed="${uuid_function}"/>
             <column name="reference" value="feed_google_renato"/>
             <column name="name" value="Feed Google"/>
-            <column name="notification_strategy" value="FULL"/>
+            <column name="partner_id" value="google"/>
+            <column name="type" value="FULL"/>
             <column name="notification_method" value="file"/>
             <column name="notification_format" value="xml"/>
             <column name="notification_url" value="url google"/>

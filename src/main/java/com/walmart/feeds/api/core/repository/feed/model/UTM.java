@@ -12,10 +12,10 @@ import java.util.UUID;
 public class UTM {
 
     @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    @GeneratedValue(generator = "feed_utm_uuid_generator")
+    @GenericGenerator(name = "feed_utm_uuid_generator", strategy = "uuid2")
     @Column(name = "id")
-    private UUID id;
+    private String id;
 
     @Column(name = "utm_type")
     private String type;
@@ -23,7 +23,7 @@ public class UTM {
     @Column(name = "utm_value")
     private String value;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "feed_id")
     private FeedEntity feed;
 }

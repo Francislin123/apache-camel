@@ -1,7 +1,7 @@
 package com.walmart.feeds.api.core.service.feed.model;
 
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
-import com.walmart.feeds.api.core.repository.feed.model.UTM;
+import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
 
@@ -15,24 +15,12 @@ import java.util.UUID;
 @Data
 public class FeedTO {
 
-    private UUID id;
-
     private String reference;
-
     private String name;
-
-    // FIXME: 24/07/17 Referenciar Objeto partner
-    private String partnerId;
-
-    private FeedGenerationStrategy strategy;
-
-    private String notificationMethod;
-
-    private String notificationFormat;
-
-    private String notificationUrl;
-
-    private List<UTM> utms;
+    private String partnerReference;
+    private FeedNotificationDataTO notificationData;
+    private FeedType type;
+    private List<UTMTO> utms;
 
     private LocalDateTime creationDate;
 
