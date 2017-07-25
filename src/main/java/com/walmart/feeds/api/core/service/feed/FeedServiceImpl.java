@@ -7,7 +7,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by vn0y942 on 21/07/17.
@@ -23,4 +29,50 @@ public class FeedServiceImpl implements FeedService {
     public FeedTO createFeed(FeedTO feedTO) {
         return null;
     }
+    @Override
+    public List<FeedTO> fetchActive(FeedTO feedTo){
+        //TODO THIAGO LIMA: Retirar Mock
+//        List<FeedEntity> feedEntities = feedRepository.findByActive(feedTo.isActive());
+        List<FeedEntity> feedEntities = this.mockFeed();
+        ModelMapper mapper = new ModelMapper();
+        return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
+    }
+    @Override
+    public List<FeedTO> fetchByPartner(FeedTO feedTO){
+        //TODO THIAGO LIMA: Retirar Mock
+//        List<FeedEntity> feedEntities = feedRepository.findByPartnerId(feedTO.getPartnerId());
+        List<FeedEntity> feedEntities = this.mockFeed();
+        ModelMapper mapper = new ModelMapper();
+        return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
+    }
+    @Override
+    public List<FeedTO> fetch(){
+        //TODO THIAGO LIMA: Retirar Mock
+//        List<FeedEntity> feedEntities = feedRepository.findAll();
+        List<FeedEntity> feedEntities = this.mockFeed();
+        ModelMapper mapper = new ModelMapper();
+        return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
+
+    }
+
+
+    private List<FeedEntity> mockFeed(){
+        //TODO THIAGO LIMA: Retirar Mock
+        LocalDateTime now = LocalDateTime.now();
+        List<FeedEntity> lista = new ArrayList<>();
+        FeedEntity feed = new FeedEntity();
+        feed.setActive(true);
+        feed.setCreationDate(now);
+        feed.setName("Teste");
+
+        FeedEntity feed2 = new FeedEntity();
+        feed2.setActive(true);
+        feed2.setCreationDate(now);
+        feed2.setName("Teste 2");
+
+        lista.add(feed);
+        lista.add(feed2);
+        return lista;
+    }
+
 }

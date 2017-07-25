@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping(FeedsController.V1_FEEDS)
 public class FeedsController {
 
-    static final String V1_FEEDS = "/v1/feeds";
+    static final String V1_FEEDS = "/v1/partners/{partner_reference}/feeds";
 
     @Autowired
     private FeedService feedService;
@@ -48,6 +51,17 @@ public class FeedsController {
 
         return ResponseEntity.ok().build();
     }
+    @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<FeedResponse>> fetchAll(){
+        ModelMapper mapper = new ModelMapper();
+        List<FeedTO> listFeed = feedService.fetch();
+        return ResponseEntity.ok(listFeed.stream().map(feedTO -> mapper.map(feedTO, FeedResponse.class)).collect(Collectors.toList()));
+    }
 
-
+    @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<FeedResponse>> fetch(){
+        ModelMapper mapper = new ModelMapper();
+        List<FeedTO> listFeed = feedService.fetch();
+        return ResponseEntity.ok(listFeed.stream().map(feedTO -> mapper.map(feedTO, FeedResponse.class)).collect(Collectors.toList()));
+    }
 }
