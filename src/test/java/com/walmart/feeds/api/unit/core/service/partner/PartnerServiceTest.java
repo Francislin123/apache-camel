@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
@@ -146,7 +147,7 @@ public class PartnerServiceTest {
     @Test
     public void testUpdatePartnerShouldReturnTrue() {
         when(repository.findByReference(anyString()))
-                .thenReturn(new Partner());
+                .thenReturn(Optional.of(new Partner()));
         PartnerRequest request = new PartnerRequest();
 
         boolean updated = this.service.updatePartner(request);

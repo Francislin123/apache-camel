@@ -1,7 +1,5 @@
 package com.walmart.feeds.api.resources.partner;
 
-import java.net.URI;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -9,6 +7,7 @@ import javax.validation.Valid;
 
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
+import com.walmart.feeds.api.resources.response.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
-import com.walmart.feeds.api.resources.response.ErrorResponse;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/v1/partners")

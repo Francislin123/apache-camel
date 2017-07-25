@@ -1,10 +1,9 @@
 package com.walmart.feeds.api.core.repository.partner.model;
 
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * <p>
@@ -27,12 +26,20 @@ import javax.persistence.Table;
 public class Partnership {
 
     @Id
+    @GeneratedValue(generator = "partnership_uuid_generator")
+    @GenericGenerator(name = "partnership_uuid_generator", strategy = "uuid2")
+    @Column(name = "id")
+    private String id;
+
+    private String reference;
+
     private String name;
+
 
     public Partnership() {
     }
 
-    public Partnership(String name) {
-        this.name = name;
+    public Partnership(String reference) {
+        this.reference = reference;
     }
 }

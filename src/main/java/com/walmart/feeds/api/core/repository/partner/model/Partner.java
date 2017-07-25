@@ -17,8 +17,8 @@ import java.util.List;
 public class Partner {
 
     @Id
-    @GeneratedValue(generator = "system-uuid") // TODO migrate to GUID
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @GeneratedValue(generator = "partner_uuid_generator") // TODO migrate to GUID
+    @GenericGenerator(name = "partner_uuid_generator", strategy = "uuid2")
     private String id;
 
     @Column
@@ -30,7 +30,7 @@ public class Partner {
     @Column
     private String description;
 
-    @OneToMany
+    @OneToMany(mappedBy = "id")
     private List<Partnership> partnership;
 
     @Column(name = "creation_date", nullable = false)
@@ -41,7 +41,7 @@ public class Partner {
     @Temporal(TemporalType.TIMESTAMP)
     private Calendar updateDate;
 
-    @Column
+    @Column(name = "flag_active")
     private boolean active;
 
 }
