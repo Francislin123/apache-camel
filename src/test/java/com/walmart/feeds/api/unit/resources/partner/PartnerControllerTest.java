@@ -22,6 +22,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.QueryTimeoutException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class PartnerControllerTest {
     private Logger logger = LoggerFactory.getLogger(PartnerControllerTest.class);
 
     @InjectMocks //@Autowired
-    private PartnerController controller = new PartnerController();
+    private PartnerController controller;
 
     @Mock
     private PartnerService partnerService;
@@ -93,10 +94,10 @@ public class PartnerControllerTest {
 
     @Test
     public void testUpdatePartnerWithDatabaseDown() throws Exception {
-        when(partnerService.updatePartner(any(PartnerRequest.class))).thenThrow(DataAccessException.class);
+        when(partnerService.updatePartner(any(PartnerRequest.class))).thenThrow(new QueryTimeoutException("erro"));
         ResponseEntity<?> response = controller.updatePartner("anyReference", getPartnerRequest());
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
