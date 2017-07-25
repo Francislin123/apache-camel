@@ -17,6 +17,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -76,10 +77,12 @@ public class FeedsController {
         return ResponseEntity.ok().body(feedResponse);
     }
     @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<FeedResponse>> fetchAll(){
+    public ResponseEntity<List<FeedResponse>> fetchAll(@PathVariable("partnerReference") String partnerReference){
         ModelMapper mapper = new ModelMapper();
-        List<FeedTO> listFeed = feedService.fetch();
-        return ResponseEntity.ok(listFeed.stream().map(feedTO -> mapper.map(feedTO, FeedResponse.class)).collect(Collectors.toList()));
+        FeedTO feedTO = new FeedTO();
+        feedTO.setPartnerReference(partnerReference);
+        List<FeedTO> listFeed = feedService.fetchByPartner(feedTO);
+        return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
     }
 
     @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

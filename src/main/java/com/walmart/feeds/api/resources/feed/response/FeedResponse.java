@@ -1,6 +1,6 @@
 package com.walmart.feeds.api.resources.feed.response;
 
-import com.walmart.feeds.api.core.repository.feed.model.FeedGenerationStrategy;
+import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.resources.feed.request.UTM;
 import lombok.Data;
 
@@ -20,7 +20,7 @@ public class FeedResponse {
     // FIXME: 24/07/17 Referenciar Objeto partner
     private String partnerId;
 
-    private FeedGenerationStrategy strategy;
+    private FeedType feedType;
 
     private String notificationMethod;
 
