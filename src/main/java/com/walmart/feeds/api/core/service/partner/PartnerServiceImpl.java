@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
@@ -18,6 +19,8 @@ import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import com.walmart.feeds.api.core.repository.partner.model.Partnership;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 
+import javax.persistence.NoResultException;
+
 @Service
 public class PartnerServiceImpl implements PartnerService {
 
@@ -29,15 +32,13 @@ public class PartnerServiceImpl implements PartnerService {
     private PartnershipRepository partnershipRepository;
 
     @Override
-    public boolean savePartner(PartnerRequest pRequest) {
-        Partner partner = buildPartner(pRequest);
+    public void savePartner(PartnerRequest partnerRequest) {
+        Partner partner = buildPartner(partnerRequest);
         partner.setCreationDate(Calendar.getInstance());
         partner.setActive(true);
         
         partner = repository.save(partner);
         logger.info("Partner {} saved.", partner.getName());
-
-        return partner != null;
     }
 
     @Override
@@ -48,15 +49,36 @@ public class PartnerServiceImpl implements PartnerService {
         return partners;
 
     }
-    
-    public boolean updatePartner(PartnerRequest pRequest) {
-    		Partner currentPartner = repository.findByReference(pRequest.getReference());
-        Partner partner = buildPartner(pRequest);
+
+    @Override
+    public List<Partner> findPartnerActives() {
+        return repository.findPartnerActives();
+    }
+
+    /**
+     *
+     * @param partnerRequest
+     * @return
+     * @throws IllegalArgumentException
+     * @see #buildPartner(PartnerRequest)
+     */
+    public boolean updatePartner(PartnerRequest partnerRequest) {
+
+        if(partnerRequest == null) {
+            logger.error("PartnerRequest not provided");
+            return false;
+        }
+
+        Partner currentPartner = repository.findByReference(partnerRequest.getReference())
+                .orElseThrow(NoResultException::new);
 
         if (currentPartner == null) {
+            logger.info("Partner {} not exists.", partnerRequest.getName());
             return false;
 		}
-        
+
+        Partner partner = buildPartner(partnerRequest);
+
         if(partner.getDescription() != null)
         		currentPartner.setDescription(partner.getDescription());
         if(partner.getPartnership() != null)
@@ -64,24 +86,29 @@ public class PartnerServiceImpl implements PartnerService {
 
         currentPartner.setUpdateDate(Calendar.getInstance());
         
-        partner = repository.save(currentPartner);
+        repository.save(currentPartner);
         logger.info("Partner {} updated.", partner.getName());
         return true;
 	}
 
-	public void setPartnerStatus(String reference, boolean newStatus) {
+	public boolean setPartnerStatus(String reference, boolean newStatus) {
+        if (repository.findByReference(reference) == null) return false;
+
         logger.info("Changing partner {} status to {}", reference, newStatus);
         repository.changePartnerStatus(reference, newStatus);
+        return true;
     }
 
-	public PartnerRequest findByReference(String reference) {
+	public PartnerResponse findByReference(String reference) {
 		logger.info("PartnerRequest {} find.", reference.toString());
 		
-		Partner partner = repository.findByReference(reference);
+		Partner partner = repository.findByReference(reference)
+                .orElseThrow(NoResultException::new);
+
 		if (partner == null) 
 			return null;
 		
-		return buildPartnerRequest(partner);
+		return buildPartnerResponse(partner);
 	}
 
     /**
@@ -90,7 +117,7 @@ public class PartnerServiceImpl implements PartnerService {
      * @return new {@link Partner} based on {@link PartnerRequest}
      * @throws IllegalArgumentException if {@link PartnerRequest} is not provided
      */
-    private Partner buildPartner(PartnerRequest partnerRequest) {
+    private Partner buildPartner(PartnerRequest partnerRequest) throws IllegalArgumentException {
         if (partnerRequest == null)
             throw new IllegalArgumentException("PartnerRequest not provided.");
 
@@ -129,7 +156,7 @@ public class PartnerServiceImpl implements PartnerService {
         
     }
 
-	private PartnerRequest buildPartnerRequest(Partner partner) {
+	private PartnerResponse buildPartnerResponse(Partner partner) throws IllegalArgumentException {
         if (partner == null)
             throw new IllegalArgumentException("Partner not provided.");
 
@@ -144,7 +171,7 @@ public class PartnerServiceImpl implements PartnerService {
             }
         });
 
-        return modelMapper.map(partner, PartnerRequest.class);
+        return modelMapper.map(partner, PartnerResponse.class);
     }
     
 }
