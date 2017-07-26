@@ -84,7 +84,7 @@ public class PartnerController {
             service.updatePartner(partnerRequest);
             return ResponseEntity.ok().build();
 
-        } catch (NoResultException e) {
+        } catch (NotFoundException e) {
 			logger.error("Partner referenced by '{}' not found.", reference);
 
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
