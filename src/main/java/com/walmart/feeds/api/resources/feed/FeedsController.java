@@ -90,6 +90,16 @@ public class FeedsController {
         feedTO.setPartnerReference(partnerReference);
         List<FeedTO> listFeed = feedService.fetchByPartner(feedTO);
         return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
+
     }
 
+    @RequestMapping (value = "{reference}",method=RequestMethod.PATCH,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity removeFeed(@PathVariable("reference")String reference){
+        try {
+            feedService.removeFeed(reference);
+            return ResponseEntity.ok().build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +37,7 @@ public class FeedServiceImpl implements FeedService {
 
         ModelMapper modelMapper = new ModelMapper();
 
-        Partner partner = partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(() -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartnerReference())));
+        Partner partner = partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartnerReference())));
 
         FeedEntity feedEntity = new FeedEntity();
         modelMapper.map(feedTO, feedEntity);
@@ -64,6 +65,17 @@ public class FeedServiceImpl implements FeedService {
         ModelMapper mapper = new ModelMapper();
         return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
     }
+
+    @Override
+    public void removeFeed(String reference) throws NotFoundException {
+
+        FeedEntity feedEntity = feedRepository.findByReference(reference).orElseThrow(()->new NotFoundException("Feed not Found"));//busca no banco a partir do reference
+
+        feedEntity.setUpdateDate(LocalDateTime.now());
+        feedRepository.changeFeedStatus(feedEntity, false);
+
+    }
+
 
     @Override
     public List<FeedTO> fetch(){
