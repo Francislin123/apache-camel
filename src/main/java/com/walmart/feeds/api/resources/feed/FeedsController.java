@@ -10,7 +10,6 @@ import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.feed.response.FeedResponse;
-import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -87,16 +86,18 @@ public class FeedsController {
     }
 
     @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity fetchAll(@PathVariable("partnerReference") String partnerReference){
+    public ResponseEntity fetchAll(@PathVariable("partnerReference") String partnerReference) {
         List<FeedTO> listFeed = null;
         ModelMapper mapper = new ModelMapper();
-        try {FeedTO feedTO = new FeedTO();
-        feedTO.setPartnerReference(partnerReference);
-         listFeed = feedService.fetchByPartner(feedTO);
-        return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
-    }catch (NotFoundException ex){
+        try {
+            FeedTO feedTO = new FeedTO();
+            feedTO.setPartnerReference(partnerReference);
+            listFeed = feedService.fetchByPartner(feedTO);
+            return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
+        } catch (NotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage()));
         }
+    }
 
     @RequestMapping (value = "{reference}",method=RequestMethod.PATCH,produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity removeFeed(@PathVariable("reference")String reference){

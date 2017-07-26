@@ -2,7 +2,6 @@ package com.walmart.feeds.api.core.service.feed;
 
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
-import javassist.NotFoundException;
 
 import java.util.List;
 

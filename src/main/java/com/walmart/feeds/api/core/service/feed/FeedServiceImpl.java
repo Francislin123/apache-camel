@@ -6,15 +6,14 @@ import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
-import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -50,9 +49,9 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
-    public List<FeedTO> fetchByActiveAndByPartnerId(FeedTO feedTo) throws NotFoundException {
+    public List<FeedTO> fetchByActiveAndByPartnerId(FeedTO feedTO) throws NotFoundException {
         //TODO[vn0y492] validate partner reference
-        List<FeedEntity> feedEntities  = feedRepository.findByActiveAndByPartnerId(feedTo.isActive()).orElseThrow(() -> new NotFoundException("Feed not found"));
+        List<FeedEntity> feedEntities  = feedRepository.findByActiveAndByPartnerId(feedTO.isActive()).orElseThrow(() -> new NotFoundException("Feed not found"));
         ModelMapper mapper = new ModelMapper();
         return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
     }
