@@ -1,8 +1,8 @@
 package com.walmart.feeds.api.resources;
 
-import com.walmart.feeds.api.resources.request.XablauRequest;
-import com.walmart.feeds.api.resources.request.XablauResponse;
-import com.walmart.feeds.api.resources.response.ErrorResponse;
+import com.walmart.feeds.api.resources.feed.request.XablauRequest;
+import com.walmart.feeds.api.resources.feed.request.XablauResponse;
+import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

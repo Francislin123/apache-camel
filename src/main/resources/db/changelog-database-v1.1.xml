@@ -1,0 +1,23 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+
+    <changeSet id="123" author="renato.ibanhez" context="dev">
+        <insert tableName="feed">
+            <column name="id" valueComputed="${uuid_function}"/>
+            <column name="reference" value="feed_google_renato"/>
+            <column name="name" value="Feed Google"/>
+            <column name="partner_id" value="google"/>
+            <column name="type" value="FULL"/>
+            <column name="notification_method" value="file"/>
+            <column name="notification_format" value="xml"/>
+            <column name="notification_url" value="url google"/>
+            <column name="creation_date" valueDate="${now}"/>
+            <column name="update_date" valueDate="${now}"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

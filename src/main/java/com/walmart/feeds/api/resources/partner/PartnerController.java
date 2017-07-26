@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.resources.partner;
 
 import com.walmart.feeds.api.core.service.partner.PartnerService;
+import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import com.walmart.feeds.api.resources.response.ErrorResponse;
