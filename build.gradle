@@ -55,6 +55,7 @@ liquibase {
             username 'root'
             password 'root'
         }
+
     }
     runList = project.ext.runList
 }

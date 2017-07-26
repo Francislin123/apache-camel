@@ -35,16 +35,18 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public void createFeed(FeedTO feedTO) throws NotFoundException {
 
-        ModelMapper modelMapper = new ModelMapper();
-
         Partner partner = partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartnerReference())));
+
+        ModelMapper modelMapper = new ModelMapper();
 
         FeedEntity feedEntity = new FeedEntity();
         modelMapper.map(feedTO, feedEntity);
         feedEntity.getUtms().stream().forEach(u -> u.setFeed(feedEntity));
         feedEntity.setPartner(partner);
 
-        feedRepository.save(feedEntity);
+        FeedEntity savedFeed = feedRepository.save(feedEntity);
+
+        logger.info("feed={} message=saved_succesfully", savedFeed);
 
     }
 

@@ -37,7 +37,6 @@ public class FeedsController {
     public ResponseEntity createFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder) {
 
         try {
-
             FeedTO feedTO = new ModelMapper().map(request, FeedTO.class);
             feedTO.setPartnerReference(partnerReference);
             feedTO.setType(FeedType.getFromCode(request.getType()));
@@ -49,6 +48,7 @@ public class FeedsController {
 
             return ResponseEntity.created(uriComponents.toUri()).build();
 
+            // TODO[r0i001q]: Use exception handler
         } catch (NotFoundException e) {
             return ResponseEntity.notFound().build();
         }
