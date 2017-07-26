@@ -25,6 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+@Api
 @RestController
 @RequestMapping("/v1/partners")
 public class PartnerController {
@@ -37,9 +43,10 @@ public class PartnerController {
 	@Autowired
 	private ServletContext context;
 
-    @RequestMapping(method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity createPartner(@RequestBody @Valid PartnerRequest partner) {
+	@ApiOperation(value = "Create new partner",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@ApiResponses(@ApiResponse(code=201,message=" Successful new partner ",response = PartnerRequest.class))
+    @RequestMapping(method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> createPartner(@RequestBody @Valid PartnerRequest partner){
         try {
 
             service.savePartner(partner);
