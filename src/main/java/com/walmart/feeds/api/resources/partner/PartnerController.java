@@ -1,29 +1,22 @@
 package com.walmart.feeds.api.resources.partner;
 
-import java.util.List;
-
-import javax.servlet.ServletContext;
-import javax.validation.Valid;
-
-import com.walmart.feeds.api.core.repository.partner.model.Partner;
+import com.walmart.feeds.api.core.service.partner.PartnerService;
+import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import com.walmart.feeds.api.resources.response.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.walmart.feeds.api.core.service.partner.PartnerService;
-import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
+import javax.persistence.NoResultException;
+import javax.servlet.ServletContext;
+import javax.validation.Valid;
+import java.util.List;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,9 +33,6 @@ public class PartnerController {
     @Autowired
     private PartnerService service;
 
-	@Autowired
-	private ServletContext context;
-
 	@ApiOperation(value = "Create new partner",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ApiResponses(@ApiResponse(code=201,message=" Successful new partner ",response = PartnerRequest.class))
     @RequestMapping(method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -57,17 +47,17 @@ public class PartnerController {
             logger.error("Cannot save the partner " + partner.getName(), e);
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(partner.getName() + " already exists");
-        } catch (DataAccessException e) {
-            logger.error("Cannot save the partner " + partner.getName(), e);
+        } catch (Exception e) {
+            logger.error("Failed to save partner " + partner.getName(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Some error occurred when try save the partner: " + e.getMessage());
+                    .body("Failed to save partner: " + e.getMessage());
         }
     }
 
     // Method to find the partner by your reference
 	@RequestMapping(value = "/{reference}",
             method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity getPartner(@PathVariable("reference") String reference) {
+	public ResponseEntity fetchPartnerByReference(@PathVariable("reference") String reference) {
 		PartnerResponse partnerRequest = service.findByReference(reference);
 		if (partnerRequest == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(),
@@ -86,19 +76,22 @@ public class PartnerController {
 
         boolean result = false;
         try {
-            result = service.updatePartner(partnerRequest);
-        } catch (DataAccessException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("There was an error while trying to update the partner: " + e.getMessage());
-        }
 
-        if (result) {
-			return ResponseEntity.ok().build();
-		} else {
+            result = service.updatePartner(partnerRequest);
+            return ResponseEntity.ok().build();
+
+        } catch (NoResultException e) {
 			logger.error("Partner referenced by '{}' not found.", reference);
+
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), "Partner " + reference + " not found!"));
-		}
+					.body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(),
+                            "Partner " + reference + " not found!"));
+        } catch (Exception e) {
+            logger.error("Failed to update the partner {reference}", e);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to update the partner: " + e.getMessage());
+        }
 
 	}
 
@@ -109,33 +102,33 @@ public class PartnerController {
 
         try {
             boolean newStatus = "1".equals(status);
-
-            boolean result = service.setPartnerStatus(reference, newStatus);
-
-            if (!result) {
-                String message = String.format("Partner referenced by %s not found.", reference);
-                logger.info(message);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), message));
-            }
-
+            service.setPartnerStatus(reference, newStatus);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            logger.error("Failure on change partner status", e);
+            logger.error("Failed to change partner status", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Some error occurred on processing partner status change.");
+                    .body("Failed to change partner status");
         }
 
     }
 
     @RequestMapping(value = "/actives",
             method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<Partner>> findPartnerActives() {
+    public ResponseEntity<List<PartnerResponse>> fetchPartnerActives() {
         try {
-            return ResponseEntity.ok(service.findPartnerActives());
+            return ResponseEntity.ok(service.findActivePartners());
         } catch (Exception e) {
-            logger.error("Get all actives partners failed!", e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            logger.error("Failed to get all active partners!", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    public ResponseEntity<List<PartnerResponse>> fetchAllPartners() {
+        try {
+            return ResponseEntity.ok(service.findAllPartners());
+        } catch (Exception e) {
+            logger.error("Failed to get all partners!", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
