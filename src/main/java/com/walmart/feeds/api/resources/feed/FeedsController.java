@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.resources.feed;
 
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
@@ -7,9 +8,11 @@ import com.walmart.feeds.api.core.service.feed.FeedService;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
+import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.feed.response.FeedResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -77,11 +80,31 @@ public class FeedsController {
         return ResponseEntity.ok().body(feedResponse);
     }
     @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<FeedResponse>> fetchAll(@PathVariable("partnerReference") String partnerReference){
+    public ResponseEntity fetchAll(@PathVariable("partnerReference") String partnerReference){
+        List<FeedTO> listFeed = null;
         ModelMapper mapper = new ModelMapper();
-        FeedTO feedTO = new FeedTO();
-        feedTO.setPartnerReference(partnerReference);
-        List<FeedTO> listFeed = feedService.fetchByPartner(feedTO);
-        return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
+        try {
+            FeedTO feedTO = new FeedTO();
+            feedTO.setPartnerReference(partnerReference);
+            listFeed = feedService.fetchByPartner(feedTO);
+            return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
+        }catch (NotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage()));
+        }
+
+    }
+    @RequestMapping(value = "actives", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity fetchActives(@PathVariable("partnerReference") String partnerReference){
+        List<FeedTO> listFeed = null;
+        ModelMapper mapper = new ModelMapper();
+        try {
+            FeedTO feedTO = new FeedTO();
+            feedTO.setPartnerReference(partnerReference);
+            listFeed = feedService.fetchByActiveAndByPartnerId(feedTO);
+            return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
+        }catch (NotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage()));
+        }
+
     }
 }

@@ -16,6 +16,6 @@ public interface FeedRepository extends JpaRepository<FeedEntity, String> {
 
     Optional<FeedEntity> findByReference(String reference);
     Optional<List<FeedEntity>> findByPartnerId(String partnerId);
-    Optional<List<FeedEntity>> findByActive(Boolean active);
+    Optional<List<FeedEntity>> findByActiveAndByPartnerId(Boolean active);
 
 }

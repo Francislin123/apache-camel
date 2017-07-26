@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.service.feed;
 
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.UTM;
@@ -8,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,14 +55,16 @@ public class FeedServiceImpl implements FeedService {
 
     }
     @Override
-    public List<FeedTO> fetchActive(FeedTO feedTo){
-        List<FeedEntity> feedEntities  = feedRepository.findByActive(feedTo.isActive()).orElseThrow(NoResultException::new);
+    public List<FeedTO> fetchByActiveAndByPartnerId(FeedTO feedTo) throws NotFoundException {
+        //TODO[vn0y492] validate partner reference
+        List<FeedEntity> feedEntities  = feedRepository.findByActiveAndByPartnerId(feedTo.isActive()).orElseThrow(() -> new NotFoundException("Feed not found"));
         ModelMapper mapper = new ModelMapper();
         return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
     }
     @Override
-    public List<FeedTO> fetchByPartner(FeedTO feedTO){
-        List<FeedEntity> feedEntities = feedRepository.findByPartnerId(feedTO.getPartnerReference()).orElseThrow(NoResultException::new);
+    public List<FeedTO> fetchByPartner(FeedTO feedTO) throws NotFoundException {
+        //TODO[vn0y492] validate partner reference
+        List<FeedEntity> feedEntities = feedRepository.findByPartnerId(feedTO.getPartnerReference()).orElseThrow(() -> new NotFoundException("Feed not found"));
         ModelMapper mapper = new ModelMapper();
         return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
     }

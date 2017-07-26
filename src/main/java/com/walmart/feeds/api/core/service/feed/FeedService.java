@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.service.feed;
 
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,6 @@ import java.util.List;
 public interface FeedService {
 
     void createFeed(FeedTO feedTO);
-    public List<FeedTO> fetchActive(FeedTO feedTo);
-    public List<FeedTO> fetchByPartner(FeedTO feedTO);
+    public List<FeedTO> fetchByActiveAndByPartnerId(FeedTO feedTo)throws NotFoundException;
+    public List<FeedTO> fetchByPartner(FeedTO feedTO) throws NotFoundException;
 }
