@@ -115,7 +115,7 @@ public class FeedsController {
         try {
             FeedTO feedTO = new FeedTO();
             feedTO.setPartnerReference(partnerReference);
-            listFeed = feedService.fetchByActiveAndByPartnerId(feedTO);
+            listFeed = feedService.fetchByActiveAndByPartner(feedTO);
             return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
         }catch (NotFoundException ex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage()));

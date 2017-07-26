@@ -49,17 +49,17 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
-    public List<FeedTO> fetchByActiveAndByPartnerId(FeedTO feedTO) throws NotFoundException {
-        //TODO[vn0y492] validate partner reference
-        List<FeedEntity> feedEntities  = feedRepository.findByActiveAndByPartnerId(feedTO.isActive()).orElseThrow(() -> new NotFoundException("Feed not found"));
+    public List<FeedTO> fetchByActiveAndByPartner(FeedTO feedTO) throws NotFoundException {
+        Partner partner = partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartnerReference())));
+        List<FeedEntity> feedEntities  = feedRepository.findByActiveAndPartner(feedTO.isActive(), partner).orElseThrow(() -> new NotFoundException("Feed not found"));
         ModelMapper mapper = new ModelMapper();
         return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
     }
 
     @Override
     public List<FeedTO> fetchByPartner(FeedTO feedTO) throws NotFoundException {
-        //TODO[vn0y492] validate partner reference
-        List<FeedEntity> feedEntities = feedRepository.findByPartnerId(feedTO.getPartnerReference()).orElseThrow(() -> new NotFoundException("Feed not found"));
+        Partner partner = partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartnerReference())));
+        List<FeedEntity> feedEntities = feedRepository.findByPartner(partner).orElseThrow(() -> new NotFoundException("Feed not found"));
         ModelMapper mapper = new ModelMapper();
         return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
     }

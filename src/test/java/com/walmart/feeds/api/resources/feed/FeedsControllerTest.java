@@ -8,14 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -64,9 +61,9 @@ public class FeedsControllerTest {
     public void testFeedsActivesByPartnerAndReturnAList() throws Exception {
         FeedTO feedTO = new FeedTO();
         feedTO.setPartnerReference("AAA333");
-        Mockito.when(feedService.fetchByActiveAndByPartnerId(feedTO)).thenReturn(this.mockListFeed());
+        Mockito.when(feedService.fetchByActiveAndByPartner(feedTO)).thenReturn(this.mockListFeed());
         ResponseEntity<List<FeedResponse>> response = feedsController.fetchActives("AAA333");
-        Mockito.verify(feedService).fetchByActiveAndByPartnerId(feedTO);
+        Mockito.verify(feedService).fetchByActiveAndByPartner(feedTO);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -74,7 +71,7 @@ public class FeedsControllerTest {
     public void testFeedsActivesByPartnerAndDealWithUnknownPartner() throws NotFoundException {
         FeedTO feedTO = new FeedTO();
         feedTO.setPartnerReference("AAA333");
-        Mockito.when(feedService.fetchByActiveAndByPartnerId(feedTO)).thenThrow(new NotFoundException(""));
+        Mockito.when(feedService.fetchByActiveAndByPartner(feedTO)).thenThrow(new NotFoundException(""));
         ResponseEntity response = feedsController.fetchActives("AAA333");
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
