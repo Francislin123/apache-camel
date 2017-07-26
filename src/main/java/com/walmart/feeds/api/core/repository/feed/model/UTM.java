@@ -1,14 +1,15 @@
 package com.walmart.feeds.api.core.repository.feed.model;
 
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.UUID;
 
 @Data
 @Entity
 @Table(name = "feed_utm")
+@ToString(exclude = "feed")
 public class UTM {
 
     @Id

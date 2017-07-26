@@ -2,7 +2,10 @@ package com.walmart.feeds.api.core.repository.feed;
 
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,4 +21,8 @@ public interface FeedRepository extends JpaRepository<FeedEntity, String> {
     Optional<List<FeedEntity>> findByPartnerId(String partnerId);
     Optional<List<FeedEntity>> findByActiveAndByPartnerId(Boolean active);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE FeedEntity f SET f.active = ?2 WHERE f = ?1")
+    void changeFeedStatus(FeedEntity feedEntity , boolean active);
 }

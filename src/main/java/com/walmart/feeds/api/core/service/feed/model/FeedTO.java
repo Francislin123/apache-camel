@@ -5,9 +5,7 @@ import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import lombok.Data;
 import org.modelmapper.ModelMapper;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by vn0y942 on 21/07/17.
@@ -21,12 +19,6 @@ public class FeedTO {
     private FeedNotificationDataTO notificationData;
     private FeedType type;
     private List<UTMTO> utms;
-
-    private LocalDateTime creationDate;
-
-    private LocalDateTime updateDate;
-
-    private boolean active;
 
     public FeedEntity toEntity(){
         ModelMapper mapper = new ModelMapper();

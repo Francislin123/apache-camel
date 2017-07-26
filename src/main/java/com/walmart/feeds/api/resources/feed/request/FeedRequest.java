@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.resources.feed.request;
 
-import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedType;
 import lombok.Data;
 
