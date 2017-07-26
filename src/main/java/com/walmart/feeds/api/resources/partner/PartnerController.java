@@ -4,6 +4,7 @@ import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import com.walmart.feeds.api.resources.response.ErrorResponse;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,13 +59,17 @@ public class PartnerController {
 	@RequestMapping(value = "/{reference}",
             method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity fetchPartnerByReference(@PathVariable("reference") String reference) {
-		PartnerResponse partnerRequest = service.findByReference(reference);
-		if (partnerRequest == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(),
+        try {
+
+            PartnerResponse partnerRequest = service.findByReference(reference);
+            return new ResponseEntity<PartnerResponse>(partnerRequest, HttpStatus.OK);
+
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(),
                     "Partner " + reference + " not found!"));
-		}
-		return new ResponseEntity<PartnerResponse>(partnerRequest, HttpStatus.OK);
-	}
+        }
+    }
 	
 	// Method to change partner fields
 	@RequestMapping(value = "/{reference}",
@@ -74,10 +79,9 @@ public class PartnerController {
 
 		partnerRequest.setReference(reference);
 
-        boolean result = false;
         try {
 
-            result = service.updatePartner(partnerRequest);
+            service.updatePartner(partnerRequest);
             return ResponseEntity.ok().build();
 
         } catch (NoResultException e) {

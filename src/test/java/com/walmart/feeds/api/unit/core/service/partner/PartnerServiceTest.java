@@ -7,6 +7,7 @@ import com.walmart.feeds.api.core.repository.partner.model.Partnership;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.partner.PartnerServiceImpl;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
+import javassist.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -119,43 +120,36 @@ public class PartnerServiceTest {
                 partner.getPartnership(), empty());
     }
 
-    @Test
-    public void testUpdatePartnerFromNullPartnerRequestShouldReturnFalse() {
-        boolean updated = this.service.updatePartner(null);
-
-        verify(repository, times(0)).findByReference(anyString());
-        verify(repository, times(0)).save(Mockito.any(Partner.class));
-
-        assertFalse(updated);
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdatePartnerFromNullPartnerRequestShouldReturnFalse() throws NotFoundException {
+        this.service.updatePartner(null);
     }
 
-    @Test
-    public void testUpdateInexistentPartnerShouldReturnFalse() {
+    @Test(expected = NotFoundException.class)
+    public void testUpdateInexistentPartnerShouldThrowNotFoundException() throws NotFoundException {
         when(repository.findByReference(anyString()))
-                .thenReturn(null);
-        PartnerRequest request = new PartnerRequest();
-
-        boolean updated = this.service.updatePartner(request);
-
+                .thenReturn(Optional.empty());
+        PartnerRequest request = createPartnerRequest();
+        this.service.updatePartner(request);
         verify(repository, times(1)).findByReference(anyString());
         verify(repository, times(0)).save(Mockito.any(Partner.class));
-
-        assertFalse("Update should return false, because the partner not exists.",
-                updated);
     }
 
     @Test
     public void testUpdatePartnerShouldReturnTrue() {
-        when(repository.findByReference(anyString()))
-                .thenReturn(Optional.of(new Partner()));
-        PartnerRequest request = new PartnerRequest();
+        try {
+            when(repository.findByReference(anyString()))
+                    .thenReturn(Optional.of(new Partner()));
+            PartnerRequest request = new PartnerRequest();
 
-        boolean updated = this.service.updatePartner(request);
+            this.service.updatePartner(request);
 
-        verify(repository, times(1)).findByReference(anyString());
-        verify(repository, times(1)).save(Mockito.any(Partner.class));
+            verify(repository, times(1)).findByReference(anyString());
+            verify(repository, times(1)).save(Mockito.any(Partner.class));
+        } catch (NotFoundException e) {
+            fail("Exception should not have been fired!");
+        }
 
-        assertTrue(updated);
     }
 
     private PartnerRequest createPartnerRequest() {

@@ -4,6 +4,7 @@ import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.resources.partner.PartnerController;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
+import javassist.NotFoundException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +25,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)//(SpringRunner.class)
-//@WebMvcTest
+@RunWith(MockitoJUnitRunner.class)
 public class PartnerControllerTest {
 
     public static final String URI_PARTNERS = "/v1/partners";
@@ -91,7 +91,6 @@ public class PartnerControllerTest {
 
     @Test
     public void testUpdatePartner() throws Exception {
-        when(partnerService.updatePartner(any(PartnerRequest.class))).thenReturn(true);
         ResponseEntity<?> response = controller.updatePartner("anyReference", getPartnerRequest());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -99,7 +98,7 @@ public class PartnerControllerTest {
 
     @Test
     public void testUpdatePartnerNotfoundWhenInexistentPartner() throws Exception {
-        when(partnerService.updatePartner(any(PartnerRequest.class))).thenThrow(NoResultException.class);
+        doThrow(NotFoundException.class).when(partnerService).updatePartner(any(PartnerRequest.class));
         ResponseEntity<?> response = controller.updatePartner("anyReference", getPartnerRequest());
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -107,7 +106,7 @@ public class PartnerControllerTest {
 
     @Test
     public void testUpdatePartnerWithDatabaseDown() throws Exception {
-        when(partnerService.updatePartner(any(PartnerRequest.class))).thenThrow(Exception.class);
+        doThrow(Exception.class).when(partnerService).updatePartner(any(PartnerRequest.class));
         ResponseEntity<?> response = controller.updatePartner("anyReference", getPartnerRequest());
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

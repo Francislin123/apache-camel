@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
+import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
@@ -19,15 +20,13 @@ import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import com.walmart.feeds.api.core.repository.partner.model.Partnership;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 
-import javax.persistence.NoResultException;
-
 @Service
 public class PartnerServiceImpl implements PartnerService {
 
     private Logger logger = LoggerFactory.getLogger(PartnerServiceImpl.class);
 
     @Autowired
-    private PartnerRepository repository;
+    private PartnerRepository partnerRepository;
     @Autowired
     private PartnershipRepository partnershipRepository;
 
@@ -37,26 +36,18 @@ public class PartnerServiceImpl implements PartnerService {
         partner.setCreationDate(Calendar.getInstance());
         partner.setActive(true);
         
-        partner = repository.save(partner);
+        partner = partnerRepository.save(partner);
         logger.info("Partner {} saved.", partner.getName());
     }
 
-    /**
-     *
-     * @param partnerRequest
-     * @return
-     * @throws IllegalArgumentException
-     * @see #buildPartner(PartnerRequest)
-     */
-    public boolean updatePartner(PartnerRequest partnerRequest) {
+    public void updatePartner(PartnerRequest partnerRequest) throws IllegalArgumentException, NotFoundException {
 
         if(partnerRequest == null) {
             logger.error("PartnerRequest not provided");
-            return false;
+            throw new IllegalArgumentException("PartnerRequest not provided");
         }
 
-        Partner currentPartner = repository.findByReference(partnerRequest.getReference())
-                .orElseThrow(NoResultException::new);
+        Partner currentPartner = findPartnerByReference(partnerRequest.getReference());
 
         Partner partner = buildPartner(partnerRequest);
 
@@ -66,45 +57,47 @@ public class PartnerServiceImpl implements PartnerService {
             currentPartner.setPartnership(partner.getPartnership());
 
         currentPartner.setUpdateDate(Calendar.getInstance());
-
-        repository.save(currentPartner);
+        partnerRepository.save(currentPartner);
         logger.info("Partner {} updated.", partner.getName());
-        return true;
+
     }
 
-    public PartnerResponse findByReference(String reference) {
-        logger.info("PartnerRequest {} find.", reference.toString());
-
-        Partner partner = repository.findByReference(reference)
-                .orElseThrow(NoResultException::new);
-
+    public PartnerResponse findByReference(String reference) throws NotFoundException {
+        Partner partner = findPartnerByReference(reference);
         return buildPartnerResponse(partner);
+    }
+
+    private Partner findPartnerByReference(String reference) throws NotFoundException {
+        logger.info("Finding partner {}.", reference);
+
+        return partnerRepository.findByReference(reference)
+                .orElseThrow(() -> new NotFoundException("Partner not found: " + reference));
     }
 
     @Override
     public List<PartnerResponse> findAllPartners() {
 
-        List<Partner> partners = repository.findAll();
+        List<Partner> partners = partnerRepository.findAll();
         logger.info("Total of fetched partners: {}", partners.size());
-        return partners.stream().map(p -> buildPartnerResponse(p)).collect(Collectors.toList());
+        return partners.stream().map(this::buildPartnerResponse).collect(Collectors.toList());
 
     }
 
     @Override
     public List<PartnerResponse> findActivePartners() {
-        List<Partner> actives = repository.findPartnerActives();
-        return actives.stream().map(p -> buildPartnerResponse(p)).collect(Collectors.toList());
+        List<Partner> actives = partnerRepository.findPartnerActives();
+        return actives.stream().map(this::buildPartnerResponse).collect(Collectors.toList());
     }
 
 
 	public void setPartnerStatus(String reference, boolean newStatus) {
         logger.info("Changing partner {} status to {}", reference, newStatus);
-        repository.changePartnerStatus(reference, newStatus);
+        partnerRepository.changePartnerStatus(reference, newStatus);
     }
 
     /**
      *
-     * @param partnerRequest
+     * @param partnerRequest payload
      * @return new {@link Partner} based on {@link PartnerRequest}
      * @throws IllegalArgumentException if {@link PartnerRequest} is not provided
      */
