@@ -13,7 +13,6 @@ import java.util.List;
 public interface FeedService {
 
     void createFeed(FeedTO feedTO);
-    public List<FeedTO> fetch();
     public List<FeedTO> fetchActive(FeedTO feedTo);
     public List<FeedTO> fetchByPartner(FeedTO feedTO);
 }

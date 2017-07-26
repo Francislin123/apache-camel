@@ -84,11 +84,4 @@ public class FeedsController {
         List<FeedTO> listFeed = feedService.fetchByPartner(feedTO);
         return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
     }
-
-    @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<FeedResponse>> fetch(){
-        ModelMapper mapper = new ModelMapper();
-        List<FeedTO> listFeed = feedService.fetch();
-        return ResponseEntity.ok(listFeed.stream().map(feedTO -> mapper.map(feedTO, FeedResponse.class)).collect(Collectors.toList()));
-    }
 }

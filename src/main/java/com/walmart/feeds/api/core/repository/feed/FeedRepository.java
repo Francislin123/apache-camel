@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface FeedRepository extends JpaRepository<FeedEntity, String> {
 
     Optional<FeedEntity> findByReference(String reference);
-    public List<FeedEntity> findByPartnerId(String partnerId);
-    public List<FeedEntity> findByActive(Boolean active);
+    Optional<List<FeedEntity>> findByPartnerId(String partnerId);
+    Optional<List<FeedEntity>> findByActive(Boolean active);
 
 }
