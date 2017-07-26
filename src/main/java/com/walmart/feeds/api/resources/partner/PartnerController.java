@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.NoResultException;
 import javax.servlet.ServletContext;
 import javax.validation.Valid;
 import java.util.List;
@@ -34,8 +33,15 @@ public class PartnerController {
     @Autowired
     private PartnerService service;
 
-	@ApiOperation(value = "Create new partner",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@ApiResponses(@ApiResponse(code=201,message=" Successful new partner ",response = PartnerRequest.class))
+	@Autowired
+	private ServletContext context;
+
+	@ApiOperation(value = " Create new partner ",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = " Successful new partner ", response = PartnerRequest.class),
+            @ApiResponse(code = 409, message = " Partner already exists "),
+            @ApiResponse(code = 500, message = " Internal server error ")})
     @RequestMapping(method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createPartner(@RequestBody @Valid PartnerRequest partner){
         try {
@@ -55,7 +61,11 @@ public class PartnerController {
         }
     }
 
-    // Method to find the partner by your reference
+    @ApiOperation(value = " Method to find the partner by your reference ",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = " Partner found successfully ", response = PartnerResponse.class),
+            @ApiResponse(code = 404, message = " Partner not found ")})
 	@RequestMapping(value = "/{reference}",
             method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity fetchPartnerByReference(@PathVariable("reference") String reference) {
@@ -70,12 +80,17 @@ public class PartnerController {
                     "Partner " + reference + " not found!"));
         }
     }
-	
-	// Method to change partner fields
+
+    @ApiOperation(value = " Method to change partner fields ",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = " Partner change successfully ", response = PartnerRequest.class),
+            @ApiResponse(code = 404, message = " Partner not change "),
+            @ApiResponse(code = 500, message = " Internal Server Error ")})
 	@RequestMapping(value = "/{reference}",
             method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<?> updatePartner(@PathVariable("reference") String reference, @RequestBody PartnerRequest partnerRequest) {
-		logger.info("Updating partners with reference {}", reference);
+	public ResponseEntity<?> updatePartner(@PathVariable("reference") String reference,
+                                           @RequestBody PartnerRequest partnerRequest) {
+		logger.info(" Updating partners with reference {} ", reference);
 
 		partnerRequest.setReference(reference);
 
@@ -99,6 +114,10 @@ public class PartnerController {
 
 	}
 
+	@ApiOperation(value = " Method to modify partner status  ", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = ""),
+            @ApiResponse(code = 500, message = " Failed to change partner status ")})
     @RequestMapping(value = "/{reference}/{status}",
             method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> changePartnerStatus(@PathVariable("reference") String reference,
@@ -116,6 +135,10 @@ public class PartnerController {
 
     }
 
+    @ApiOperation(value = " Method for finding active partners ", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = " Partners found successfully ", response = PartnerResponse.class),
+            @ApiResponse(code = 500, message = " Internal Server Error ")})
     @RequestMapping(value = "/actives",
             method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<PartnerResponse>> fetchPartnerActives() {
@@ -127,6 +150,7 @@ public class PartnerController {
         }
     }
 
+    @RequestMapping
     public ResponseEntity<List<PartnerResponse>> fetchAllPartners() {
         try {
             return ResponseEntity.ok(service.findAllPartners());
