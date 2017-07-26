@@ -125,7 +125,7 @@ public class PartnerServiceImpl implements PartnerService {
 
         for (String type : partnerships) {
             try {
-                Partnership partnership = partnershipRepository.findOne(type);
+                Partnership partnership = partnershipRepository.findByReference(type);
                 if (null == partnership) {
                     continue;
                 }

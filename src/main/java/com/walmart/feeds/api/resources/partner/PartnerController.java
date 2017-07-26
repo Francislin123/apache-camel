@@ -139,8 +139,7 @@ public class PartnerController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = " Partners found successfully ", response = PartnerResponse.class),
             @ApiResponse(code = 500, message = " Internal Server Error ")})
-    @RequestMapping(value = "/actives",
-            method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/actives", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<PartnerResponse>> fetchPartnerActives() {
         try {
             return ResponseEntity.ok(service.findActivePartners());
@@ -150,12 +149,12 @@ public class PartnerController {
         }
     }
 
-    @RequestMapping
+    @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<PartnerResponse>> fetchAllPartners() {
         try {
             return ResponseEntity.ok(service.findAllPartners());
         } catch (Exception e) {
-            logger.error("Failed to get all partners!", e);
+            logger.error("Failed to get all active partners!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
