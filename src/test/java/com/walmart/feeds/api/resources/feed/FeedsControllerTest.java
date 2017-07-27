@@ -17,6 +17,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,6 +33,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -145,7 +148,18 @@ public class FeedsControllerTest {
         ResponseEntity response = feedsController.fetchActives("AAA333");
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
-
+    @Test
+    public void testUpdateFeed() throws Exception {
+        doNothing().when(feedService).updateFeed(Fixture.from(FeedTO.class).gimme("feed-to-full-api-valid"));
+        mockMvc.perform(patch(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
+                ).andExpect(status().isOk());
+    }
+    @Test(expected = DataIntegrityViolationException.class)
+    public void testUpdateFeedAndDealWithDuplicatedReference() throws Exception {
+        doThrow(DataIntegrityViolationException.class).when(feedService).updateFeed(Fixture.from(FeedTO.class).gimme("feed-to-full-api-valid"));
+        mockMvc.perform(patch(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
+        ).andExpect(status().isConflict());
+    }
     private List<FeedTO> mockListFeed(){
         List<FeedTO> list = new ArrayList<>();
         FeedTO feedTO = new FeedTO();
