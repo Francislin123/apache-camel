@@ -12,6 +12,7 @@ import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.feed.response.FeedResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +54,8 @@ public class FeedsController {
             // TODO[r0i001q]: Use exception handler
         } catch (NotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (DuplicateKeyException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
 
@@ -76,9 +79,7 @@ public class FeedsController {
         feedResponse.setFeedType(feedEntity.getType());
 
         feedResponse.setUtms(feedEntity.getUtms().stream().map(utm -> {
-            com.walmart.feeds.api.resources.feed.request.UTM utmResponse = new com.walmart.feeds.api.resources.feed.request.UTM();
-            utmResponse.setType(utm.getType());
-            utmResponse.setValue(utm.getValue());
+            com.walmart.feeds.api.resources.feed.request.UTM utmResponse = new com.walmart.feeds.api.resources.feed.request.UTM(utm.getType(), utm.getValue());
             return utmResponse;
         }).collect(Collectors.toList()));
 
