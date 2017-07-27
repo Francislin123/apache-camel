@@ -30,8 +30,8 @@ public class Partner {
     @Column
     private String description;
 
-    @OneToMany
-    private List<Partnership> partnership;
+    @Column
+    private String partnerships;
 
     @Column(name = "creation_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

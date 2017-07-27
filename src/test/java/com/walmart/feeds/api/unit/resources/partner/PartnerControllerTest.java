@@ -18,7 +18,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.persistence.NoResultException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -131,6 +130,20 @@ public class PartnerControllerTest {
         doThrow(Exception.class).when(partnerService).setPartnerStatus(anyString(), anyBoolean());
         ResponseEntity response = controller.changePartnerStatus("buscape", "0");
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void testSearchPartners() {
+        when(partnerService.searchPartners(anyString())).thenReturn(Arrays.asList(new PartnerResponse()));
+        ResponseEntity response = controller.searchPartners("busc");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void testSearchPartnersEmptyResult() {
+        when(partnerService.searchPartners(anyString())).thenReturn(Arrays.asList());
+        ResponseEntity response = controller.searchPartners("xyz");
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     private PartnerRequest getPartnerRequest() {

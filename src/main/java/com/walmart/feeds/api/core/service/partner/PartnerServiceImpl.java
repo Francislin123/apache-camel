@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.walmart.feeds.api.core.repository.partner.PartnershipRepository;
+import com.walmart.feeds.api.core.repository.partner.model.Partnership;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
@@ -15,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
-import com.walmart.feeds.api.core.repository.partner.PartnershipRepository;
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
-import com.walmart.feeds.api.core.repository.partner.model.Partnership;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 
 @Service
@@ -36,7 +36,7 @@ public class PartnerServiceImpl implements PartnerService {
         partner.setCreationDate(Calendar.getInstance());
         partner.setActive(true);
 
-        if (partner.getPartnership().isEmpty()){
+        if (partner.getPartnerships().isEmpty()){
             logger.info("No one partnership relationated with partner " + partner.getReference());
             throw new IllegalArgumentException("No one partnership relationated with partner " + partner.getReference());
         }
@@ -57,8 +57,8 @@ public class PartnerServiceImpl implements PartnerService {
 
         if(partner.getDescription() != null)
             currentPartner.setDescription(partner.getDescription());
-        if(partner.getPartnership() != null)
-            currentPartner.setPartnership(partner.getPartnership());
+        if(partner.getPartnerships() != null)
+            currentPartner.setPartnerships(partner.getPartnerships());
 
         currentPartner.setUpdateDate(Calendar.getInstance());
         partnerRepository.save(currentPartner);
@@ -93,8 +93,13 @@ public class PartnerServiceImpl implements PartnerService {
         return actives.stream().map(this::buildPartnerResponse).collect(Collectors.toList());
     }
 
+    @Override
+    public List<PartnerResponse> searchPartners(String query) {
+        List<Partner> partners = partnerRepository.searchPartners(query);
+        return partners.stream().map(this::buildPartnerResponse).collect(Collectors.toList());
+    }
 
-	public void setPartnerStatus(String reference, boolean newStatus) {
+    public void setPartnerStatus(String reference, boolean newStatus) {
         logger.info("Changing partner {} status to {}", reference, newStatus);
         partnerRepository.changePartnerStatus(reference, newStatus);
     }
@@ -113,30 +118,13 @@ public class PartnerServiceImpl implements PartnerService {
         modelMapper.addMappings(new PropertyMap<PartnerRequest, Partner>() {
             @Override
             protected void configure() {
-                List<Partnership> partnerships = fetchPartnerships(partnerRequest.getPartnership());
-                map().setPartnership(partnerships);
+                String[] partnerships = partnerRequest.getPartnership()
+                        .toArray(new String[partnerRequest.getPartnership().size()]);
+                map().setPartnerships(String.join(";", partnerships));
             }
         });
 
         return modelMapper.map(partnerRequest, Partner.class);
-    }
-
-    private List<Partnership> fetchPartnerships(List<String> partnerships) {
-        List<Partnership> partnershipList = new ArrayList<>();
-
-        if (null == partnerships)
-            return partnershipList;
-
-        for (String type : partnerships) {
-            Partnership partnership = partnershipRepository.findByReference(type);
-            if (null == partnership) {
-                logger.info("Partnership " + type + " not found!");
-                continue;
-            }
-            partnershipList.add(partnership);
-        }
-        return partnershipList;
-        
     }
 
 	private PartnerResponse buildPartnerResponse(Partner partner) throws IllegalArgumentException {
@@ -144,15 +132,15 @@ public class PartnerServiceImpl implements PartnerService {
             throw new IllegalArgumentException("Partner not provided.");
 
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(new PropertyMap<Partner, PartnerRequest>() {
-            @Override
-            protected void configure() {
-            		List<String> partnerships = 
-            				partner.getPartnership().stream().map(Partnership::getName).collect(Collectors.toList());
-                            
-                map().setPartnership(partnerships);
-            }
-        });
+//        modelMapper.addMappings(new PropertyMap<Partner, PartnerResponse>() {
+//            @Override
+//            protected void configure() {
+//            		List<String> partnerships =
+//            				partner.getPartnership().stream().map(Partnership::getName).collect(Collectors.toList());
+//
+//                map().setPartnership(partnerships);
+//            }
+//        });
 
         return modelMapper.map(partner, PartnerResponse.class);
     }

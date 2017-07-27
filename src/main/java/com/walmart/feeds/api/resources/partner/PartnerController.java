@@ -4,7 +4,7 @@ import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
-import com.walmart.feeds.api.resources.response.ErrorResponse;
+import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,9 +91,8 @@ public class PartnerController {
             @ApiResponse(code = 500, message = " Internal Server Error ")})
 	@RequestMapping(value = "/{reference}",
             method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<?> updatePartner(@PathVariable("reference") String reference,
-                                           @RequestBody PartnerRequest partnerRequest) {
-		logger.info(" Updating partners with reference {} ", reference);
+	public ResponseEntity<?> updatePartner(@PathVariable("reference") String reference, @RequestBody PartnerRequest partnerRequest) {
+		logger.info("Updating partner referenced by {}", reference);
 
 		partnerRequest.setReference(reference);
 
@@ -157,8 +156,18 @@ public class PartnerController {
         try {
             return ResponseEntity.ok(service.findAllPartners());
         } catch (Exception e) {
-            logger.error("Failed to get all active partners!", e);
+            logger.error("Failed to get all partners!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity searchPartners(@RequestParam("q") String query) {
+        logger.info("Searching partners using query text = {}", query);
+        List<PartnerResponse> partnerResponses = this.service.searchPartners(query);
+        if (partnerResponses.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(partnerResponses);
     }
 }

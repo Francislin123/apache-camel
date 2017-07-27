@@ -7,6 +7,7 @@ import com.walmart.feeds.api.core.repository.partner.model.Partnership;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.partner.PartnerServiceImpl;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
+import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import javassist.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.empty;
@@ -37,9 +39,6 @@ public class PartnerServiceTest {
     @Mock
     private PartnerRepository repository;
 
-    @Mock
-    private PartnershipRepository psRepository;
-
     @InjectMocks
     private PartnerService service = new PartnerServiceImpl();
 
@@ -47,13 +46,6 @@ public class PartnerServiceTest {
 
     @Before
     public void setUp() throws NoSuchMethodException {
-        when(psRepository.findOne(anyString()))
-                .then((invocation) -> {
-                    Partnership partnership = new Partnership(invocation.getArgumentAt(0, String.class));
-                    logger.info("Partnership: {}", partnership.getName());
-                    return partnership;
-                });
-
         buildPartnerMethod = PartnerServiceImpl.class
                 .getDeclaredMethod("buildPartner", PartnerRequest.class);
         buildPartnerMethod.setAccessible(true);
@@ -61,7 +53,7 @@ public class PartnerServiceTest {
     }
 
     @Test
-    public void testBuildPartnerFromPartnerRequestWithPartnerships()
+    public void testBuildPartnerFromPartnerRequest()
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         PartnerRequest partnerRequest = createPartnerRequest();
         partnerRequest.setPartnership(Arrays.asList("SEM", "COMPARADOR"));
@@ -71,8 +63,8 @@ public class PartnerServiceTest {
         assertEquals(partnerRequest.getName(), partner.getName());
         assertEquals(partnerRequest.getReference(), partner.getReference());
         assertEquals(partnerRequest.getDescription(), partner.getDescription());
-        assertThat(partner.getPartnership(), hasItem(new Partnership("SEM")));
-        assertThat(partner.getPartnership(), hasItem(new Partnership("COMPARADOR")));
+        assertEquals(partner.getPartnerships(), "SEM;COMPARADOR");
+        logger.info("Mapped partnerships: {}", partner.getPartnerships());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -87,37 +79,6 @@ public class PartnerServiceTest {
                 throw (IllegalArgumentException) e.getCause();
         }
 
-    }
-
-    @Test
-    public void testBuildPartnerFromPartnerRequestWithoutPartnerships()
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        PartnerRequest partnerRequest = createPartnerRequest();
-        partnerRequest.setPartnership(new ArrayList<>());
-
-        Partner partner = (Partner) buildPartnerMethod.invoke(service, partnerRequest);
-
-        assertEquals(partnerRequest.getName(), partner.getName());
-        assertEquals(partnerRequest.getReference(), partner.getReference());
-        assertEquals(partnerRequest.getDescription(), partner.getDescription());
-        assertThat("Partnership list should be empty",
-                partner.getPartnership(), empty());
-        logger.info("Partnership size: {}", partner.getPartnership().size());
-    }
-
-    @Test
-    public void testNonNullPartnershipsFromPartnerRequest()
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        PartnerRequest partnerRequest = createPartnerRequest();
-        partnerRequest.setPartnership(null);
-
-        Partner partner = (Partner) buildPartnerMethod.invoke(service, partnerRequest);
-
-        assertEquals(partnerRequest.getName(), partner.getName());
-        assertEquals(partnerRequest.getReference(), partner.getReference());
-        assertEquals(partnerRequest.getDescription(), partner.getDescription());
-        assertThat("Partnership list should be empty",
-                partner.getPartnership(), empty());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -136,7 +97,6 @@ public class PartnerServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreatePartnerWIthEmptyPartnershipList() {
-        when(psRepository.findByReference(anyString())).thenReturn(null);
         service.savePartner(createPartnerRequest());
     }
 
@@ -154,7 +114,20 @@ public class PartnerServiceTest {
         } catch (NotFoundException e) {
             fail("Exception should not have been fired!");
         }
+    }
 
+    @Test
+    public void testSearchPartners() {
+        when(repository.searchPartners(anyString())).thenReturn(Arrays.asList(createPartner()));
+        List<PartnerResponse> partners = service.searchPartners("bus");
+        assertFalse(partners.isEmpty());
+    }
+
+    @Test
+    public void testSearchPartnersEmptyResult() {
+        when(repository.searchPartners(anyString())).thenReturn(new ArrayList<Partner>());
+        List<PartnerResponse> partners = service.searchPartners("xyz");
+        assertTrue(partners.isEmpty());
     }
 
     private PartnerRequest createPartnerRequest() {
@@ -163,6 +136,22 @@ public class PartnerServiceTest {
         partnerRequest.setReference("partner");
         partnerRequest.setDescription("New partner");
         return partnerRequest;
+    }
+
+    private PartnerResponse createPartnerResponse() {
+        PartnerResponse partnerResponse = new PartnerResponse();
+        partnerResponse.setName("Partner");
+        partnerResponse.setReference("partner");
+        partnerResponse.setDescription("New partner");
+        return partnerResponse;
+    }
+
+    private Partner createPartner() {
+        Partner partner = new Partner();
+        partner.setName("Partner");
+        partner.setReference("partner");
+        partner.setDescription("New partner");
+        return partner;
     }
 
 }

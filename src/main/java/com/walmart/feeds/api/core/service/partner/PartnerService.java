@@ -5,6 +5,7 @@ import java.util.List;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import javassist.NotFoundException;
+import org.springframework.data.jpa.repository.Query;
 
 public interface PartnerService {
 
@@ -20,6 +21,8 @@ public interface PartnerService {
 
     List<PartnerResponse> findActivePartners();
 
+    List<PartnerResponse> searchPartners(String query);
+
     /**
      *
      * @param partnerRequest payload
@@ -34,4 +37,5 @@ public interface PartnerService {
      * @param status true whether active, false otherwise
      */
     void setPartnerStatus(String reference, boolean status);
+
 }
