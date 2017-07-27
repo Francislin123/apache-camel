@@ -5,8 +5,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.walmart.feeds.api.core.repository.partner.PartnershipRepository;
-import com.walmart.feeds.api.core.repository.partner.model.Partnership;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;

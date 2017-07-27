@@ -44,11 +44,17 @@ public class PartnerServiceTest {
 
     private Method buildPartnerMethod;
 
+    private Method buildPartnerResponseMethod;
+
     @Before
     public void setUp() throws NoSuchMethodException {
         buildPartnerMethod = PartnerServiceImpl.class
                 .getDeclaredMethod("buildPartner", PartnerRequest.class);
         buildPartnerMethod.setAccessible(true);
+
+        buildPartnerResponseMethod = PartnerServiceImpl.class.getDeclaredMethod("buildPartnerResponse",
+                Partner.class);
+        buildPartnerResponseMethod.setAccessible(true);
 
     }
 
@@ -65,6 +71,27 @@ public class PartnerServiceTest {
         assertEquals(partnerRequest.getDescription(), partner.getDescription());
         assertEquals(partner.getPartnerships(), "SEM;COMPARADOR");
         logger.info("Mapped partnerships: {}", partner.getPartnerships());
+    }
+
+    @Test
+    public void testBuildPartnerResponseFromPartnerWithPartnerships()
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        Partner partner = new Partner();
+        partner.setActive(true);
+        partner.setName("Buscape");
+        partner.setReference("buscape");
+        Partnership partnership = new Partnership();
+        partnership.setName("Comparadores");
+        partnership.setReference("comparadores");
+        partner.setPartnership(Arrays.asList(partnership));
+
+        PartnerResponse partnerResponse = (PartnerResponse) buildPartnerResponseMethod.invoke(service, partner);
+
+        assertEquals(partnerResponse.getName(), partnerResponse.getName());
+        assertEquals(partnerResponse.getReference(), partnerResponse.getReference());
+        assertEquals(partnerResponse.getDescription(), partnerResponse.getDescription());
+        assertThat(partnerResponse.getPartnership(), hasItem("comparadores"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -136,22 +163,6 @@ public class PartnerServiceTest {
         partnerRequest.setReference("partner");
         partnerRequest.setDescription("New partner");
         return partnerRequest;
-    }
-
-    private PartnerResponse createPartnerResponse() {
-        PartnerResponse partnerResponse = new PartnerResponse();
-        partnerResponse.setName("Partner");
-        partnerResponse.setReference("partner");
-        partnerResponse.setDescription("New partner");
-        return partnerResponse;
-    }
-
-    private Partner createPartner() {
-        Partner partner = new Partner();
-        partner.setName("Partner");
-        partner.setReference("partner");
-        partner.setDescription("New partner");
-        return partner;
     }
 
 }

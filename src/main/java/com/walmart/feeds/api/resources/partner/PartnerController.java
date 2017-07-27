@@ -139,7 +139,7 @@ public class PartnerController {
 
     @ApiOperation(value = " Method for finding active partners ", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = " Partners found successfully ", response = PartnerResponse.class),
+            @ApiResponse(code = 200, message = " Partners found successfully ", response = PartnerResponse.class,responseContainer = "List"),
             @ApiResponse(code = 500, message = " Internal Server Error ")})
     @RequestMapping(value = "/actives", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<PartnerResponse>> fetchPartnerActives() {
@@ -151,6 +151,11 @@ public class PartnerController {
         }
     }
 
+    @ApiOperation(value = " Partner Listing Method ",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = " List of partners ok ", response = PartnerRequest.class,responseContainer = "List"),
+            @ApiResponse(code = 404, message = " Partner not change "),
+            @ApiResponse(code = 500, message = " Internal Server Error ")})
     @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<PartnerResponse>> fetchAllPartners() {
         try {
