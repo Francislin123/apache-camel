@@ -81,10 +81,7 @@ public class PartnerServiceTest {
         partner.setActive(true);
         partner.setName("Buscape");
         partner.setReference("buscape");
-        Partnership partnership = new Partnership();
-        partnership.setName("Comparadores");
-        partnership.setReference("comparadores");
-        partner.setPartnership(Arrays.asList(partnership));
+        partner.setPartnerships("comparadores;afiliados");
 
         PartnerResponse partnerResponse = (PartnerResponse) buildPartnerResponseMethod.invoke(service, partner);
 
@@ -92,6 +89,7 @@ public class PartnerServiceTest {
         assertEquals(partnerResponse.getReference(), partnerResponse.getReference());
         assertEquals(partnerResponse.getDescription(), partnerResponse.getDescription());
         assertThat(partnerResponse.getPartnership(), hasItem("comparadores"));
+        logger.info("Partnerships: {} ", partnerResponse.getPartnership());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -152,9 +150,17 @@ public class PartnerServiceTest {
 
     @Test
     public void testSearchPartnersEmptyResult() {
-        when(repository.searchPartners(anyString())).thenReturn(new ArrayList<Partner>());
+        when(repository.searchPartners(anyString())).thenReturn(new ArrayList<>());
         List<PartnerResponse> partners = service.searchPartners("xyz");
         assertTrue(partners.isEmpty());
+    }
+
+    private Partner createPartner() {
+        Partner partner = new Partner();
+        partner.setName("Partner");
+        partner.setReference("partner");
+        partner.setDescription("New partner");
+        return partner;
     }
 
     private PartnerRequest createPartnerRequest() {

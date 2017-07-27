@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.core.service.partner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +26,6 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Autowired
     private PartnerRepository partnerRepository;
-    @Autowired
-    private PartnershipRepository partnershipRepository;
 
     @Override
     public void savePartner(PartnerRequest partnerRequest) throws IllegalArgumentException {
@@ -130,15 +129,16 @@ public class PartnerServiceImpl implements PartnerService {
             throw new IllegalArgumentException("Partner not provided.");
 
         ModelMapper modelMapper = new ModelMapper();
-//        modelMapper.addMappings(new PropertyMap<Partner, PartnerResponse>() {
-//            @Override
-//            protected void configure() {
-//            		List<String> partnerships =
-//            				partner.getPartnership().stream().map(Partnership::getName).collect(Collectors.toList());
-//
-//                map().setPartnership(partnerships);
-//            }
-//        });
+        modelMapper.addMappings(new PropertyMap<Partner, PartnerResponse>() {
+            @Override
+            protected void configure() {
+                String partnershipsString = partner.getPartnerships();
+                if (partnershipsString != null) {
+                    List<String> partnerships = Arrays.asList(partnershipsString.split(";"));
+                    map().setPartnership(partnerships);
+                }
+            }
+        });
 
         return modelMapper.map(partner, PartnerResponse.class);
     }

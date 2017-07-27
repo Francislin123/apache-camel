@@ -75,7 +75,7 @@ public class PartnerController {
         try {
 
             PartnerResponse partnerRequest = service.findByReference(reference);
-            return new ResponseEntity<PartnerResponse>(partnerRequest, HttpStatus.OK);
+            return new ResponseEntity<>(partnerRequest, HttpStatus.OK);
 
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -166,7 +166,7 @@ public class PartnerController {
         }
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "search", method = RequestMethod.GET)
     public ResponseEntity searchPartners(@RequestParam("q") String query) {
         logger.info("Searching partners using query text = {}", query);
         List<PartnerResponse> partnerResponses = this.service.searchPartners(query);

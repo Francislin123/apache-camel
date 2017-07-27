@@ -27,7 +27,8 @@ public interface PartnerRepository extends JpaRepository<Partner, Long> {
     @Query("SELECT DISTINCT p FROM Partner p WHERE " +
 			"lower(p.name) LIKE %:query% OR " +
 			"lower(p.reference) LIKE %:query% OR " +
-			"lower(p.description) LIKE %:query%"
+			"lower(p.description) LIKE %:query% OR " +
+			"lower(p.partnerships) LIKE %:query%"
 	)
 	List<Partner> searchPartners(@Param("query") String query);
 }
