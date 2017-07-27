@@ -166,6 +166,10 @@ public class PartnerController {
         }
     }
 
+    @ApiOperation(value = " Method for fetching partners using query text ",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = " Search completed successfully ", response = PartnerRequest.class,responseContainer = "List"),
+            @ApiResponse(code = 404, message = " Search without result ")})
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public ResponseEntity searchPartners(@RequestParam("q") String query) {
         logger.info("Searching partners using query text = {}", query);
