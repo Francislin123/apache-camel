@@ -1,0 +1,40 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="dropPartnershipTable" author="renato.ibanhez">
+        <comment>Droping partnership domain table</comment>
+
+        <dropForeignKeyConstraint baseTableName="partner" constraintName="fk_partner_partnership"/>
+
+        <dropColumn tableName="partner" columnName="partnership_id"/>
+
+        <dropTable tableName="partnership"/>
+
+        <addColumn tableName="partner">
+            <column name="partnerships" type="varchar(255)" >
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <rollback changeSetId="createPartnershipTable"
+                  changeSetAuthor="renato.ibanhez"
+                  changeSetPath="src/main/resources/db/changelog/db.changelog-1.0.xml"/>
+
+        <rollback>
+            <comment>Rollback for partner table columns</comment>
+            <addColumn tableName="partner">
+                <column name="partnership_id" type="${uuid_type}"/>
+            </addColumn>
+            <addForeignKeyConstraint baseTableName="partner" baseColumnNames="partnership_id"
+                                     constraintName="fk_partner_partnership"
+                                     referencedTableName="partnership"
+                                     referencedColumnNames="id"/>
+            <dropColumn tableName="partner" columnName="partnerships"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
