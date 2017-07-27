@@ -7,6 +7,7 @@ import com.walmart.feeds.api.core.repository.partner.model.Partnership;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.partner.PartnerServiceImpl;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
+import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import javassist.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +46,8 @@ public class PartnerServiceTest {
 
     private Method buildPartnerMethod;
 
+    private Method buildPartnerResponseMethod;
+
     @Before
     public void setUp() throws NoSuchMethodException {
         when(psRepository.findOne(anyString()))
@@ -54,15 +57,20 @@ public class PartnerServiceTest {
                     return partnership;
                 });
 
-        buildPartnerMethod = PartnerServiceImpl.class
-                .getDeclaredMethod("buildPartner", PartnerRequest.class);
+        buildPartnerMethod = PartnerServiceImpl.class.getDeclaredMethod("buildPartner",
+                PartnerRequest.class);
         buildPartnerMethod.setAccessible(true);
+
+        buildPartnerResponseMethod = PartnerServiceImpl.class.getDeclaredMethod("buildPartnerResponse",
+                Partner.class);
+        buildPartnerResponseMethod.setAccessible(true);
 
     }
 
     @Test
-    public void testBuildPartnerFromPartnerRequestWithPartnerships()
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void testBuildPartnerFromPartnerRequestWithPartnerships()throws NoSuchMethodException,
+            InvocationTargetException, IllegalAccessException {
+
         PartnerRequest partnerRequest = createPartnerRequest();
         partnerRequest.setPartnership(Arrays.asList("SEM", "COMPARADOR"));
 
@@ -73,6 +81,27 @@ public class PartnerServiceTest {
         assertEquals(partnerRequest.getDescription(), partner.getDescription());
         assertThat(partner.getPartnership(), hasItem(new Partnership("SEM")));
         assertThat(partner.getPartnership(), hasItem(new Partnership("COMPARADOR")));
+    }
+
+    @Test
+    public void testBuildPartnerResponseFromPartnerWithPartnerships()
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        Partner partner = new Partner();
+        partner.setActive(true);
+        partner.setName("Buscape");
+        partner.setReference("buscape");
+        Partnership partnership = new Partnership();
+        partnership.setName("Comparadores");
+        partnership.setReference("comparadores");
+        partner.setPartnership(Arrays.asList(partnership));
+
+        PartnerResponse partnerResponse = (PartnerResponse) buildPartnerResponseMethod.invoke(service, partner);
+
+        assertEquals(partnerResponse.getName(), partnerResponse.getName());
+        assertEquals(partnerResponse.getReference(), partnerResponse.getReference());
+        assertEquals(partnerResponse.getDescription(), partnerResponse.getDescription());
+        assertThat(partnerResponse.getPartnership(), hasItem("comparadores"));
     }
 
     @Test(expected = IllegalArgumentException.class)

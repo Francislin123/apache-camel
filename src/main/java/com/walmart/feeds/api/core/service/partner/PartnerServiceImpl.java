@@ -82,7 +82,7 @@ public class PartnerServiceImpl implements PartnerService {
     public List<PartnerResponse> findAllPartners() {
 
         List<Partner> partners = partnerRepository.findAll();
-        logger.info("Total of fetched partners: {}", partners.size());
+       logger.info("Total of fetched partners: {}", partners.size());
         return partners.stream().map(this::buildPartnerResponse).collect(Collectors.toList());
 
     }
@@ -92,7 +92,6 @@ public class PartnerServiceImpl implements PartnerService {
         List<Partner> actives = partnerRepository.findPartnerActives();
         return actives.stream().map(this::buildPartnerResponse).collect(Collectors.toList());
     }
-
 
 	public void setPartnerStatus(String reference, boolean newStatus) {
         logger.info("Changing partner {} status to {}", reference, newStatus);
@@ -144,12 +143,12 @@ public class PartnerServiceImpl implements PartnerService {
             throw new IllegalArgumentException("Partner not provided.");
 
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(new PropertyMap<Partner, PartnerRequest>() {
+        modelMapper.addMappings(new PropertyMap<Partner, PartnerResponse>() {
             @Override
             protected void configure() {
-            		List<String> partnerships = 
-            				partner.getPartnership().stream().map(Partnership::getName).collect(Collectors.toList());
-                            
+            		List<String> partnerships =
+                            partner.getPartnership().stream().map((p) -> p.getReference()).collect(Collectors.toList());
+
                 map().setPartnership(partnerships);
             }
         });
