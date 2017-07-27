@@ -2,6 +2,7 @@ package com.walmart.feeds.api.resources.feed.response;
 
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.resources.feed.request.UTM;
+import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -17,8 +18,7 @@ public class FeedResponse {
 
     private String name;
 
-    // FIXME: 24/07/17 Referenciar Objeto partner
-    private String partnerId;
+    private PartnerResponse partnerResponse;
 
     private FeedType feedType;
 

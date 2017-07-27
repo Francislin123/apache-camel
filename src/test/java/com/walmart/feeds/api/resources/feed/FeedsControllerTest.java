@@ -35,6 +35,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -59,7 +60,7 @@ public class FeedsControllerTest {
     @Before
     public void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(feedsController)
-                .setControllerAdvice(FeedsAdminAPIExceptionHandler.class)
+                .setControllerAdvice(new FeedsAdminAPIExceptionHandler())
                 .build();
     }
 
@@ -70,20 +71,12 @@ public class FeedsControllerTest {
 
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
-        ).andExpect(status().isCreated());
+        ).andExpect(status().isCreated())
+                .andExpect(header().string("location", "http://localhost/v1/partners/partnerReferenceTest/feeds/feed_test"));
 
         verify(feedService, times(1)).createFeed(any(FeedTO.class));
 
-    }
 
-    @Test
-    public void testFeedsByPartnerAndReturnAList() throws Exception {
-        FeedTO feedTO = new FeedTO();
-        feedTO.setPartnerReference("AAA333");
-        Mockito.when(feedService.fetchByPartner(feedTO)).thenReturn(this.mockListFeed());
-        ResponseEntity<List<FeedResponse>> response = feedsController.fetchAll("AAA333");
-        Mockito.verify(feedService).fetchByPartner(feedTO);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
@@ -96,14 +89,6 @@ public class FeedsControllerTest {
 
         verify(feedService, times(1)).createFeed(any(FeedTO.class));
 
-    }
-
-    public void testFeedsByPartnerAndDealWithUnknownPartner() throws NotFoundException {
-        FeedTO feedTO = new FeedTO();
-        feedTO.setPartnerReference("AAA333");
-        Mockito.when(feedService.fetchByPartner(feedTO)).thenThrow(new NotFoundException(""));
-        ResponseEntity response = feedsController.fetchAll("AAA333");
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
@@ -128,6 +113,24 @@ public class FeedsControllerTest {
         ).andExpect(status().isBadRequest());
 
         verify(feedService, times(0)).createFeed(any(FeedTO.class));
+    }
+
+    @Test
+    public void testFeedsByPartnerAndReturnAList() throws Exception {
+        FeedTO feedTO = new FeedTO();
+        feedTO.setPartnerReference("AAA333");
+        Mockito.when(feedService.fetchByPartner(feedTO)).thenReturn(this.mockListFeed());
+        ResponseEntity<List<FeedResponse>> response = feedsController.fetchAll("AAA333");
+        Mockito.verify(feedService).fetchByPartner(feedTO);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    public void testFeedsByPartnerAndDealWithUnknownPartner() throws NotFoundException {
+        FeedTO feedTO = new FeedTO();
+        feedTO.setPartnerReference("AAA333");
+        Mockito.when(feedService.fetchByPartner(feedTO)).thenThrow(new NotFoundException(""));
+        ResponseEntity response = feedsController.fetchAll("AAA333");
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test

@@ -50,26 +50,19 @@ public class FeedsController {
             @ApiResponse(code = 409, message = "Feed already exists"),
             @ApiResponse(code = 404, message = "Invalid partner")})
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder) {
+    public ResponseEntity createFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder) throws NotFoundException {
 
-        try {
-            FeedTO feedTO = new ModelMapper().map(request, FeedTO.class);
-            feedTO.setPartnerReference(partnerReference);
-            feedTO.setType(FeedType.getFromCode(request.getType()));
+        FeedTO feedTO = new ModelMapper().map(request, FeedTO.class);
+        feedTO.setPartnerReference(partnerReference);
+        feedTO.setType(FeedType.getFromCode(request.getType()));
 
-            feedService.createFeed(feedTO);
+        feedService.createFeed(feedTO);
 
-            UriComponents uriComponents =
-                    builder.path(V1_FEEDS.concat("/{reference}")).buildAndExpand(partnerReference, request.getReference());
+        UriComponents uriComponents =
+                builder.path(V1_FEEDS.concat("/{reference}")).buildAndExpand(partnerReference, request.getReference());
 
-            return ResponseEntity.created(uriComponents.toUri()).build();
+        return ResponseEntity.created(uriComponents.toUri()).build();
 
-            // TODO[r0i001q]: Use exception handler
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (DuplicateKeyException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
     }
     @ApiOperation(value = " Fetch feed by reference ",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -128,13 +121,9 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Feed removed with success", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Invalid feed reference")})
     @RequestMapping (value = "{reference}",method=RequestMethod.PATCH,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity removeFeed(@PathVariable("reference")String reference){
-        try {
-            feedService.removeFeed(reference);
-            return ResponseEntity.ok().build();
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity removeFeed(@PathVariable("reference") String reference) throws NotFoundException {
+        feedService.removeFeed(reference);
+        return ResponseEntity.ok().build();
     }
     @ApiOperation(value = "Fetch actives feeds",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -142,18 +131,15 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Return all actives feeds", response = FeedResponse.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Invalid partner reference")})
     @RequestMapping(value = "actives", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity fetchActives(@PathVariable("partnerReference") String partnerReference){
+    public ResponseEntity fetchActives(@PathVariable("partnerReference") String partnerReference) throws NotFoundException {
         List<FeedTO> listFeed = null;
         ModelMapper mapper = new ModelMapper();
-        try {
-            FeedTO feedTO = new FeedTO();
-            feedTO.setPartnerReference(partnerReference);
-            listFeed = feedService.fetchByActiveAndByPartner(feedTO);
-            return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
-        }catch (NotFoundException ex){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage()));
-        }
 
+        FeedTO feedTO = new FeedTO();
+        feedTO.setPartnerReference(partnerReference);
+        listFeed = feedService.fetchByActiveAndByPartner(feedTO);
+
+        return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
     }
 
     @RequestMapping(method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)

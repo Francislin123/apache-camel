@@ -1,18 +1,16 @@
 package com.walmart.feeds.api.resources.feed.validator.annotation;
 
-import com.walmart.feeds.api.resources.feed.validator.FeedTypeValidator;
+import com.walmart.feeds.api.resources.feed.validator.FeedNotificationDataURLValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
-import javax.validation.constraints.NotNull;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = FeedTypeValidator.class)
+@Constraint(validatedBy = FeedNotificationDataURLValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-@NotNull(message = "FeedType cannot be null")
-public @interface ValidFeedType {
+public @interface ValidFeedNotificationUrl {
 
     String message();
 
