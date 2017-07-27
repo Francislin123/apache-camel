@@ -12,7 +12,7 @@ public interface PartnerService {
      *
      * @param partnerRequest payload
      */
-    void savePartner(PartnerRequest partnerRequest);
+    void savePartner(PartnerRequest partnerRequest) throws IllegalArgumentException;
 
     PartnerResponse findByReference(String reference) throws NotFoundException;
 

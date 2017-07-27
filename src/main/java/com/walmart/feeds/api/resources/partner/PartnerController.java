@@ -52,8 +52,10 @@ public class PartnerController {
 
         } catch (DataIntegrityViolationException e) {
             logger.error("Cannot save the partner " + partner.getName(), e);
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(partner.getName() + " already exists");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(partner.getName() + " already exists");
+        } catch (IllegalArgumentException e) {
+            logger.error("Cannot save the partner " + partner.getName(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             logger.error("Failed to save partner " + partner.getName(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

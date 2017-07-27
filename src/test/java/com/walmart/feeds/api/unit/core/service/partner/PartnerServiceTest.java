@@ -127,12 +127,17 @@ public class PartnerServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void testUpdateInexistentPartnerShouldThrowNotFoundException() throws NotFoundException {
-        when(repository.findByReference(anyString()))
-                .thenReturn(Optional.empty());
+        when(repository.findByReference(anyString())).thenReturn(Optional.empty());
         PartnerRequest request = createPartnerRequest();
         this.service.updatePartner(request);
         verify(repository, times(1)).findByReference(anyString());
         verify(repository, times(0)).save(Mockito.any(Partner.class));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreatePartnerWIthEmptyPartnershipList() {
+        when(psRepository.findByReference(anyString())).thenReturn(null);
+        service.savePartner(createPartnerRequest());
     }
 
     @Test

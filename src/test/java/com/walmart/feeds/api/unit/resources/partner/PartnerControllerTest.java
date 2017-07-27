@@ -45,6 +45,14 @@ public class PartnerControllerTest {
     }
 
     @Test
+    public void testCreatedNewPartnerWithInexistenPartnership(){
+        PartnerRequest request = new PartnerRequest();
+        Mockito.doThrow(IllegalArgumentException.class).when(partnerService).savePartner(request);
+        ResponseEntity response = controller.createPartner(request);
+        Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
     public void testCreatedNewWithConflict(){
         PartnerRequest request = new PartnerRequest();
         Mockito.doThrow(DataIntegrityViolationException.class).when(partnerService).savePartner(request);

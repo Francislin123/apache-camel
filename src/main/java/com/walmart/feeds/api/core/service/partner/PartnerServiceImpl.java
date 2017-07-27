@@ -31,11 +31,15 @@ public class PartnerServiceImpl implements PartnerService {
     private PartnershipRepository partnershipRepository;
 
     @Override
-    public void savePartner(PartnerRequest partnerRequest) {
+    public void savePartner(PartnerRequest partnerRequest) throws IllegalArgumentException {
         Partner partner = buildPartner(partnerRequest);
         partner.setCreationDate(Calendar.getInstance());
         partner.setActive(true);
-        
+
+        if (partner.getPartnership().isEmpty()){
+            logger.info("No one partnership relationated with partner " + partner.getReference());
+            throw new IllegalArgumentException("No one partnership relationated with partner " + partner.getReference());
+        }
         partner = partnerRepository.save(partner);
         logger.info("Partner {} saved.", partner.getName());
     }
@@ -124,15 +128,12 @@ public class PartnerServiceImpl implements PartnerService {
             return partnershipList;
 
         for (String type : partnerships) {
-            try {
-                Partnership partnership = partnershipRepository.findByReference(type);
-                if (null == partnership) {
-                    continue;
-                }
-                partnershipList.add(partnership);
-            } catch (IllegalArgumentException ex) {
-                logger.error("Partnership " + type + " not found!", ex);
+            Partnership partnership = partnershipRepository.findByReference(type);
+            if (null == partnership) {
+                logger.info("Partnership " + type + " not found!");
+                continue;
             }
+            partnershipList.add(partnership);
         }
         return partnershipList;
         
