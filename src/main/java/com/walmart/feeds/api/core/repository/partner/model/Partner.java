@@ -30,7 +30,7 @@ public class Partner {
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany
     private List<Partnership> partnership;
 
     @Column(name = "creation_date", nullable = false)

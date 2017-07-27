@@ -2,37 +2,36 @@ package com.walmart.feeds.api.core.service.partner;
 
 import java.util.List;
 
-import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
+import javassist.NotFoundException;
 
 public interface PartnerService {
 
     /**
      *
-     * @param partnerRequest
-     * @return true if partner was saved
+     * @param partnerRequest payload
      */
-    void savePartner(PartnerRequest partnerRequest);
+    void savePartner(PartnerRequest partnerRequest) throws IllegalArgumentException;
+
+    PartnerResponse findByReference(String reference) throws NotFoundException;
+
+    List<PartnerResponse> findAllPartners();
+
+    List<PartnerResponse> findActivePartners();
 
     /**
      *
-     * @param partnerRequest
-     * @return false if
+     * @param partnerRequest payload
+     * @throws IllegalArgumentException when the partnerRequest is not provided
+     * @throws NotFoundException when partner not exists to be updated
      */
-    boolean updatePartner(PartnerRequest partnerRequest);
+    void updatePartner(PartnerRequest partnerRequest) throws IllegalArgumentException, NotFoundException;
 
     /**
      *
-     * @param reference
-     * @param status
-     * @return true if exists the partner
+     * @param reference for the partner
+     * @param status true whether active, false otherwise
      */
-    boolean setPartnerStatus(String reference, boolean status);
-
-    PartnerResponse findByReference(String reference);
-
-    List<Partner> getAllPartners();
-
-    List<Partner> findPartnerActives();
+    void setPartnerStatus(String reference, boolean status);
 }

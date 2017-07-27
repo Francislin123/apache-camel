@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
+import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
@@ -19,8 +20,6 @@ import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import com.walmart.feeds.api.core.repository.partner.model.Partnership;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 
-import javax.persistence.NoResultException;
-
 @Service
 public class PartnerServiceImpl implements PartnerService {
 
@@ -28,90 +27,81 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Autowired
     private PartnerRepository partnerRepository;
-
     @Autowired
     private PartnershipRepository partnershipRepository;
 
     @Override
-    public void savePartner(PartnerRequest partnerRequest) {
+    public void savePartner(PartnerRequest partnerRequest) throws IllegalArgumentException {
         Partner partner = buildPartner(partnerRequest);
         partner.setCreationDate(Calendar.getInstance());
         partner.setActive(true);
 
+        if (partner.getPartnership().isEmpty()){
+            logger.info("No one partnership relationated with partner " + partner.getReference());
+            throw new IllegalArgumentException("No one partnership relationated with partner " + partner.getReference());
+        }
         partner = partnerRepository.save(partner);
         logger.info("Partner {} saved.", partner.getName());
     }
 
-    @Override
-    public List<Partner> getAllPartners() {
-
-        List<Partner> partners = partnerRepository.findAll();
-        logger.info("Total of fetched partners: {}", partners.size());
-        return partners;
-
-    }
-
-    @Override
-    public List<Partner> findPartnerActives() {
-        return partnerRepository.findPartnerActives();
-    }
-
-    /**
-     *
-     * @param partnerRequest
-     * @return
-     * @throws IllegalArgumentException
-     * @see #buildPartner(PartnerRequest)
-     */
-    public boolean updatePartner(PartnerRequest partnerRequest) {
+    public void updatePartner(PartnerRequest partnerRequest) throws IllegalArgumentException, NotFoundException {
 
         if(partnerRequest == null) {
             logger.error("PartnerRequest not provided");
-            return false;
+            throw new IllegalArgumentException("PartnerRequest not provided");
         }
 
-        Partner currentPartner = partnerRepository.findByReference(partnerRequest.getReference())
-                .orElseThrow(NoResultException::new);
-
-        if (currentPartner == null) {
-            logger.info("Partner {} not exists.", partnerRequest.getName());
-            return false;
-		}
+        Partner currentPartner = findPartnerByReference(partnerRequest.getReference());
 
         Partner partner = buildPartner(partnerRequest);
 
         if(partner.getDescription() != null)
-        		currentPartner.setDescription(partner.getDescription());
+            currentPartner.setDescription(partner.getDescription());
         if(partner.getPartnership() != null)
-        		currentPartner.setPartnership(partner.getPartnership());
+            currentPartner.setPartnership(partner.getPartnership());
 
         currentPartner.setUpdateDate(Calendar.getInstance());
-
         partnerRepository.save(currentPartner);
         logger.info("Partner {} updated.", partner.getName());
-        return true;
-	}
 
-	public boolean setPartnerStatus(String reference, boolean newStatus) {
-        if (partnerRepository.findByReference(reference) == null) return false;
-
-        logger.info("Changing partner {} status to {}", reference, newStatus);
-        partnerRepository.changePartnerStatus(reference, newStatus);
-        return true;
     }
 
-	public PartnerResponse findByReference(String reference) {
-		logger.info("PartnerRequest {} find.", reference.toString());
+    public PartnerResponse findByReference(String reference) throws NotFoundException {
+        Partner partner = findPartnerByReference(reference);
+        return buildPartnerResponse(partner);
+    }
 
-        Partner partner = partnerRepository.findByReference(reference)
-                .orElseThrow(NoResultException::new);
+    private Partner findPartnerByReference(String reference) throws NotFoundException {
+        logger.info("Finding partner {}.", reference);
 
-		return buildPartnerResponse(partner);
-	}
+        return partnerRepository.findByReference(reference)
+                .orElseThrow(() -> new NotFoundException("Partner not found: " + reference));
+    }
+
+    @Override
+    public List<PartnerResponse> findAllPartners() {
+
+        List<Partner> partners = partnerRepository.findAll();
+        logger.info("Total of fetched partners: {}", partners.size());
+        return partners.stream().map(this::buildPartnerResponse).collect(Collectors.toList());
+
+    }
+
+    @Override
+    public List<PartnerResponse> findActivePartners() {
+        List<Partner> actives = partnerRepository.findPartnerActives();
+        return actives.stream().map(this::buildPartnerResponse).collect(Collectors.toList());
+    }
+
+
+	public void setPartnerStatus(String reference, boolean newStatus) {
+        logger.info("Changing partner {} status to {}", reference, newStatus);
+        partnerRepository.changePartnerStatus(reference, newStatus);
+    }
 
     /**
      *
-     * @param partnerRequest
+     * @param partnerRequest payload
      * @return new {@link Partner} based on {@link PartnerRequest}
      * @throws IllegalArgumentException if {@link PartnerRequest} is not provided
      */
@@ -138,15 +128,12 @@ public class PartnerServiceImpl implements PartnerService {
             return partnershipList;
 
         for (String type : partnerships) {
-            try {
-                Partnership partnership = partnershipRepository.findOne(type);
-                if (null == partnership) {
-                    continue;
-                }
-                partnershipList.add(partnership);
-            } catch (IllegalArgumentException ex) {
-                logger.error("Partnership " + type + " not found!", ex);
+            Partnership partnership = partnershipRepository.findByReference(type);
+            if (null == partnership) {
+                logger.info("Partnership " + type + " not found!");
+                continue;
             }
+            partnershipList.add(partnership);
         }
         return partnershipList;
         
