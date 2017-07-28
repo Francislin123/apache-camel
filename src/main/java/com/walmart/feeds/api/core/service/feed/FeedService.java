@@ -12,8 +12,12 @@ import java.util.List;
 public interface FeedService {
 
     void createFeed(FeedTO feedTO) throws NotFoundException;
-    public List<FeedTO> fetchByActiveAndByPartner(FeedTO feedTo)throws NotFoundException;
-    public List<FeedTO> fetchByPartner(FeedTO feedTO) throws NotFoundException;
+
+    List<FeedTO> fetchByActiveAndByPartner(FeedTO feedTo) throws NotFoundException;
+
+    List<FeedTO> fetchByPartner(FeedTO feedTO) throws NotFoundException;
+
+    void changeFeedStatus(String reference, Boolean active) throws NotFoundException;
 
     void updateFeed(FeedTO feedTO);
 }

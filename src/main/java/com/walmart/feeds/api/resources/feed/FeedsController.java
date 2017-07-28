@@ -62,7 +62,6 @@ public class FeedsController {
         return ResponseEntity.created(uriComponents.toUri()).build();
 
     }
-
     @ApiOperation(value = " Fetch feed by reference ",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
@@ -96,7 +95,6 @@ public class FeedsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage()));
         }
     }
-
     @ApiOperation(value = " Fetch all feeds by partner reference ",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
@@ -116,6 +114,16 @@ public class FeedsController {
         }
     }
 
+    @ApiOperation(value = "Change feed status",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Feed removed with success", response = ResponseEntity.class),
+            @ApiResponse(code = 404, message = "Invalid feed reference")})
+    @RequestMapping(value = "{reference}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity changeFeedStatus(@PathVariable("reference") String reference, @RequestParam("active") Boolean active) throws NotFoundException {
+        feedService.changeFeedStatus(reference, active);
+        return ResponseEntity.ok().build();
+    }
     @ApiOperation(value = "Fetch actives feeds",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
@@ -133,8 +141,8 @@ public class FeedsController {
         return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
     }
 
-    @RequestMapping(value = "{reference}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity patchFeed(@RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder) {
+    @RequestMapping(method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity patchFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder) {
         try{
             FeedTO feedTO = new ModelMapper().map(request, FeedTO.class);
             feedTO.setPartnerReference(partnerReference);

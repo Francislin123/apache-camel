@@ -66,6 +66,16 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
+    public void changeFeedStatus(String reference, Boolean active) throws NotFoundException {
+
+        Feed feedEntity = feedRepository.findByReference(reference).orElseThrow(() -> new NotFoundException("Feed not Found"));//busca no banco a partir do reference
+
+        feedEntity.setUpdateDate(LocalDateTime.now());
+        feedRepository.changeFeedStatus(feedEntity, active);
+
+    }
+
+    @Override
     public void updateFeed(FeedTO feedTO) throws DataIntegrityViolationException {
         ModelMapper mapper = new ModelMapper();
         Feed entity = mapper.map(feedTO, Feed.class);
