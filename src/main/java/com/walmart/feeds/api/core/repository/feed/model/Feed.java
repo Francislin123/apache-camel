@@ -15,7 +15,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "feed", uniqueConstraints = {@UniqueConstraint(columnNames = "reference")})
-public class FeedEntity {
+public class Feed {
 
     @Id
     @GeneratedValue(generator = "feed_uuid_generator")
@@ -57,7 +57,7 @@ public class FeedEntity {
     @Column(name = "flag_active")
     private boolean active;
 
-    public FeedEntity() {
+    public Feed() {
         this.creationDate = LocalDateTime.now();
         this.active = true;
     }

@@ -27,5 +27,5 @@ public class UTM {
 
     @ManyToOne
     @JoinColumn(name = "feed_id")
-    private FeedEntity feed;
+    private Feed feed;
 }
