@@ -15,7 +15,5 @@ public interface FeedService {
     public List<FeedTO> fetchByActiveAndByPartner(FeedTO feedTo)throws NotFoundException;
     public List<FeedTO> fetchByPartner(FeedTO feedTO) throws NotFoundException;
 
-    void removeFeed(String reference) throws NotFoundException;
-
     void updateFeed(FeedTO feedTO);
 }

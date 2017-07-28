@@ -24,8 +24,4 @@ public interface FeedRepository extends JpaRepository<Feed, String> {
 
     Optional<List<Feed>> findByActiveAndPartner(Boolean active, Partner partner);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE Feed f SET f.active = ?2 WHERE f = ?1")
-    void changeFeedStatus(Feed feedEntity, boolean active);
 }

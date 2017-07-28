@@ -18,7 +18,7 @@ public class FeedResponse {
 
     private String name;
 
-    private PartnerResponse partnerResponse;
+    private PartnerResponse partner;
 
     private FeedType feedType;
 
