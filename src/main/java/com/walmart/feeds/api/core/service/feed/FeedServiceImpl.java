@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -44,7 +45,7 @@ public class FeedServiceImpl implements FeedService {
 
         FeedEntity savedFeed = feedRepository.save(feedEntity);
 
-        logger.info("feed={} message=saved_succesfully", savedFeed);
+        logger.info("feed={} message=saved_successfully", savedFeed);
 
     }
 
@@ -72,5 +73,13 @@ public class FeedServiceImpl implements FeedService {
         feedEntity.setUpdateDate(LocalDateTime.now());
         feedRepository.changeFeedStatus(feedEntity, false);
 
+    }
+
+    @Override
+    public void updateFeed(FeedTO feedTO) throws DataIntegrityViolationException {
+        ModelMapper mapper = new ModelMapper();
+        FeedEntity entity = mapper.map(feedTO, FeedEntity.class);
+        feedRepository.save(entity);
+        logger.info("feed={} message=update_successfully", entity);
     }
 }
