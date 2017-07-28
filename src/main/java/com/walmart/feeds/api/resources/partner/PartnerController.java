@@ -112,7 +112,7 @@ public class PartnerController {
 					.body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(),
                             "Partner " + reference + " not found!"));
         } catch (Exception e) {
-            logger.error("Failed to update the partner {reference}", e);
+            logger.error("Failed to update the partner " + reference, e);
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Failed to update the partner: " + e.getMessage());

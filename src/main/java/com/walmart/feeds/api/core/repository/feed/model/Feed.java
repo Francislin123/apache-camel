@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.repository.feed.model;
 
+import com.walmart.feeds.api.core.repository.AuditableEntity;
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "feed", uniqueConstraints = {@UniqueConstraint(columnNames = "reference")})
-public class Feed {
+public class Feed extends AuditableEntity {
 
     @Id
     @GeneratedValue(generator = "feed_uuid_generator")
@@ -48,17 +49,10 @@ public class Feed {
     @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
     private List<UTM> utms;
 
-    @Column(name = "creation_date")
-    private LocalDateTime creationDate;
-
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
-
     @Column(name = "flag_active")
     private boolean active;
 
     public Feed() {
-        this.creationDate = LocalDateTime.now();
         this.active = true;
     }
 }

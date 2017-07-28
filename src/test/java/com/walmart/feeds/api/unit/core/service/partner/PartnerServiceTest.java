@@ -1,9 +1,9 @@
 package com.walmart.feeds.api.unit.core.service.partner;
 
+import com.walmart.feeds.api.core.repository.partner.PartnerHistoryRepository;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
-import com.walmart.feeds.api.core.repository.partner.PartnershipRepository;
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
-import com.walmart.feeds.api.core.repository.partner.model.Partnership;
+import com.walmart.feeds.api.core.repository.partner.model.PartnerHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.partner.PartnerServiceImpl;
 import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -38,6 +37,9 @@ public class PartnerServiceTest {
 
     @Mock
     private PartnerRepository repository;
+
+    @Mock
+    private PartnerHistoryRepository historyRepository;
 
     @InjectMocks
     private PartnerService service = new PartnerServiceImpl();
@@ -106,6 +108,24 @@ public class PartnerServiceTest {
 
     }
 
+    @Test
+    public void testUpdatePartner() {
+        try {
+            when(repository.findByReference(anyString()))
+                    .thenReturn(Optional.of(new Partner()));
+
+            PartnerTO request = new PartnerTO();
+
+            this.service.updatePartner(request);
+
+            verify(repository).findByReference(anyString());
+            verify(repository).save(Mockito.any(Partner.class));
+            verify(historyRepository).save(any(PartnerHistory.class));
+        } catch (NotFoundException e) {
+            fail("Exception should not have been fired!");
+        }
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testUpdatePartnerFromNullPartnerRequestShouldReturnFalse() throws NotFoundException {
         this.service.updatePartner(null);
@@ -114,31 +134,16 @@ public class PartnerServiceTest {
     @Test(expected = NotFoundException.class)
     public void testUpdateInexistentPartnerShouldThrowNotFoundException() throws NotFoundException {
         when(repository.findByReference(anyString())).thenReturn(Optional.empty());
-        PartnerTO request = createPartnerTO();
-        this.service.updatePartner(request);
-        verify(repository, times(1)).findByReference(anyString());
+        PartnerTO partnerTO = createPartnerTO();
+        this.service.updatePartner(partnerTO);
+        verify(repository).findByReference(anyString());
         verify(repository, times(0)).save(Mockito.any(Partner.class));
+        verify(historyRepository, times(0)).save(Mockito.any(PartnerHistory.class));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreatePartnerWIthEmptyPartnershipList() {
         service.savePartner(createPartnerTO());
-    }
-
-    @Test
-    public void testUpdatePartnerShouldReturnTrue() {
-        try {
-            when(repository.findByReference(anyString()))
-                    .thenReturn(Optional.of(new Partner()));
-            PartnerTO request = new PartnerTO();
-
-            this.service.updatePartner(request);
-
-            verify(repository, times(1)).findByReference(anyString());
-            verify(repository, times(1)).save(Mockito.any(Partner.class));
-        } catch (NotFoundException e) {
-            fail("Exception should not have been fired!");
-        }
     }
 
     @Test

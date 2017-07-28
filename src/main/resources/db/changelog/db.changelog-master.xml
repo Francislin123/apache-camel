@@ -13,8 +13,5 @@
     </preConditions>
 
     <include file="src/main/resources/db/changelog/db.changelog-1.0.xml"/>
-    <include file="src/main/resources/db/changelog/warm-up/db.warmup-1.0.xml"/>
-    <include file="src/main/resources/db/changelog/db.changelog-1.1.xml"/>
-    <include file="src/main/resources/db/changelog/warm-up/db.warmup-1.1.xml"/>
 
 </databaseChangeLog>

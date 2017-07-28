@@ -3,24 +3,20 @@ package com.walmart.feeds.api.core.repository.partner.model;
 import com.walmart.feeds.api.core.repository.AuditableEntity;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.util.Calendar;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "partner", uniqueConstraints = {
-        @UniqueConstraint(name = "name_constraint", columnNames = "name"),
-        @UniqueConstraint(name = "reference_constraint", columnNames = "reference")
-})
+@Table(name = "partner_history")
 @Data
-public class Partner extends AuditableEntity {
+public class PartnerHistory extends AuditableEntity {
 
     @Id
-    @GeneratedValue(generator = "partner_uuid_generator")
-    @GenericGenerator(name = "partner_uuid_generator", strategy = "uuid2")
+    @GeneratedValue(generator = "partner_history_uuid_generator")
+    @GenericGenerator(name = "partner_history_uuid_generator", strategy = "uuid2")
+    @Column(name = "history_id")
     private UUID id;
 
     @Column

@@ -6,7 +6,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <property name="uuid_type" value="VARCHAR(36)" dbms="mysql"/>
-    <property name="uuid_type" value="BLOB" dbms="oracle"/>
+    <property name="uuid_type" value="RAW(32)" dbms="oracle"/>
 
     <property name="now" value="sysdate" dbms="oracle"/>
     <property name="now" value="now()" dbms="mysql"/>
@@ -15,30 +15,7 @@
     <property name="uuid_function" value="UUID()" dbms="mysql"/>
     <property name="uuid_function" value="sys_guid()" dbms="oracle"/>
 
-    <changeSet id="createPartnershipTable" author="renato.ibanhez">
-        <comment>Creating partnership domain table</comment>
-        <createTable tableName="partnership">
-            <column name="id" type="${uuid_type}">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="reference" type="varchar(20)">
-                <constraints unique="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <rollback>
-            <dropTable tableName="partnership"/>
-        </rollback>
-    </changeSet>
-
     <changeSet id="createPartnerTable" author="renato.ibanhez">
-
-        <preConditions onError="HALT">
-            <tableExists tableName="partnership"/>
-        </preConditions>
 
         <comment>Creating partner table</comment>
 
@@ -55,8 +32,8 @@
             <column name="description" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="partnership_id" type="${uuid_type}">
-                <constraints foreignKeyName="fk_partner_partnership" nullable="false"/>
+            <column name="partnerships" type="varchar(255)">
+                <constraints nullable="false"/>
             </column>
             <column name="creation_date" type="datetime" defaultValueComputed="${now}">
                 <constraints nullable="false"/>
@@ -65,12 +42,10 @@
             <column name="flag_active" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
-
-        <addForeignKeyConstraint baseTableName="partner" baseColumnNames="partnership_id"
-                                 constraintName="fk_partner_partnership"
-                                 referencedTableName="partnership"
-                                 referencedColumnNames="id"/>
 
         <rollback>
             <dropTable tableName="partner"/>
@@ -100,9 +75,7 @@
             <column name="description" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="partnership_id" type="${uuid_type}">
-                <constraints foreignKeyName="fk_partner_partnership" nullable="false"/>
-            </column>
+            <column name="partnerships" type="varchar(255)"/>
             <column name="creation_date" type="datetime" defaultValueComputed="${now}">
                 <constraints nullable="false"/>
             </column>
@@ -110,7 +83,7 @@
             <column name="flag_active" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
-            <column name="user" type="varchar(20)">
+            <column name="user_login" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -155,6 +128,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <rollback>
@@ -188,7 +164,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="update_date" type="datetime" defaultValueDate="${now}"/>
-            <column name="user" type="varchar(20)">
+            <column name="user_login" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

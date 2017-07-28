@@ -1,11 +1,9 @@
 package com.walmart.feeds.api.core.service.partner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.walmart.feeds.api.core.repository.partner.PartnerHistoryRepository;
+import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
+import com.walmart.feeds.api.core.repository.partner.model.Partner;
+import com.walmart.feeds.api.core.repository.partner.model.PartnerHistory;
 import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
 import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
@@ -15,8 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
-import com.walmart.feeds.api.core.repository.partner.model.Partner;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class PartnerServiceImpl implements PartnerService {
@@ -26,17 +27,22 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private PartnerRepository partnerRepository;
 
+    @Autowired
+    private PartnerHistoryRepository partnerHistoryRepository;
+
     @Override
     public void savePartner(PartnerTO partnerRequest) throws IllegalArgumentException {
         Partner partner = buildPartner(partnerRequest);
-        partner.setCreationDate(Calendar.getInstance());
-        partner.setActive(true);
 
         if (partner.getPartnerships().isEmpty()){
             logger.info("No one partnership relationated with partner " + partner.getReference());
             throw new IllegalArgumentException("No one partnership relationated with partner " + partner.getReference());
         }
-        partner = partnerRepository.save(partner);
+
+        partner.setCreationDate(LocalDateTime.now());
+        partner.setActive(true);
+        persistPartner(partner);
+
         logger.info("Partner {} saved.", partner.getName());
     }
 
@@ -56,10 +62,18 @@ public class PartnerServiceImpl implements PartnerService {
         if(partner.getPartnerships() != null)
             currentPartner.setPartnerships(partner.getPartnerships());
 
-        currentPartner.setUpdateDate(Calendar.getInstance());
-        partnerRepository.save(currentPartner);
-        logger.info("Partner {} updated.", partner.getName());
+        currentPartner.setUpdateDate(LocalDateTime.now());
+        persistPartner(currentPartner);
 
+        logger.info("Partner {} updated.", currentPartner.getName());
+    }
+
+    // TODO: 28/07/17 transactional
+    private void persistPartner(Partner partner) {
+        partnerRepository.save(partner);
+        // TODO: 28/07/17 The JPA not throw exception for inexistent entity updated.
+        PartnerHistory partnerHistory = buildPartnerHistory(partner);
+        partnerHistory = partnerHistoryRepository.save(partnerHistory);
     }
 
     public PartnerTO findByReference(String reference) throws NotFoundException {
@@ -141,5 +155,11 @@ public class PartnerServiceImpl implements PartnerService {
 
         return modelMapper.map(partner, PartnerTO.class);
     }
-    
+
+    private PartnerHistory buildPartnerHistory(Partner currentPartner) {
+        ModelMapper modelMapper = new ModelMapper();
+        PartnerHistory partnerHistory = modelMapper.map(currentPartner, PartnerHistory.class);
+        return partnerHistory;
+    }
+
 }

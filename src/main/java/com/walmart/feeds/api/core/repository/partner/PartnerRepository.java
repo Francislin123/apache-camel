@@ -10,9 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface PartnerRepository extends JpaRepository<Partner, Long> {
+public interface PartnerRepository extends JpaRepository<Partner, UUID> {
 
 	Optional<Partner> findByReference(String reference);
 
