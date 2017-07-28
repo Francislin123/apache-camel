@@ -19,6 +19,7 @@ public class FeedTO {
     private FeedNotificationDataTO notificationData;
     private FeedType type;
     private List<UTMTO> utms;
+    private boolean active;
 
     public FeedEntity toEntity(){
         ModelMapper mapper = new ModelMapper();

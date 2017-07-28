@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Data
 @Entity
-@Table(name = "feed")
+@Table(name = "feed", uniqueConstraints = {@UniqueConstraint(columnNames = "reference")})
 public class FeedEntity {
 
     @Id

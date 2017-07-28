@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.feed;
+package com.walmart.feeds.api.resources.feed.validator;
 
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedType;
