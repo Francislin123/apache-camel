@@ -2,7 +2,7 @@ package com.walmart.feeds.api.resources.feed;
 
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
-import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
+import com.walmart.feeds.api.core.repository.feed.model.Feed;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.service.feed.FeedService;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
@@ -10,7 +10,6 @@ import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.feed.response.FeedResponse;
-import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -18,7 +17,6 @@ import io.swagger.annotations.ApiResponses;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -72,7 +70,7 @@ public class FeedsController {
     @RequestMapping(value = "{reference}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity fetchFeed(@PathVariable("reference") String reference) {
         try {
-            FeedEntity feedEntity = feedRepository.findByReference(reference).orElseThrow(() -> new NotFoundException("Reference not found"));
+            Feed feedEntity = feedRepository.findByReference(reference).orElseThrow(() -> new NotFoundException("Reference not found"));
 
             FeedResponse feedResponse = new FeedResponse();
 

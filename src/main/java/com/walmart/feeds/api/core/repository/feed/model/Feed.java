@@ -7,6 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by vn0y942 on 21/07/17.
@@ -14,13 +15,13 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "feed", uniqueConstraints = {@UniqueConstraint(columnNames = "reference")})
-public class FeedEntity {
+public class Feed {
 
     @Id
     @GeneratedValue(generator = "feed_uuid_generator")
     @GenericGenerator(name = "feed_uuid_generator", strategy = "uuid2")
     @Column(name = "id")
-    private String id;
+    private UUID id;
 
     @Column(name = "reference")
     private String reference;
@@ -56,7 +57,7 @@ public class FeedEntity {
     @Column(name = "flag_active")
     private boolean active;
 
-    public FeedEntity() {
+    public Feed() {
         this.creationDate = LocalDateTime.now();
         this.active = true;
     }

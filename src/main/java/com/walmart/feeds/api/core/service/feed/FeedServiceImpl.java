@@ -2,7 +2,7 @@ package com.walmart.feeds.api.core.service.feed;
 
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
-import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
+import com.walmart.feeds.api.core.repository.feed.model.Feed;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
@@ -38,12 +38,12 @@ public class FeedServiceImpl implements FeedService {
 
         ModelMapper modelMapper = new ModelMapper();
 
-        FeedEntity feedEntity = new FeedEntity();
+        Feed feedEntity = new Feed();
         modelMapper.map(feedTO, feedEntity);
         feedEntity.getUtms().stream().forEach(u -> u.setFeed(feedEntity));
         feedEntity.setPartner(partner);
 
-        FeedEntity savedFeed = feedRepository.save(feedEntity);
+        Feed savedFeed = feedRepository.save(feedEntity);
 
         logger.info("feed={} message=saved_successfully", savedFeed);
 
@@ -52,7 +52,7 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public List<FeedTO> fetchByActiveAndByPartner(FeedTO feedTO) throws NotFoundException {
         Partner partner = partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartnerReference())));
-        List<FeedEntity> feedEntities  = feedRepository.findByActiveAndPartner(feedTO.isActive(), partner).orElseThrow(() -> new NotFoundException("Feed not found"));
+        List<Feed> feedEntities = feedRepository.findByActiveAndPartner(feedTO.isActive(), partner).orElseThrow(() -> new NotFoundException("Feed not found"));
         ModelMapper mapper = new ModelMapper();
         return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
     }
@@ -60,7 +60,7 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public List<FeedTO> fetchByPartner(FeedTO feedTO) throws NotFoundException {
         Partner partner = partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartnerReference())));
-        List<FeedEntity> feedEntities = feedRepository.findByPartner(partner).orElseThrow(() -> new NotFoundException("Feed not found"));
+        List<Feed> feedEntities = feedRepository.findByPartner(partner).orElseThrow(() -> new NotFoundException("Feed not found"));
         ModelMapper mapper = new ModelMapper();
         return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
     }
@@ -68,7 +68,7 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public void removeFeed(String reference) throws NotFoundException {
 
-        FeedEntity feedEntity = feedRepository.findByReference(reference).orElseThrow(()->new NotFoundException("Feed not Found"));//busca no banco a partir do reference
+        Feed feedEntity = feedRepository.findByReference(reference).orElseThrow(() -> new NotFoundException("Feed not Found"));//busca no banco a partir do reference
 
         feedEntity.setUpdateDate(LocalDateTime.now());
         feedRepository.changeFeedStatus(feedEntity, false);
@@ -78,7 +78,7 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public void updateFeed(FeedTO feedTO) throws DataIntegrityViolationException {
         ModelMapper mapper = new ModelMapper();
-        FeedEntity entity = mapper.map(feedTO, FeedEntity.class);
+        Feed entity = mapper.map(feedTO, Feed.class);
         feedRepository.save(entity);
         logger.info("feed={} message=update_successfully", entity);
     }
