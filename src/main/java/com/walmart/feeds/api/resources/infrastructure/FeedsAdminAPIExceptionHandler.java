@@ -13,11 +13,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.stream.Collectors;
 
-@EnableWebMvc
 @RestControllerAdvice
 public class FeedsAdminAPIExceptionHandler {
 
