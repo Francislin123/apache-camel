@@ -1,7 +1,7 @@
 package com.walmart.feeds.api.core.service.feed;
 
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
-import javassist.NotFoundException;
 
 import java.util.List;
 
@@ -12,7 +12,10 @@ import java.util.List;
 public interface FeedService {
 
     void createFeed(FeedTO feedTO) throws NotFoundException;
-    public List<FeedTO> fetch();
-    public List<FeedTO> fetchActive(FeedTO feedTo);
-    public List<FeedTO> fetchByPartner(FeedTO feedTO);
+    public List<FeedTO> fetchByActiveAndByPartner(FeedTO feedTo)throws NotFoundException;
+    public List<FeedTO> fetchByPartner(FeedTO feedTO) throws NotFoundException;
+
+    void removeFeed(String reference) throws NotFoundException;
+
+    void updateFeed(FeedTO feedTO);
 }
