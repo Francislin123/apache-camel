@@ -6,7 +6,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <property name="uuid_type" value="VARCHAR(36)" dbms="mysql"/>
-    <property name="uuid_type" value="RAW(32)" dbms="oracle"/>
+    <property name="uuid_type" value="BLOB" dbms="oracle"/>
 
     <property name="now" value="sysdate" dbms="oracle"/>
     <property name="now" value="now()" dbms="mysql"/>
@@ -210,7 +210,7 @@
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="feed_id" type="varchar(50)">
+            <column name="feed_id" type="${uuid_type}">
                 <constraints foreignKeyName="" nullable="false"/>
             </column>
             <column name="utm_type" type="varchar(20)">

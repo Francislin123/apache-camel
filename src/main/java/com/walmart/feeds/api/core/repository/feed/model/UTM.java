@@ -5,6 +5,7 @@ import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -16,7 +17,7 @@ public class UTM {
     @GeneratedValue(generator = "feed_utm_uuid_generator")
     @GenericGenerator(name = "feed_utm_uuid_generator", strategy = "uuid2")
     @Column(name = "id")
-    private String id;
+    private UUID id;
 
     @Column(name = "utm_type")
     private String type;

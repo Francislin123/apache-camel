@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "partner", uniqueConstraints = {
@@ -19,7 +20,7 @@ public class Partner {
     @Id
     @GeneratedValue(generator = "partner_uuid_generator") // TODO migrate to GUID
     @GenericGenerator(name = "partner_uuid_generator", strategy = "uuid2")
-    private String id;
+    private UUID id;
 
     @Column
     private String name;
