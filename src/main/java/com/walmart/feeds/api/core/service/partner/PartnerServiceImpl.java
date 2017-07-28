@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
+import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
 import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
-import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 
 @Service
 public class PartnerServiceImpl implements PartnerService {
@@ -28,7 +27,7 @@ public class PartnerServiceImpl implements PartnerService {
     private PartnerRepository partnerRepository;
 
     @Override
-    public void savePartner(PartnerRequest partnerRequest) throws IllegalArgumentException {
+    public void savePartner(PartnerTO partnerRequest) throws IllegalArgumentException {
         Partner partner = buildPartner(partnerRequest);
         partner.setCreationDate(Calendar.getInstance());
         partner.setActive(true);
@@ -41,11 +40,11 @@ public class PartnerServiceImpl implements PartnerService {
         logger.info("Partner {} saved.", partner.getName());
     }
 
-    public void updatePartner(PartnerRequest partnerRequest) throws IllegalArgumentException, NotFoundException {
+    public void updatePartner(PartnerTO partnerRequest) throws IllegalArgumentException, NotFoundException {
 
         if(partnerRequest == null) {
-            logger.error("PartnerRequest not provided");
-            throw new IllegalArgumentException("PartnerRequest not provided");
+            logger.error("PartnerTO not provided");
+            throw new IllegalArgumentException("PartnerTO not provided");
         }
 
         Partner currentPartner = findPartnerByReference(partnerRequest.getReference());
@@ -63,9 +62,9 @@ public class PartnerServiceImpl implements PartnerService {
 
     }
 
-    public PartnerResponse findByReference(String reference) throws NotFoundException {
+    public PartnerTO findByReference(String reference) throws NotFoundException {
         Partner partner = findPartnerByReference(reference);
-        return buildPartnerResponse(partner);
+        return buildPartnerTO(partner);
     }
 
     private Partner findPartnerByReference(String reference) throws NotFoundException {
@@ -76,24 +75,24 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
-    public List<PartnerResponse> findAllPartners() {
+    public List<PartnerTO> findAllPartners() {
 
         List<Partner> partners = partnerRepository.findAll();
         logger.info("Total of fetched partners: {}", partners.size());
-        return partners.stream().map(this::buildPartnerResponse).collect(Collectors.toList());
+        return partners.stream().map(this::buildPartnerTO).collect(Collectors.toList());
 
     }
 
     @Override
-    public List<PartnerResponse> findActivePartners() {
+    public List<PartnerTO> findActivePartners() {
         List<Partner> actives = partnerRepository.findPartnerActives();
-        return actives.stream().map(this::buildPartnerResponse).collect(Collectors.toList());
+        return actives.stream().map(this::buildPartnerTO).collect(Collectors.toList());
     }
 
     @Override
-    public List<PartnerResponse> searchPartners(String query) {
+    public List<PartnerTO> searchPartners(String query) {
         List<Partner> partners = partnerRepository.searchPartners(query);
-        return partners.stream().map(this::buildPartnerResponse).collect(Collectors.toList());
+        return partners.stream().map(this::buildPartnerTO).collect(Collectors.toList());
     }
 
     public void setPartnerStatus(String reference, boolean newStatus) {
@@ -103,33 +102,33 @@ public class PartnerServiceImpl implements PartnerService {
 
     /**
      *
-     * @param partnerRequest payload
-     * @return new {@link Partner} based on {@link PartnerRequest}
-     * @throws IllegalArgumentException if {@link PartnerRequest} is not provided
+     * @param partnerTO payload
+     * @return new {@link Partner} based on {@link PartnerTO}
+     * @throws IllegalArgumentException if {@link PartnerTO} is not provided
      */
-    private Partner buildPartner(PartnerRequest partnerRequest) throws IllegalArgumentException {
-        if (partnerRequest == null)
-            throw new IllegalArgumentException("PartnerRequest not provided.");
+    private Partner buildPartner(PartnerTO partnerTO) throws IllegalArgumentException {
+        if (partnerTO == null)
+            throw new IllegalArgumentException("PartnerTO not provided.");
 
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(new PropertyMap<PartnerRequest, Partner>() {
+        modelMapper.addMappings(new PropertyMap<PartnerTO, Partner>() {
             @Override
             protected void configure() {
-                String[] partnerships = partnerRequest.getPartnership()
-                        .toArray(new String[partnerRequest.getPartnership().size()]);
+                String[] partnerships = partnerTO.getPartnership()
+                        .toArray(new String[partnerTO.getPartnership().size()]);
                 map().setPartnerships(String.join(";", partnerships));
             }
         });
 
-        return modelMapper.map(partnerRequest, Partner.class);
+        return modelMapper.map(partnerTO, Partner.class);
     }
 
-	private PartnerResponse buildPartnerResponse(Partner partner) throws IllegalArgumentException {
+	private PartnerTO buildPartnerTO(Partner partner) throws IllegalArgumentException {
         if (partner == null)
             throw new IllegalArgumentException("Partner not provided.");
 
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.addMappings(new PropertyMap<Partner, PartnerResponse>() {
+        modelMapper.addMappings(new PropertyMap<Partner, PartnerTO>() {
             @Override
             protected void configure() {
                 String partnershipsString = partner.getPartnerships();
@@ -140,7 +139,7 @@ public class PartnerServiceImpl implements PartnerService {
             }
         });
 
-        return modelMapper.map(partner, PartnerResponse.class);
+        return modelMapper.map(partner, PartnerTO.class);
     }
     
 }

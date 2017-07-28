@@ -1,11 +1,13 @@
 package com.walmart.feeds.api.resources.partner;
 
 import com.walmart.feeds.api.core.service.partner.PartnerService;
+import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
 import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
+import com.walmart.feeds.api.resources.partner.response.PartnerResponseList;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
-import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import javassist.NotFoundException;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletContext;
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,7 +51,7 @@ public class PartnerController {
     public ResponseEntity<?> createPartner(@RequestBody @Valid PartnerRequest partner){
         try {
 
-            service.savePartner(partner);
+            service.savePartner(buildPartnerTO(partner));
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
 
@@ -74,7 +78,7 @@ public class PartnerController {
 	public ResponseEntity fetchPartnerByReference(@PathVariable("reference") String reference) {
         try {
 
-            PartnerResponse partnerRequest = service.findByReference(reference);
+            PartnerResponse partnerRequest = buildPartnerResponse(service.findByReference(reference));
             return new ResponseEntity<>(partnerRequest, HttpStatus.OK);
 
         } catch (NotFoundException e) {
@@ -98,7 +102,7 @@ public class PartnerController {
 
         try {
 
-            service.updatePartner(partnerRequest);
+            service.updatePartner(buildPartnerTO(partnerRequest));
             return ResponseEntity.ok().build();
 
         } catch (NotFoundException e) {
@@ -142,9 +146,10 @@ public class PartnerController {
             @ApiResponse(code = 200, message = " Partners found successfully ", response = PartnerResponse.class,responseContainer = "List"),
             @ApiResponse(code = 500, message = " Internal Server Error ")})
     @RequestMapping(value = "/actives", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<PartnerResponse>> fetchPartnerActives() {
+    public ResponseEntity fetchPartnerActives() {
         try {
-            return ResponseEntity.ok(service.findActivePartners());
+            List<PartnerTO> activePartners = service.findActivePartners();
+            return ResponseEntity.ok(buildPartnerListResponse(activePartners));
         } catch (Exception e) {
             logger.error("Failed to get all active partners!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -157,9 +162,10 @@ public class PartnerController {
             @ApiResponse(code = 404, message = " Partner not change "),
             @ApiResponse(code = 500, message = " Internal Server Error ")})
     @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<PartnerResponse>> fetchAllPartners() {
+    public ResponseEntity fetchAllPartners() {
         try {
-            return ResponseEntity.ok(service.findAllPartners());
+            List<PartnerTO> allPartners = service.findAllPartners();
+            return ResponseEntity.ok(buildPartnerListResponse(allPartners));
         } catch (Exception e) {
             logger.error("Failed to get all partners!", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -169,10 +175,31 @@ public class PartnerController {
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public ResponseEntity searchPartners(@RequestParam("q") String query) {
         logger.info("Searching partners using query text = {}", query);
-        List<PartnerResponse> partnerResponses = this.service.searchPartners(query);
+        List<PartnerTO> partnerResponses = this.service.searchPartners(query);
         if (partnerResponses.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(partnerResponses);
+        return ResponseEntity.ok(buildPartnerListResponse(partnerResponses));
+    }
+
+    private PartnerTO buildPartnerTO(PartnerRequest request) {
+        PartnerTO partnerTO = new PartnerTO();
+        ModelMapper mapper = new ModelMapper();
+        mapper.map(request, partnerTO);
+        return partnerTO;
+    }
+
+    private PartnerResponse buildPartnerResponse(PartnerTO partnerTO) {
+        PartnerResponse response = new PartnerResponse();
+        ModelMapper mapper = new ModelMapper();
+        mapper.map(partnerTO, response);
+        return response;
+    }
+
+    private PartnerResponseList buildPartnerListResponse(Collection<PartnerTO> partnersTO) {
+        List<PartnerResponse> responses =
+                partnersTO.stream().map((partnerTO) -> buildPartnerResponse(partnerTO)).collect(Collectors.toList());
+        PartnerResponseList listResponse = new PartnerResponseList(responses);
+        return listResponse;
     }
 }

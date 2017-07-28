@@ -6,8 +6,8 @@ import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import com.walmart.feeds.api.core.repository.partner.model.Partnership;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.partner.PartnerServiceImpl;
+import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
-import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import javassist.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,24 +44,24 @@ public class PartnerServiceTest {
 
     private Method buildPartnerMethod;
 
-    private Method buildPartnerResponseMethod;
+    private Method buildPartnerTOMethod;
 
     @Before
     public void setUp() throws NoSuchMethodException {
         buildPartnerMethod = PartnerServiceImpl.class
-                .getDeclaredMethod("buildPartner", PartnerRequest.class);
+                .getDeclaredMethod("buildPartner", PartnerTO.class);
         buildPartnerMethod.setAccessible(true);
 
-        buildPartnerResponseMethod = PartnerServiceImpl.class.getDeclaredMethod("buildPartnerResponse",
+        buildPartnerTOMethod = PartnerServiceImpl.class.getDeclaredMethod("buildPartnerTO",
                 Partner.class);
-        buildPartnerResponseMethod.setAccessible(true);
+        buildPartnerTOMethod.setAccessible(true);
 
     }
 
     @Test
     public void testBuildPartnerFromPartnerRequest()
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        PartnerRequest partnerRequest = createPartnerRequest();
+        PartnerTO partnerRequest = createPartnerTO();
         partnerRequest.setPartnership(Arrays.asList("SEM", "COMPARADOR"));
 
         Partner partner = (Partner) buildPartnerMethod.invoke(service, partnerRequest);
@@ -74,7 +74,7 @@ public class PartnerServiceTest {
     }
 
     @Test
-    public void testBuildPartnerResponseFromPartnerWithPartnerships()
+    public void testBuildPartnerTOFromPartnerWithPartnerships()
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         Partner partner = new Partner();
@@ -83,7 +83,7 @@ public class PartnerServiceTest {
         partner.setReference("buscape");
         partner.setPartnerships("comparadores;afiliados");
 
-        PartnerResponse partnerResponse = (PartnerResponse) buildPartnerResponseMethod.invoke(service, partner);
+        PartnerTO partnerResponse = (PartnerTO) buildPartnerTOMethod.invoke(service, partner);
 
         assertEquals(partnerResponse.getName(), partnerResponse.getName());
         assertEquals(partnerResponse.getReference(), partnerResponse.getReference());
@@ -114,7 +114,7 @@ public class PartnerServiceTest {
     @Test(expected = NotFoundException.class)
     public void testUpdateInexistentPartnerShouldThrowNotFoundException() throws NotFoundException {
         when(repository.findByReference(anyString())).thenReturn(Optional.empty());
-        PartnerRequest request = createPartnerRequest();
+        PartnerTO request = createPartnerTO();
         this.service.updatePartner(request);
         verify(repository, times(1)).findByReference(anyString());
         verify(repository, times(0)).save(Mockito.any(Partner.class));
@@ -122,7 +122,7 @@ public class PartnerServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreatePartnerWIthEmptyPartnershipList() {
-        service.savePartner(createPartnerRequest());
+        service.savePartner(createPartnerTO());
     }
 
     @Test
@@ -130,7 +130,7 @@ public class PartnerServiceTest {
         try {
             when(repository.findByReference(anyString()))
                     .thenReturn(Optional.of(new Partner()));
-            PartnerRequest request = new PartnerRequest();
+            PartnerTO request = new PartnerTO();
 
             this.service.updatePartner(request);
 
@@ -144,14 +144,14 @@ public class PartnerServiceTest {
     @Test
     public void testSearchPartners() {
         when(repository.searchPartners(anyString())).thenReturn(Arrays.asList(createPartner()));
-        List<PartnerResponse> partners = service.searchPartners("bus");
+        List<PartnerTO> partners = service.searchPartners("bus");
         assertFalse(partners.isEmpty());
     }
 
     @Test
     public void testSearchPartnersEmptyResult() {
         when(repository.searchPartners(anyString())).thenReturn(new ArrayList<>());
-        List<PartnerResponse> partners = service.searchPartners("xyz");
+        List<PartnerTO> partners = service.searchPartners("xyz");
         assertTrue(partners.isEmpty());
     }
 
@@ -163,12 +163,12 @@ public class PartnerServiceTest {
         return partner;
     }
 
-    private PartnerRequest createPartnerRequest() {
-        PartnerRequest partnerRequest = new PartnerRequest();
-        partnerRequest.setName("Partner");
-        partnerRequest.setReference("partner");
-        partnerRequest.setDescription("New partner");
-        return partnerRequest;
+    private PartnerTO createPartnerTO() {
+        PartnerTO to = new PartnerTO();
+        to.setName("Partner");
+        to.setReference("partner");
+        to.setDescription("New partner");
+        return to;
     }
 
 }
