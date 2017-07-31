@@ -17,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -117,37 +116,29 @@ public class FeedsControllerTest {
 
     @Test
     public void testFeedsByPartnerAndReturnAList() throws Exception {
-        FeedTO feedTO = new FeedTO();
-        feedTO.setPartnerReference("AAA333");
-        Mockito.when(feedService.fetchByPartner(feedTO)).thenReturn(this.mockListFeed());
+        Mockito.when(feedService.fetchByPartner("AAA333", active)).thenReturn(this.mockListFeed());
         ResponseEntity<List<FeedResponse>> response = feedsController.fetchAll("AAA333");
-        Mockito.verify(feedService).fetchByPartner(feedTO);
+        Mockito.verify(feedService).fetchByPartner("AAA333", active);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     public void testFeedsByPartnerAndDealWithUnknownPartner() throws NotFoundException {
-        FeedTO feedTO = new FeedTO();
-        feedTO.setPartnerReference("AAA333");
-        Mockito.when(feedService.fetchByPartner(feedTO)).thenThrow(new NotFoundException(""));
+        Mockito.when(feedService.fetchByPartner("AAA333", active)).thenThrow(new NotFoundException(""));
         ResponseEntity response = feedsController.fetchAll("AAA333");
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     public void testFeedsActivesByPartnerAndReturnAList() throws Exception {
-        FeedTO feedTO = new FeedTO();
-        feedTO.setPartnerReference("AAA333");
-        Mockito.when(feedService.fetchByActiveAndByPartner(feedTO)).thenReturn(this.mockListFeed());
+        Mockito.when(feedService.fetchByActiveAndByPartner("AAA333")).thenReturn(this.mockListFeed());
         ResponseEntity<List<FeedResponse>> response = feedsController.fetchActives("AAA333");
-        Mockito.verify(feedService).fetchByActiveAndByPartner(feedTO);
+        Mockito.verify(feedService).fetchByActiveAndByPartner("AAA333");
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     public void testFeedsActivesByPartnerAndDealWithUnknownPartner() throws NotFoundException {
-        FeedTO feedTO = new FeedTO();
-        feedTO.setPartnerReference("AAA333");
-        Mockito.when(feedService.fetchByActiveAndByPartner(feedTO)).thenThrow(new NotFoundException(""));
+        Mockito.when(feedService.fetchByActiveAndByPartner("AAA333")).thenThrow(new NotFoundException(""));
         ResponseEntity response = feedsController.fetchActives("AAA333");
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -157,9 +148,9 @@ public class FeedsControllerTest {
         mockMvc.perform(patch(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
                 ).andExpect(status().isOk());
     }
-    @Test(expected = DataIntegrityViolationException.class)
+    @Test
     public void testUpdateFeedAndDealWithDuplicatedReference() throws Exception {
-        doThrow(DataIntegrityViolationException.class).when(feedService).updateFeed(Fixture.from(FeedTO.class).gimme("feed-to-full-api-valid"));
+        doThrow(DataIntegrityViolationException.class).when(feedService).updateFeed(any(FeedTO.class));
         mockMvc.perform(patch(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
         ).andExpect(status().isConflict());
     }

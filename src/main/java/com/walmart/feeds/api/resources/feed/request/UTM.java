@@ -10,5 +10,9 @@ public class UTM {
     private String type;
     private String value;
 
+    public UTM(){
+
+    }
+
 
 }

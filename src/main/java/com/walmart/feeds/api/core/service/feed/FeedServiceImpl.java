@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.service.feed;
 
+import com.walmart.feeds.api.core.converter.FeedConverter;
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.Feed;
@@ -34,7 +35,7 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public void createFeed(FeedTO feedTO) throws NotFoundException {
 
-        Partner partner = partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartnerReference())));
+        Partner partner = partnerRepository.findByReference(feedTO.getPartner().getReference()).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartner().getReference())));
 
         ModelMapper modelMapper = new ModelMapper();
 
@@ -50,35 +51,37 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
-    public List<FeedTO> fetchByActiveAndByPartner(FeedTO feedTO) throws NotFoundException {
-        Partner partner = partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartnerReference())));
-        List<Feed> feedEntities = feedRepository.findByActiveAndPartner(feedTO.isActive(), partner).orElseThrow(() -> new NotFoundException("Feed not found"));
-        ModelMapper mapper = new ModelMapper();
-        return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
+    public List<FeedTO> fetchByActiveAndByPartner(String partnerReference) throws NotFoundException {
+        Partner partner = partnerRepository.findByReference(partnerReference).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", partnerReference)));
+        List<Feed> feedEntities = feedRepository.findByActiveAndPartner(true, partner).orElseThrow(() -> new NotFoundException("Feed not found"));
+        return feedEntities.stream().map(feedEntity -> FeedConverter.convert(feedEntity)).collect(Collectors.toList());
     }
 
     @Override
-    public List<FeedTO> fetchByPartner(FeedTO feedTO) throws NotFoundException {
-        Partner partner = partnerRepository.findByReference(feedTO.getPartnerReference()).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartnerReference())));
-        List<Feed> feedEntities = feedRepository.findByPartner(partner).orElseThrow(() -> new NotFoundException("Feed not found"));
-        ModelMapper mapper = new ModelMapper();
-        return feedEntities.stream().map(feedEntity -> mapper.map(feedEntity, FeedTO.class)).collect(Collectors.toList());
+    public List<FeedTO> fetchByPartner(String partnerReference, Boolean active) throws NotFoundException {
+        Partner partner = partnerRepository.findByReference(partnerReference).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", partnerReference)));
+        List<Feed> feedEntities = feedRepository.findByPartnerAndActive(partner, active).orElseThrow(() -> new NotFoundException("Feed not found"));
+        return feedEntities.stream().map(feedEntity -> FeedConverter.convert(feedEntity)).collect(Collectors.toList());
     }
 
     @Override
     public void changeFeedStatus(String reference, Boolean active) throws NotFoundException {
-
         Feed feedEntity = feedRepository.findByReference(reference).orElseThrow(() -> new NotFoundException("Feed not Found"));//busca no banco a partir do reference
-
         feedEntity.setUpdateDate(LocalDateTime.now());
         feedRepository.changeFeedStatus(feedEntity, active);
-
     }
 
     @Override
-    public void updateFeed(FeedTO feedTO) throws DataIntegrityViolationException {
-        ModelMapper mapper = new ModelMapper();
-        Feed entity = mapper.map(feedTO, Feed.class);
+    public void updateFeed(FeedTO feedTO) throws DataIntegrityViolationException, NotFoundException {
+        Partner partner = partnerRepository.findByReference(feedTO.getPartner().getReference()).orElseThrow(() -> new NotFoundException("Partner not Found"));
+
+        Feed persistedFeed = feedRepository.findByReference(feedTO.getReference()).orElseThrow(() -> new NotFoundException("Feed not Found"));
+        Feed entity = FeedConverter.convert(feedTO);
+        entity.setId(persistedFeed.getId());
+        entity.setUpdateDate(LocalDateTime.now());
+        entity.setPartner(partner);
+        entity.setCreationDate(persistedFeed.getCreationDate());
+        entity.getUtms().stream().forEach(utm -> utm.setFeed(entity));
         feedRepository.save(entity);
         logger.info("feed={} message=update_successfully", entity);
     }

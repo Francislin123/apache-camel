@@ -1,11 +1,13 @@
 package com.walmart.feeds.api.resources.feed;
 
+import com.walmart.feeds.api.core.converter.FeedConverter;
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.Feed;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.service.feed.FeedService;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
+import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
@@ -51,7 +53,8 @@ public class FeedsController {
     public ResponseEntity createFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder) throws NotFoundException {
 
         FeedTO feedTO = new ModelMapper().map(request, FeedTO.class);
-        feedTO.setPartnerReference(partnerReference);
+        feedTO.setPartner(new PartnerTO());
+        feedTO.getPartner().setReference(partnerReference);
         feedTO.setType(FeedType.getFromCode(request.getType()));
 
         feedService.createFeed(feedTO);
@@ -101,14 +104,10 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Return found feeds", response = FeedResponse.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Invalid partner reference")})
     @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity fetchAll(@PathVariable("partnerReference") String partnerReference) {
-        List<FeedTO> listFeed = null;
-        ModelMapper mapper = new ModelMapper();
+    public ResponseEntity fetchAll(@PathVariable("partnerReference") String partnerReference, @RequestParam(value = "active", required = false) Boolean active) {
         try {
-            FeedTO feedTO = new FeedTO();
-            feedTO.setPartnerReference(partnerReference);
-            listFeed = feedService.fetchByPartner(feedTO);
-            return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
+            List<FeedTO> listFeed = feedService.fetchByPartner(partnerReference, active);
+            return ResponseEntity.ok(listFeed.stream().map(f -> FeedConverter.convertResponse(f)).collect(Collectors.toList()));
         } catch (NotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage()));
         }
@@ -120,39 +119,20 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Feed removed with success", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Invalid feed reference")})
     @RequestMapping(value = "{reference}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity changeFeedStatus(@PathVariable("reference") String reference, @RequestParam("active") Boolean active) throws NotFoundException {
+    public ResponseEntity changeFeedStatus(@PathVariable("reference") String reference, @RequestParam(value = "active", required = false) Boolean active) throws NotFoundException {
         feedService.changeFeedStatus(reference, active);
         return ResponseEntity.ok().build();
     }
-    @ApiOperation(value = "Fetch actives feeds",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Return all actives feeds", response = FeedResponse.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "Invalid partner reference")})
-    @RequestMapping(value = "actives", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity fetchActives(@PathVariable("partnerReference") String partnerReference) throws NotFoundException {
-        List<FeedTO> listFeed = null;
-        ModelMapper mapper = new ModelMapper();
-
-        FeedTO feedTO = new FeedTO();
-        feedTO.setPartnerReference(partnerReference);
-        listFeed = feedService.fetchByActiveAndByPartner(feedTO);
-
-        return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
-    }
 
     @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder) {
-        try{
-            FeedTO feedTO = new ModelMapper().map(request, FeedTO.class);
-            feedTO.setPartnerReference(partnerReference);
-            feedTO.setType(FeedType.getFromCode(request.getType()));
-            feedService.updateFeed(feedTO);
-            UriComponents uriComponents =
-                    builder.path(V1_FEEDS.concat("/{reference}")).buildAndExpand(partnerReference, request.getReference());
-            return ResponseEntity.ok(uriComponents.toUri());
-        }catch (DataIntegrityViolationException ex){
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
+    public ResponseEntity updateFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder) throws NotFoundException {
+        FeedTO feedTO = new ModelMapper().map(request, FeedTO.class);
+        feedTO.setPartner(new PartnerTO());
+        feedTO.getPartner().setReference(partnerReference);
+        feedTO.setType(FeedType.getFromCode(request.getType()));
+        feedService.updateFeed(feedTO);
+        UriComponents uriComponents =
+                builder.path(V1_FEEDS.concat("/{reference}")).buildAndExpand(partnerReference, request.getReference());
+        return ResponseEntity.ok(uriComponents.toUri());
     }
 }
