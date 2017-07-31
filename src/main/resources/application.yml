@@ -1,0 +1,18 @@
+# temporary - use only for simple tests
+spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF
+    username: FEEDS_ADMIN
+    password: FEEDS_ADMIN
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 5
+  jpa:
+    show-sql: true
+
+server:
+  port: 8080
+  contextPath: /api
