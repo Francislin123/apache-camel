@@ -15,6 +15,7 @@ plugins {
     id 'org.springframework.boot' version '1.5.4.RELEASE'
     id 'io.franzbecker.gradle-lombok' version '1.8'
     id 'org.liquibase.gradle' version '1.2.4'
+    id 'net.researchgate.release' version '2.4.0'
 }
 
 apply plugin: 'docker'
@@ -34,6 +35,12 @@ docker {
     maintainer = "Feeds - Walmart"
     // TODO[r0i001q]: Configurar push para registry do walmart
 //    registry = "docker-registry.qa.vmcommerce.intra"
+}
+
+release {
+    git {
+        requireBranch = 'homolog'
+    }
 }
 
 configurations {
@@ -58,6 +65,10 @@ liquibase {
         }
     }
     runList = project.ext.runList
+}
+
+task printProjectVersion << {
+    println project.version
 }
 
 task buildDocker(type: Docker) {
