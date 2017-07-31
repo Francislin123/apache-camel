@@ -4,6 +4,7 @@ import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
 import com.walmart.feeds.api.resources.partner.PartnerController;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
+import com.walmart.feeds.api.resources.partner.request.PartnerUpdateRequest;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponseList;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import javassist.NotFoundException;
@@ -41,8 +42,9 @@ public class PartnerControllerTest {
     @Test
     public void testCreateNewPartner() throws Exception {
         PartnerRequest request = new PartnerRequest();
-        controller.createPartner(request);
+        ResponseEntity<?> response = controller.createPartner(request);
         Mockito.verify(partnerService, Mockito.times(1)).savePartner(Mockito.any(PartnerTO.class));
+        Assert.assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
 
     @Test
@@ -88,7 +90,7 @@ public class PartnerControllerTest {
     @Test
     public void testFetchActivePartners(){
         Mockito.when(partnerService.findActivePartners()).thenReturn(Arrays.asList(new PartnerTO()));
-        ResponseEntity<List<PartnerResponse>> response = controller.fetchPartnerActives();
+        ResponseEntity<List<PartnerResponse>> response = controller.fetchActivePartners();
         Assert.assertNotNull(response);
         Assert.assertTrue(response.getBody() instanceof PartnerResponseList);
         PartnerResponseList listResponse = (PartnerResponseList) response.getBody();
@@ -98,13 +100,13 @@ public class PartnerControllerTest {
     @Test
     public void testFetchActivePartnersWithDatabaseDown(){
         Mockito.doThrow(Exception.class).when(partnerService).findActivePartners();
-        ResponseEntity<List<PartnerResponse>> partnersActives = controller.fetchPartnerActives();
+        ResponseEntity<List<PartnerResponse>> partnersActives = controller.fetchActivePartners();
         Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, partnersActives.getStatusCode());
     }
 
     @Test
     public void testUpdatePartner() throws Exception {
-        ResponseEntity<?> response = controller.updatePartner("anyReference", createPartnerRequest());
+        ResponseEntity<?> response = controller.updatePartner("anyReference", createPartnerUpdateRequest());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -112,7 +114,7 @@ public class PartnerControllerTest {
     @Test
     public void testUpdatePartnerNotfoundWhenInexistentPartner() throws Exception {
         doThrow(NotFoundException.class).when(partnerService).updatePartner(any(PartnerTO.class));
-        ResponseEntity<?> response = controller.updatePartner("anyReference", createPartnerRequest());
+        ResponseEntity<?> response = controller.updatePartner("anyReference", createPartnerUpdateRequest());
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -120,7 +122,7 @@ public class PartnerControllerTest {
     @Test
     public void testUpdatePartnerWithDatabaseDown() throws Exception {
         doThrow(Exception.class).when(partnerService).updatePartner(any(PartnerTO.class));
-        ResponseEntity<?> response = controller.updatePartner("anyReference", createPartnerRequest());
+        ResponseEntity<?> response = controller.updatePartner("anyReference", createPartnerUpdateRequest());
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
@@ -154,6 +156,11 @@ public class PartnerControllerTest {
 
     private PartnerRequest createPartnerRequest() {
         PartnerRequest partnerRequest = new PartnerRequest();
+        return partnerRequest;
+    }
+
+    private PartnerUpdateRequest createPartnerUpdateRequest() {
+        PartnerUpdateRequest partnerRequest = new PartnerUpdateRequest();
         return partnerRequest;
     }
 

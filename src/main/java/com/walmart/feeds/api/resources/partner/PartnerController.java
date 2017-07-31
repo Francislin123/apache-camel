@@ -4,6 +4,7 @@ import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
 import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
+import com.walmart.feeds.api.resources.partner.request.PartnerUpdateRequest;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponseList;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import javassist.NotFoundException;
@@ -41,7 +42,7 @@ public class PartnerController {
 	@Autowired
 	private ServletContext context;
 
-	@ApiOperation(value = " Create new partner ",
+	@ApiOperation(value = "Create new partner",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = " Successful new partner ", response = PartnerRequest.class),
@@ -49,111 +50,71 @@ public class PartnerController {
             @ApiResponse(code = 500, message = " Internal server error ")})
     @RequestMapping(method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createPartner(@RequestBody @Valid PartnerRequest partner){
-        try {
 
-            service.savePartner(buildPartnerTO(partner));
+        service.savePartner(buildPartnerTO(partner));
+        return ResponseEntity.status(HttpStatus.CREATED).build();
 
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-
-        } catch (DataIntegrityViolationException e) {
-            logger.error("Cannot save the partner " + partner.getName(), e);
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(partner.getName() + " already exists");
-        } catch (IllegalArgumentException e) {
-            logger.error("Cannot save the partner " + partner.getName(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            logger.error("Failed to save partner " + partner.getName(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to save partner: " + e.getMessage());
-        }
     }
 
     @ApiOperation(value = " Method to find the partner by your reference ",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = " Partner found successfully ", response = PartnerResponse.class),
-            @ApiResponse(code = 404, message = " Partner not found ")})
+            @ApiResponse(code = 200, message = "Partner found successfully", response = PartnerResponse.class),
+            @ApiResponse(code = 404, message = "Partner not found")})
 	@RequestMapping(value = "/{reference}",
             method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity fetchPartnerByReference(@PathVariable("reference") String reference) {
-        try {
+	public ResponseEntity fetchPartnerByReference(@PathVariable("reference") String reference) throws NotFoundException {
 
-            PartnerResponse partnerRequest = buildPartnerResponse(service.findByReference(reference));
-            return new ResponseEntity<>(partnerRequest, HttpStatus.OK);
+        PartnerResponse partnerRequest = buildPartnerResponse(service.findByReference(reference));
+        return new ResponseEntity(partnerRequest, HttpStatus.OK);
 
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(),
-                    "Partner " + reference + " not found!"));
-        }
     }
 
     @ApiOperation(value = " Method to change partner fields ",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = " Partner change successfully ", response = PartnerRequest.class),
-            @ApiResponse(code = 404, message = " Partner not change "),
-            @ApiResponse(code = 500, message = " Internal Server Error ")})
+            @ApiResponse(code = 200, message = "", response = PartnerRequest.class),
+            @ApiResponse(code = 404, message = ""),
+            @ApiResponse(code = 500, message = "")})
 	@RequestMapping(value = "/{reference}",
-            method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<?> updatePartner(@PathVariable("reference") String reference, @RequestBody PartnerRequest partnerRequest) {
+            method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity updatePartner(@PathVariable("reference") String reference, @Valid @RequestBody PartnerUpdateRequest partnerRequest) throws NotFoundException {
 		logger.info("Updating partner referenced by {}", reference);
 
-		partnerRequest.setReference(reference);
+        ModelMapper mapper = new ModelMapper();
+        PartnerTO partnerTO = mapper.map(partnerRequest, PartnerTO.class);
+        partnerTO.setReference(reference);
 
-        try {
+        service.updatePartner(partnerTO);
 
-            service.updatePartner(buildPartnerTO(partnerRequest));
-            return ResponseEntity.ok().build();
-
-        } catch (NotFoundException e) {
-			logger.error("Partner referenced by '{}' not found.", reference);
-
-			return ResponseEntity.status(HttpStatus.NOT_FOUND)
-					.body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(),
-                            "Partner " + reference + " not found!"));
-        } catch (Exception e) {
-            logger.error("Failed to update the partner " + reference, e);
-
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to update the partner: " + e.getMessage());
-        }
+        return ResponseEntity.ok().build();
 
 	}
 
-	@ApiOperation(value = " Method to modify partner status  ", consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Method to modify partner status", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = ""),
-            @ApiResponse(code = 500, message = " Failed to change partner status ")})
-    @RequestMapping(value = "/{reference}/{status}",
+            @ApiResponse(code = 500, message = "Failed to change partner status")})
+    @RequestMapping(value = "/{reference}",
             method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> changePartnerStatus(@PathVariable("reference") String reference,
-                                                 @PathVariable("status") String status) {
+                                                 @RequestParam("status") int status) {
 
-        try {
-            boolean newStatus = "1".equals(status);
-            service.setPartnerStatus(reference, newStatus);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            logger.error("Failed to change partner status", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to change partner status");
-        }
+        boolean newStatus = status == 1;
+        service.setPartnerStatus(reference, newStatus);
+        return ResponseEntity.noContent().build();
 
     }
 
-    @ApiOperation(value = " Method for finding active partners ", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = " Method to find the active partners ", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = " Partners found successfully ", response = PartnerResponse.class,responseContainer = "List"),
             @ApiResponse(code = 500, message = " Internal Server Error ")})
     @RequestMapping(value = "/actives", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity fetchPartnerActives() {
-        try {
-            List<PartnerTO> activePartners = service.findActivePartners();
-            return ResponseEntity.ok(buildPartnerListResponse(activePartners));
-        } catch (Exception e) {
-            logger.error("Failed to get all active partners!", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity fetchActivePartners() {
+
+        List<PartnerTO> activePartners = service.findActivePartners();
+        return ResponseEntity.ok(buildPartnerListResponse(activePartners));
+
     }
 
     @ApiOperation(value = " Partner Listing Method ",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -163,13 +124,10 @@ public class PartnerController {
             @ApiResponse(code = 500, message = " Internal Server Error ")})
     @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity fetchAllPartners() {
-        try {
-            List<PartnerTO> allPartners = service.findAllPartners();
-            return ResponseEntity.ok(buildPartnerListResponse(allPartners));
-        } catch (Exception e) {
-            logger.error("Failed to get all partners!", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+
+        List<PartnerTO> allPartners = service.findAllPartners();
+        return ResponseEntity.ok(buildPartnerListResponse(allPartners));
+
     }
 
     @ApiOperation(value = " Method for fetching partners using query text ",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -178,12 +136,14 @@ public class PartnerController {
             @ApiResponse(code = 404, message = " Search without result ")})
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public ResponseEntity searchPartners(@RequestParam("q") String query) {
+
         logger.info("Searching partners using query text = {}", query);
         List<PartnerTO> partnerResponses = this.service.searchPartners(query);
         if (partnerResponses.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(buildPartnerListResponse(partnerResponses));
+
     }
 
     private PartnerTO buildPartnerTO(PartnerRequest request) {

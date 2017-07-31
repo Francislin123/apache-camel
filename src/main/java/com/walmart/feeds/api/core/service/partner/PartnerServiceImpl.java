@@ -31,13 +31,8 @@ public class PartnerServiceImpl implements PartnerService {
     private PartnerHistoryRepository partnerHistoryRepository;
 
     @Override
-    public void savePartner(PartnerTO partnerRequest) throws IllegalArgumentException {
-        Partner partner = buildPartner(partnerRequest);
-
-        if (partner.getPartnerships().isEmpty()){
-            logger.info("No one partnership relationated with partner " + partner.getReference());
-            throw new IllegalArgumentException("No one partnership relationated with partner " + partner.getReference());
-        }
+    public void savePartner(PartnerTO partnerTO) throws IllegalArgumentException {
+        Partner partner = buildPartner(partnerTO);
 
         partner.setCreationDate(LocalDateTime.now());
         partner.setActive(true);
@@ -46,23 +41,16 @@ public class PartnerServiceImpl implements PartnerService {
         logger.info("Partner {} saved.", partner.getName());
     }
 
-    public void updatePartner(PartnerTO partnerRequest) throws IllegalArgumentException, NotFoundException {
+    public void updatePartner(PartnerTO partnerTO) throws IllegalArgumentException, NotFoundException {
+        Partner currentPartner = findPartnerByReference(partnerTO.getReference());
 
-        if(partnerRequest == null) {
-            logger.error("PartnerTO not provided");
-            throw new IllegalArgumentException("PartnerTO not provided");
-        }
+        Partner partner = buildPartner(partnerTO);
 
-        Partner currentPartner = findPartnerByReference(partnerRequest.getReference());
-
-        Partner partner = buildPartner(partnerRequest);
-
-        if(partner.getDescription() != null)
-            currentPartner.setDescription(partner.getDescription());
-        if(partner.getPartnerships() != null)
-            currentPartner.setPartnerships(partner.getPartnerships());
-
+        currentPartner.setName(partner.getName());
+        currentPartner.setDescription(partner.getDescription());
+        currentPartner.setPartnerships(partner.getPartnerships());
         currentPartner.setUpdateDate(LocalDateTime.now());
+
         persistPartner(currentPartner);
 
         logger.info("Partner {} updated.", currentPartner.getName());
@@ -128,8 +116,8 @@ public class PartnerServiceImpl implements PartnerService {
         modelMapper.addMappings(new PropertyMap<PartnerTO, Partner>() {
             @Override
             protected void configure() {
-                String[] partnerships = partnerTO.getPartnership()
-                        .toArray(new String[partnerTO.getPartnership().size()]);
+                String[] partnerships = partnerTO.getPartnerships()
+                        .toArray(new String[partnerTO.getPartnerships().size()]);
                 map().setPartnerships(String.join(";", partnerships));
             }
         });
@@ -148,7 +136,7 @@ public class PartnerServiceImpl implements PartnerService {
                 String partnershipsString = partner.getPartnerships();
                 if (partnershipsString != null) {
                     List<String> partnerships = Arrays.asList(partnershipsString.split(";"));
-                    map().setPartnership(partnerships);
+                    map().setPartnerships(partnerships);
                 }
             }
         });

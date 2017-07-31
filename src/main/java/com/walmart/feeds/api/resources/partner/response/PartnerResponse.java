@@ -15,7 +15,7 @@ public class PartnerResponse {
 
     private String description;
 
-    private List<String> partnership;
+    private List<String> partnerships;
 
     private boolean active;
 

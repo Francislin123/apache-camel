@@ -19,7 +19,7 @@ public class PartnerRequest {
     private String description;
 
     @NotEmpty
-    private List<String> partnership = new ArrayList<>();
+    private List<String> partnerships = new ArrayList<>();
 
     private boolean active;
 

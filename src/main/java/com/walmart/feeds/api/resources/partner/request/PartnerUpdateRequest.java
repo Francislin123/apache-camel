@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.core.service.partner.model;
+package com.walmart.feeds.api.resources.partner.request;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -8,16 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class PartnerTO {
+public class PartnerUpdateRequest {
 
+    @NotNull
     private String name;
-
-    private String reference;
 
     private String description;
 
+    @NotEmpty
     private List<String> partnerships = new ArrayList<>();
-
-    private boolean active;
 
 }

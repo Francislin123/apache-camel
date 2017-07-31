@@ -18,7 +18,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 
+import javax.validation.ConstraintViolationException;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -114,8 +117,7 @@ public class PartnerServiceTest {
             when(repository.findByReference(anyString()))
                     .thenReturn(Optional.of(new Partner()));
 
-            PartnerTO request = new PartnerTO();
-
+            PartnerTO request = createPartnerTO();
             this.service.updatePartner(request);
 
             verify(repository).findByReference(anyString());
@@ -124,11 +126,6 @@ public class PartnerServiceTest {
         } catch (NotFoundException e) {
             fail("Exception should not have been fired!");
         }
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testUpdatePartnerFromNullPartnerRequestShouldReturnFalse() throws NotFoundException {
-        this.service.updatePartner(null);
     }
 
     @Test(expected = NotFoundException.class)
@@ -141,9 +138,12 @@ public class PartnerServiceTest {
         verify(historyRepository, times(0)).save(Mockito.any(PartnerHistory.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = DataIntegrityViolationException.class)
     public void testCreatePartnerWIthEmptyPartnershipList() {
-        service.savePartner(createPartnerTO());
+        when(repository.save(Mockito.any(Partner.class))).thenThrow(DataIntegrityViolationException.class);
+        PartnerTO partnerTO = createPartnerTO();
+        service.savePartner(partnerTO);
+        verify(repository).save(Mockito.any(Partner.class));
     }
 
     @Test
@@ -173,6 +173,7 @@ public class PartnerServiceTest {
         to.setName("Partner");
         to.setReference("partner");
         to.setDescription("New partner");
+        to.setPartnership(Arrays.asList("comparadores"));
         return to;
     }
 
