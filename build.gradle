@@ -81,6 +81,10 @@ task buildDocker(type: Docker) {
     }
 }
 
+task printProjectVersion << {
+    println project.version
+}
+
 dependencies {
     compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}"
