@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -46,8 +47,10 @@ public class Feed extends AuditableEntity {
     @Column(name = "notification_url")
     private String notificationUrl;
 
-    @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL)
-    private List<UTM> utms;
+    @ElementCollection
+    @MapKeyColumn(name = "utm_type")
+    @Column(name = "utm_value")
+    private Map<String, String> utms;
 
     @Column(name = "flag_active")
     private boolean active;

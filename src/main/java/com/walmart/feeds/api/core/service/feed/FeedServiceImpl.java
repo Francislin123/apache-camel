@@ -41,9 +41,8 @@ public class FeedServiceImpl implements FeedService {
 
         Feed feedEntity = new Feed();
         modelMapper.map(feedTO, feedEntity);
-        feedEntity.getUtms().stream().forEach(u -> u.setFeed(feedEntity));
         feedEntity.setPartner(partner);
-
+        feedEntity.setCreationDate(LocalDateTime.now());
         Feed savedFeed = feedRepository.save(feedEntity);
 
         logger.info("feed={} message=saved_successfully", savedFeed);
@@ -51,16 +50,14 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
-    public List<FeedTO> fetchByActiveAndByPartner(String partnerReference) throws NotFoundException {
-        Partner partner = partnerRepository.findByReference(partnerReference).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", partnerReference)));
-        List<Feed> feedEntities = feedRepository.findByActiveAndPartner(true, partner).orElseThrow(() -> new NotFoundException("Feed not found"));
-        return feedEntities.stream().map(feedEntity -> FeedConverter.convert(feedEntity)).collect(Collectors.toList());
-    }
-
-    @Override
     public List<FeedTO> fetchByPartner(String partnerReference, Boolean active) throws NotFoundException {
         Partner partner = partnerRepository.findByReference(partnerReference).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", partnerReference)));
-        List<Feed> feedEntities = feedRepository.findByPartnerAndActive(partner, active).orElseThrow(() -> new NotFoundException("Feed not found"));
+        List<Feed> feedEntities = null;
+        if(active != null){
+            feedEntities = feedRepository.findByActiveAndPartner(active, partner).orElseThrow(() -> new NotFoundException("Feed not found"));
+        }else{
+            feedEntities = feedRepository.findByPartner(partner).orElseThrow(() -> new NotFoundException("Feed not found"));
+        }
         return feedEntities.stream().map(feedEntity -> FeedConverter.convert(feedEntity)).collect(Collectors.toList());
     }
 
@@ -79,9 +76,8 @@ public class FeedServiceImpl implements FeedService {
         Feed entity = FeedConverter.convert(feedTO);
         entity.setId(persistedFeed.getId());
         entity.setUpdateDate(LocalDateTime.now());
-        entity.setPartner(partner);
         entity.setCreationDate(persistedFeed.getCreationDate());
-        entity.getUtms().stream().forEach(utm -> utm.setFeed(entity));
+        entity.setPartner(partner);
         feedRepository.save(entity);
         logger.info("feed={} message=update_successfully", entity);
     }

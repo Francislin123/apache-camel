@@ -13,8 +13,6 @@ public interface FeedService {
 
     void createFeed(FeedTO feedTO) throws NotFoundException;
 
-    List<FeedTO> fetchByActiveAndByPartner(String partnerReference) throws NotFoundException;
-
     List<FeedTO> fetchByPartner(String partnerReference, Boolean active) throws NotFoundException;
 
     void changeFeedStatus(String reference, Boolean active) throws NotFoundException;

@@ -87,10 +87,7 @@ public class FeedsController {
 
             feedResponse.setFeedType(feedEntity.getType());
 
-            feedResponse.setUtms(feedEntity.getUtms().stream().map(utm -> {
-                com.walmart.feeds.api.resources.feed.request.UTM utmResponse = new com.walmart.feeds.api.resources.feed.request.UTM(utm.getType(), utm.getValue());
-                return utmResponse;
-            }).collect(Collectors.toList()));
+            feedResponse.setUtms(feedEntity.getUtms());
 
             return ResponseEntity.ok().body(feedResponse);
 

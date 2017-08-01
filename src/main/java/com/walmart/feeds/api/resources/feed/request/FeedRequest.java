@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.resources.feed.request;
 
-import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedNotificationUrl;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedType;
 import lombok.Data;
@@ -9,8 +8,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 @Data
 public class FeedRequest {
@@ -33,7 +31,7 @@ public class FeedRequest {
     private FeedNotificationData notification;
 
     @NotEmpty
-    private List<UTM> utms;
+    private Map<String, String> utms;
 
     private Boolean active;
 

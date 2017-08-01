@@ -6,14 +6,17 @@ import br.com.six2six.fixturefactory.loader.TemplateLoader;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.service.feed.model.FeedNotificationDataTO;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
-import com.walmart.feeds.api.core.service.feed.model.UTMTO;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
-import com.walmart.feeds.api.resources.feed.request.UTM;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class FeedTemplateLoader implements TemplateLoader {
     @Override
     public void load() {
+        Map<String, String> utms = new HashMap<>();
+        utms.put("utm_source", "zoom");
         Fixture.of(FeedNotificationData.class).addTemplate("valid-notification-api", new Rule() {{
             add("method", "api");
             add("format", "json");
@@ -25,15 +28,12 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("format", "xml");
         }});
 
-        Fixture.of(UTM.class).addTemplate("utm_valid", new Rule() {{
-            add("type", random("utm_source", "utm_campaign", "utm_blabla", "utm_term", "utm_content", "utm_medium"));
-            add("value", random(String.class, "asdasd", "qweqwe", "12312312"));
-        }});
+
 
         Fixture.of(FeedRequest.class).addTemplate("feed-request-generic-valid", new Rule() {{
             add("name", "Feed WM Test");
             add("reference", "feed_test");
-            add("utms", Fixture.from(UTM.class).gimme(3, "utm_valid"));
+            add("utms", utms);
         }});
 
         Fixture.of(FeedRequest.class).addTemplate("feed-full-api-valid").inherits("feed-request-generic-valid", new Rule() {{
@@ -55,10 +55,6 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("notification", notification);
         }});
 
-        Fixture.of(UTMTO.class).addTemplate("utm_to_valid", new Rule() {{
-            add("type", random("utm_source", "utm_campaign", "utm_blabla", "utm_term", "utm_content", "utm_medium"));
-            add("value", random(String.class, "asdasd", "qweqwe", "12312312"));
-        }});
         Fixture.of(FeedNotificationDataTO.class).addTemplate("valid-notification-to-api", new Rule() {{
             add("method", "api");
             add("format", "json");
@@ -68,7 +64,7 @@ public class FeedTemplateLoader implements TemplateLoader {
         Fixture.of(FeedTO.class).addTemplate("feed-to-full-api-valid", new Rule() {{
             add("name", "Feed WM Test");
             add("reference", "feed_test");
-            add("utms", Fixture.from(UTMTO.class).gimme(3, "utm_to_valid"));
+            add("utms", utms);
             add("type", FeedType.FULL);
             FeedNotificationDataTO notification = Fixture.from(FeedNotificationDataTO.class).gimme("valid-notification-to-api");
             add("notificationData", notification);

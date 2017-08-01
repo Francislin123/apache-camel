@@ -180,30 +180,27 @@
             <tableExists tableName="feed"/>
         </preConditions>
 
-        <comment>Creating feed_utm table</comment>
+        <comment>Creating feed_utms table</comment>
 
-        <createTable tableName="feed_utm">
-            <column name="id" type="${uuid_type}">
+        <createTable tableName="feed_utms">
+            <column name="feed_id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="feed_id" type="${uuid_type}">
-                <constraints foreignKeyName="" nullable="false"/>
-            </column>
             <column name="utm_type" type="varchar(20)">
-                <constraints nullable="false"/>
+                <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="utm_value" type="varchar(20)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="feed_utm" baseColumnNames="feed_id" constraintName="fk_feed_utm"
+        <addForeignKeyConstraint baseTableName="feed_utms" baseColumnNames="feed_id" constraintName="fk_feed_utm"
                                  referencedTableName="feed"
                                  referencedColumnNames="id"/>
 
         <rollback>
-            <dropTable tableName="feed_utm"/>
-            <dropForeignKeyConstraint baseTableName="feed_utm" constraintName="fk_feed_utm"/>
+            <dropTable tableName="feed_utms"/>
+            <dropForeignKeyConstraint baseTableName="feed_utms" constraintName="fk_feed_utms"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

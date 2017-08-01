@@ -34,6 +34,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -115,52 +116,16 @@ public class FeedsControllerTest {
     }
 
     @Test
-    public void testFeedsByPartnerAndReturnAList() throws Exception {
-        Mockito.when(feedService.fetchByPartner("AAA333", active)).thenReturn(this.mockListFeed());
-        ResponseEntity<List<FeedResponse>> response = feedsController.fetchAll("AAA333");
-        Mockito.verify(feedService).fetchByPartner("AAA333", active);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    public void testFeedsByPartnerAndDealWithUnknownPartner() throws NotFoundException {
-        Mockito.when(feedService.fetchByPartner("AAA333", active)).thenThrow(new NotFoundException(""));
-        ResponseEntity response = feedsController.fetchAll("AAA333");
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    }
-
-    @Test
-    public void testFeedsActivesByPartnerAndReturnAList() throws Exception {
-        Mockito.when(feedService.fetchByActiveAndByPartner("AAA333")).thenReturn(this.mockListFeed());
-        ResponseEntity<List<FeedResponse>> response = feedsController.fetchActives("AAA333");
-        Mockito.verify(feedService).fetchByActiveAndByPartner("AAA333");
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    public void testFeedsActivesByPartnerAndDealWithUnknownPartner() throws NotFoundException {
-        Mockito.when(feedService.fetchByActiveAndByPartner("AAA333")).thenThrow(new NotFoundException(""));
-        ResponseEntity response = feedsController.fetchActives("AAA333");
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    }
-    @Test
     public void testUpdateFeed() throws Exception {
         doNothing().when(feedService).updateFeed(Fixture.from(FeedTO.class).gimme("feed-to-full-api-valid"));
-        mockMvc.perform(patch(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
+        mockMvc.perform(put(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
                 ).andExpect(status().isOk());
     }
     @Test
     public void testUpdateFeedAndDealWithDuplicatedReference() throws Exception {
         doThrow(DataIntegrityViolationException.class).when(feedService).updateFeed(any(FeedTO.class));
-        mockMvc.perform(patch(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
+        mockMvc.perform(put(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
         ).andExpect(status().isConflict());
-    }
-    private List<FeedTO> mockListFeed(){
-        List<FeedTO> list = new ArrayList<>();
-        FeedTO feedTO = new FeedTO();
-        feedTO.setPartnerReference("AAA333");
-        feedTO.setActive(true);
-        list.add(feedTO);
-        return list;
     }
 
     private String asJsonString(FeedRequest feedRequest) {
