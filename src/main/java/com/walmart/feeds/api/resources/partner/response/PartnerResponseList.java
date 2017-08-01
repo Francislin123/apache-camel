@@ -10,6 +10,8 @@ public class PartnerResponseList {
 
     private List<PartnerResponse> partners;
 
+    public PartnerResponseList() {}
+
     public PartnerResponseList(List<PartnerResponse> partnerResponseList) {
         this.partners = partnerResponseList;
     }

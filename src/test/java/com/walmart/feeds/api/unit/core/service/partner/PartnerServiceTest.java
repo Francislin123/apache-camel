@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.unit.core.service.partner;
 
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.partner.PartnerHistoryRepository;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
@@ -8,7 +9,6 @@ import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.partner.PartnerServiceImpl;
 import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
-import javassist.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,7 +67,7 @@ public class PartnerServiceTest {
     public void testBuildPartnerFromPartnerRequest()
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         PartnerTO partnerRequest = createPartnerTO();
-        partnerRequest.setPartnership(Arrays.asList("SEM", "COMPARADOR"));
+        partnerRequest.setPartnerships(Arrays.asList("SEM", "COMPARADOR"));
 
         Partner partner = (Partner) buildPartnerMethod.invoke(service, partnerRequest);
 
@@ -93,8 +93,8 @@ public class PartnerServiceTest {
         assertEquals(partnerResponse.getName(), partnerResponse.getName());
         assertEquals(partnerResponse.getReference(), partnerResponse.getReference());
         assertEquals(partnerResponse.getDescription(), partnerResponse.getDescription());
-        assertThat(partnerResponse.getPartnership(), hasItem("comparadores"));
-        logger.info("Partnerships: {} ", partnerResponse.getPartnership());
+        assertThat(partnerResponse.getPartnerships(), hasItem("comparadores"));
+        logger.info("Partnerships: {} ", partnerResponse.getPartnerships());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -173,7 +173,7 @@ public class PartnerServiceTest {
         to.setName("Partner");
         to.setReference("partner");
         to.setDescription("New partner");
-        to.setPartnership(Arrays.asList("comparadores"));
+        to.setPartnerships(Arrays.asList("comparadores"));
         return to;
     }
 

@@ -1,18 +1,16 @@
 package com.walmart.feeds.api.resources.partner;
 
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
-import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
 import com.walmart.feeds.api.resources.partner.request.PartnerUpdateRequest;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponseList;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
-import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,9 +43,9 @@ public class PartnerController {
 	@ApiOperation(value = "Create new partner",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = " Successful new partner ", response = PartnerRequest.class),
-            @ApiResponse(code = 409, message = " Partner already exists "),
-            @ApiResponse(code = 500, message = " Internal server error ")})
+            @ApiResponse(code = 201, message = "Successful new partner", response = PartnerRequest.class),
+            @ApiResponse(code = 409, message = "Partner already exists"),
+            @ApiResponse(code = 500, message = "Unhandled exception")})
     @RequestMapping(method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createPartner(@RequestBody @Valid PartnerRequest partner){
 
@@ -56,10 +54,10 @@ public class PartnerController {
 
     }
 
-    @ApiOperation(value = " Method to find the partner by your reference ",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "Method to find the partner by your reference",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Partner found successfully", response = PartnerResponse.class),
+            @ApiResponse(code = 200, message = "Partner found", response = PartnerResponse.class),
             @ApiResponse(code = 404, message = "Partner not found")})
 	@RequestMapping(value = "/{reference}",
             method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -72,12 +70,13 @@ public class PartnerController {
 
     @ApiOperation(value = " Method to change partner fields ",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "", response = PartnerRequest.class),
-            @ApiResponse(code = 404, message = ""),
-            @ApiResponse(code = 500, message = "")})
+            @ApiResponse(code = 200, message = "Partner was updated"),
+            @ApiResponse(code = 404, message = "Partner does not exists"),
+            @ApiResponse(code = 500, message = "Unhandled error")})
 	@RequestMapping(value = "/{reference}",
             method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity updatePartner(@PathVariable("reference") String reference, @Valid @RequestBody PartnerUpdateRequest partnerRequest) throws NotFoundException {
+	public ResponseEntity updatePartner(@PathVariable("reference") String reference, @Valid @RequestBody PartnerUpdateRequest partnerRequest)
+            throws NotFoundException {
 		logger.info("Updating partner referenced by {}", reference);
 
         ModelMapper mapper = new ModelMapper();
@@ -92,7 +91,7 @@ public class PartnerController {
 
 	@ApiOperation(value = "Method to modify partner status", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = ""),
+            @ApiResponse(code = 204, message = "Partner status changed"),
             @ApiResponse(code = 500, message = "Failed to change partner status")})
     @RequestMapping(value = "/{reference}",
             method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -100,15 +99,15 @@ public class PartnerController {
                                                  @RequestParam("status") int status) {
 
         boolean newStatus = status == 1;
-        service.setPartnerStatus(reference, newStatus);
+        service.changePartnerStatus(reference, newStatus);
         return ResponseEntity.noContent().build();
 
     }
 
     @ApiOperation(value = " Method to find the active partners ", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = " Partners found successfully ", response = PartnerResponse.class,responseContainer = "List"),
-            @ApiResponse(code = 500, message = " Internal Server Error ")})
+            @ApiResponse(code = 200, message = "Partners found successfully", response = PartnerResponseList.class),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
     @RequestMapping(value = "/actives", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity fetchActivePartners() {
 
@@ -117,12 +116,11 @@ public class PartnerController {
 
     }
 
-    @ApiOperation(value = " Partner Listing Method ",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "Partner Listing Method",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = " List of partners ok ", response = PartnerRequest.class,responseContainer = "List"),
-            @ApiResponse(code = 404, message = " Partner not change "),
-            @ApiResponse(code = 500, message = " Internal Server Error ")})
-    @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            @ApiResponse(code = 200, message = "List of all partners", response = PartnerResponseList.class),
+            @ApiResponse(code = 500, message = "Unhandled exception")})
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity fetchAllPartners() {
 
         List<PartnerTO> allPartners = service.findAllPartners();
@@ -132,8 +130,8 @@ public class PartnerController {
 
     @ApiOperation(value = " Method for fetching partners using query text ",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = " Search completed successfully ", response = PartnerRequest.class,responseContainer = "List"),
-            @ApiResponse(code = 404, message = " Search without result ")})
+            @ApiResponse(code = 200, message = "Search found partners", response = PartnerResponseList.class, responseContainer = "List"),
+            @ApiResponse(code = 404, message = "Empty result")})
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public ResponseEntity searchPartners(@RequestParam("q") String query) {
 

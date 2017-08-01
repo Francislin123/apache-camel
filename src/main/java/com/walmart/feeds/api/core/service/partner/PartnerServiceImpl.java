@@ -1,11 +1,11 @@
 package com.walmart.feeds.api.core.service.partner;
 
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.partner.PartnerHistoryRepository;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerHistory;
 import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
-import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
@@ -97,7 +97,7 @@ public class PartnerServiceImpl implements PartnerService {
         return partners.stream().map(this::buildPartnerTO).collect(Collectors.toList());
     }
 
-    public void setPartnerStatus(String reference, boolean newStatus) {
+    public void changePartnerStatus(String reference, boolean newStatus) {
         logger.info("Changing partner {} status to {}", reference, newStatus);
         partnerRepository.changePartnerStatus(reference, newStatus);
     }
