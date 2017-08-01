@@ -66,12 +66,12 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
-    public void removeFeed(String reference) throws NotFoundException {
+    public void changeFeedStatus(String reference, Boolean active) throws NotFoundException {
 
         Feed feedEntity = feedRepository.findByReference(reference).orElseThrow(() -> new NotFoundException("Feed not Found"));//busca no banco a partir do reference
 
         feedEntity.setUpdateDate(LocalDateTime.now());
-        feedRepository.changeFeedStatus(feedEntity, false);
+        feedRepository.changeFeedStatus(feedEntity, active);
 
     }
 

@@ -35,5 +35,7 @@ public class FeedRequest {
     @NotEmpty
     private List<UTM> utms;
 
+    private Boolean active;
+
 
 }

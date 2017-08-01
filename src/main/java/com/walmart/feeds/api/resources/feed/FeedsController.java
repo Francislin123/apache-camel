@@ -113,14 +113,15 @@ public class FeedsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage()));
         }
     }
-    @ApiOperation(value = "Remove feed by reference",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+
+    @ApiOperation(value = "Change feed status",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Feed removed with success", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Invalid feed reference")})
-    @RequestMapping (value = "{reference}",method=RequestMethod.PATCH,produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity removeFeed(@PathVariable("reference") String reference) throws NotFoundException {
-        feedService.removeFeed(reference);
+    @RequestMapping(value = "{reference}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity changeFeedStatus(@PathVariable("reference") String reference, @RequestParam("active") Boolean active) throws NotFoundException {
+        feedService.changeFeedStatus(reference, active);
         return ResponseEntity.ok().build();
     }
     @ApiOperation(value = "Fetch actives feeds",
@@ -140,8 +141,8 @@ public class FeedsController {
         return ResponseEntity.ok(listFeed.stream().map(f -> mapper.map(f, FeedResponse.class)).collect(Collectors.toList()));
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity patchFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder){
+    @RequestMapping(method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerReference") String partnerReference, UriComponentsBuilder builder) {
         try{
             FeedTO feedTO = new ModelMapper().map(request, FeedTO.class);
             feedTO.setPartnerReference(partnerReference);
