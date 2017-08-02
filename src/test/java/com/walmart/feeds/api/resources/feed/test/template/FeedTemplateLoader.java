@@ -4,8 +4,6 @@ import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
-import com.walmart.feeds.api.core.service.feed.model.FeedNotificationDataTO;
-import com.walmart.feeds.api.core.service.feed.model.FeedTO;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 
@@ -28,12 +26,10 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("format", "xml");
         }});
 
-
-
         Fixture.of(FeedRequest.class).addTemplate("feed-request-generic-valid", new Rule() {{
-            add("name", "Feed WM Test");
-            add("reference", "feed_test");
+            add("name", "FeedEntity WM Test");
             add("utms", utms);
+            add("active", true);
         }});
 
         Fixture.of(FeedRequest.class).addTemplate("feed-full-api-valid").inherits("feed-request-generic-valid", new Rule() {{
@@ -55,19 +51,5 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("notification", notification);
         }});
 
-        Fixture.of(FeedNotificationDataTO.class).addTemplate("valid-notification-to-api", new Rule() {{
-            add("method", "api");
-            add("format", "json");
-            add("url", "http://localhost:8080/notification");
-        }});
-
-        Fixture.of(FeedTO.class).addTemplate("feed-to-full-api-valid", new Rule() {{
-            add("name", "Feed WM Test");
-            add("reference", "feed_test");
-            add("utms", utms);
-            add("type", FeedType.FULL);
-            FeedNotificationDataTO notification = Fixture.from(FeedNotificationDataTO.class).gimme("valid-notification-to-api");
-            add("notificationData", notification);
-        }});
     }
 }

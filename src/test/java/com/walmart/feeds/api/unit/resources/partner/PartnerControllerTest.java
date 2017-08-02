@@ -1,12 +1,22 @@
 package com.walmart.feeds.api.unit.resources.partner;
 
+import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import br.com.six2six.fixturefactory.Fixture;
+import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
-import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
+import com.walmart.feeds.api.resources.feed.CollectionResponse;
+import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
+import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
 import com.walmart.feeds.api.resources.partner.PartnerController;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
-import com.walmart.feeds.api.resources.partner.response.PartnerResponseList;
+import com.walmart.feeds.api.resources.partner.request.PartnerUpdateRequest;
+import org.hamcrest.Matchers;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
-import javassist.NotFoundException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,143 +28,232 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PartnerControllerTest {
 
     public static final String URI_PARTNERS = "/v1/partners";
+
     private Logger logger = LoggerFactory.getLogger(PartnerControllerTest.class);
 
-    @InjectMocks //@Autowired
-    private PartnerController controller = new PartnerController();
+    private MockMvc mockMvc;
+
+    private ObjectMapper mapper;
+
+    @InjectMocks
+    private PartnerController partnerController = new PartnerController();
 
     @Mock
     private PartnerService partnerService;
 
+    @BeforeClass
+    public static void setUp() {
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.partner.test.template");
+    }
+
+    @Before
+    public void init() {
+        mockMvc = MockMvcBuilders.standaloneSetup(partnerController)
+                .setControllerAdvice(new FeedsAdminAPIExceptionHandler())
+                .build();
+        mapper = new ObjectMapper();
+    }
+
     @Test
     public void testCreateNewPartner() throws Exception {
-        PartnerRequest request = new PartnerRequest();
-        controller.createPartner(request);
-        Mockito.verify(partnerService, Mockito.times(1)).savePartner(Mockito.any(PartnerTO.class));
+        mockMvc.perform(MockMvcRequestBuilders.post(URI_PARTNERS)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(PartnerRequest.class)
+                        .gimme("valid_partner_request"))))
+            .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        Mockito.verify(partnerService).savePartner(Mockito.any(PartnerEntity.class));
     }
 
     @Test
-    public void testCreatedNewPartnerWithInexistenPartnership(){
-        PartnerRequest request = new PartnerRequest();
-        Mockito.doThrow(IllegalArgumentException.class).when(partnerService).savePartner(Mockito.any(PartnerTO.class));
-        ResponseEntity response = controller.createPartner(request);
-        Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    public void testCreatedNewPartnerWithInexistenPartnership() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post(URI_PARTNERS)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(PartnerRequest.class)
+                    .gimme("invalid_partner_request_no_partnerships"))))
+            .andExpect(MockMvcResultMatchers.status().isBadRequest())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.code", Matchers.is("400")));
+
+        verify(partnerService, times(0)).savePartner(Mockito.any(PartnerEntity.class));
     }
 
     @Test
-    public void testCreatedNewWithConflict(){
-        PartnerRequest request = new PartnerRequest();
-        Mockito.doThrow(DataIntegrityViolationException.class).when(partnerService).savePartner(Mockito.any(PartnerTO.class));
-        ResponseEntity response = controller.createPartner(request);
-        Assert.assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+    public void testCreatedNewWithConflict() throws Exception {
+        Mockito.doThrow(DataIntegrityViolationException.class)
+                .when(partnerService).savePartner(Mockito.any(PartnerEntity.class));
+
+        mockMvc.perform(MockMvcRequestBuilders.post(URI_PARTNERS)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(PartnerRequest.class)
+                    .gimme("valid_partner_request"))))
+            .andExpect(MockMvcResultMatchers.status().isConflict());
     }
 
     @Test
-    public void testFetchAllPartners() {
-        when(partnerService.findAllPartners()).thenReturn(Arrays.asList(new PartnerTO()));
+    public void testFetchAllPartners() throws Exception {
+        when(partnerService.findAllPartners()).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
 
-        ResponseEntity response = controller.fetchAllPartners();
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS).contentType(MediaType.APPLICATION_JSON))
+                .andDo(result -> {
+                    logger.info("Result: {}", result.getResponse().getContentAsString());
+                })
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].slug", Matchers.is("buscape")))
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
         verify(partnerService).findAllPartners();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody() instanceof PartnerResponseList);
-        PartnerResponseList listResponse = (PartnerResponseList) response.getBody();
-        assertFalse(listResponse.getPartners().isEmpty());
     }
 
     @Test
-    public void testFetchAllPartnersWithDatabaseDown() {
-        // TODO map the correct exception
-        doThrow(Exception.class).when(partnerService).findAllPartners();
+    public void testFetchAllPartnersWithDatabaseDown() throws Exception {
+        when(partnerService.findAllPartners()).thenThrow(Exception.class);
 
-        ResponseEntity response = controller.fetchAllPartners();
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(MockMvcResultMatchers.status().isInternalServerError());
 
         verify(partnerService).findAllPartners();
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
-    public void testFetchActivePartners(){
-        Mockito.when(partnerService.findActivePartners()).thenReturn(Arrays.asList(new PartnerTO()));
-        ResponseEntity<List<PartnerResponse>> response = controller.fetchPartnerActives();
-        Assert.assertNotNull(response);
-        Assert.assertTrue(response.getBody() instanceof PartnerResponseList);
-        PartnerResponseList listResponse = (PartnerResponseList) response.getBody();
-        Assert.assertFalse(listResponse.getPartners().isEmpty());
+    public void testFetchActivePartners() throws Exception {
+        when(partnerService.findActivePartners()).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS + "/actives")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andDo(result -> {
+                        logger.info("Result: {}", result.getResponse().getContentAsString());
+                    })
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].active", Matchers.is(true)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        verify(partnerService).findActivePartners();
     }
 
     @Test
-    public void testFetchActivePartnersWithDatabaseDown(){
-        Mockito.doThrow(Exception.class).when(partnerService).findActivePartners();
-        ResponseEntity<List<PartnerResponse>> partnersActives = controller.fetchPartnerActives();
-        Assert.assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, partnersActives.getStatusCode());
+    public void testFetchActivePartnersWithDatabaseDown() throws Exception {
+        when(partnerService.findActivePartners()).thenThrow(Exception.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS + "/actives")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+
+        verify(partnerService).findActivePartners();
     }
 
     @Test
     public void testUpdatePartner() throws Exception {
-        ResponseEntity<?> response = controller.updatePartner("anyReference", createPartnerRequest());
+        mockMvc.perform(MockMvcRequestBuilders.put(URI_PARTNERS + "/reference")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(jsonRequest(Fixture.from(PartnerUpdateRequest.class).gimme("partner_update_request"))))
+            .andExpect(MockMvcResultMatchers.status().isOk());
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(partnerService).updatePartner(Mockito.any(PartnerEntity.class));
     }
 
     @Test
     public void testUpdatePartnerNotfoundWhenInexistentPartner() throws Exception {
-        doThrow(NotFoundException.class).when(partnerService).updatePartner(any(PartnerTO.class));
-        ResponseEntity<?> response = controller.updatePartner("anyReference", createPartnerRequest());
+        doThrow(NotFoundException.class).when(partnerService).updatePartner(Mockito.any(PartnerEntity.class));
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        mockMvc.perform(MockMvcRequestBuilders.put(URI_PARTNERS + "/reference")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(jsonRequest(Fixture.from(PartnerUpdateRequest.class).gimme("partner_update_request"))))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        verify(partnerService).updatePartner(Mockito.any(PartnerEntity.class));
     }
 
     @Test
     public void testUpdatePartnerWithDatabaseDown() throws Exception {
-        doThrow(Exception.class).when(partnerService).updatePartner(any(PartnerTO.class));
-        ResponseEntity<?> response = controller.updatePartner("anyReference", createPartnerRequest());
+        doThrow(Exception.class).when(partnerService).updatePartner(any(PartnerEntity.class));
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        mockMvc.perform(MockMvcRequestBuilders.put(URI_PARTNERS + "/reference")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(jsonRequest(Fixture.from(PartnerUpdateRequest.class).gimme("partner_update_request"))))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+
+        verify(partnerService).updatePartner(Mockito.any(PartnerEntity.class));
     }
 
     @Test
-    public void testChangePartnerStatus() {
-        ResponseEntity response = controller.changePartnerStatus("buscape", "0");
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    public void testChangePartnerStatus() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.patch(URI_PARTNERS + "/reference?active=false")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+        verify(partnerService).changePartnerStatus("reference", false);
     }
 
     @Test
-    public void testChangePartnerStatusWhenDatabaseDown() {
-        doThrow(Exception.class).when(partnerService).setPartnerStatus(anyString(), anyBoolean());
-        ResponseEntity response = controller.changePartnerStatus("buscape", "0");
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    public void testChangePartnerStatusWhenDatabaseDown() throws Exception {
+        doThrow(Exception.class).when(partnerService).changePartnerStatus("reference", false);
+
+        mockMvc.perform(MockMvcRequestBuilders.patch(URI_PARTNERS + "/reference?active=false")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(PartnerUpdateRequest.class).gimme("partner_update_request"))))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+
+        verify(partnerService).changePartnerStatus("reference", false);
     }
 
     @Test
-    public void testSearchPartners() {
-        when(partnerService.searchPartners(anyString())).thenReturn(Arrays.asList(new PartnerTO()));
-        ResponseEntity response = controller.searchPartners("busc");
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+    public void testSearchPartners() throws Exception {
+        when(partnerService.searchPartners("busc")).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS + "/search?q=busc")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].slug", Matchers.is("buscape")));
+
+        verify(partnerService).searchPartners("busc");
     }
 
     @Test
-    public void testSearchPartnersEmptyResult() {
-        when(partnerService.searchPartners(anyString())).thenReturn(Arrays.asList());
-        ResponseEntity response = controller.searchPartners("xyz");
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    public void testSearchPartnersEmptyResult() throws Exception {
+        when(partnerService.searchPartners("test")).thenReturn(new ArrayList<>());
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS + "/search?q=test")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+
+        verify(partnerService).searchPartners("test");
     }
 
-    private PartnerRequest createPartnerRequest() {
-        PartnerRequest partnerRequest = new PartnerRequest();
-        return partnerRequest;
+    @Test
+    public void testSearchPartnersEmptyQuery() throws Exception {
+        when(partnerService.searchPartners("")).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
+
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS + "/search?q=")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        verify(partnerService).searchPartners("");
+    }
+
+    public String jsonRequest(Object request) throws JsonProcessingException {
+        return mapper.writeValueAsString(request);
     }
 
 }

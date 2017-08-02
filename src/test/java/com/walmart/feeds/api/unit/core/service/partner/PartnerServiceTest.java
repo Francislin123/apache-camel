@@ -1,14 +1,12 @@
 package com.walmart.feeds.api.unit.core.service.partner;
 
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.partner.PartnerHistoryRepository;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
-import com.walmart.feeds.api.core.repository.partner.model.Partner;
+import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.partner.PartnerServiceImpl;
-import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
-import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
-import javassist.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,15 +16,13 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -44,67 +40,8 @@ public class PartnerServiceTest {
     @InjectMocks
     private PartnerService service = new PartnerServiceImpl();
 
-    private Method buildPartnerMethod;
-
-    private Method buildPartnerTOMethod;
-
     @Before
     public void setUp() throws NoSuchMethodException {
-        buildPartnerMethod = PartnerServiceImpl.class
-                .getDeclaredMethod("buildPartner", PartnerTO.class);
-        buildPartnerMethod.setAccessible(true);
-
-        buildPartnerTOMethod = PartnerServiceImpl.class.getDeclaredMethod("buildPartnerTO",
-                Partner.class);
-        buildPartnerTOMethod.setAccessible(true);
-
-    }
-
-    @Test
-    public void testBuildPartnerFromPartnerRequest()
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        PartnerTO partnerRequest = createPartnerTO();
-        partnerRequest.setPartnership(Arrays.asList("SEM", "COMPARADOR"));
-
-        Partner partner = (Partner) buildPartnerMethod.invoke(service, partnerRequest);
-
-        assertEquals(partnerRequest.getName(), partner.getName());
-        assertEquals(partnerRequest.getReference(), partner.getReference());
-        assertEquals(partnerRequest.getDescription(), partner.getDescription());
-        assertEquals(partner.getPartnerships(), "SEM;COMPARADOR");
-        logger.info("Mapped partnerships: {}", partner.getPartnerships());
-    }
-
-    @Test
-    public void testBuildPartnerTOFromPartnerWithPartnerships()
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-
-        Partner partner = new Partner();
-        partner.setActive(true);
-        partner.setName("Buscape");
-        partner.setReference("buscape");
-        partner.setPartnerships("comparadores;afiliados");
-
-        PartnerTO partnerResponse = (PartnerTO) buildPartnerTOMethod.invoke(service, partner);
-
-        assertEquals(partnerResponse.getName(), partnerResponse.getName());
-        assertEquals(partnerResponse.getReference(), partnerResponse.getReference());
-        assertEquals(partnerResponse.getDescription(), partnerResponse.getDescription());
-        assertThat(partnerResponse.getPartnership(), hasItem("comparadores"));
-        logger.info("Partnerships: {} ", partnerResponse.getPartnership());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testBuildPartnerFromNullPartnerRequest()
-            throws NoSuchMethodException, IllegalAccessException {
-
-        try {
-            PartnerRequest partnerRequest = null;
-            Partner partner = (Partner) buildPartnerMethod.invoke(service, partnerRequest);
-        } catch (InvocationTargetException e) {
-            if (e.getCause() instanceof IllegalArgumentException)
-                throw (IllegalArgumentException) e.getCause();
-        }
 
     }
 
@@ -112,30 +49,20 @@ public class PartnerServiceTest {
     @Test
     public void testUpdatePartner() {
         try {
-            when(repository.findByReference(anyString())) .thenReturn(Optional.of(new Partner()));
+            when(repository.findBySlug(anyString())).thenReturn(Optional.of(new PartnerEntity()));
 
-            PartnerTO request = new PartnerTO();
+            PartnerEntity request = PartnerEntity.builder().name("Teste 123").build();
+
 
             this.service.updatePartner(request);
 
-            verify(repository).findByReference(anyString());
-            verify(repository).save(Mockito.any(Partner.class));
+            verify(repository).findBySlug(anyString());
+            verify(repository).save(Mockito.any(PartnerEntity.class));
             verify(historyRepository).save(any(PartnerHistory.class));
         } catch (NotFoundException e) {
             fail("Exception should not have been fired!");
         }
     }
-    //--------------------------------------------------------------------------------------------------------------//
-    @Test(expected = NotFoundException.class)
-    public void testUpdateInexistentPartnerShouldThrowNotFoundException() throws NotFoundException {
-        when(repository.findByReference(anyString())).thenReturn(Optional.empty());
-        PartnerTO partnerTO = createPartnerTO();
-        this.service.updatePartner(partnerTO);
-        verify(repository).findByReference(anyString());
-        verify(repository, times(0)).save(Mockito.any(Partner.class));
-        verify(historyRepository, times(0)).save(Mockito.any(PartnerHistory.class));
-    }
-    //--------------------------------------------------------------------------------------------------------------//
 
     @Test(expected = IllegalArgumentException.class)
     public void testUpdatePartnerFromNullPartnerRequestShouldReturnFalse() throws NotFoundException {
@@ -144,37 +71,38 @@ public class PartnerServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreatePartnerWIthEmptyPartnershipList() {
-        service.savePartner(createPartnerTO());
+
+        PartnerEntity partner = PartnerEntity.builder()
+                .name("PartnerEntity")
+                .slug("partner")
+                .description("New partner")
+                .partnerships("").build();
+
+        service.savePartner(partner);
     }
 
     @Test
     public void testSearchPartners() {
         when(repository.searchPartners(anyString())).thenReturn(Arrays.asList(createPartner()));
-        List<PartnerTO> partners = service.searchPartners("bus");
+        List<PartnerEntity> partners = service.searchPartners("bus");
         assertFalse(partners.isEmpty());
     }
 
     @Test
     public void testSearchPartnersEmptyResult() {
         when(repository.searchPartners(anyString())).thenReturn(new ArrayList<>());
-        List<PartnerTO> partners = service.searchPartners("xyz");
+        List<PartnerEntity> partners = service.searchPartners("xyz");
         assertTrue(partners.isEmpty());
     }
 
-    private Partner createPartner() {
-        Partner partner = new Partner();
-        partner.setName("Partner");
-        partner.setReference("partner");
-        partner.setDescription("New partner");
-        return partner;
-    }
+    private PartnerEntity createPartner() {
+        PartnerEntity partner = PartnerEntity.builder()
+                .name("PartnerEntity")
+                .slug("partner")
+                .description("New partner")
+                .partnerships("teste123").build();
 
-    private PartnerTO createPartnerTO() {
-        PartnerTO to = new PartnerTO();
-        to.setName("Partner");
-        to.setReference("partner");
-        to.setDescription("New partner");
-        return to;
+        return partner;
     }
 
 }

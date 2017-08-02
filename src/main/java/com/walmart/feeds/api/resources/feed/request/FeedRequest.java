@@ -14,10 +14,6 @@ import java.util.Map;
 public class FeedRequest {
 
     @NotEmpty
-    @Size(min = 1, max = 20)
-    private String reference;
-
-    @NotEmpty
     @Size(min = 1, max = 50)
     private String name;
 
@@ -33,6 +29,7 @@ public class FeedRequest {
     @NotEmpty
     private Map<String, String> utms;
 
+    @NotNull
     private Boolean active;
 
 

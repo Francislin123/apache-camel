@@ -2,12 +2,11 @@ package com.walmart.feeds.api.core.service.feed.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
-import com.walmart.feeds.api.core.repository.partner.model.Partner;
+import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -32,7 +31,7 @@ public class FeedHistory extends AuditableEntity {
     private String name;
 
     @ManyToOne
-    private Partner partner;
+    private PartnerEntity partner;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
