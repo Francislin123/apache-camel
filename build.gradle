@@ -19,6 +19,7 @@ plugins {
     id 'io.franzbecker.gradle-lombok' version '1.8'
     id 'org.liquibase.gradle' version '1.2.4'
     id 'net.researchgate.release' version '2.4.0'
+    id "org.sonarqube" version "2.5"
 }
 
 apply plugin: 'docker'
@@ -53,6 +54,13 @@ release {
 
 configurations {
     compile.exclude module: "spring-boot-starter-tomcat"
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "Feeds Admin Api"
+        property "sonar.projectKey", "$archivesBaseName"
+    }
 }
 
 liquibase {
