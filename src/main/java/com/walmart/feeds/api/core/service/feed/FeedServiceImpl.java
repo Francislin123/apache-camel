@@ -1,20 +1,19 @@
 package com.walmart.feeds.api.core.service.feed;
 
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
-import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -31,8 +30,8 @@ public class FeedServiceImpl implements FeedService {
     @Autowired
     private PartnerRepository partnerRepository;
 
-    @Autowired
-    private FeedHistoryRepository feedHistoryRepository;
+//    @Autowired
+//    private FeedHistoryRepository feedHistoryRepository;
 
     @Override
     public FeedEntity createFeed(FeedEntity feedEntity) throws NotFoundException {
@@ -143,12 +142,12 @@ public class FeedServiceImpl implements FeedService {
     private FeedEntity persistFeed(FeedEntity feed) {
         FeedEntity savedFeed = feedRepository.save(feed);
         // TODO: 01/08/17 The JPA not throw exception for inexistent entity updated.
-        FeedHistory feedHistory = buildPartnerHistory(feed);
-        feedHistory = feedHistoryRepository.save(feedHistory);
+//        FeedHistory feedHistory = buildPartnerHistory(feed);
+//        feedHistory = feedHistoryRepository.save(feedHistory);
         return savedFeed;
     }
 
-    private FeedHistory buildPartnerHistory(Feed currentFeed) {
+    private FeedHistory buildPartnerHistory(FeedEntity currentFeed) {
         ModelMapper modelMapper = new ModelMapper();
         FeedHistory feedHistory = modelMapper.map(currentFeed, FeedHistory.class);
         return feedHistory;

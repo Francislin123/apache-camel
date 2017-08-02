@@ -45,9 +45,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PartnerControllerTest {
@@ -87,7 +85,7 @@ public class PartnerControllerTest {
                         .gimme("valid_partner_request"))))
             .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        Mockito.verify(partnerService).savePartner(Mockito.any(PartnerTO.class));
+        Mockito.verify(partnerService).savePartner(Mockito.any(PartnerEntity.class));
     }
 
     @Test
@@ -99,13 +97,13 @@ public class PartnerControllerTest {
             .andExpect(MockMvcResultMatchers.status().isBadRequest())
             .andExpect(MockMvcResultMatchers.jsonPath("$.code", Matchers.is("400")));
 
-        verify(partnerService, times(0)).savePartner(Mockito.any(PartnerTO.class));
+        verify(partnerService, times(0)).savePartner(Mockito.any(PartnerEntity.class));
     }
 
     @Test
     public void testCreatedNewWithConflict() throws Exception {
         Mockito.doThrow(DataIntegrityViolationException.class)
-                .when(partnerService).savePartner(Mockito.any(PartnerTO.class));
+                .when(partnerService).savePartner(Mockito.any(PartnerEntity.class));
 
         mockMvc.perform(MockMvcRequestBuilders.post(URI_PARTNERS)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -116,13 +114,13 @@ public class PartnerControllerTest {
 
     @Test
     public void testFetchAllPartners() throws Exception {
-        when(partnerService.findAllPartners()).thenReturn(Fixture.from(PartnerTO.class).gimme(2, "partner_to"));
+        when(partnerService.findAllPartners()).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS))
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS).contentType(MediaType.APPLICATION_JSON))
                 .andDo(result -> {
                     logger.info("Result: {}", result.getResponse().getContentAsString());
                 })
-                .andExpect(MockMvcResultMatchers.jsonPath("$.partners[0].reference", Matchers.is("buscape")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].slug", Matchers.is("buscape")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         verify(partnerService).findAllPartners();
@@ -141,14 +139,14 @@ public class PartnerControllerTest {
 
     @Test
     public void testFetchActivePartners() throws Exception {
-        when(partnerService.findActivePartners()).thenReturn(Fixture.from(PartnerTO.class).gimme(2,"partner_to"));
+        when(partnerService.findActivePartners()).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS + "/actives")
                     .contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andDo(result -> {
                         logger.info("Result: {}", result.getResponse().getContentAsString());
                     })
-                .andExpect(MockMvcResultMatchers.jsonPath("$.partners[0].active", Matchers.is(true)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].active", Matchers.is(true)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         verify(partnerService).findActivePartners();
@@ -172,7 +170,7 @@ public class PartnerControllerTest {
                     .content(jsonRequest(Fixture.from(PartnerUpdateRequest.class).gimme("partner_update_request"))))
             .andExpect(MockMvcResultMatchers.status().isOk());
 
-        verify(partnerService).updatePartner(Mockito.any(PartnerTO.class));
+        verify(partnerService).updatePartner(Mockito.any(PartnerEntity.class));
     }
 
     @Test
@@ -184,7 +182,7 @@ public class PartnerControllerTest {
                     .content(jsonRequest(Fixture.from(PartnerUpdateRequest.class).gimme("partner_update_request"))))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
 
-        verify(partnerService).updatePartner(Mockito.any(PartnerTO.class));
+        verify(partnerService).updatePartner(Mockito.any(PartnerEntity.class));
     }
 
     @Test
@@ -196,12 +194,12 @@ public class PartnerControllerTest {
                     .content(jsonRequest(Fixture.from(PartnerUpdateRequest.class).gimme("partner_update_request"))))
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError());
 
-        verify(partnerService).updatePartner(Mockito.any(PartnerTO.class));
+        verify(partnerService).updatePartner(Mockito.any(PartnerEntity.class));
     }
 
     @Test
     public void testChangePartnerStatus() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.patch(URI_PARTNERS + "/reference?status=0")
+        mockMvc.perform(MockMvcRequestBuilders.patch(URI_PARTNERS + "/reference?active=false")
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
 
@@ -212,7 +210,7 @@ public class PartnerControllerTest {
     public void testChangePartnerStatusWhenDatabaseDown() throws Exception {
         doThrow(Exception.class).when(partnerService).changePartnerStatus("reference", false);
 
-        mockMvc.perform(MockMvcRequestBuilders.patch(URI_PARTNERS + "/reference?status=0")
+        mockMvc.perform(MockMvcRequestBuilders.patch(URI_PARTNERS + "/reference?active=false")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(PartnerUpdateRequest.class).gimme("partner_update_request"))))
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError());
@@ -222,12 +220,12 @@ public class PartnerControllerTest {
 
     @Test
     public void testSearchPartners() throws Exception {
-        when(partnerService.searchPartners("busc")).thenReturn(Fixture.from(PartnerTO.class).gimme(2,"partner_to"));
+        when(partnerService.searchPartners("busc")).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS + "/search?q=busc")
                         .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.partners[0].reference", Matchers.is("buscape")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].slug", Matchers.is("buscape")));
 
         verify(partnerService).searchPartners("busc");
     }
@@ -245,7 +243,7 @@ public class PartnerControllerTest {
 
     @Test
     public void testSearchPartnersEmptyQuery() throws Exception {
-        when(partnerService.searchPartners("")).thenReturn(Fixture.from(PartnerTO.class).gimme(2,"partner_to"));
+        when(partnerService.searchPartners("")).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS + "/search?q=")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))

@@ -1,19 +1,13 @@
 package com.walmart.feeds.api.core.service.feed;
 
-import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
-import com.walmart.feeds.api.core.repository.feed.model.Feed;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
-import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
-import com.walmart.feeds.api.core.service.feed.model.FeedTO;
-import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
-import javassist.NotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -23,9 +17,7 @@ import java.util.Optional;
 import static com.walmart.feeds.api.core.repository.feed.model.FeedType.INVENTORY;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FeedServiceImplTest {
@@ -33,8 +25,8 @@ public class FeedServiceImplTest {
     @InjectMocks
     private FeedServiceImpl feedService;
 
-    @Mock
-    private FeedHistoryRepository feedHistoryRepository;
+//    @Mock
+//    private FeedHistoryRepository feedHistoryRepository;
 
     @Mock
     private FeedRepository repository;
@@ -44,36 +36,30 @@ public class FeedServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void createFeedWhenPartnerNoExists() throws Exception {
-        when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.empty());
-        feedService.createFeed(new FeedEntity());
+        when(partnerRepository.findActiveBySlug(anyString())).thenReturn(Optional.empty());
+        feedService.createFeed(createFeedEntity());
     }
 
-    public void testUpdatePartner() throws com.walmart.feeds.api.core.exceptions.NotFoundException {
+    @Test
+    public void testUpdateFeed() throws com.walmart.feeds.api.core.exceptions.NotFoundException {
         try {
-            when(repository.findBySlug(anyString())).thenReturn(Optional.of(new FeedEntity()));
+            when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity().getPartner()));
+            when(repository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity()));
 
-            this.feedService.updateFeed(new FeedEntity());
+            this.feedService.updateFeed(createFeedEntity());
 
             verify(repository).findBySlug(anyString());
             verify(repository).save(Mockito.any(FeedEntity.class));
-            verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
+//            verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
         } catch (Exception e) {
             fail("Exception should not have been fired!");
         }
     }
 
-    @Test
-    public void testUpdateInexistentPartnerShouldThrowNotFoundException() throws com.walmart.feeds.api.core.exceptions.NotFoundException {
-        when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
-        FeedEntity feedTO = createFeedTO();
-        this.feedService.updateFeed(feedTO);
-        verify(repository).findBySlug(anyString());
-        verify(repository, times(0)).save(Mockito.any(FeedEntity.class));
-        verify(feedHistoryRepository, times(0)).save(Mockito.any(FeedHistory.class));
-    }
-
-    private FeedEntity createFeedTO() {
-        PartnerEntity partnerTO = new PartnerEntity();
+    private FeedEntity createFeedEntity() {
+        PartnerEntity partnerTO = PartnerEntity.builder()
+                .slug("teste123")
+                .build();
         FeedEntity to = FeedEntity.builder()
                 .name("Big")
                 .slug("partner-teste")

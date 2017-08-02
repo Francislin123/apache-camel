@@ -63,26 +63,22 @@ public class PartnerServiceTest {
             fail("Exception should not have been fired!");
         }
     }
-    //--------------------------------------------------------------------------------------------------------------//
-    @Test(expected = NotFoundException.class)
-    public void testUpdateInexistentPartnerShouldThrowNotFoundException() throws NotFoundException {
-        when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
-        PartnerEntity partner = createPartner();
-        this.service.updatePartner(partner);
-        verify(repository).findBySlug(anyString());
-        verify(repository, times(0)).save(Mockito.any(PartnerEntity.class));
-        verify(historyRepository, times(0)).save(Mockito.any(PartnerHistory.class));
-    }
-    //--------------------------------------------------------------------------------------------------------------//
 
     @Test(expected = IllegalArgumentException.class)
     public void testUpdatePartnerFromNullPartnerRequestShouldReturnFalse() throws NotFoundException {
         this.service.updatePartner(null);
     }
 
-    @Test(expected = DataIntegrityViolationException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testCreatePartnerWIthEmptyPartnershipList() {
-        service.savePartner(createPartner());
+
+        PartnerEntity partner = PartnerEntity.builder()
+                .name("PartnerEntity")
+                .slug("partner")
+                .description("New partner")
+                .partnerships("").build();
+
+        service.savePartner(partner);
     }
 
     @Test
@@ -104,7 +100,7 @@ public class PartnerServiceTest {
                 .name("PartnerEntity")
                 .slug("partner")
                 .description("New partner")
-                .partnerships("").build();
+                .partnerships("teste123").build();
 
         return partner;
     }

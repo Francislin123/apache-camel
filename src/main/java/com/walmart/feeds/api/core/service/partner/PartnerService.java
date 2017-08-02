@@ -1,12 +1,9 @@
 package com.walmart.feeds.api.core.service.partner;
 
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
-import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
-
-import java.util.List;
-import java.util.List;
-
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+
+import java.util.List;
 
 public interface PartnerService {
 

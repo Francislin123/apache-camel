@@ -6,18 +6,14 @@ import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.feed.CollectionResponse;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
-import com.walmart.feeds.api.resources.partner.request.PartnerUpdateRequest;
-import com.walmart.feeds.api.resources.partner.response.PartnerResponseList;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,17 +45,21 @@ public class PartnerController {
     @RequestMapping(method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createPartner(@RequestBody @Valid PartnerRequest partnerRequest, UriComponentsBuilder builder) {
 
-            PartnerEntity partner = PartnerEntity.builder()
-                    .slug(SlugParserUtil.toSlug(partnerRequest.getName()))
-                    // TODO[r0i001q]: Export to Utility class
-                    .partnerships(String.join(";", partnerRequest.getPartnership()))
-                    .name(partnerRequest.getName())
-                    .description(partnerRequest.getDescription())
-                    .active(partnerRequest.isActive())
-                    .build();service.savePartner(partner);
+        PartnerEntity partner = PartnerEntity.builder()
+                .slug(SlugParserUtil.toSlug(partnerRequest.getName()))
+                // TODO[r0i001q]: Export to Utility class
+                .partnerships(String.join(";", partnerRequest.getPartnerships()))
+                .name(partnerRequest.getName())
+                .description(partnerRequest.getDescription())
+                .active(partnerRequest.isActive())
+                .build();
 
-    UriComponents uriComponents =
-                    builder.path(V1_PARTNERS.concat("/{partnerSlug}")).buildAndExpand(partner.getSlug());        return ResponseEntity.created(uriComponents.toUri()).build();
+        service.savePartner(partner);
+
+        UriComponents uriComponents =
+                builder.path(V1_PARTNERS.concat("/{partnerSlug}")).buildAndExpand(partner.getSlug());
+
+        return ResponseEntity.created(uriComponents.toUri()).build();
 
     }
 
@@ -72,18 +72,18 @@ public class PartnerController {
             method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity fetchPartnerBySlug(@PathVariable("slug") String slug) throws NotFoundException {
 
-            PartnerEntity partner = service.findBySlug(slug);
+        PartnerEntity partner = service.findBySlug(slug);
 
-            return ResponseEntity.ok(
-                    PartnerResponse.builder()
-                            .slug(partner.getSlug())
-                            .name(partner.getName())
-                            .description(partner.getDescription())
-                            .partnerships(partner.getPartnershipsAsList())
-                            .active(partner.isActive())
-                            .creationDate(partner.getCreationDate())
-                            .updateDate(partner.getUpdateDate())
-                            .build());
+        return ResponseEntity.ok(
+                PartnerResponse.builder()
+                        .slug(partner.getSlug())
+                        .name(partner.getName())
+                        .description(partner.getDescription())
+                        .partnerships(partner.getPartnershipsAsList())
+                        .active(partner.isActive())
+                        .creationDate(partner.getCreationDate())
+                        .updateDate(partner.getUpdateDate())
+                        .build());
 
     }
 
@@ -94,7 +94,7 @@ public class PartnerController {
             @ApiResponse(code = 500, message = " Internal Server Error ")})
     @RequestMapping(value = "/{slug}",
             method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> updatePartner(@PathVariable("slug") String slug, @RequestBody PartnerRequest partnerRequest) {
+    public ResponseEntity<?> updatePartner(@PathVariable("slug") String slug, @RequestBody PartnerRequest partnerRequest) throws NotFoundException {
         logger.info("Updating partner slug by {}", slug);
 
 
@@ -108,7 +108,6 @@ public class PartnerController {
 
             service.updatePartner(partner);
 
-            service.updatePartner(partner);
             return ResponseEntity.ok().build();
 
 	}
@@ -122,15 +121,15 @@ public class PartnerController {
     public ResponseEntity<?> changePartnerStatus(@PathVariable("slug") String slug,
                                                  @RequestParam("active") Boolean active) {
 
-            service.setPartnerStatus(slug, active);
-            return ResponseEntity.noContent().build();
+        service.changePartnerStatus(slug, active);
 
+        return ResponseEntity.noContent().build();
     }
 
     // TODO[r0i001q]: Verify content-type
     @ApiOperation(value = "Method to find the active partners", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = " Partners found successfully ", response = PartnerResponseList.class),
+            @ApiResponse(code = 200, message = " Partners found successfully ", response = CollectionResponse.class),
             @ApiResponse(code = 500, message = " Internal Server Error ")})
     @RequestMapping(value = "/actives", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CollectionResponse<PartnerResponse>> fetchPartnerActives() {
@@ -155,25 +154,24 @@ public class PartnerController {
             @ApiResponse(code = 500, message = "Unhandled exception")})
     @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CollectionResponse<PartnerResponse>> fetchAllPartners() {
-        try {
-            List<PartnerEntity> allPartners = service.findAllPartners();
+        List<PartnerEntity> allPartners = service.findAllPartners();
 
-            return ResponseEntity.ok().body(CollectionResponse.<PartnerResponse>builder()
-                    .result(allPartners.stream().map(p -> PartnerResponse.builder()
-                            .slug(p.getSlug())
-                            .updateDate(p.getUpdateDate())
-                            .creationDate(p.getCreationDate())
-                            .active(p.isActive())
-                            .description(p.getDescription())
-                            .name(p.getName())
-                            .partnerships(p.getPartnershipsAsList())
-                            .build()).collect(Collectors.toList())
-                    ).build());
+        return ResponseEntity.ok().body(CollectionResponse.<PartnerResponse>builder()
+                .result(allPartners.stream().map(p -> PartnerResponse.builder()
+                        .slug(p.getSlug())
+                        .updateDate(p.getUpdateDate())
+                        .creationDate(p.getCreationDate())
+                        .active(p.isActive())
+                        .description(p.getDescription())
+                        .name(p.getName())
+                        .partnerships(p.getPartnershipsAsList())
+                        .build()).collect(Collectors.toList())
+                ).build());
     }
 
     @ApiOperation(value = "Method for fetching partners using query text", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = " Search found partners ", response = PartnerResponseList.class,responseContainer = "List"),
+            @ApiResponse(code = 200, message = " Search found partners ", response = CollectionResponse.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = " Empty result ")})
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public ResponseEntity<CollectionResponse<PartnerResponse>> searchPartners(@RequestParam("q") String query) {
