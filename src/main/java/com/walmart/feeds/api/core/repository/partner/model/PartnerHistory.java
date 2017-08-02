@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -32,5 +33,17 @@ public class PartnerHistory extends AuditableEntity {
 
     @Column(name = "flag_active")
     private boolean active;
+
+    @PrePersist
+    protected void prePersist() {
+        this.creationDate = LocalDateTime.now();
+        this.user = "teste";
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        this.updateDate = LocalDateTime.now();
+        this.user = "teste";
+    }
 
 }

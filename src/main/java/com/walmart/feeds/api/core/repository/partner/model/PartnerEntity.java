@@ -61,4 +61,16 @@ public class PartnerEntity extends AuditableEntity {
     public List<String> getPartnershipsAsList() {
         return Arrays.asList(partnerships.split(PARTNERSHOT_SEPARATOR));
     }
+
+    @PrePersist
+    protected void prePersist() {
+        this.creationDate = LocalDateTime.now();
+        this.user = "teste";
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        this.updateDate = LocalDateTime.now();
+        this.user = "teste";
+    }
 }
