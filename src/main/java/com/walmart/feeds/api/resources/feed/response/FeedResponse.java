@@ -19,7 +19,7 @@ public class FeedResponse {
 
     private PartnerResponse partner;
 
-    private FeedType feedType;
+    private FeedType type;
 
    private FeedNotificationData notification;
 

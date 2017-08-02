@@ -43,7 +43,7 @@ public class FeedsController {
     @Autowired
     private FeedService feedService;
 
-    @ApiOperation(value = " Create a new feed ",
+    @ApiOperation(value = "Create a new feed",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successful feed creation", response = ResponseEntity.class),
@@ -65,7 +65,7 @@ public class FeedsController {
         return ResponseEntity.created(uriComponents.toUri()).build();
 
     }
-    @ApiOperation(value = " Fetch feed by reference ",
+    @ApiOperation(value = "Fetch feed by reference",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return found feed", response = FeedResponse.class),
@@ -84,7 +84,7 @@ public class FeedsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), ex.getMessage()));
         }
     }
-    @ApiOperation(value = " Fetch all feeds by partner reference ",
+    @ApiOperation(value = "Fetch all feeds by partner reference",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return found feeds", response = FeedResponse.class, responseContainer = "List"),

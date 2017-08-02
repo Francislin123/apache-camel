@@ -2,10 +2,12 @@ package com.walmart.feeds.api.core.service.feed;
 
 import com.walmart.feeds.api.core.converter.FeedConverter;
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.Feed;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.Partner;
+import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -32,10 +34,14 @@ public class FeedServiceImpl implements FeedService {
     @Autowired
     private PartnerRepository partnerRepository;
 
+    @Autowired
+    private FeedHistoryRepository feedHistoryRepository;
+
     @Override
     public void createFeed(FeedTO feedTO) throws NotFoundException {
 
-        Partner partner = partnerRepository.findByReference(feedTO.getPartner().getReference()).orElseThrow(()  -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartner().getReference())));
+        Partner partner = partnerRepository.findByReference(feedTO.getPartner().getReference()).orElseThrow(()
+                -> new NotFoundException(String.format("Partner not found for reference %s", feedTO.getPartner().getReference())));
 
         ModelMapper modelMapper = new ModelMapper();
 
@@ -43,9 +49,10 @@ public class FeedServiceImpl implements FeedService {
         modelMapper.map(feedTO, feedEntity);
         feedEntity.setPartner(partner);
         feedEntity.setCreationDate(LocalDateTime.now());
-        Feed savedFeed = feedRepository.save(feedEntity);
+        //Feed savedFeed = feedRepository.save(feedEntity);
+        persistFeed(feedEntity);
 
-        logger.info("feed={} message=saved_successfully", savedFeed);
+        logger.info("feed={} message=saved_successfully", feedEntity);
 
     }
 
@@ -78,7 +85,21 @@ public class FeedServiceImpl implements FeedService {
         entity.setUpdateDate(LocalDateTime.now());
         entity.setCreationDate(persistedFeed.getCreationDate());
         entity.setPartner(partner);
-        feedRepository.save(entity);
+        persistFeed(entity);
+
         logger.info("feed={} message=update_successfully", entity);
+    }
+
+    private void persistFeed(Feed feed) {
+        feedRepository.save(feed);
+        // TODO: 01/08/17 The JPA not throw exception for inexistent entity updated.
+        FeedHistory feedHistory = buildPartnerHistory(feed);
+        feedHistory = feedHistoryRepository.save(feedHistory);
+    }
+
+    private FeedHistory buildPartnerHistory(Feed currentFeed) {
+        ModelMapper modelMapper = new ModelMapper();
+        FeedHistory feedHistory = modelMapper.map(currentFeed, FeedHistory.class);
+        return feedHistory;
     }
 }

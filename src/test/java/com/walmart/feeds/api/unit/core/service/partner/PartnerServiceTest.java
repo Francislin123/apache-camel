@@ -108,11 +108,11 @@ public class PartnerServiceTest {
 
     }
 
+    //--------------------------------------------------------------------------------------------------------------//
     @Test
     public void testUpdatePartner() {
         try {
-            when(repository.findByReference(anyString()))
-                    .thenReturn(Optional.of(new Partner()));
+            when(repository.findByReference(anyString())) .thenReturn(Optional.of(new Partner()));
 
             PartnerTO request = new PartnerTO();
 
@@ -125,12 +125,7 @@ public class PartnerServiceTest {
             fail("Exception should not have been fired!");
         }
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testUpdatePartnerFromNullPartnerRequestShouldReturnFalse() throws NotFoundException {
-        this.service.updatePartner(null);
-    }
-
+    //--------------------------------------------------------------------------------------------------------------//
     @Test(expected = NotFoundException.class)
     public void testUpdateInexistentPartnerShouldThrowNotFoundException() throws NotFoundException {
         when(repository.findByReference(anyString())).thenReturn(Optional.empty());
@@ -139,6 +134,12 @@ public class PartnerServiceTest {
         verify(repository).findByReference(anyString());
         verify(repository, times(0)).save(Mockito.any(Partner.class));
         verify(historyRepository, times(0)).save(Mockito.any(PartnerHistory.class));
+    }
+    //--------------------------------------------------------------------------------------------------------------//
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUpdatePartnerFromNullPartnerRequestShouldReturnFalse() throws NotFoundException {
+        this.service.updatePartner(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
