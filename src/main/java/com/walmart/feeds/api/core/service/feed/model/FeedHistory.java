@@ -25,7 +25,7 @@ public class FeedHistory extends AuditableEntity {
     private UUID id;
 
     @Column(name = "reference")
-    private String reference;
+    private String slug;
 
     @Column(name = "name")
     private String name;

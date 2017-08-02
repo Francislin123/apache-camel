@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.core.service.feed;
 
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
@@ -30,8 +31,8 @@ public class FeedServiceImpl implements FeedService {
     @Autowired
     private PartnerRepository partnerRepository;
 
-//    @Autowired
-//    private FeedHistoryRepository feedHistoryRepository;
+    @Autowired
+    private FeedHistoryRepository feedHistoryRepository;
 
     @Override
     public FeedEntity createFeed(FeedEntity feedEntity) throws NotFoundException {
@@ -142,8 +143,8 @@ public class FeedServiceImpl implements FeedService {
     private FeedEntity persistFeed(FeedEntity feed) {
         FeedEntity savedFeed = feedRepository.save(feed);
         // TODO: 01/08/17 The JPA not throw exception for inexistent entity updated.
-//        FeedHistory feedHistory = buildPartnerHistory(feed);
-//        feedHistory = feedHistoryRepository.save(feedHistory);
+        FeedHistory feedHistory = buildPartnerHistory(feed);
+        feedHistory = feedHistoryRepository.save(feedHistory);
         return savedFeed;
     }
 

@@ -34,16 +34,5 @@ public class PartnerHistory extends AuditableEntity {
     @Column(name = "flag_active")
     private boolean active;
 
-    @PrePersist
-    protected void prePersist() {
-        this.creationDate = LocalDateTime.now();
-        this.user = "teste";
-    }
-
-    @PreUpdate
-    protected void preUpdate() {
-        this.updateDate = LocalDateTime.now();
-        this.user = "teste";
-    }
 
 }
