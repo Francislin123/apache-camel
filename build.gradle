@@ -18,6 +18,8 @@ plugins {
     id 'org.springframework.boot' version '1.5.4.RELEASE'
     id 'io.franzbecker.gradle-lombok' version '1.8'
     id 'org.liquibase.gradle' version '1.2.4'
+    id 'net.researchgate.release' version '2.4.0'
+    id "org.sonarqube" version "2.5"
 }
 
 apply plugin: 'docker'
@@ -44,8 +46,21 @@ docker {
 //    registry = "docker-registry.qa.vmcommerce.intra"
 }
 
+release {
+    git {
+        requireBranch = 'homolog'
+    }
+}
+
 configurations {
     compile.exclude module: "spring-boot-starter-tomcat"
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectName", "Feeds Admin Api"
+        property "sonar.projectKey", "$archivesBaseName"
+    }
 }
 
 liquibase {
@@ -57,12 +72,6 @@ liquibase {
             password 'FEEDS_ADMIN'
         }
 
-        dev {
-            changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
-            url 'jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521:MELF?createDatabaseIfNotExist=true'
-            username 'root'
-            password 'root'
-        }
     }
     runList = project.ext.runList
 }
@@ -79,6 +88,10 @@ task buildDocker(type: Docker) {
             into stageDir
         }
     }
+}
+
+task printProjectVersion << {
+    println project.version
 }
 
 dependencies {
