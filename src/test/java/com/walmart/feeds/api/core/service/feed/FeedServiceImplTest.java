@@ -1,13 +1,16 @@
 package com.walmart.feeds.api.core.service.feed;
 
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -25,8 +28,8 @@ public class FeedServiceImplTest {
     @InjectMocks
     private FeedServiceImpl feedService;
 
-//    @Mock
-//    private FeedHistoryRepository feedHistoryRepository;
+    @Mock
+    private FeedHistoryRepository feedHistoryRepository;
 
     @Mock
     private FeedRepository repository;
@@ -50,7 +53,7 @@ public class FeedServiceImplTest {
 
             verify(repository).findBySlug(anyString());
             verify(repository).save(Mockito.any(FeedEntity.class));
-//            verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
+            verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
         } catch (Exception e) {
             fail("Exception should not have been fired!");
         }
