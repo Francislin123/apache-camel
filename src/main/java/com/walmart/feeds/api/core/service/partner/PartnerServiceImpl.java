@@ -1,11 +1,11 @@
 package com.walmart.feeds.api.core.service.partner;
 
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.partner.PartnerHistoryRepository;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerHistory;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
-import javassist.NotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +107,7 @@ public class PartnerServiceImpl implements PartnerService {
         return partnerRepository.searchPartners(query);
     }
 
-    public void setPartnerStatus(String slug, boolean active) {
+    public void changePartnerStatus(String slug, boolean active) {
         logger.info("Changing partner {} status to {}", slug, active);
         partnerRepository.changePartnerStatus(slug, active);
     }

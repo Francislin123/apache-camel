@@ -1,9 +1,12 @@
 package com.walmart.feeds.api.core.service.partner;
 
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
+
+import java.util.List;
 import java.util.List;
 
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
-import javassist.NotFoundException;
 
 public interface PartnerService {
 
@@ -13,7 +16,7 @@ public interface PartnerService {
      */
     void savePartner(PartnerEntity partner) throws IllegalArgumentException;
 
-    PartnerEntity findBySlug(String reference) throws NotFoundException;
+    PartnerEntity findBySlug(String reference) throws NotFoundException, com.walmart.feeds.api.core.exceptions.NotFoundException;
 
     List<PartnerEntity> findAllPartners();
 
@@ -27,13 +30,13 @@ public interface PartnerService {
      * @throws IllegalArgumentException when the partnerTO is not provided
      * @throws NotFoundException when partner not exists to be updated
      */
-    void updatePartner(PartnerEntity partner) throws IllegalArgumentException, NotFoundException;
+    void updatePartner(PartnerEntity partner) throws IllegalArgumentException, NotFoundException, com.walmart.feeds.api.core.exceptions.NotFoundException;
 
     /**
      *
      * @param reference for the partner
      * @param status true whether active, false otherwise
      */
-    void setPartnerStatus(String reference, boolean status);
+    void changePartnerStatus(String reference, boolean status);
 
 }

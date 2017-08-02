@@ -21,7 +21,7 @@ public class PartnerResponse {
 
     private String description;
 
-    private List<String> partnership;
+    private List<String> partnerships;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime creationDate;

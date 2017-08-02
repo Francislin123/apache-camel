@@ -30,7 +30,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="varchar(255)">
-                <constraints nullable="false"/>
             </column>
             <column name="partnerships" type="varchar(255)">
                 <constraints nullable="false"/>
@@ -73,7 +72,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="description" type="varchar(255)">
-                <constraints nullable="false"/>
             </column>
             <column name="partnerships" type="varchar(255)"/>
             <column name="creation_date" type="datetime" defaultValueComputed="${now}">
