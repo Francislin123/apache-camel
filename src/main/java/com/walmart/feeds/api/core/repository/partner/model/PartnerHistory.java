@@ -21,8 +21,8 @@ public class PartnerHistory extends AuditableEntity {
     @Column
     private String name;
 
-    @Column
-    private String reference;
+    @Column(name = "reference")
+    private String slug;
 
     @Column
     private String description;

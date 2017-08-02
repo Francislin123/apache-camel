@@ -2,35 +2,32 @@ package com.walmart.feeds.api.core.service.partner;
 
 import java.util.List;
 
-import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
-import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
-import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
+import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import javassist.NotFoundException;
-import org.springframework.data.jpa.repository.Query;
 
 public interface PartnerService {
 
     /**
      *
-     * @param partnerTO payload
+     * @param partner payload
      */
-    void savePartner(PartnerTO partnerTO) throws IllegalArgumentException;
+    void savePartner(PartnerEntity partner) throws IllegalArgumentException;
 
-    PartnerTO findByReference(String reference) throws NotFoundException;
+    PartnerEntity findBySlug(String reference) throws NotFoundException;
 
-    List<PartnerTO> findAllPartners();
+    List<PartnerEntity> findAllPartners();
 
-    List<PartnerTO> findActivePartners();
+    List<PartnerEntity> findActivePartners();
 
-    List<PartnerTO> searchPartners(String query);
+    List<PartnerEntity> searchPartners(String query);
 
     /**
      *
-     * @param partnerTO payload
+     * @param partner payload
      * @throws IllegalArgumentException when the partnerTO is not provided
      * @throws NotFoundException when partner not exists to be updated
      */
-    void updatePartner(PartnerTO partnerTO) throws IllegalArgumentException, NotFoundException;
+    void updatePartner(PartnerEntity partner) throws IllegalArgumentException, NotFoundException;
 
     /**
      *

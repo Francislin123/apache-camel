@@ -3,7 +3,9 @@ package com.walmart.feeds.api.core.service.feed;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.Feed;
+import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
+import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.service.feed.model.FeedTO;
 import com.walmart.feeds.api.core.service.partner.model.PartnerTO;
@@ -42,20 +44,18 @@ public class FeedServiceImplTest {
 
     @Test(expected = NotFoundException.class)
     public void createFeedWhenPartnerNoExists() throws Exception {
-        when(partnerRepository.findByReference(anyString())).thenReturn(Optional.empty());
-        feedService.createFeed(new FeedTO());
+        when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        feedService.createFeed(new FeedEntity());
     }
 
     public void testUpdatePartner() throws com.walmart.feeds.api.core.exceptions.NotFoundException {
         try {
-            when(repository.findByReference(anyString())) .thenReturn(Optional.of(new Feed()));
+            when(repository.findBySlug(anyString())).thenReturn(Optional.of(new FeedEntity()));
 
-            FeedTO request = new FeedTO();
+            this.feedService.updateFeed(new FeedEntity());
 
-            this.feedService.updateFeed(request);
-
-            verify(repository).findByReference(anyString());
-            verify(repository).save(Mockito.any(Feed.class));
+            verify(repository).findBySlug(anyString());
+            verify(repository).save(Mockito.any(FeedEntity.class));
             verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
         } catch (Exception e) {
             fail("Exception should not have been fired!");
@@ -64,22 +64,22 @@ public class FeedServiceImplTest {
 
     @Test
     public void testUpdateInexistentPartnerShouldThrowNotFoundException() throws com.walmart.feeds.api.core.exceptions.NotFoundException {
-        when(repository.findByReference(anyString())).thenReturn(Optional.empty());
-        FeedTO feedTO = createFeedTO();
+        when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
+        FeedEntity feedTO = createFeedTO();
         this.feedService.updateFeed(feedTO);
-        verify(repository).findByReference(anyString());
-        verify(repository, times(0)).save(Mockito.any(Feed.class));
+        verify(repository).findBySlug(anyString());
+        verify(repository, times(0)).save(Mockito.any(FeedEntity.class));
         verify(feedHistoryRepository, times(0)).save(Mockito.any(FeedHistory.class));
     }
 
-    private FeedTO createFeedTO() {
-        PartnerTO partnerTO = new PartnerTO();
-        FeedTO to = new FeedTO();
-        to.setName("Big");
-        to.setReference("partner-teste");
-        to.setActive(true);
-        to.setPartner(partnerTO);
-        to.setType(INVENTORY);
+    private FeedEntity createFeedTO() {
+        PartnerEntity partnerTO = new PartnerEntity();
+        FeedEntity to = FeedEntity.builder()
+                .name("Big")
+                .slug("partner-teste")
+                .active(true)
+                .partner(partnerTO)
+                .type(INVENTORY).build();
         return to;
     }
 }

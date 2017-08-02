@@ -96,9 +96,9 @@
 
     <changeSet id="createFeedTable" author="renato.ibanhez">
 
-        <comment>Creating feed table</comment>
+        <comment>Creating feedEntity table</comment>
 
-        <createTable tableName="feed">
+        <createTable tableName="feedEntity">
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -134,7 +134,7 @@
         </createTable>
 
         <rollback>
-            <dropTable tableName="feed"/>
+            <dropTable tableName="feedEntity"/>
         </rollback>
 
     </changeSet>
@@ -142,7 +142,7 @@
     <changeSet id="createFeedHistoryTable" author="renato.ibanhez">
 
         <preConditions onError="WARN">
-            <tableExists tableName="feed"/>
+            <tableExists tableName="feedEntity"/>
         </preConditions>
 
         <comment>Creating feed_history table</comment>
@@ -189,7 +189,7 @@
     <changeSet id="createFeedUtmTable" author="renato.ibanhez">
 
         <preConditions onError="HALT">
-            <tableExists tableName="feed"/>
+            <tableExists tableName="feedEntity"/>
         </preConditions>
 
         <comment>Creating feed_utms table</comment>
@@ -207,7 +207,7 @@
         </createTable>
 
         <addForeignKeyConstraint baseTableName="feed_utms" baseColumnNames="feed_id" constraintName="fk_feed_utm"
-                                 referencedTableName="feed"
+                                 referencedTableName="feedEntity"
                                  referencedColumnNames="id"/>
 
         <rollback>
