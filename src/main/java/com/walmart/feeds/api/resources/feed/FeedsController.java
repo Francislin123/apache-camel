@@ -74,20 +74,9 @@ public class FeedsController {
     public ResponseEntity fetchFeed(@PathVariable("reference") String reference) {
         try {
             Feed feedEntity = feedRepository.findByReference(reference).orElseThrow(() -> new NotFoundException("Reference not found"));
+            ModelMapper modelMapper = new ModelMapper();
 
-            FeedResponse feedResponse = new FeedResponse();
-
-            feedResponse.setName(feedEntity.getName());
-            feedResponse.setReference(feedEntity.getReference());
-
-            FeedNotificationData notification = new FeedNotificationData();
-            notification.setFormat(feedEntity.getNotificationFormat());
-            notification.setMethod(feedEntity.getNotificationMethod());
-            notification.setUrl(feedEntity.getNotificationUrl());
-
-            feedResponse.setFeedType(feedEntity.getType());
-
-            feedResponse.setUtms(feedEntity.getUtms());
+            FeedResponse feedResponse = modelMapper.map(feedEntity, FeedResponse.class);
 
             return ResponseEntity.ok().body(feedResponse);
 
@@ -116,7 +105,7 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Feed removed with success", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Invalid feed reference")})
     @RequestMapping(value = "{reference}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity changeFeedStatus(@PathVariable("reference") String reference, @RequestParam(value = "active", required = false) Boolean active) throws NotFoundException {
+    public ResponseEntity changeFeedStatus(@PathVariable("reference") String reference, @RequestParam(value = "active") Boolean active) throws NotFoundException {
         feedService.changeFeedStatus(reference, active);
         return ResponseEntity.ok().build();
     }
