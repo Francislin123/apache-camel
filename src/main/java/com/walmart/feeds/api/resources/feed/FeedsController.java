@@ -180,6 +180,6 @@ public class FeedsController {
         UriComponents uriComponents =
                 builder.path(V1_FEEDS.concat("/{slug}")).buildAndExpand(partnerSlug, feedEntity.getSlug());
 
-        return ResponseEntity.ok(uriComponents.toUri());
+        return ResponseEntity.ok().build();
     }
 }
