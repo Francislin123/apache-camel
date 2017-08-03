@@ -81,6 +81,20 @@ public class PartnerServiceImpl implements PartnerService {
         return findPartnerByReference(reference);
     }
 
+    @Override
+    public List<PartnerEntity> findPartnersByStatus(Boolean active) {
+
+        List<PartnerEntity> partners;
+
+        if (active == null) {
+            partners = findAllPartners();
+        } else {
+            partners = partnerRepository.findByActive(active);
+        }
+
+        return partners;
+    }
+
     private PartnerEntity findPartnerByReference(String reference) throws NotFoundException {
         logger.info("Finding partner {}.", reference);
 
@@ -95,11 +109,6 @@ public class PartnerServiceImpl implements PartnerService {
         logger.info("Total of fetched partners: {}", partners.size());
         return partners;
 
-    }
-
-    @Override
-    public List<PartnerEntity> findActivePartners() {
-        return partnerRepository.findPartnerActives();
     }
 
     @Override

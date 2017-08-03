@@ -25,6 +25,8 @@ public interface PartnerRepository extends JpaRepository<PartnerEntity, UUID> {
     @Query("UPDATE PartnerEntity p SET p.active = ?2 WHERE p.slug = ?1")
     void changePartnerStatus(String reference, boolean status);
 
+    List<PartnerEntity> findByActive(Boolean active);
+
     @Query("SELECT p FROM PartnerEntity p WHERE active = true")
     List<PartnerEntity> findPartnerActives();
 

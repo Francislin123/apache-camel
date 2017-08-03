@@ -4,12 +4,10 @@ import com.walmart.feeds.api.core.repository.AuditableEntity;
 import lombok.*;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +19,7 @@ import java.util.UUID;
 @Getter
 public class PartnerEntity extends AuditableEntity {
 
-    public static final String PARTNERSHOT_SEPARATOR = ";";
+    public static final String PARTNERSHIP_SEPARATOR = ";";
 
     @Id
     @GeneratedValue(generator = "partner_uuid_generator")
@@ -59,7 +57,7 @@ public class PartnerEntity extends AuditableEntity {
     }
 
     public List<String> getPartnershipsAsList() {
-        return Arrays.asList(partnerships.split(PARTNERSHOT_SEPARATOR));
+        return Arrays.asList(partnerships.split(PARTNERSHIP_SEPARATOR));
     }
 
 }

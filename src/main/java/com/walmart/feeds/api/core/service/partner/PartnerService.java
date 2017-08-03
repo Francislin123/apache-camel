@@ -15,9 +15,9 @@ public interface PartnerService {
 
     PartnerEntity findBySlug(String reference) throws NotFoundException, com.walmart.feeds.api.core.exceptions.NotFoundException;
 
-    List<PartnerEntity> findAllPartners();
+    List<PartnerEntity> findPartnersByStatus(Boolean active);
 
-    List<PartnerEntity> findActivePartners();
+    List<PartnerEntity> findAllPartners();
 
     List<PartnerEntity> searchPartners(String query);
 

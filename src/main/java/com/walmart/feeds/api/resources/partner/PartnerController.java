@@ -126,35 +126,14 @@ public class PartnerController {
         return ResponseEntity.noContent().build();
     }
 
-    // TODO[r0i001q]: Verify content-type
-    @ApiOperation(value = "Method to find the active partners", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = " Partners found successfully ", response = CollectionResponse.class),
-            @ApiResponse(code = 500, message = " Internal Server Error ")})
-    @RequestMapping(value = "/actives", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CollectionResponse<PartnerResponse>> fetchPartnerActives() {
-        List<PartnerEntity> activePartners = service.findActivePartners();
-        return ResponseEntity.ok().body(CollectionResponse.<PartnerResponse>builder()
-                .result(activePartners.stream().map(p -> PartnerResponse.builder()
-                        .slug(p.getSlug())
-                        .updateDate(p.getUpdateDate())
-                        .creationDate(p.getCreationDate())
-                        .active(p.isActive())
-                        .description(p.getDescription())
-                        .name(p.getName())
-                        .partnerships(p.getPartnershipsAsList())
-                        .build()).collect(Collectors.toList())
-                ).build());
-    }
-
     @ApiOperation(value = " PartnerEntity Listing Method ",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of all partners", response = CollectionResponse.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Partner not change"),
             @ApiResponse(code = 500, message = "Unhandled exception")})
     @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CollectionResponse<PartnerResponse>> fetchAllPartners() {
-        List<PartnerEntity> allPartners = service.findAllPartners();
+    public ResponseEntity<CollectionResponse<PartnerResponse>> fetchAllPartners(@RequestParam(value = "active", required = false) Boolean active) {
+        List<PartnerEntity> allPartners = service.findPartnersByStatus(active);
 
         return ResponseEntity.ok().body(CollectionResponse.<PartnerResponse>builder()
                 .result(allPartners.stream().map(p -> PartnerResponse.builder()
