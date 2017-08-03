@@ -34,6 +34,6 @@ public interface PartnerService {
      * @param reference for the partner
      * @param status true whether active, false otherwise
      */
-    void changePartnerStatus(String reference, boolean status);
+    void changePartnerStatus(String reference, boolean status) throws NotFoundException;
 
 }

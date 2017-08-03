@@ -107,9 +107,24 @@ public class PartnerServiceImpl implements PartnerService {
         return partnerRepository.searchPartners(query);
     }
 
-    public void changePartnerStatus(String slug, boolean active) {
+    public void changePartnerStatus(String slug, boolean active) throws NotFoundException {
         logger.info("Changing partner {} status to {}", slug, active);
-        partnerRepository.changePartnerStatus(slug, active);
+
+        PartnerEntity currentPartner = findPartnerByReference(slug);
+
+        PartnerEntity updatedPartner = PartnerEntity.builder()
+                .id(currentPartner.getId())
+                .slug(currentPartner.getSlug())
+                .name(currentPartner.getName())
+                .description(currentPartner.getDescription())
+                .partnerships(currentPartner.getPartnerships())
+                .creationDate(currentPartner.getCreationDate())
+                .active(active)
+                .build();
+
+        persistPartner(updatedPartner);
+
+        partnerRepository.save(updatedPartner);
     }
 
     private PartnerHistory buildPartnerHistory(PartnerEntity currentPartner) {

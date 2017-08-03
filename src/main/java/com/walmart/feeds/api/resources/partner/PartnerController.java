@@ -119,7 +119,7 @@ public class PartnerController {
     @RequestMapping(value = "/{slug}",
             method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> changePartnerStatus(@PathVariable("slug") String slug,
-                                                 @RequestParam("active") Boolean active) {
+                                                 @RequestParam("active") Boolean active) throws NotFoundException {
 
         service.changePartnerStatus(slug, active);
 
