@@ -114,7 +114,7 @@ public class PartnerControllerTest {
 
     @Test
     public void testFetchAllPartners() throws Exception {
-        when(partnerService.findAllPartners()).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
+        when(partnerService.findPartnersByStatus(null)).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS).contentType(MediaType.APPLICATION_JSON))
                 .andDo(result -> {
@@ -123,25 +123,26 @@ public class PartnerControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].slug", Matchers.is("buscape")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        verify(partnerService).findAllPartners();
+        verify(partnerService).findPartnersByStatus(null);
     }
 
     @Test
     public void testFetchAllPartnersWithDatabaseDown() throws Exception {
-        when(partnerService.findAllPartners()).thenThrow(Exception.class);
+        when(partnerService.findPartnersByStatus(anyBoolean())).thenThrow(Exception.class);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(MockMvcResultMatchers.status().isInternalServerError());
 
-        verify(partnerService).findAllPartners();
+        verify(partnerService).findPartnersByStatus(anyBoolean());
     }
 
     @Test
     public void testFetchActivePartners() throws Exception {
-        when(partnerService.findActivePartners()).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
+        when(partnerService.findPartnersByStatus(true)).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS + "/actives")
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS)
+                .param("active", "true")
                     .contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andDo(result -> {
                         logger.info("Result: {}", result.getResponse().getContentAsString());
@@ -149,18 +150,18 @@ public class PartnerControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].active", Matchers.is(true)))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        verify(partnerService).findActivePartners();
+        verify(partnerService).findPartnersByStatus(true);
     }
 
     @Test
     public void testFetchActivePartnersWithDatabaseDown() throws Exception {
-        when(partnerService.findActivePartners()).thenThrow(Exception.class);
+        when(partnerService.findPartnersByStatus(anyBoolean())).thenThrow(Exception.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS + "/actives")
+        mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS).param("active", "true")
                     .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError());
 
-        verify(partnerService).findActivePartners();
+        verify(partnerService).findPartnersByStatus(anyBoolean());
     }
 
     @Test
