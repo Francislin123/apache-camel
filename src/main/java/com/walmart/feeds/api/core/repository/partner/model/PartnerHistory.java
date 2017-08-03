@@ -22,7 +22,7 @@ public class PartnerHistory extends AuditableEntity {
     @Column
     private String name;
 
-    @Column(name = "reference")
+    @Column(name = "slug")
     private String slug;
 
     @Column

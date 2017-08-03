@@ -23,7 +23,7 @@
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="reference" type="varchar(20)">
+            <column name="slug" type="varchar(50)">
                 <constraints unique="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(50)">
@@ -64,7 +64,7 @@
             <column name="history_id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="reference" type="varchar(20)">
+            <column name="slug" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="name" type="varchar(50)">
@@ -99,13 +99,13 @@
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="reference" type="varchar(20)">
+            <column name="slug" type="varchar(50)">
                 <constraints unique="true" nullable="false"/>
             </column>
             <column name="partner_id" type="${uuid_type}">
                 <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
             </column>
-            <column name="name" type="varchar(40)">
+            <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="type" type="varchar(10)">
@@ -147,13 +147,13 @@
          <column name="history_id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="reference" type="varchar(20)">
+            <column name="slug" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="partner_id" type="${uuid_type}">
                 <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
             </column>
-            <column name="name" type="varchar(40)">
+            <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="type" type="varchar(10)">

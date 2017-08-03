@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Table(name = "feed", uniqueConstraints = {@UniqueConstraint(columnNames = "reference")})
+@Table(name = "feed", uniqueConstraints = {@UniqueConstraint(columnNames = "slug")})
 public class FeedEntity extends AuditableEntity {
 
     @Id
@@ -27,7 +27,7 @@ public class FeedEntity extends AuditableEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "reference")
+    @Column(name = "slug")
     private String slug;
 
     @Column(name = "name")

@@ -16,7 +16,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "partner", uniqueConstraints = {
         @UniqueConstraint(name = "name_constraint", columnNames = "name"),
-        @UniqueConstraint(name = "reference_constraint", columnNames = "reference")
+        @UniqueConstraint(name = "reference_constraint", columnNames = "slug")
 })
 @Getter
 public class PartnerEntity extends AuditableEntity {
@@ -31,7 +31,7 @@ public class PartnerEntity extends AuditableEntity {
     @Column
     private String name;
 
-    @Column(name = "reference")
+    @Column(name = "slug")
     private String slug;
 
     @Column
