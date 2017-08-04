@@ -6,7 +6,6 @@ import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerHistory;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +68,7 @@ public class PartnerServiceImpl implements PartnerService {
         logger.info("partner={} message=saved_successfully", savedPartner);
 
         // TODO: 28/07/17 The JPA not throw exception for inexistent entity updated.
-        PartnerHistory partnerHistory = buildPartnerHistory(partner);
+        PartnerHistory partnerHistory = buildPartnerHistory(savedPartner);
         partnerHistory = partnerHistoryRepository.save(partnerHistory);
 
         logger.info("partnerHistory={} message=saved_successfully", partnerHistory);
@@ -137,8 +136,18 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     private PartnerHistory buildPartnerHistory(PartnerEntity currentPartner) {
-        ModelMapper modelMapper = new ModelMapper();
-        PartnerHistory partnerHistory = modelMapper.map(currentPartner, PartnerHistory.class);
+
+        PartnerHistory partnerHistory = PartnerHistory.builder()
+                .active(currentPartner.isActive())
+                .creationDate(currentPartner.getCreationDate())
+                .description(currentPartner.getDescription())
+                .name(currentPartner.getName())
+                .partnerships(currentPartner.getPartnerships())
+                .slug(currentPartner.getSlug())
+                .user(currentPartner.getUser())
+                .updateDate(currentPartner.getUpdateDate())
+                .build();
+
         return partnerHistory;
     }
 

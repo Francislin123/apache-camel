@@ -8,7 +8,6 @@ import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +58,7 @@ public class FeedServiceImpl implements FeedService {
                 .creationDate(feedEntity.getCreationDate())
                 .build();
 
-        FeedEntity savedFeedEntity = persistFeed(newFeed);
+        FeedEntity savedFeedEntity = saveFeedWithHistory(newFeed);
 
         logger.info("feedEntity={} message=saved_successfully", savedFeedEntity);
 
@@ -104,7 +103,7 @@ public class FeedServiceImpl implements FeedService {
                 .creationDate(feedEntityEntity.getCreationDate())
                 .build();
 
-        feedRepository.save(updatedFeed);
+        saveFeedWithHistory(updatedFeed);
 
         logger.info("feed={} message=updated_successfully", feedEntityEntity);
     }
@@ -135,22 +134,35 @@ public class FeedServiceImpl implements FeedService {
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
 
-        persistFeed(updatedFeed);
+        saveFeedWithHistory(updatedFeed);
 
         logger.info("feedEntity={} message=update_successfully", feedEntity);
     }
 
-    private FeedEntity persistFeed(FeedEntity feed) {
+    private FeedEntity saveFeedWithHistory(FeedEntity feed) {
         FeedEntity savedFeed = feedRepository.save(feed);
         // TODO: 01/08/17 The JPA not throw exception for inexistent entity updated.
-        FeedHistory feedHistory = buildPartnerHistory(feed);
-        feedHistory = feedHistoryRepository.save(feedHistory);
+        FeedHistory feedHistory = buildPartnerHistory(savedFeed);
+        feedHistoryRepository.save(feedHistory);
         return savedFeed;
     }
 
     private FeedHistory buildPartnerHistory(FeedEntity currentFeed) {
-        ModelMapper modelMapper = new ModelMapper();
-        FeedHistory feedHistory = modelMapper.map(currentFeed, FeedHistory.class);
+
+        FeedHistory feedHistory = FeedHistory.builder()
+                .active(currentFeed.isActive())
+                .creationDate(currentFeed.getCreationDate())
+                .name(currentFeed.getName())
+                .notificationFormat(currentFeed.getNotificationFormat())
+                .notificationMethod(currentFeed.getNotificationMethod())
+                .notificationUrl(currentFeed.getNotificationUrl())
+                .partner(currentFeed.getPartner())
+                .slug(currentFeed.getSlug())
+                .type(currentFeed.getType())
+                .updateDate(currentFeed.getUpdateDate())
+                .user(currentFeed.getUser())
+                .build();
+
         return feedHistory;
     }
 }
