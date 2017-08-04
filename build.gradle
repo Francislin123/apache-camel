@@ -36,8 +36,6 @@ repositories {
     maven {
         url "http://www.datanucleus.org/downloads/maven2/"
     }
-
-
 }
 
 docker {
