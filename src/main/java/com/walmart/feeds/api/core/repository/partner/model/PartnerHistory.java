@@ -1,7 +1,8 @@
 package com.walmart.feeds.api.core.repository.partner.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
-import lombok.Data;
+import lombok.Builder;
+import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -10,7 +11,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "partner_history")
-@Data
 public class PartnerHistory extends AuditableEntity {
 
     @Id
@@ -34,5 +34,28 @@ public class PartnerHistory extends AuditableEntity {
     @Column(name = "flag_active")
     private boolean active;
 
+    @Tolerate
+    public PartnerHistory() {
+    }
 
+    @Builder
+    public PartnerHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String name, String slug, String description, String partnerships, boolean active) {
+        super(creationDate, updateDate, user);
+        this.id = id;
+        this.name = name;
+        this.slug = slug;
+        this.description = description;
+        this.partnerships = partnerships;
+        this.active = active;
+    }
+
+    @Override
+    protected void prePersist() {
+        //do-nothing
+    }
+
+    @Override
+    protected void preUpdate() {
+        //do-nothing
+    }
 }
