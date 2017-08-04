@@ -50,6 +50,7 @@ public class PartnerServiceTest {
     public void testUpdatePartner() {
         try {
             when(repository.findBySlug(anyString())).thenReturn(Optional.of(new PartnerEntity()));
+            when(repository.save(any(PartnerEntity.class))).thenReturn(createPartner());
 
             PartnerEntity request = PartnerEntity.builder().name("Teste 123").build();
 

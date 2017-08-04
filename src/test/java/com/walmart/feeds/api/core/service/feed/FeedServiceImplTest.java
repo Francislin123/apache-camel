@@ -48,6 +48,7 @@ public class FeedServiceImplTest {
         try {
             when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity().getPartner()));
             when(repository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity()));
+            when(repository.save(any(FeedEntity.class))).thenReturn(createFeedEntity());
 
             this.feedService.updateFeed(createFeedEntity());
 
