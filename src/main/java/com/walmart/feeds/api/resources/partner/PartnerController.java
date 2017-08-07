@@ -47,8 +47,7 @@ public class PartnerController {
 
         PartnerEntity partner = PartnerEntity.builder()
                 .slug(SlugParserUtil.toSlug(partnerRequest.getName()))
-                // TODO[r0i001q]: Export to Utility class
-                .partnerships(String.join(";", partnerRequest.getPartnerships()))
+                .partnerships(String.join(PartnerEntity.PARTNERSHIP_SEPARATOR, partnerRequest.getPartnerships()))
                 .name(partnerRequest.getName())
                 .description(partnerRequest.getDescription())
                 .active(partnerRequest.isActive())
@@ -100,7 +99,7 @@ public class PartnerController {
 
         PartnerEntity partner = PartnerEntity.builder()
                 .slug(SlugParserUtil.toSlug(partnerRequest.getName()))
-                .partnerships(String.join(";", partnerRequest.getPartnerships()))
+                .partnerships(String.join(PartnerEntity.PARTNERSHIP_SEPARATOR, partnerRequest.getPartnerships()))
                 .name(partnerRequest.getName())
                 .description(partnerRequest.getDescription())
                 .active(partnerRequest.isActive())

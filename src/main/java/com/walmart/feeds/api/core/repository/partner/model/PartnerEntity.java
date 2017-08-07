@@ -58,3 +58,4 @@ public class PartnerEntity extends AuditableEntity {
     }
 
 }
+
