@@ -5,6 +5,7 @@ import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedType;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -12,19 +13,20 @@ import javax.validation.constraints.Size;
 import java.util.Map;
 
 @Data
+@Validated
 public class FeedRequest {
 
-    @NotEmpty
-    @Size(min = 1, max = 50)
+    @NotBlank
+    @Size(max = 50)
     private String name;
 
-    @NotEmpty
-    @ValidFeedType(message = "Invalid type for feed")
+    @NotBlank
+    @ValidFeedType
     private String type;
 
     @Valid
     @NotNull
-    @ValidFeedNotificationUrl(message = "The field url is required if the type is 'api'")
+    @ValidFeedNotificationUrl
     private FeedNotificationData notification;
 
     @NotEmpty

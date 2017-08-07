@@ -1,8 +1,9 @@
 package com.walmart.feeds.api.resources.feed;
 
-import com.walmart.feeds.api.core.exceptions.NotFoundException;
-import com.walmart.feeds.api.core.repository.feed.FeedRepository;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
+import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
+import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.feed.FeedService;
@@ -34,9 +35,6 @@ public class FeedsController {
     static final String V1_FEEDS = "/v1/partners/{partnerSlug}/feeds";
 
     @Autowired
-    private FeedRepository feedRepository;
-
-    @Autowired
     private FeedService feedService;
 
     @ApiOperation(value = "Create a new feed",
@@ -46,13 +44,13 @@ public class FeedsController {
             @ApiResponse(code = 409, message = "FeedEntity already exists"),
             @ApiResponse(code = 404, message = "Invalid partner")})
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerSlug") String partnerSlug, UriComponentsBuilder builder) throws NotFoundException {
+    public ResponseEntity createFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerSlug") String partnerSlug, UriComponentsBuilder builder) throws EntityNotFoundException {
 
         FeedEntity feedEntity = FeedEntity.builder()
                 .slug(SlugParserUtil.toSlug(request.getName()))
                 .name(request.getName())
-                .notificationFormat(request.getNotification().getFormat())
-                .notificationMethod(request.getNotification().getMethod())
+                .notificationFormat(FeedNotificationFormat.getFromCode(request.getNotification().getFormat()))
+                .notificationMethod(FeedNotificationMethod.getFromCode(request.getNotification().getMethod()))
                 .notificationUrl(request.getNotification().getUrl())
                 .active(request.getActive())
                 .partner(PartnerEntity.builder()
@@ -76,31 +74,31 @@ public class FeedsController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return found feed", response = FeedResponse.class),
             @ApiResponse(code = 404, message = "FeedEntity not found by slug")})
-    @RequestMapping(value = "{slug}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity fetchFeed(@PathVariable("slug") String slug) throws NotFoundException {
+    @RequestMapping(value = "{feedSlug}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity fetchFeed(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("feedSlug") String feedSlug) throws EntityNotFoundException {
 
-        FeedEntity feedEntityEntity = feedRepository.findBySlug(slug).orElseThrow(() -> new NotFoundException(String.format("FeedEntity not found for slug=%s", slug)));
+        FeedEntity feedEntity = feedService.fetchByPartner(feedSlug, partnerSlug);
 
         return ResponseEntity.ok().body(FeedResponse.builder()
-                .name(feedEntityEntity.getName())
-                .slug(feedEntityEntity.getSlug())
+                .name(feedEntity.getName())
+                .slug(feedEntity.getSlug())
                 .notification(FeedNotificationData.builder()
-                        .format(feedEntityEntity.getNotificationFormat())
-                        .method(feedEntityEntity.getNotificationMethod())
-                        .url(feedEntityEntity.getNotificationUrl())
+                        .format(feedEntity.getNotificationFormat().getType())
+                        .method(feedEntity.getNotificationMethod().getType())
+                        .url(feedEntity.getNotificationUrl())
                         .build())
                 .partner(PartnerResponse.builder()
-                        .slug(feedEntityEntity.getPartner().getSlug())
-                        .active(feedEntityEntity.getPartner().isActive())
-                        .description(feedEntityEntity.getPartner().getDescription())
-                        .name(feedEntityEntity.getPartner().getName())
-                        .partnerships(feedEntityEntity.getPartner().getPartnershipsAsList())
+                        .slug(feedEntity.getPartner().getSlug())
+                        .active(feedEntity.getPartner().isActive())
+                        .description(feedEntity.getPartner().getDescription())
+                        .name(feedEntity.getPartner().getName())
+                        .partnerships(feedEntity.getPartner().getPartnershipsAsList())
                         .build())
-                .type(feedEntityEntity.getType())
-                .utms(feedEntityEntity.getUtms())
-                .creationDate(feedEntityEntity.getCreationDate())
-                .updateDate(feedEntityEntity.getUpdateDate())
-                .active(feedEntityEntity.isActive())
+                .type(feedEntity.getType())
+                .utms(feedEntity.getUtms())
+                .creationDate(feedEntity.getCreationDate())
+                .updateDate(feedEntity.getUpdateDate())
+                .active(feedEntity.isActive())
                 .build());
     }
 
@@ -110,17 +108,17 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Return found feeds", response = FeedResponse.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Invalid partner slug")})
     @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CollectionResponse<FeedResponse>> fetchAll(@PathVariable("partnerSlug") String partnerSlug, @RequestParam(value = "active", required = false) Boolean active) throws NotFoundException {
+    public ResponseEntity<CollectionResponse<FeedResponse>> fetchAll(@PathVariable("partnerSlug") String partnerSlug, @RequestParam(value = "active", required = false) Boolean active) throws EntityNotFoundException {
 
-        List<FeedEntity> listFeedEntity = feedService.fetchByPartner(partnerSlug, active);
+        List<FeedEntity> listFeedEntity = feedService.fetchActiveByPartner(partnerSlug, active);
 
         return ResponseEntity.ok().body(CollectionResponse.<FeedResponse>builder()
                 .result(listFeedEntity.stream().map(f -> FeedResponse.builder()
                         .name(f.getName())
                         .slug(f.getSlug())
                         .notification(FeedNotificationData.builder()
-                                .format(f.getNotificationFormat())
-                                .method(f.getNotificationMethod())
+                                .format(f.getNotificationFormat().getType())
+                                .method(f.getNotificationMethod().getType())
                                 .url(f.getNotificationUrl())
                                 .build())
                         .partner(PartnerResponse.builder()
@@ -145,7 +143,7 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Status modified with success", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Invalid feed or partner slug")})
     @RequestMapping(value = "{feedSlug}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity changeFeedStatus(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("feedSlug") String feedSlug, @RequestParam(value = "active", required = true) Boolean active) throws NotFoundException {
+    public ResponseEntity changeFeedStatus(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("feedSlug") String feedSlug, @RequestParam(value = "active", required = true) Boolean active) throws EntityNotFoundException {
 
         feedService.changeFeedStatus(partnerSlug, feedSlug, active);
 
@@ -159,13 +157,13 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "FeedEntity removed with success", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Invalid feed reference")})
     @RequestMapping(value = "{feedSlug}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateFeed(@Valid @RequestBody FeedRequest request, @PathVariable("feedSlug") String feedSlug, @PathVariable("partnerSlug") String partnerSlug, UriComponentsBuilder builder) throws NotFoundException {
+    public ResponseEntity updateFeed(@Valid @RequestBody FeedRequest request, @PathVariable("feedSlug") String feedSlug, @PathVariable("partnerSlug") String partnerSlug, UriComponentsBuilder builder) throws EntityNotFoundException {
 
         FeedEntity feedEntity = FeedEntity.builder()
                 .slug(feedSlug)
                 .name(request.getName())
-                .notificationFormat(request.getNotification().getFormat())
-                .notificationMethod(request.getNotification().getMethod())
+                .notificationFormat(FeedNotificationFormat.getFromCode(request.getNotification().getFormat()))
+                .notificationMethod(FeedNotificationMethod.getFromCode(request.getNotification().getMethod()))
                 .notificationUrl(request.getNotification().getUrl())
                 .active(request.getActive())
                 .partner(PartnerEntity.builder()
