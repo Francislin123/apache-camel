@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class FeedServiceImpl implements FeedService {
     private FeedHistoryRepository feedHistoryRepository;
 
     @Override
+    @Transactional
     public FeedEntity createFeed(FeedEntity feedEntity) {
 
         if (feedEntity.getPartner() == null) {
@@ -95,6 +97,7 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
+    @Transactional
     public void changeFeedStatus(String partnerSlug, String slug, Boolean active) {
 
         partnerRepository.findBySlug(partnerSlug).orElseThrow(() -> new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", partnerSlug)));
@@ -121,6 +124,7 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
+    @Transactional
     public void updateFeed(FeedEntity feedEntity) {
 
         if (feedEntity.getPartner() == null) {
@@ -151,8 +155,7 @@ public class FeedServiceImpl implements FeedService {
     }
 
     private FeedEntity saveFeedWithHistory(FeedEntity feed) {
-        FeedEntity savedFeed = feedRepository.save(feed);
-        // TODO: 01/08/17 The JPA not throw exception for inexistent entity updated.
+        FeedEntity savedFeed = feedRepository.saveAndFlush(feed);
         FeedHistory feedHistory = buildPartnerHistory(savedFeed);
         feedHistoryRepository.save(feedHistory);
         return savedFeed;
