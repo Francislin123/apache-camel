@@ -1,18 +1,18 @@
 package com.walmart.feeds.api.resources.feed.validator.annotation;
 
-import com.walmart.feeds.api.resources.feed.validator.FeedNotificationDataURLValidator;
+import com.walmart.feeds.api.resources.feed.validator.FeedNotificationFormatValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = FeedNotificationDataURLValidator.class)
+@Constraint(validatedBy = FeedNotificationFormatValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ValidFeedNotificationUrl {
+public @interface ValidFeedNotificationFormat {
 
-    String message() default "{com.walmart.validation.constraints.ValidFeedNotificationUrl.message}";
+    String message() default "{com.walmart.validation.constraints.ValidFeedNotificationFormat.message}";
 
     Class<?>[] groups() default {};
 

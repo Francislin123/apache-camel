@@ -20,7 +20,6 @@ public abstract class AuditableEntity {
     @Column(name = "creation_date")
     protected LocalDateTime creationDate;
 
-    // TODO[r0i001q]: verify if exists another way to set this field with a builder pattern
     @Column(name = "update_date")
     protected LocalDateTime updateDate;
 

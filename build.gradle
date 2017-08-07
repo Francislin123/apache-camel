@@ -69,7 +69,6 @@ liquibase {
             username 'FEEDS_ADMIN'
             password 'FEEDS_ADMIN'
         }
-
     }
     runList = project.ext.runList
 }
@@ -88,7 +87,7 @@ task buildDocker(type: Docker) {
     }
 }
 
-task printProjectVersion << {
+task printProjectVersion() {
     println project.version
 }
 
