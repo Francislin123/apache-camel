@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <contextName>feeds-admin-api</contextName>
+    <property name="APP" value="feeds-admin-api"/>
+    <property name="FILE_PATH" value="/walmart/log/"/>
+
+    <!-- Appenders -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${FILE_PATH}/${APP}/${APP}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <FileNamePattern>${FILE_PATH}/${APP}.log.%d{yyyy-MM-dd_HH}.%i.gz</FileNamePattern>
+            <!-- keep 288 days' worth of history -->
+            <MaxHistory>288</MaxHistory>
+            <!-- or whenever the file size reaches 100MB -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${APP} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <!-- Splunk appender -->
+    <appender name="SPLUNK" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${FILE_PATH}/${APP}/splunk.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <FileNamePattern>${FILE_PATH}/${APP}/splunk.log.%d{yyyy-MM-dd_HH}.%i.gz</FileNamePattern>
+            <!-- keep 288 days' worth of history -->
+            <MaxHistory>288</MaxHistory>
+            <!-- or whenever the file size reaches 100MB -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>date="%d{yyyy-MM-dd HH:mm:ss.SSS}", app=${APP}, app_name=${APP}, log_level=%level, thread=%thread, %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Loginit live appender -->
+    <appender name="LOGINIT_LIVE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${FILE_PATH}/${APP}/loginit_live.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <FileNamePattern>${FILE_PATH}/${APP}/loginit_live.log.%d{yyyy-MM-dd_HH}.%i.gz</FileNamePattern>
+            <!-- keep 288 days' worth of history -->
+            <MaxHistory>288</MaxHistory>
+            <!-- or whenever the file size reaches 100MB -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>#{date="%d{yyyy-MM-dd HH:mm:ss.SSS}}" #{host=${HOSTNAME}} #{app=${APP}} #{app_name=${APP}} #{log_level=%level} #{thread=%thread} #{%replace(%msg){', ','} #{'}}%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Async Appenders -->
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="FILE" />
+    </appender>
+
+    <appender name="ASYNC_SPLUNKLOG" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="SPLUNK" />
+    </appender>
+
+    <appender name="ASYNC_LOGINIT_LIVE" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="LOGINIT_LIVE" />
+    </appender>
+
+    <!-- Loggers -->
+    <logger name="com.walmart" level="info" />
+
+    <root level="info">
+        <appender-ref ref="ASYNC" />
+    </root>
+</configuration>
