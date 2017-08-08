@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Table(name = "feed", uniqueConstraints = {@UniqueConstraint(columnNames = "slug")})
+@Table(name = "feed")
 public class FeedEntity extends AuditableEntity {
 
     @Id
@@ -27,13 +27,12 @@ public class FeedEntity extends AuditableEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "slug")
+    @Column(name = "slug", unique = true)
     private String slug;
 
     @Column(name = "name")
     private String name;
 
-    // TODO[r0i001q]: verify if exists another way to set this field with a builder pattern
     @ManyToOne
     private PartnerEntity partner;
 
@@ -41,11 +40,13 @@ public class FeedEntity extends AuditableEntity {
     @Column(name = "type")
     private FeedType type;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "notification_method")
-    private String notificationMethod;
+    private FeedNotificationMethod notificationMethod;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "notification_format")
-    private String notificationFormat;
+    private FeedNotificationFormat notificationFormat;
 
     @Column(name = "notification_url")
     private String notificationUrl;
@@ -65,7 +66,7 @@ public class FeedEntity extends AuditableEntity {
     }
 
     @Builder
-    private FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, String notificationMethod, String notificationFormat, String notificationUrl, Map<String, String> utms, boolean active) {
+    private FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, Map<String, String> utms, boolean active) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;

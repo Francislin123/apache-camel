@@ -74,7 +74,6 @@ liquibase {
             username 'FEEDS_ADMIN'
             password 'FEEDS_ADMIN'
         }
-
     }
     runList = project.ext.runList
 }
@@ -93,7 +92,7 @@ task buildDocker(type: Docker) {
     }
 }
 
-task printProjectVersion << {
+task printProjectVersion() {
     println project.version
 }
 
@@ -108,6 +107,7 @@ dependencies {
 
     compile "io.springfox:springfox-swagger2:${springFoxVersion}"
     compile "io.springfox:springfox-swagger-ui:${springFoxVersion}"
+    compile 'de.siegmar:logback-gelf:1.0.4'
 
     compile "mysql:mysql-connector-java:5.1.42"
     compile "oracle:ojdbc6:11.2.0.3"
