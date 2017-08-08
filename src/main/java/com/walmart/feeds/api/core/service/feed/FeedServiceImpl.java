@@ -1,6 +1,8 @@
 package com.walmart.feeds.api.core.service.feed;
 
-import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
@@ -11,8 +13,8 @@ import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,15 +36,19 @@ public class FeedServiceImpl implements FeedService {
     private FeedHistoryRepository feedHistoryRepository;
 
     @Override
-    public FeedEntity createFeed(FeedEntity feedEntity) throws NotFoundException {
+    @Transactional
+    public FeedEntity createFeed(FeedEntity feedEntity) {
 
         if (feedEntity.getPartner() == null) {
-            // TODO[r0i001q]: tratar excecao de maneira adequada
-            throw new RuntimeException();
+            throw new InconsistentEntityException("Feed must have a partner");
+        }
+
+        if (feedRepository.findBySlug(feedEntity.getSlug()).isPresent()) {
+            throw new EntityAlreadyExistsException(String.format("Feed with slug='%s' already exists", feedEntity.getSlug()));
         }
 
         PartnerEntity partner = partnerRepository.findActiveBySlug(feedEntity.getPartner().getSlug()).orElseThrow(() ->
-                new NotFoundException(String.format("PartnerEntity not found for reference %s", feedEntity.getPartner().getSlug())));
+                new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", feedEntity.getPartner().getSlug())));
 
         FeedEntity newFeed = FeedEntity.builder()
                 .utms(feedEntity.getUtms())
@@ -67,9 +73,17 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
-    public List<FeedEntity> fetchByPartner(String partnerSlug, Boolean active) throws NotFoundException {
+    public FeedEntity fetchByPartner(String feedSlug, String partnerSlug) {
 
-        PartnerEntity partner = partnerRepository.findBySlug(partnerSlug).orElseThrow(() -> new NotFoundException(String.format("PartnerEntity not found for slug %s", partnerSlug)));
+        partnerRepository.findBySlug(partnerSlug).orElseThrow(() -> new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", partnerSlug)));
+
+        return feedRepository.findBySlug(feedSlug).orElseThrow(() -> new EntityNotFoundException(String.format("FeedEntity not found for slug='%s'", feedSlug)));
+    }
+
+    @Override
+    public List<FeedEntity> fetchActiveByPartner(String partnerSlug, Boolean active) {
+
+        PartnerEntity partner = partnerRepository.findBySlug(partnerSlug).orElseThrow(() -> new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", partnerSlug)));
 
         List<FeedEntity> feedsActivesByPartner;
 
@@ -83,42 +97,43 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
-    public void changeFeedStatus(String partnerSlug, String slug, Boolean active) throws NotFoundException {
+    @Transactional
+    public void changeFeedStatus(String partnerSlug, String slug, Boolean active) {
 
-        partnerRepository.findBySlug(partnerSlug).orElseThrow(() -> new NotFoundException("FeedEntity not Found"));
+        partnerRepository.findBySlug(partnerSlug).orElseThrow(() -> new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", partnerSlug)));
 
-        FeedEntity feedEntityEntity = feedRepository.findBySlug(slug).orElseThrow(() -> new NotFoundException("FeedEntity not Found"));//busca no banco a partir do slug
+        FeedEntity feedEntity = feedRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException(String.format("FeedEntity not found for slug='%s'", slug)));//busca no banco a partir do slug
 
         FeedEntity updatedFeed = FeedEntity.builder()
-                .utms(feedEntityEntity.getUtms())
-                .id(feedEntityEntity.getId())
-                .slug(feedEntityEntity.getSlug())
-                .type(feedEntityEntity.getType())
-                .partner(feedEntityEntity.getPartner())
-                .notificationUrl(feedEntityEntity.getNotificationUrl())
-                .notificationMethod(feedEntityEntity.getNotificationMethod())
-                .notificationFormat(feedEntityEntity.getNotificationFormat())
-                .name(feedEntityEntity.getName())
+                .utms(feedEntity.getUtms())
+                .id(feedEntity.getId())
+                .slug(feedEntity.getSlug())
+                .type(feedEntity.getType())
+                .partner(feedEntity.getPartner())
+                .notificationUrl(feedEntity.getNotificationUrl())
+                .notificationMethod(feedEntity.getNotificationMethod())
+                .notificationFormat(feedEntity.getNotificationFormat())
+                .name(feedEntity.getName())
                 .active(active)
-                .creationDate(feedEntityEntity.getCreationDate())
+                .creationDate(feedEntity.getCreationDate())
                 .build();
 
         saveFeedWithHistory(updatedFeed);
 
-        logger.info("feed={} message=updated_successfully", feedEntityEntity);
+        logger.info("feed={} message=updated_successfully", feedEntity);
     }
 
     @Override
-    public void updateFeed(FeedEntity feedEntity) throws DataIntegrityViolationException, NotFoundException {
+    @Transactional
+    public void updateFeed(FeedEntity feedEntity) {
 
         if (feedEntity.getPartner() == null) {
-            // TODO[r0i001q]: tratar excecao de maneira adequada
-            throw new RuntimeException();
+            throw new InconsistentEntityException("Feed must have a partner");
         }
 
-        PartnerEntity partner = partnerRepository.findBySlug(feedEntity.getPartner().getSlug()).orElseThrow(() -> new NotFoundException("PartnerEntity not Found"));
+        PartnerEntity partner = partnerRepository.findBySlug(feedEntity.getPartner().getSlug()).orElseThrow(() -> new EntityNotFoundException("PartnerEntity not Found"));
 
-        FeedEntity persistedFeedEntity = feedRepository.findBySlug(feedEntity.getSlug()).orElseThrow(() -> new NotFoundException("FeedEntity not Found"));
+        FeedEntity persistedFeedEntity = feedRepository.findBySlug(feedEntity.getSlug()).orElseThrow(() -> new EntityNotFoundException("FeedEntity not Found"));
 
         FeedEntity updatedFeed = FeedEntity.builder()
                 .id(persistedFeedEntity.getId())
@@ -140,8 +155,7 @@ public class FeedServiceImpl implements FeedService {
     }
 
     private FeedEntity saveFeedWithHistory(FeedEntity feed) {
-        FeedEntity savedFeed = feedRepository.save(feed);
-        // TODO: 01/08/17 The JPA not throw exception for inexistent entity updated.
+        FeedEntity savedFeed = feedRepository.saveAndFlush(feed);
         FeedHistory feedHistory = buildPartnerHistory(savedFeed);
         feedHistoryRepository.save(feedHistory);
         return savedFeed;
@@ -153,8 +167,8 @@ public class FeedServiceImpl implements FeedService {
                 .active(currentFeed.isActive())
                 .creationDate(currentFeed.getCreationDate())
                 .name(currentFeed.getName())
-                .notificationFormat(currentFeed.getNotificationFormat())
-                .notificationMethod(currentFeed.getNotificationMethod())
+                .notificationFormat(currentFeed.getNotificationFormat().getType())
+                .notificationMethod(currentFeed.getNotificationMethod().getType())
                 .notificationUrl(currentFeed.getNotificationUrl())
                 .partner(currentFeed.getPartner())
                 .slug(currentFeed.getSlug())

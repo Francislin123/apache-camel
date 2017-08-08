@@ -1,6 +1,6 @@
 package com.walmart.feeds.api.resources.partner;
 
-import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
@@ -47,8 +47,7 @@ public class PartnerController {
 
         PartnerEntity partner = PartnerEntity.builder()
                 .slug(SlugParserUtil.toSlug(partnerRequest.getName()))
-                // TODO[r0i001q]: Export to Utility class
-                .partnerships(String.join(";", partnerRequest.getPartnerships()))
+                .partnerships(String.join(PartnerEntity.PARTNERSHIP_SEPARATOR, partnerRequest.getPartnerships()))
                 .name(partnerRequest.getName())
                 .description(partnerRequest.getDescription())
                 .active(partnerRequest.isActive())
@@ -70,7 +69,7 @@ public class PartnerController {
             @ApiResponse(code = 404, message = " PartnerEntity not found ")})
 	@RequestMapping(value = "/{slug}",
             method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity fetchPartnerBySlug(@PathVariable("slug") String slug) throws NotFoundException {
+    public ResponseEntity fetchPartnerBySlug(@PathVariable("slug") String slug) throws EntityNotFoundException {
 
         PartnerEntity partner = service.findBySlug(slug);
 
@@ -94,13 +93,13 @@ public class PartnerController {
             @ApiResponse(code = 500, message = " Internal Server Error ")})
     @RequestMapping(value = "/{slug}",
             method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> updatePartner(@PathVariable("slug") String slug, @RequestBody PartnerRequest partnerRequest) throws NotFoundException {
+    public ResponseEntity<?> updatePartner(@PathVariable("slug") String slug, @RequestBody PartnerRequest partnerRequest) throws EntityNotFoundException {
         logger.info("Updating partner slug by {}", slug);
 
 
         PartnerEntity partner = PartnerEntity.builder()
                 .slug(SlugParserUtil.toSlug(partnerRequest.getName()))
-                .partnerships(String.join(";", partnerRequest.getPartnerships()))
+                .partnerships(String.join(PartnerEntity.PARTNERSHIP_SEPARATOR, partnerRequest.getPartnerships()))
                 .name(partnerRequest.getName())
                 .description(partnerRequest.getDescription())
                 .active(partnerRequest.isActive())
@@ -119,7 +118,7 @@ public class PartnerController {
     @RequestMapping(value = "/{slug}",
             method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> changePartnerStatus(@PathVariable("slug") String slug,
-                                                 @RequestParam("active") Boolean active) throws NotFoundException {
+                                                 @RequestParam("active") Boolean active) throws EntityNotFoundException {
 
         service.changePartnerStatus(slug, active);
 
