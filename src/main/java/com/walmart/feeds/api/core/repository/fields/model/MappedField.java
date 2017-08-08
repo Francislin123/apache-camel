@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.core.repository.mapping.model;
+package com.walmart.feeds.api.core.repository.fields.model;
 
 import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
