@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class PartnerServiceImpl implements PartnerService {
     private PartnerHistoryRepository partnerHistoryRepository;
 
     @Override
+    @Transactional
     public void savePartner(PartnerEntity partner) {
 
         if (partner.getPartnerships().isEmpty()){
@@ -44,6 +46,8 @@ public class PartnerServiceImpl implements PartnerService {
 
     }
 
+    @Override
+    @Transactional
     public void updatePartner(PartnerEntity partner) throws IllegalArgumentException, EntityNotFoundException {
 
         PartnerEntity currentPartner = findPartnerByReference(partner.getSlug());
@@ -63,21 +67,7 @@ public class PartnerServiceImpl implements PartnerService {
         logger.info("PartnerEntity {} updated.", partner.getSlug());
     }
 
-    // TODO: 28/07/17 transactional
-    private PartnerEntity persistPartner(PartnerEntity partner) {
 
-        PartnerEntity savedPartner = partnerRepository.save(partner);
-
-        logger.info("partner={} message=saved_successfully", savedPartner);
-
-        // TODO: 28/07/17 The JPA not throw exception for inexistent entity updated.
-        PartnerHistory partnerHistory = buildPartnerHistory(savedPartner);
-        partnerHistory = partnerHistoryRepository.save(partnerHistory);
-
-        logger.info("partnerHistory={} message=saved_successfully", partnerHistory);
-
-        return savedPartner;
-    }
 
     public PartnerEntity findBySlug(String reference) throws EntityNotFoundException {
         return findPartnerByReference(reference);
@@ -97,13 +87,6 @@ public class PartnerServiceImpl implements PartnerService {
         return partners;
     }
 
-    private PartnerEntity findPartnerByReference(String slug) throws EntityNotFoundException {
-        logger.info("Finding partner {}.", slug);
-
-        return partnerRepository.findBySlug(slug)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("PartnerEntity not for slug='%s'", slug)));
-    }
-
     @Override
     public List<PartnerEntity> findAllPartners() {
 
@@ -118,6 +101,8 @@ public class PartnerServiceImpl implements PartnerService {
         return partnerRepository.searchPartners(query);
     }
 
+    @Override
+    @Transactional
     public void changePartnerStatus(String slug, boolean active) throws EntityNotFoundException {
         logger.info("Changing partner {} status to {}", slug, active);
 
@@ -135,7 +120,6 @@ public class PartnerServiceImpl implements PartnerService {
 
         persistPartner(updatedPartner);
 
-        partnerRepository.save(updatedPartner);
     }
 
     private PartnerHistory buildPartnerHistory(PartnerEntity currentPartner) {
@@ -152,6 +136,27 @@ public class PartnerServiceImpl implements PartnerService {
                 .build();
 
         return partnerHistory;
+    }
+
+    private PartnerEntity persistPartner(PartnerEntity partner) {
+
+        PartnerEntity savedPartner = partnerRepository.saveAndFlush(partner);
+
+        logger.info("partner={} message=saved_successfully", savedPartner);
+
+        PartnerHistory partnerHistory = buildPartnerHistory(savedPartner);
+        partnerHistory = partnerHistoryRepository.save(partnerHistory);
+
+        logger.info("partnerHistory={} message=saved_successfully", partnerHistory);
+
+        return savedPartner;
+    }
+
+    private PartnerEntity findPartnerByReference(String slug) throws EntityNotFoundException {
+        logger.info("Finding partner {}.", slug);
+
+        return partnerRepository.findBySlug(slug)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("PartnerEntity not for slug='%s'", slug)));
     }
 
 }
