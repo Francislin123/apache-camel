@@ -29,46 +29,6 @@
         </layout>
     </appender>
 
-    <!-- Splunk appender -->
-    <appender name="SPLUNK" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${FILE_PATH}/${APP}/splunk.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <FileNamePattern>${FILE_PATH}/${APP}/splunk.log.%d{yyyy-MM-dd_HH}.%i.gz</FileNamePattern>
-            <!-- keep 288 days' worth of history -->
-            <MaxHistory>288</MaxHistory>
-            <!-- or whenever the file size reaches 100MB -->
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>100MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
-        <encoder>
-            <pattern>date="%d{yyyy-MM-dd HH:mm:ss.SSS}", app=${APP}, app_name=${APP}, log_level=%level, thread=%thread,
-                %msg%n
-            </pattern>
-        </encoder>
-    </appender>
-
-    <!-- Loginit live appender -->
-    <appender name="LOGINIT_LIVE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${FILE_PATH}/${APP}/loginit_live.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- rollover daily -->
-            <FileNamePattern>${FILE_PATH}/${APP}/loginit_live.log.%d{yyyy-MM-dd_HH}.%i.gz</FileNamePattern>
-            <!-- keep 288 days' worth of history -->
-            <MaxHistory>288</MaxHistory>
-            <!-- or whenever the file size reaches 100MB -->
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>100MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
-        <encoder>
-            <pattern>#{date="%d{yyyy-MM-dd HH:mm:ss.SSS}}" #{app=${APP}} #{app_name=${APP}} #{log_level=%level}
-                #{thread=%thread} #{%replace(%msg){', ','} #{'}}%n
-            </pattern>
-        </encoder>
-    </appender>
-
     <appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">
         <graylogHost>radio.qa.vmcommerce.intra</graylogHost>
         <graylogPort>12202</graylogPort>
@@ -80,15 +40,6 @@
                 <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${APP} [%thread] %-5level %logger{36} - %msg%n</pattern>
             </fullPatternLayout>
         </layout>
-    </appender>
-
-
-    <appender name="ASYNC_SPLUNKLOG" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="SPLUNK"/>
-    </appender>
-
-    <appender name="ASYNC_LOGINIT_LIVE" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="LOGINIT_LIVE"/>
     </appender>
 
     <!-- Loggers -->
