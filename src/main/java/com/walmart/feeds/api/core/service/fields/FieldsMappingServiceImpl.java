@@ -1,0 +1,94 @@
+package com.walmart.feeds.api.core.service.fields;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
+import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
+import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
+import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingHistory;
+import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
+import com.walmart.feeds.api.core.utils.SlugParserUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+
+@Service
+public class FieldsMappingServiceImpl implements FieldsMappingService {
+
+    private Logger logger = LoggerFactory.getLogger(FieldsMappingServiceImpl.class);
+
+    @Autowired
+    private FieldsMappingRepository fieldsMappingRepository;
+
+    @Autowired
+    private FieldsMappingHistoryRepository historyRepository;
+
+    @Override
+    public FieldsMappingEntity findBySlug(String slug) throws NotFoundException {
+
+        FieldsMappingEntity fieldsMapping = fieldsMappingRepository.findBySlug(slug).orElseThrow(() ->
+                new NotFoundException(String.format("FieldsMappging %s not found!", slug)));
+
+        return fieldsMapping;
+
+    }
+
+    @Override
+    @Transactional
+    public void updateFieldsMapping(FieldsMappingEntity fieldsMapping) throws NotFoundException {
+
+        if (fieldsMapping == null) {
+            throw new RuntimeException("null mappingentity");
+        }
+
+        FieldsMappingEntity persistedEntity = fieldsMappingRepository.findBySlug(fieldsMapping.getSlug())
+                .orElseThrow(() -> new NotFoundException(String.format("FieldsMapping %s not found", fieldsMapping.getSlug())));
+
+        FieldsMappingEntity updatedEntity = FieldsMappingEntity.builder()
+                .creationDate(persistedEntity.getCreationDate())
+                .updateDate(LocalDateTime.now())
+                .user(persistedEntity.getUser())
+                .name(fieldsMapping.getName())
+                .slug(SlugParserUtil.toSlug(fieldsMapping.getName()))
+                .mappedFields(fieldsMapping.getMappedFields())
+                .build();
+
+        persistFieldsMapping(updatedEntity);
+
+    }
+
+    private void persistFieldsMapping(FieldsMappingEntity updatedEntity) {
+
+        FieldsMappingHistory history = FieldsMappingHistory.builder()
+            .name(updatedEntity.getName())
+            .slug(updatedEntity.getSlug())
+            .mappedFields(getMappedFieldsAsJson(updatedEntity.getMappedFields()))
+            .build();
+
+
+        fieldsMappingRepository.save(updatedEntity);
+        logger.info("fieldsMapping={} message=saved_successfully", updatedEntity);
+
+
+        historyRepository.save(history);
+        logger.info("fieldsMappingHistory={} message=saved_successfully", history);
+
+    }
+
+    private String getMappedFieldsAsJson(List<MappedFieldEntity> mappedFields) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(mappedFields);
+        } catch (JsonProcessingException e) {
+            logger.error("Error to convert mapped fields to json", e);
+        }
+        return "";
+    }
+}

@@ -1,6 +1,6 @@
 package com.walmart.feeds.api.resources.fields.request;
 
-import com.walmart.feeds.api.core.repository.fields.model.MappedField;
+import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.validator.constraints.NotBlank;
@@ -19,5 +19,5 @@ public class FieldsMappingRequest {
     private String name;
 
     @NotEmpty
-    private List<MappedField> mappedFields;
+    private List<MappedFieldEntity> mappedFields;
 }
