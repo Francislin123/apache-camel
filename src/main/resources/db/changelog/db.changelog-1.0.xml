@@ -238,7 +238,7 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="createFieldsMappingTable" author="francislin.souza">
+    <changeSet id="createFieldsMappingTable" author="adisson.gomes">
 
         <comment>Creating fields mapping table</comment>
 
@@ -246,7 +246,22 @@
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="varchar(50)"></column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <rollback>
@@ -323,6 +338,41 @@
         <rollback>
             <dropForeignKeyConstraint baseTableName="mapped_field" constraintName="fk_fields_mapping_id"/>
             <dropTable tableName="mapped_field"/>
+        </rollback>
+    </changeSet>
+
+
+    <changeSet id="createFieldsMappingHistoryTable" author="adisson.gomes">
+
+        <comment>Creating fields mapping history table</comment>
+
+        <createTable tableName="fields_mapping_history">
+            <column name="history_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mapped_fields" type="varchar2">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="fields_mapping_history"/>
         </rollback>
     </changeSet>
 
