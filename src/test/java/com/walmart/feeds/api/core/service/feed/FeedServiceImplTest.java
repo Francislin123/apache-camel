@@ -60,12 +60,12 @@ public class FeedServiceImplTest {
         try {
             when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity().getPartner()));
             when(repository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity()));
-            when(repository.save(any(FeedEntity.class))).thenReturn(createFeedEntity());
+            when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(createFeedEntity());
 
             this.feedService.updateFeed(createFeedEntity());
 
             verify(repository).findBySlug(anyString());
-            verify(repository).save(Mockito.any(FeedEntity.class));
+            verify(repository).saveAndFlush(Mockito.any(FeedEntity.class));
             verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
         } catch (Exception e) {
             fail("Exception should not have been fired!");
