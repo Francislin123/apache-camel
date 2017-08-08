@@ -1,5 +1,7 @@
 package com.walmart.feeds.api.core.repository.feed.model;
 
+import com.walmart.feeds.api.core.exceptions.SystemException;
+
 import java.util.Arrays;
 
 public enum FeedType {
@@ -19,7 +21,11 @@ public enum FeedType {
     }
 
     public static FeedType getFromCode(String type) {
-        // TODO[r0i001q]: throw an specific exception
-        return Arrays.stream(FeedType.values()).filter(f -> f.getType().equals(type)).findFirst().orElseThrow(() -> new RuntimeException("FeedType not found for type=" + type));
+        return Arrays.stream(FeedType.values()).filter(f -> f.getType().equals(type)).findFirst().orElseThrow(() -> new SystemException("FeedType not found for type=" + type));
+    }
+
+    @Override
+    public String toString() {
+        return type;
     }
 }

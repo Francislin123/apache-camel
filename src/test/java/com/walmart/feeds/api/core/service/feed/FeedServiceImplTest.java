@@ -1,9 +1,12 @@
 package com.walmart.feeds.api.core.service.feed;
 
-import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
+import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
+import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
@@ -37,14 +40,23 @@ public class FeedServiceImplTest {
     @Mock
     private PartnerRepository partnerRepository;
 
-    @Test(expected = NotFoundException.class)
+    @Test(expected = EntityNotFoundException.class)
     public void createFeedWhenPartnerNoExists() throws Exception {
         when(partnerRepository.findActiveBySlug(anyString())).thenReturn(Optional.empty());
+        when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
+
+        feedService.createFeed(createFeedEntity());
+    }
+
+    @Test(expected = EntityAlreadyExistsException.class)
+    public void createFeedWhenFeedAlreadyExists() throws Exception {
+        when(repository.findBySlug(anyString())).thenReturn(Optional.of(new FeedEntity()));
+
         feedService.createFeed(createFeedEntity());
     }
 
     @Test
-    public void testUpdateFeed() throws com.walmart.feeds.api.core.exceptions.NotFoundException {
+    public void testUpdateFeed() throws EntityNotFoundException {
         try {
             when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity().getPartner()));
             when(repository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity()));
@@ -69,6 +81,8 @@ public class FeedServiceImplTest {
                 .slug("partner-teste")
                 .active(true)
                 .partner(partnerTO)
+                .notificationFormat(FeedNotificationFormat.JSON)
+                .notificationMethod(FeedNotificationMethod.FILE)
                 .type(INVENTORY).build();
         return to;
     }

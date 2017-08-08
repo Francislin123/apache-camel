@@ -1,6 +1,6 @@
 package com.walmart.feeds.api.core.service.feed;
 
-import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 
 import java.util.List;
@@ -11,11 +11,13 @@ import java.util.List;
 
 public interface FeedService {
 
-    FeedEntity createFeed(FeedEntity feedEntity) throws NotFoundException;
+    FeedEntity createFeed(FeedEntity feedEntity);
 
-    List<FeedEntity> fetchByPartner(String partnerReference, Boolean active) throws NotFoundException;
+    List<FeedEntity> fetchActiveByPartner(String partnerReference, Boolean active);
 
-    void changeFeedStatus(String partnerSlug, String slug, Boolean active) throws NotFoundException;
+    void changeFeedStatus(String partnerSlug, String slug, Boolean active);
 
-    void updateFeed(FeedEntity feedEntity) throws NotFoundException;
+    void updateFeed(FeedEntity feedEntity);
+
+    FeedEntity fetchByPartner(String feedSlug, String partnerSlug);
 }
