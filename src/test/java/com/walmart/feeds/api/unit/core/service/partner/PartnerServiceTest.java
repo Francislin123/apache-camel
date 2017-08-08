@@ -50,7 +50,7 @@ public class PartnerServiceTest {
     public void testUpdatePartner() {
         try {
             when(repository.findBySlug(anyString())).thenReturn(Optional.of(new PartnerEntity()));
-            when(repository.save(any(PartnerEntity.class))).thenReturn(createPartner());
+            when(repository.saveAndFlush(any(PartnerEntity.class))).thenReturn(createPartner());
 
             PartnerEntity request = PartnerEntity.builder().name("Teste 123").build();
 
@@ -58,7 +58,7 @@ public class PartnerServiceTest {
             this.service.updatePartner(request);
 
             verify(repository).findBySlug(anyString());
-            verify(repository).save(Mockito.any(PartnerEntity.class));
+            verify(repository).saveAndFlush(Mockito.any(PartnerEntity.class));
             verify(historyRepository).save(any(PartnerHistory.class));
         } catch (EntityNotFoundException e) {
             fail("Exception should not have been fired!");
