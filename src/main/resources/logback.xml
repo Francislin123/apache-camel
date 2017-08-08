@@ -5,6 +5,12 @@
     <property name="APP" value="feeds-admin-api"/>
     <property name="FILE_PATH" value="/walmart/log/"/>
 
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+        </encoder>
+    </appender>
+
     <!-- Appenders -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${FILE_PATH}/${APP}/${APP}.log</file>
@@ -37,7 +43,9 @@
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
-            <pattern>date="%d{yyyy-MM-dd HH:mm:ss.SSS}", app=${APP}, app_name=${APP}, log_level=%level, thread=%thread, %msg%n</pattern>
+            <pattern>date="%d{yyyy-MM-dd HH:mm:ss.SSS}", app=${APP}, app_name=${APP}, log_level=%level, thread=%thread,
+                %msg%n
+            </pattern>
         </encoder>
     </appender>
 
@@ -55,27 +63,41 @@
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
-            <pattern>#{date="%d{yyyy-MM-dd HH:mm:ss.SSS}}" #{host=${HOSTNAME}} #{app=${APP}} #{app_name=${APP}} #{log_level=%level} #{thread=%thread} #{%replace(%msg){', ','} #{'}}%n</pattern>
+            <pattern>#{date="%d{yyyy-MM-dd HH:mm:ss.SSS}}" #{app=${APP}} #{app_name=${APP}} #{log_level=%level}
+                #{thread=%thread} #{%replace(%msg){', ','} #{'}}%n
+            </pattern>
         </encoder>
     </appender>
 
-    <!-- Async Appenders -->
-    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="FILE" />
+    <appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">
+        <graylogHost>radio.qa.vmcommerce.intra</graylogHost>
+        <graylogPort>12202</graylogPort>
+        <layout class="de.siegmar.logbackgelf.GelfLayout">
+            <shortPatternLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%m%nopex</pattern>
+            </shortPatternLayout>
+            <fullPatternLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${APP} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </fullPatternLayout>
+        </layout>
     </appender>
 
+
     <appender name="ASYNC_SPLUNKLOG" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="SPLUNK" />
+        <appender-ref ref="SPLUNK"/>
     </appender>
 
     <appender name="ASYNC_LOGINIT_LIVE" class="ch.qos.logback.classic.AsyncAppender">
-        <appender-ref ref="LOGINIT_LIVE" />
+        <appender-ref ref="LOGINIT_LIVE"/>
     </appender>
 
     <!-- Loggers -->
-    <logger name="com.walmart" level="info" />
+    <logger name="com.walmart" level="info"/>
 
     <root level="info">
-        <appender-ref ref="ASYNC" />
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="GELF"/>
+        <appender-ref ref="STDOUT"/>
     </root>
+
 </configuration>
