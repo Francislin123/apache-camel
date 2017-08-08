@@ -4,12 +4,10 @@ import com.walmart.feeds.api.core.repository.AuditableEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
-import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -17,12 +15,12 @@ import java.util.UUID;
  */
 @Entity
 @Getter
-public class FieldsMappingEntity extends AuditableEntity {
+public class FieldsMappingHistory extends AuditableEntity {
 
     @Id
     @GeneratedValue(generator = "fields_mapping_uuid_generator")
     @GenericGenerator(name = "fields_mapping_uuid_generator", strategy = "uuid2")
-    @JsonIgnore
+    @Column(name = "history_id")
     private UUID id;
 
     @Column(name = "name")
@@ -31,11 +29,13 @@ public class FieldsMappingEntity extends AuditableEntity {
     @Column(name = "slug")
     private String slug;
 
-    @OneToMany
-    private List<MappedFieldEntity> mappedFields;
+    @Lob
+    @Column(name = "mapped_fields")
+    private String mappedFields;
 
     @Builder
-    public FieldsMappingEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String name, String slug, List<MappedFieldEntity> mappedFields) {
+    public FieldsMappingHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user,
+                                UUID id, String name, String slug, String mappedFields) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.name = name;
@@ -44,6 +44,6 @@ public class FieldsMappingEntity extends AuditableEntity {
     }
 
     @Tolerate
-    public FieldsMappingEntity() {
+    public FieldsMappingHistory() {
     }
 }

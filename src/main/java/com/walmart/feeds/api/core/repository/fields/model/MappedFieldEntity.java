@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.repository.fields.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -13,8 +14,9 @@ import java.util.UUID;
  * Created by vn0gshm on 07/08/17.
  */
 @Entity
+@Builder
 @Getter
-public class MappedField {
+public class MappedFieldEntity {
 
     @Id
     @GeneratedValue(generator = "mapped_field_uuid_generator")
