@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.core.repository.mapping.model;
+package com.walmart.feeds.api.core.repository.fields.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
 import lombok.Builder;
@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -26,7 +27,7 @@ public class FieldsMappingEntity extends AuditableEntity {
     private String name;
 
     @OneToMany
-    private MappedField mappedField;
+    private List<MappedField> mappedFields;
 
     @Builder
     private FieldsMappingEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String name) {
@@ -36,5 +37,6 @@ public class FieldsMappingEntity extends AuditableEntity {
     }
 
     @Tolerate
-    public FieldsMappingEntity() {}
+    public FieldsMappingEntity() {
+    }
 }
