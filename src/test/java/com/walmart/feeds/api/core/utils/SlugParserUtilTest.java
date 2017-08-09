@@ -33,4 +33,13 @@ public class SlugParserUtilTest {
         assertEquals("renato-ibanhez-123", sluggedImput);
     }
 
+    @Test
+    public void convertaWithAccentedLetters() {
+        String input = "[Renato #Ibanhez çaãeécôlà 123@";
+
+        String sluggedImput = SlugParserUtil.toSlug(input);
+
+        assertEquals("renato-ibanhez-caaeecola-123", sluggedImput);
+    }
+
 }
