@@ -6,6 +6,7 @@ import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.feed.FeedService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
@@ -46,6 +47,10 @@ public class FeedsController {
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerSlug") String partnerSlug, UriComponentsBuilder builder) throws EntityNotFoundException {
 
+        TemplateEntity template = new TemplateEntity();
+
+        template.setSlug(request.getTemplate());
+
         FeedEntity feedEntity = FeedEntity.builder()
                 .slug(SlugParserUtil.toSlug(request.getName()))
                 .name(request.getName())
@@ -57,6 +62,7 @@ public class FeedsController {
                         .slug(partnerSlug)
                         .build())
                 .type(FeedType.getFromCode(request.getType()))
+                .template(template)
                 .utms(request.getUtms())
                 .build();
 

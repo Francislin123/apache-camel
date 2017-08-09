@@ -8,6 +8,8 @@ import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.template.TemplateRepository;
+import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.slf4j.Logger;
@@ -27,13 +29,16 @@ public class FeedServiceImpl implements FeedService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private FeedRepository feedRepository;
+    private FeedRepository  feedRepository;
 
     @Autowired
     private PartnerRepository partnerRepository;
 
     @Autowired
     private FeedHistoryRepository feedHistoryRepository;
+
+    @Autowired
+    private TemplateRepository templateRepository;
 
     @Override
     @Transactional
@@ -50,6 +55,9 @@ public class FeedServiceImpl implements FeedService {
         PartnerEntity partner = partnerRepository.findActiveBySlug(feedEntity.getPartner().getSlug()).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", feedEntity.getPartner().getSlug())));
 
+        TemplateEntity template = templateRepository.findBySlug(feedEntity.getTemplate().getSlug()).orElseThrow(() ->
+                new NotFoundException(String.format("TemplateEntity not found for reference %s", feedEntity.getTemplate().getSlug())));
+
         FeedEntity newFeed = FeedEntity.builder()
                 .utms(feedEntity.getUtms())
                 .id(feedEntity.getId())
@@ -62,6 +70,7 @@ public class FeedServiceImpl implements FeedService {
                 .name(feedEntity.getName())
                 .active(feedEntity.isActive())
                 .creationDate(feedEntity.getCreationDate())
+                .template(template)
                 .build();
 
         FeedEntity savedFeedEntity = saveFeedWithHistory(newFeed);
@@ -173,6 +182,7 @@ public class FeedServiceImpl implements FeedService {
                 .partner(currentFeed.getPartner())
                 .slug(currentFeed.getSlug())
                 .type(currentFeed.getType())
+                .template(currentFeed.getTemplate())
                 .updateDate(currentFeed.getUpdateDate())
                 .user(currentFeed.getUser())
                 .build();

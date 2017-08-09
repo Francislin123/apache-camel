@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.beans.Transient;
 import java.util.Map;
 
 @Data
@@ -33,6 +34,13 @@ public class FeedRequest {
 
     @NotNull
     private Boolean active;
+
+
+    // CERTO?
+    // @Transient
+    private String template;
+
+
 
 
 }

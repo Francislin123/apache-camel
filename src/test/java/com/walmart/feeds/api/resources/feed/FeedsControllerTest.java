@@ -46,7 +46,7 @@ public class FeedsControllerTest {
 
     @BeforeClass
     public static void setUp() {
-        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.resources.feed.test.template");
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.resources.feed.test.TemplateEntity");
     }
 
     @Before

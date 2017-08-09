@@ -2,6 +2,7 @@ package com.walmart.feeds.api.core.repository.feed.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
@@ -33,6 +34,7 @@ public class FeedEntity extends AuditableEntity {
     @Column(name = "name")
     private String name;
 
+    // TODO[r0i001q]: verify if exists another way to set this field with a builder pattern
     @ManyToOne
     private PartnerEntity partner;
 
@@ -50,6 +52,9 @@ public class FeedEntity extends AuditableEntity {
 
     @Column(name = "notification_url")
     private String notificationUrl;
+
+    @ManyToOne
+    private TemplateEntity template;
 
     @ElementCollection
     @MapKeyColumn(name = "utm_type")
