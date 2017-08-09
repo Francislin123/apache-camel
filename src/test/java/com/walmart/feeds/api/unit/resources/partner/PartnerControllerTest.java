@@ -101,7 +101,7 @@ public class PartnerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(PartnerRequest.class)
                     .gimme("valid_partner_request"))))
-            .andExpect(MockMvcResultMatchers.status().isConflict());
+                .andExpect(MockMvcResultMatchers.status().isConflict());
     }
 
     @Test
@@ -109,9 +109,7 @@ public class PartnerControllerTest {
         when(partnerService.findPartnersByStatus(null)).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS).contentType(MediaType.APPLICATION_JSON))
-                .andDo(result -> {
-                    logger.info("Result: {}", result.getResponse().getContentAsString());
-                })
+                .andDo(result -> logger.info("Result: {}", result.getResponse().getContentAsString())                )
                 .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].slug", Matchers.is("buscape")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
