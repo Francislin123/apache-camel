@@ -55,8 +55,7 @@ public class PartnerController {
 
         service.savePartner(partner);
 
-        UriComponents uriComponents =
-                builder.path(V1_PARTNERS.concat("/{partnerSlug}")).buildAndExpand(partner.getSlug());
+        UriComponents uriComponents = builder.path(V1_PARTNERS.concat("/{partnerSlug}")).buildAndExpand(partner.getSlug());
 
         return ResponseEntity.created(uriComponents.toUri()).build();
 

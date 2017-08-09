@@ -23,13 +23,12 @@ public class FieldsMappingEntity extends AuditableEntity {
     @Id
     @GeneratedValue(generator = "fields_mapping_uuid_generator")
     @GenericGenerator(name = "fields_mapping_uuid_generator", strategy = "uuid2")
-    @JsonIgnore
     private UUID id;
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "slug")
+    @Column(name = "slug", unique = true)
     private String slug;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

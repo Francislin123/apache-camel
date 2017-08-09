@@ -5,8 +5,13 @@ import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 
 public interface FieldsMappingService {
 
-    FieldsMappingEntity findBySlug(String slug) throws EntityNotFoundException;
+    /**
+     * @param fieldsMappingEntity payload
+     */
+    void saveFieldsdMapping(FieldsMappingEntity fieldsMappingEntity) throws IllegalArgumentException;
 
     void updateFieldsMapping(FieldsMappingEntity mappingEntity) throws EntityNotFoundException;
+
+    FieldsMappingEntity findBySlug(String slug) throws EntityNotFoundException;
 
 }

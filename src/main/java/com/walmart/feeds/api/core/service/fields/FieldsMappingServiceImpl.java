@@ -3,6 +3,7 @@ package com.walmart.feeds.api.core.service.fields;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
@@ -32,13 +33,17 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     private FieldsMappingHistoryRepository historyRepository;
 
     @Override
-    public FieldsMappingEntity findBySlug(String slug) throws EntityNotFoundException {
+    public void saveFieldsdMapping(FieldsMappingEntity fieldsMappingEntity) throws IllegalArgumentException {
 
-        FieldsMappingEntity fieldsMapping = fieldsMappingRepository.findBySlug(slug).orElseThrow(() ->
-                new EntityNotFoundException(String.format("FieldsMappging %s not found!", slug)));
+        if (fieldsMappingRepository.findBySlug(fieldsMappingEntity.getSlug()).isPresent()) {
+            throw new EntityAlreadyExistsException(String.format("Fields mapping with slug='%s' already exists", fieldsMappingEntity.getSlug()));
+        }
 
-        return fieldsMapping;
+        if (fieldsMappingEntity.getMappedFields().isEmpty()){
+            throw new IllegalArgumentException("No mapped fields related with fields mapping " + fieldsMappingEntity.getName());
+        }
 
+        persistFieldsMapping(fieldsMappingEntity);
     }
 
     @Override
@@ -63,6 +68,16 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
                 .build();
 
         persistFieldsMapping(updatedEntity);
+
+    }
+
+    @Override
+    public FieldsMappingEntity findBySlug(String slug) throws EntityNotFoundException {
+
+        FieldsMappingEntity fieldsMapping = fieldsMappingRepository.findBySlug(slug).orElseThrow(() ->
+                new EntityNotFoundException(String.format("FieldsMappging %s not found!", slug)));
+
+        return fieldsMapping;
 
     }
 
