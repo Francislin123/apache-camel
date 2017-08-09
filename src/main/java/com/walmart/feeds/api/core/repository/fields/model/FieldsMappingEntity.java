@@ -16,6 +16,7 @@ import java.util.UUID;
  * Created by vn0gshm on 07/08/17.
  */
 @Entity
+@Table(name = "fields_mapping")
 @Getter
 public class FieldsMappingEntity extends AuditableEntity {
 
@@ -31,7 +32,8 @@ public class FieldsMappingEntity extends AuditableEntity {
     @Column(name = "slug")
     private String slug;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "fields_mapping_id", referencedColumnName = "id")
     private List<MappedFieldEntity> mappedFields;
 
     @Builder

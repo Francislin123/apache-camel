@@ -1,8 +1,9 @@
 package com.walmart.feeds.api.core.service.fields;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,10 +32,10 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     private FieldsMappingHistoryRepository historyRepository;
 
     @Override
-    public FieldsMappingEntity findBySlug(String slug) throws NotFoundException {
+    public FieldsMappingEntity findBySlug(String slug) throws EntityNotFoundException {
 
         FieldsMappingEntity fieldsMapping = fieldsMappingRepository.findBySlug(slug).orElseThrow(() ->
-                new NotFoundException(String.format("FieldsMappging %s not found!", slug)));
+                new EntityNotFoundException(String.format("FieldsMappging %s not found!", slug)));
 
         return fieldsMapping;
 
@@ -42,16 +43,17 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     @Override
     @Transactional
-    public void updateFieldsMapping(FieldsMappingEntity fieldsMapping) throws NotFoundException {
+    public void updateFieldsMapping(FieldsMappingEntity fieldsMapping) throws EntityNotFoundException {
 
         if (fieldsMapping == null) {
             throw new RuntimeException("null mappingentity");
         }
 
         FieldsMappingEntity persistedEntity = fieldsMappingRepository.findBySlug(fieldsMapping.getSlug())
-                .orElseThrow(() -> new NotFoundException(String.format("FieldsMapping %s not found", fieldsMapping.getSlug())));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("FieldsMapping %s not found", fieldsMapping.getSlug())));
 
         FieldsMappingEntity updatedEntity = FieldsMappingEntity.builder()
+                .id(persistedEntity.getId())
                 .creationDate(persistedEntity.getCreationDate())
                 .updateDate(LocalDateTime.now())
                 .user(persistedEntity.getUser())
@@ -84,6 +86,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     private String getMappedFieldsAsJson(List<MappedFieldEntity> mappedFields) {
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
         try {
             return mapper.writeValueAsString(mappedFields);
         } catch (JsonProcessingException e) {
