@@ -56,7 +56,7 @@ public class FeedServiceImpl implements FeedService {
                 new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", feedEntity.getPartner().getSlug())));
 
         TemplateEntity template = templateRepository.findBySlug(feedEntity.getTemplate().getSlug()).orElseThrow(() ->
-                new NotFoundException(String.format("TemplateEntity not found for reference %s", feedEntity.getTemplate().getSlug())));
+                new EntityNotFoundException(String.format("TemplateEntity not found for reference %s", feedEntity.getTemplate().getSlug())));
 
         FeedEntity newFeed = FeedEntity.builder()
                 .utms(feedEntity.getUtms())
