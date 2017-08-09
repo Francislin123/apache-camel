@@ -1,11 +1,10 @@
 package com.walmart.feeds.api.resources.fields;
 
-import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingService;
-import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.fields.request.FieldsMappingRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,11 +17,14 @@ public class FieldsMappingController {
 
     public static final String V1_FIELDS_MAPPING = "/v1/fieldsmapping";
 
+    @Autowired
     private FieldsMappingService fieldsMappingService;
 
     @RequestMapping(value = "{slug}", method = RequestMethod.PUT)
     public ResponseEntity updateMapping(@RequestBody @Valid FieldsMappingRequest request,
-                                        @PathVariable("slug") String slug) throws NotFoundException {
+                                        @PathVariable("slug") String slug) {
+
+        // TODO: 09/08/17 validate null elements on request.mappedfields
 
         FieldsMappingEntity mappingEntity = FieldsMappingEntity.builder()
             .name(request.getName())
