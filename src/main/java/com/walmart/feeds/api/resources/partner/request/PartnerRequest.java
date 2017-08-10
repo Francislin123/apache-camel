@@ -1,26 +1,27 @@
 package com.walmart.feeds.api.resources.partner.request;
 
+import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyElements;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
-import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Builder
 @Getter
 public class PartnerRequest {
 
-    @NotNull
+    @NotBlank
+    @Size(max = 50)
     private String name;
 
+    @Size(max = 255)
     private String description;
 
-    @NotEmpty
-    private List<String> partnerships = new ArrayList<>();
+    @NotEmptyElements(allowedPattern = "[\\w\\d-\\s_]+")
+    private List<String> partnerships;
 
     private boolean active;
 

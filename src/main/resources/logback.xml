@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <contextName>feeds-admin-api</contextName>
+    <property name="APP" value="feeds-admin-api"/>
+    <property name="FILE_PATH" value="/walmart/log/"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appenders -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${FILE_PATH}/${APP}/${APP}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <FileNamePattern>${FILE_PATH}/${APP}.log.%d{yyyy-MM-dd_HH}.%i.gz</FileNamePattern>
+            <!-- keep 288 days' worth of history -->
+            <MaxHistory>288</MaxHistory>
+            <!-- or whenever the file size reaches 100MB -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${APP} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">
+        <graylogHost>radio.qa.vmcommerce.intra</graylogHost>
+        <graylogPort>12202</graylogPort>
+        <layout class="de.siegmar.logbackgelf.GelfLayout">
+            <shortPatternLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%m%nopex</pattern>
+            </shortPatternLayout>
+            <fullPatternLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${APP} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </fullPatternLayout>
+        </layout>
+    </appender>
+
+    <!-- Loggers -->
+    <logger name="com.walmart" level="info"/>
+
+    <root level="info">
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="GELF"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>

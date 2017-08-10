@@ -1,18 +1,20 @@
 package com.walmart.feeds.api.resources.feed.validator.annotation;
 
-import com.walmart.feeds.api.resources.feed.validator.FeedNotificationDataURLValidator;
+import com.walmart.feeds.api.resources.feed.validator.NotEmptyMapValidator;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = FeedNotificationDataURLValidator.class)
+@Constraint(validatedBy = NotEmptyMapValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ValidFeedNotificationUrl {
+@NotEmpty
+public @interface NotEmptyMapEntry {
 
-    String message() default "{com.walmart.validation.constraints.ValidFeedNotificationUrl.message}";
+    String message() default "{com.walmart.validation.constraints.NotEmptyMapEntry.message}";
 
     Class<?>[] groups() default {};
 

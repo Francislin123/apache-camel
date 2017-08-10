@@ -12,10 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "partner", uniqueConstraints = {
-        @UniqueConstraint(name = "name_constraint", columnNames = "name"),
-        @UniqueConstraint(name = "reference_constraint", columnNames = "slug")
-})
+@Table(name = "partner")
 @Getter
 public class PartnerEntity extends AuditableEntity {
 
@@ -26,10 +23,10 @@ public class PartnerEntity extends AuditableEntity {
     @GenericGenerator(name = "partner_uuid_generator", strategy = "uuid2")
     private UUID id;
 
-    @Column
+    @Column(unique = true)
     private String name;
 
-    @Column(name = "slug")
+    @Column(name = "slug", unique = true)
     private String slug;
 
     @Column
@@ -61,3 +58,4 @@ public class PartnerEntity extends AuditableEntity {
     }
 
 }
+

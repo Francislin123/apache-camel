@@ -3,7 +3,8 @@ package com.walmart.feeds.api.unit.resources.feed;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.resources.feed.FeedsController;
@@ -16,8 +17,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -73,7 +72,7 @@ public class FeedsControllerTest {
 
     @Test
     public void testCreateFeedWhenPartnerNotExists() throws Exception {
-        doThrow(NotFoundException.class).when(feedService).createFeed(any(FeedEntity.class));
+        doThrow(EntityNotFoundException.class).when(feedService).createFeed(any(FeedEntity.class));
 
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
@@ -86,7 +85,7 @@ public class FeedsControllerTest {
     @Test
     public void testCreateFeedWhenReferenceAlreadyExists() throws Exception {
 
-        doThrow(DuplicateKeyException.class).when(feedService).createFeed(any(FeedEntity.class));
+        doThrow(EntityAlreadyExistsException.class).when(feedService).createFeed(any(FeedEntity.class));
 
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
@@ -96,9 +95,33 @@ public class FeedsControllerTest {
     }
 
     @Test
+    public void testCreateFeedWithInvalidUtmList() throws Exception {
+
+//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
+
+        mockMvc.perform(
+                post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-with-invalid-utm-list")))
+        ).andExpect(status().isBadRequest());
+
+        verify(feedService, times(0)).createFeed(any(FeedEntity.class));
+    }
+
+    @Test
+    public void testCreateFeedWithAnEmptyName() throws Exception {
+
+//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
+
+        mockMvc.perform(
+                post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-with-empty-name")))
+        ).andExpect(status().isBadRequest());
+
+        verify(feedService, times(0)).createFeed(any(FeedEntity.class));
+    }
+
+    @Test
     public void testCreateFeedWhenRequestIsIvalid() throws Exception {
 
-        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
+//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
 
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-without-name")))
@@ -115,7 +138,7 @@ public class FeedsControllerTest {
     }
     @Test
     public void testUpdateFeedAndDealWithDuplicatedReference() throws Exception {
-        doThrow(DataIntegrityViolationException.class).when(feedService).updateFeed(any(FeedEntity.class));
+        doThrow(EntityAlreadyExistsException.class).when(feedService).updateFeed(any(FeedEntity.class));
         mockMvc.perform(put(FeedsController.V1_FEEDS + "/teste123", "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
         ).andExpect(status().isConflict());
     }

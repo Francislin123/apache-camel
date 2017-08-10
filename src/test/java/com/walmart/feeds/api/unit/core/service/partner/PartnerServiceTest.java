@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.unit.core.service.partner;
 
-import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.repository.partner.PartnerHistoryRepository;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
@@ -16,7 +17,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,27 +50,21 @@ public class PartnerServiceTest {
     public void testUpdatePartner() {
         try {
             when(repository.findBySlug(anyString())).thenReturn(Optional.of(new PartnerEntity()));
-            when(repository.save(any(PartnerEntity.class))).thenReturn(createPartner());
+            when(repository.saveAndFlush(any(PartnerEntity.class))).thenReturn(createPartner());
 
-            PartnerEntity request = PartnerEntity.builder().name("Teste 123").build();
-
+            PartnerEntity request = PartnerEntity.builder().name("Teste 123").slug("teste").build();
 
             this.service.updatePartner(request);
 
             verify(repository).findBySlug(anyString());
-            verify(repository).save(Mockito.any(PartnerEntity.class));
+            verify(repository).saveAndFlush(Mockito.any(PartnerEntity.class));
             verify(historyRepository).save(any(PartnerHistory.class));
-        } catch (NotFoundException e) {
+        } catch (EntityNotFoundException e) {
             fail("Exception should not have been fired!");
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testUpdatePartnerFromNullPartnerRequestShouldReturnFalse() throws NotFoundException {
-        this.service.updatePartner(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = InconsistentEntityException.class)
     public void testCreatePartnerWIthEmptyPartnershipList() {
 
         PartnerEntity partner = PartnerEntity.builder()

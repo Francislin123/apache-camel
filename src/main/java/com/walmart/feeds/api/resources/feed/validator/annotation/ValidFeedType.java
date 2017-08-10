@@ -14,7 +14,7 @@ import java.lang.annotation.*;
 @NotNull(message = "FeedType cannot be null")
 public @interface ValidFeedType {
 
-    String message();
+    String message() default "{com.walmart.validation.constraints.ValidFeedType.message}";
 
     Class<?>[] groups() default {};
 

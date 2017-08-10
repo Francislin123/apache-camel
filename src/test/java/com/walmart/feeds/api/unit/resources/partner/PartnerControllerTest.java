@@ -1,14 +1,13 @@
 package com.walmart.feeds.api.unit.resources.partner;
 
-import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.feeds.api.core.exceptions.NotFoundException;
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
-import com.walmart.feeds.api.resources.feed.CollectionResponse;
-import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
 import com.walmart.feeds.api.resources.partner.PartnerController;
 import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
@@ -16,8 +15,6 @@ import com.walmart.feeds.api.resources.partner.request.PartnerUpdateRequest;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,25 +23,16 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -102,14 +90,14 @@ public class PartnerControllerTest {
 
     @Test
     public void testCreatedNewWithConflict() throws Exception {
-        Mockito.doThrow(DataIntegrityViolationException.class)
+        Mockito.doThrow(EntityAlreadyExistsException.class)
                 .when(partnerService).savePartner(Mockito.any(PartnerEntity.class));
 
         mockMvc.perform(MockMvcRequestBuilders.post(URI_PARTNERS)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(PartnerRequest.class)
                     .gimme("valid_partner_request"))))
-            .andExpect(MockMvcResultMatchers.status().isConflict());
+                .andExpect(MockMvcResultMatchers.status().isConflict());
     }
 
     @Test
@@ -117,9 +105,7 @@ public class PartnerControllerTest {
         when(partnerService.findPartnersByStatus(null)).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS).contentType(MediaType.APPLICATION_JSON))
-                .andDo(result -> {
-                    logger.info("Result: {}", result.getResponse().getContentAsString());
-                })
+                .andDo(result -> logger.info("Result: {}", result.getResponse().getContentAsString())                )
                 .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].slug", Matchers.is("buscape")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -128,13 +114,13 @@ public class PartnerControllerTest {
 
     @Test
     public void testFetchAllPartnersWithDatabaseDown() throws Exception {
-        when(partnerService.findPartnersByStatus(anyBoolean())).thenThrow(Exception.class);
+        when(partnerService.findPartnersByStatus(any())).thenThrow(Exception.class);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(MockMvcResultMatchers.status().isInternalServerError());
 
-        verify(partnerService).findPartnersByStatus(anyBoolean());
+        verify(partnerService).findPartnersByStatus(any());
     }
 
     @Test
@@ -176,7 +162,7 @@ public class PartnerControllerTest {
 
     @Test
     public void testUpdatePartnerNotfoundWhenInexistentPartner() throws Exception {
-        doThrow(NotFoundException.class).when(partnerService).updatePartner(Mockito.any(PartnerEntity.class));
+        doThrow(EntityNotFoundException.class).when(partnerService).updatePartner(Mockito.any(PartnerEntity.class));
 
         mockMvc.perform(MockMvcRequestBuilders.put(URI_PARTNERS + "/reference")
                     .contentType(MediaType.APPLICATION_JSON_UTF8)

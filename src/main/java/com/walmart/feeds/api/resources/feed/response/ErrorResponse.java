@@ -1,6 +1,9 @@
 package com.walmart.feeds.api.resources.feed.response;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.experimental.Tolerate;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -8,25 +11,21 @@ import java.util.List;
 /**
  * Created by r0i001q on 19/07/17.
  */
-@Data
+@Getter
 public class ErrorResponse {
 
     private String code;
     private String description;
 	private List<FieldValidation> fieldValidations;
 
-	public ErrorResponse() {
-		this(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Unhandled error");
-	}
-	
-    public ErrorResponse(String code, String description) {
-		super();
-		this.code = code;
-		this.description = description;
-	}
+    @Tolerate
+    public ErrorResponse() {
+        new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "Unhandled Exception", null);
+    }
 
-	public ErrorResponse(String code, String description, List<FieldValidation> validations) {
-		super();
+    @Builder
+    private ErrorResponse(String code, String description, List<FieldValidation> validations) {
+        super();
 		this.code = code;
 		this.description = description;
 		this.fieldValidations = validations;
