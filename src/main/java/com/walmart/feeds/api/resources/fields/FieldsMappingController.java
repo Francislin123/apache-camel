@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.resources.fields;
 
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingService;
@@ -79,6 +80,20 @@ public class FieldsMappingController {
                         .mappedFields(f.getMappedFields())
                         .build()).collect(Collectors.toList())
                 ).build());
+    }
+
+    @ApiOperation(value = "Method to delete fields mapping",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "FieldsMappingEntity delete successfully", response = FieldsMappingRequest.class),
+            @ApiResponse(code = 404, message = "FieldsMappingEntity not delete"),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
+    @RequestMapping(value = "/{slug}",
+            method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> deleteFieldsMapping(@PathVariable("slug") String slug) throws EntityNotFoundException {
+
+        fieldsMappingService.deleteFieldsMapping(slug);
+
+        return ResponseEntity.noContent().build();
     }
 
     @ApiOperation(value = "Update the existent fields mapping",

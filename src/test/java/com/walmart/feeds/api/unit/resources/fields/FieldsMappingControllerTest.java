@@ -5,6 +5,7 @@ import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingService;
 import com.walmart.feeds.api.resources.fields.FieldsMappingController;
@@ -101,18 +102,13 @@ public class FieldsMappingControllerTest {
 
     }
 
-    /**
-     * Test the fieldsMapping without mapped fields list
-     *
-     * @throws Exception
-     */
     @Test
     public void testCreatedNewFieldsMappingWhenMappedFieldsIsEmpty() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post(URI_FIELDSDMAPPING)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(FieldsMappingRequest.class)
-                    .gimme(FIELDS_MAPPING_REQUEST_EMPTY_MAPPED_FIELDS))))
+                        .gimme(FIELDS_MAPPING_REQUEST_EMPTY_MAPPED_FIELDS))))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
         verify(fieldsMappingService, times(0)).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
@@ -121,14 +117,38 @@ public class FieldsMappingControllerTest {
 
     //---------------------------------- Test Create Fields Mapping end ---------------------------------------------//
 
-    //---------------------------------- Test Listing Fields Mapping begin ------------------------------------------//
+    //---------------------------------- Test delete Fields Mapping begin -------------------------------------------//
 
-    /**
-     * Test the fieldsMapping when mapped fields list has invalids elements,
-     * e.g. mapped fields with empty wmField or partnerField
-     *
-     * @throws Exception
-     */
+    @Test
+    public void testDeleteFieldsMapping() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete(FieldsMappingController.URI_FIELDSDMAPPING + "/slug")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    public void testDeleteFieldsMappingNonExistent() throws Exception {
+        doThrow(EntityNotFoundException.class).when(fieldsMappingService).deleteFieldsMapping("buscape");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete(FieldsMappingController.URI_FIELDSDMAPPING + "/buscape")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    public void testDeleteFieldsMappingUnhandledException() throws Exception {
+        doThrow(Exception.class).when(fieldsMappingService).deleteFieldsMapping("buscape");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete(FieldsMappingController.URI_FIELDSDMAPPING + "/buscape")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+    }
+
+    //---------------------------------- Test delete Fields Mapping begin -------------------------------------------//
+
     @Test
     public void testCreatedNewFieldsMappingWhenMappedFieldsIsInvalid() throws Exception {
 
@@ -141,11 +161,6 @@ public class FieldsMappingControllerTest {
         verify(fieldsMappingService, times(0)).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
     }
 
-    /**
-     * Test the FieldsMappging when mapped fields list contains null elements
-     *
-     * @throws Exception
-     */
     @Test
     public void testCreatedNewFieldsMappingWhenMappedFieldsHasNullElements() throws Exception {
 
@@ -153,12 +168,12 @@ public class FieldsMappingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(FieldsMappingRequest.class)
                         .gimme(FIELDS_MAPPING_REQUEST_NULL_MAPPED_FIELDS))))
-            .andDo(response -> {
-                if (response.getResponse().getStatus() != 404) {
-                    System.out.println("STILL FAILING BECAUSE THERE IS NO VALIDATOR");
-                }
-            })
-            .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andDo(response -> {
+                    if (response.getResponse().getStatus() != 404) {
+                        System.out.println("STILL FAILING BECAUSE THERE IS NO VALIDATOR");
+                    }
+                })
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
         verify(fieldsMappingService, times(0)).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
 
@@ -173,7 +188,7 @@ public class FieldsMappingControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post(URI_FIELDSDMAPPING)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(FieldsMappingRequest.class)
-                    .gimme(FIELDS_MAPPING_REQUEST))))
+                        .gimme(FIELDS_MAPPING_REQUEST))))
                 .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
                 .andExpect(MockMvcResultMatchers.status().isConflict());
     }
@@ -185,7 +200,7 @@ public class FieldsMappingControllerTest {
                 .put(FieldsMappingController.URI_FIELDSDMAPPING + "/buscape")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(FieldsMappingRequest.class).gimme(FIELDS_MAPPING_REQUEST))))
-            .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
     }
 
@@ -208,12 +223,12 @@ public class FieldsMappingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(FieldsMappingRequest.class)
                         .gimme(FIELDS_MAPPING_REQUEST_NULL_MAPPED_FIELDS))))
-            .andDo(response -> {
-                if (response.getResponse().getStatus() != 404) {
-                    System.out.println("STILL FAILING BECAUSE THERE IS NO VALIDATOR");
-                }
-            })
-            .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andDo(response -> {
+                    if (response.getResponse().getStatus() != 404) {
+                        System.out.println("STILL FAILING BECAUSE THERE IS NO VALIDATOR");
+                    }
+                })
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
