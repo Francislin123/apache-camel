@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.resources.feed.request;
 
+import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyMapEntry;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedNotificationUrl;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedType;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class FeedRequest {
     private FeedNotificationData notification;
 
     @Valid
+    @NotEmptyMapEntry
     private Map<String, String> utms;
 
     @NotNull

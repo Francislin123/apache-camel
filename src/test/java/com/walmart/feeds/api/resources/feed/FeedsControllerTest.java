@@ -16,8 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -96,9 +94,33 @@ public class FeedsControllerTest {
     }
 
     @Test
+    public void testCreateFeedWithInvalidUtmList() throws Exception {
+
+//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
+
+        mockMvc.perform(
+                post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-with-invalid-utm-list")))
+        ).andExpect(status().isBadRequest());
+
+        verify(feedService, times(0)).createFeed(any(FeedEntity.class));
+    }
+
+    @Test
+    public void testCreateFeedWithAnEmptyName() throws Exception {
+
+//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
+
+        mockMvc.perform(
+                post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-with-empty-name")))
+        ).andExpect(status().isBadRequest());
+
+        verify(feedService, times(0)).createFeed(any(FeedEntity.class));
+    }
+
+    @Test
     public void testCreateFeedWhenRequestIsIvalid() throws Exception {
 
-        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
+//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
 
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-without-name")))
