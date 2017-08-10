@@ -12,13 +12,15 @@ This application responsible for setting up a feed, through it you can register 
   - Oracle 11
 
 
-### You can also:
+##### You can also:
+
 
 - Merge request in the master branch after being applied in production
 - All stories need a branch from the homologation
 - Every task needs a branch from the story
 - The merge of the branchs of the tasks must be done in the equivalent
 - A member who has developed the story will be responsible for the merge request in the homologation
+
 
 ### Clone project and Run application
 
