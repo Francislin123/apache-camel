@@ -38,13 +38,13 @@ public class FieldsMappingTemplateLoader implements TemplateLoader {
             add("mappedFields", mappedFields);
         }});
 
-        Fixture.of(FieldsMappingRequest.class).addTemplate("invalid_fields_mapping_request_no_mapped_fields", new Rule() {{
+        Fixture.of(FieldsMappingRequest.class).addTemplate("fields_mapping_request_empty_mapped_fields", new Rule() {{
             add("name", "Buscape");
         }});
 
-        Fixture.of(PartnerUpdateRequest.class).addTemplate("fields_mapping_update_request", new Rule() {{
+        Fixture.of(FieldsMappingRequest.class).addTemplate("fields_mapping_request_null_mapped_fields", new Rule() {{
             add("name", "Buscape");
-            add("mappedFields", Arrays.asList("price"));
+            add("mappedFields", Arrays.asList(null, null));
         }});
 
         Fixture.of(PartnerUpdateRequest.class).addTemplate("invalid_fields_mapping_udpate_request", new Rule() {{
