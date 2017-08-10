@@ -34,30 +34,35 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class FieldsMappingControllerTest {
 
-    //Simula requisicao ao controller
+    //Simulate controller request
     private MockMvc mockMvc;
 
-    //Injeta o objeto da requisicao e faz o parse do Objeto para Jsom
+    //Injects the object from the request and parse the object to Json
     private ObjectMapper mapper;
 
-    //Injeta o meu controller
-    @InjectMocks
-    private FieldsMappingController fieldsMappingController = new FieldsMappingController();
-
+    //Create a instance to be used by controller
     @Mock
     private FieldsMappingService fieldsMappingService;
 
+    //Inject my controller fieldsMappingService Obs(MOCK)
+    @InjectMocks
+    private FieldsMappingController fieldsMappingController = new FieldsMappingController();
+
+    //Run only once
     @BeforeClass
     public static void setUp() {
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.fields.test.template");
     }
 
+    //And always run before the test
     @Before
     public void init() {
         mockMvc = MockMvcBuilders.standaloneSetup(fieldsMappingController)
                 .setControllerAdvice(new FeedsAdminAPIExceptionHandler()).build();
         mapper = new ObjectMapper();
     }
+
+    //---------------------------------- Test Create Fields Mapping begin ------------------------------------------//
 
     @Test
     public void testCreateFieldsMapping() throws Exception {
@@ -68,7 +73,7 @@ public class FieldsMappingControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
 
-        Mockito.verify(fieldsMappingService, times(1)).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
+        Mockito.verify(fieldsMappingService).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
 
     }
 
@@ -113,6 +118,10 @@ public class FieldsMappingControllerTest {
         verify(fieldsMappingService, times(0)).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
 
     }
+
+    //---------------------------------- Test Create Fields Mapping end ---------------------------------------------//
+
+    //---------------------------------- Test Listing Fields Mapping begin ------------------------------------------//
 
     /**
      * Test the fieldsMapping when mapped fields list has invalids elements,
@@ -165,6 +174,7 @@ public class FieldsMappingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(FieldsMappingRequest.class)
                     .gimme(FIELDS_MAPPING_REQUEST))))
+                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
                 .andExpect(MockMvcResultMatchers.status().isConflict());
     }
 

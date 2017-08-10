@@ -131,6 +131,7 @@ public class PartnerController {
             @ApiResponse(code = 500, message = "Unhandled exception")})
     @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CollectionResponse<PartnerResponse>> fetchAllPartners(@RequestParam(value = "active", required = false) Boolean active) {
+
         List<PartnerEntity> allPartners = service.findPartnersByStatus(active);
 
         return ResponseEntity.ok().body(CollectionResponse.<PartnerResponse>builder()

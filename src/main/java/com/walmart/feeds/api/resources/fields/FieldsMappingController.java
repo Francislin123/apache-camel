@@ -2,11 +2,11 @@ package com.walmart.feeds.api.resources.fields;
 
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
-import com.walmart.feeds.api.core.service.feed.FeedService;
-import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
+import com.walmart.feeds.api.resources.feed.CollectionResponse;
 import com.walmart.feeds.api.resources.fields.request.FieldsMappingRequest;
+import com.walmart.feeds.api.resources.fields.response.FieldsMappingResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -21,6 +21,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -37,9 +38,6 @@ public class FieldsMappingController {
 
     @Autowired
     private FieldsMappingService fieldsMappingService;
-
-    //@Autowired
-    private FeedService feedService = new FeedServiceImpl();
 
     @ApiOperation(value = "Create new fields mapping",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
@@ -65,6 +63,24 @@ public class FieldsMappingController {
 
     }
 
+    @ApiOperation(value = "FieldsMappingEntity Listing Method",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of all fields mapping", response = CollectionResponse.class, responseContainer = "List"),
+            @ApiResponse(code = 404, message = "Fields mapping not change"),
+            @ApiResponse(code = 500, message = "Unhandled exception")})
+    @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<CollectionResponse<FieldsMappingResponse>> listAllFieldsMapping() {
+
+        List<FieldsMappingEntity> allFieldsMapping = fieldsMappingService.findAllFieldsMapping();
+        return ResponseEntity.ok().body(CollectionResponse.<FieldsMappingResponse>builder()
+                .result(allFieldsMapping.stream().map(f -> FieldsMappingResponse.builder()
+                        .name(f.getName())
+                        .slug(f.getSlug())
+                        .mappedFields(f.getMappedFields())
+                        .build()).collect(Collectors.toList())
+                ).build());
+    }
+
     @ApiOperation(value = "Update the existent fields mapping",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
@@ -81,17 +97,18 @@ public class FieldsMappingController {
                 .name(request.getName())
                 .slug(slug)
                 .mappedFields(
-                    request.getMappedFields().stream().map(m -> MappedFieldEntity.builder()
-                        .partnerField(m.getPartnerField())
-                        .wmField(m.getWmField())
-                        .required(m.isRequired())
-                        .build())
-                        .collect(Collectors.toList()))
+                        request.getMappedFields().stream().map(m -> MappedFieldEntity.builder()
+                                .partnerField(m.getPartnerField())
+                                .wmField(m.getWmField())
+                                .required(m.isRequired())
+                                .build())
+                                .collect(Collectors.toList()))
                 .build();
 
         fieldsMappingService.updateFieldsMapping(mappingEntity);
 
         return ResponseEntity.ok().build();
     }
+
 }
 
