@@ -7,6 +7,7 @@ import lombok.experimental.Tolerate;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -19,6 +20,7 @@ public class FieldsMappingRequest {
     @NotBlank
     private String name;
 
+    @Valid
     @NotEmpty
     private List<MappedFieldEntity> mappedFields;
 

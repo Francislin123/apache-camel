@@ -55,8 +55,8 @@ public class FieldsMappingServiceTest {
                 .thenReturn(Optional.of(createFieldsMapping()));
 
         mappingService.saveFieldsdMapping(createFieldsMapping());
-
         Mockito.verify(fmRepository).findBySlug(Mockito.anyString());
+
         Mockito.verifyNoMoreInteractions(historyRepository);
 
     }

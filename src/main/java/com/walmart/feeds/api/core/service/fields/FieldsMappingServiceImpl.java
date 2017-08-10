@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,7 +41,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
         }
 
         if (fieldsMappingEntity.getMappedFields().isEmpty()){
-            throw new IllegalArgumentException("No mapped fields related with fields mapping " + fieldsMappingEntity.getName());
+            throw new UserException("No mapped fields related with fields mapping " + fieldsMappingEntity.getName());
         }
 
         persistFieldsMapping(fieldsMappingEntity);
