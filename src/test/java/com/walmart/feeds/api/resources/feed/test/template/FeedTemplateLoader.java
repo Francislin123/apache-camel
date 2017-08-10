@@ -51,5 +51,23 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("notification", notification);
         }});
 
+        Fixture.of(FeedRequest.class).addTemplate("feed-full-with-empty-name").inherits("feed-request-generic-valid", new Rule() {{
+            add("name", "     ");
+            add("type", FeedType.FULL.getType());
+            FeedNotificationData notification = Fixture.from(FeedNotificationData.class).gimme("valid-notification-file");
+            add("notification", notification);
+        }});
+
+        Fixture.of(FeedRequest.class).addTemplate("feed-full-with-invalid-utm-list").inherits("feed-request-generic-valid", new Rule() {{
+            add("type", FeedType.FULL.getType());
+            FeedNotificationData notification = Fixture.from(FeedNotificationData.class).gimme("valid-notification-file");
+            add("notification", notification);
+
+            Map<String, String> utms = new HashMap();
+            utms.put("teste", null);
+            utms.put("teste1", "    ");
+            add("utms", utms);
+        }});
+
     }
 }
