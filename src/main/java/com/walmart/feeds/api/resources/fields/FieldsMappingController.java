@@ -44,9 +44,9 @@ public class FieldsMappingController {
     @ApiOperation(value = "Create new fields mapping",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = " Successful new fields mapping ", response = FieldsMappingRequest.class),
-            @ApiResponse(code = 409, message = " FieldsMappingEntity already exists "),
-            @ApiResponse(code = 500, message = " Unhandled exception ")})
+            @ApiResponse(code = 201, message = "Successful new fields mapping"),
+            @ApiResponse(code = 409, message = "FieldsMappingEntity already exists"),
+            @ApiResponse(code = 500, message = "Unhandled exception")})
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createFieldsMapping(@RequestBody @Valid FieldsMappingRequest fieldsMappingRequest, UriComponentsBuilder builder) {
 
@@ -64,6 +64,12 @@ public class FieldsMappingController {
 
     }
 
+    @ApiOperation(value = "Update the existent fields mapping",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful on update the fields mapping", response = FieldsMappingRequest.class),
+            @ApiResponse(code = 404, message = "FieldsMappingEntity not found"),
+            @ApiResponse(code = 500, message = "Unhandled exception")})
     @RequestMapping(value = "{slug}", method = RequestMethod.PUT)
     public ResponseEntity updateMapping(@RequestBody @Valid FieldsMappingRequest request,
                                         @PathVariable("slug") String slug) {
@@ -74,12 +80,12 @@ public class FieldsMappingController {
                 .name(request.getName())
                 .slug(slug)
                 .mappedFields(
-                        request.getMappedFields().stream().map(m -> MappedFieldEntity.builder()
-                                .partnerField(m.getPartnerField())
-                                .wmField(m.getWmField())
-                                .required(m.isRequired())
-                                .build())
-                                .collect(Collectors.toList()))
+                    request.getMappedFields().stream().map(m -> MappedFieldEntity.builder()
+                        .partnerField(m.getPartnerField())
+                        .wmField(m.getWmField())
+                        .required(m.isRequired())
+                        .build())
+                        .collect(Collectors.toList()))
                 .build();
 
         fieldsMappingService.updateFieldsMapping(mappingEntity);

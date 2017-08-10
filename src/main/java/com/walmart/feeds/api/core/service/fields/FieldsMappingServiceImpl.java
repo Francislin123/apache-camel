@@ -33,6 +33,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     private FieldsMappingHistoryRepository historyRepository;
 
     @Override
+    @Transactional
     public void saveFieldsdMapping(FieldsMappingEntity fieldsMappingEntity) throws IllegalArgumentException {
 
         if (fieldsMappingRepository.findBySlug(fieldsMappingEntity.getSlug()).isPresent()) {
@@ -90,11 +91,11 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
             .build();
 
 
-        fieldsMappingRepository.save(updatedEntity);
+        fieldsMappingRepository.saveAndFlush(updatedEntity);
         logger.info("fieldsMapping={} message=saved_successfully", updatedEntity);
 
 
-        historyRepository.save(history);
+        historyRepository.saveAndFlush(history);
         logger.info("fieldsMappingHistory={} message=saved_successfully", history);
 
     }
