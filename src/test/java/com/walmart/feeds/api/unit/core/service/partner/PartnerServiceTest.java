@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +52,7 @@ public class PartnerServiceTest {
             when(repository.findBySlug(anyString())).thenReturn(Optional.of(new PartnerEntity()));
             when(repository.saveAndFlush(any(PartnerEntity.class))).thenReturn(createPartner());
 
-            PartnerEntity request = PartnerEntity.builder().name("Teste 123").build();
-
+            PartnerEntity request = PartnerEntity.builder().name("Teste 123").slug("teste").build();
 
             this.service.updatePartner(request);
 
