@@ -1,5 +1,4 @@
 # Feeds Admin Api
----
 
 This application responsible for setting up a feed, through it you can register a new partner, feed or map their fields to a template.
 
@@ -13,7 +12,7 @@ This application responsible for setting up a feed, through it you can register 
   - Oracle 11
 
 
-You can also:
+### You can also:
 
 - Merge request in the master branch after being applied in production
 - All stories need a branch from the homologation
