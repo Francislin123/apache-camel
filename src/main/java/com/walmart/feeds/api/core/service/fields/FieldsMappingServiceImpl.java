@@ -72,6 +72,12 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     }
 
     @Override
+    public void deleteFieldsMapping(FieldsMappingEntity fieldsMappingEntity) {
+        FieldsMappingEntity fieldsMappingDelete = findBySlug(fieldsMappingEntity.getSlug());
+        this.fieldsMappingRepository.delete(fieldsMappingDelete);
+    }
+
+    @Override
     public FieldsMappingEntity findBySlug(String slug) throws EntityNotFoundException {
 
         FieldsMappingEntity fieldsMapping = fieldsMappingRepository.findBySlug(slug).orElseThrow(() ->
@@ -79,6 +85,13 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
         return fieldsMapping;
 
+    }
+
+    @Override
+    public List<FieldsMappingEntity> findAllFieldsMapping() {
+        List<FieldsMappingEntity> fieldsMapping = fieldsMappingRepository.findAll();
+        logger.info("Total of fields mapping: {}", fieldsMapping.size());
+        return fieldsMapping;
     }
 
     private void persistFieldsMapping(FieldsMappingEntity updatedEntity) {

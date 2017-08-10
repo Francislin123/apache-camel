@@ -42,19 +42,19 @@ public class FieldsMappingTemplateLoader implements TemplateLoader {
             add("name", "Buscape");
         }});
 
-        Fixture.of(PartnerUpdateRequest.class).addTemplate("fields_mapping_update_request", new Rule() {{
+        Fixture.of(FieldsMappingRequest.class).addTemplate("fields_delete_request", new Rule() {{
+            add("name", "Facebook");
+        }});
+
+        Fixture.of(FieldsMappingRequest.class).addTemplate("invalid_fields_mapping_udpate_request", new Rule() {{
             add("name", "Buscape");
             add("mappedFields", Arrays.asList("price"));
         }});
 
-        Fixture.of(PartnerUpdateRequest.class).addTemplate("invalid_fields_mapping_udpate_request", new Rule() {{
+        Fixture.of(FieldsMappingEntity.class).addTemplate("fields_mapping_entity", new Rule() {{
             add("name", "Buscape");
-            add("mappedFields", Arrays.asList("price"));
-        }});
-
-        Fixture.of(PartnerEntity.class).addTemplate("fields_mapping_entity", new Rule() {{
-            add("name", "Buscape");
-            add("mappedFields", Arrays.asList("price"));
+            add("slug", "buscape");
+            add("mappedFields", mappedFields);
         }});
     }
 }
