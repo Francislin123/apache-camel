@@ -126,6 +126,8 @@ public class FeedsController {
                                 .active(f.getPartner().isActive())
                                 .description(f.getPartner().getDescription())
                                 .name(f.getPartner().getName())
+                                .creationDate(f.getPartner().getCreationDate())
+                                .updateDate(f.getPartner().getUpdateDate())
                                 .partnerships(f.getPartner().getPartnershipsAsList())
                                 .build())
                         .type(f.getType())
