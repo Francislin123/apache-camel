@@ -3,7 +3,6 @@ package com.walmart.feeds.api.resources.feed.request;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedNotificationUrl;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedType;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;

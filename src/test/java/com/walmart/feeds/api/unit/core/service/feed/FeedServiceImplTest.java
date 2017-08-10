@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.core.service.feed;
+package com.walmart.feeds.api.unit.core.service.feed;
 
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
@@ -6,6 +6,7 @@ import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.feed;
+package com.walmart.feeds.api.unit.resources.feed;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
+import com.walmart.feeds.api.resources.feed.FeedsController;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
 import org.junit.Before;

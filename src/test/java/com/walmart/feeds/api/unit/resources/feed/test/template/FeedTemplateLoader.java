@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.feed.test.template;
+package com.walmart.feeds.api.unit.resources.feed.test.template;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;

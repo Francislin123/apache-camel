@@ -1,5 +1,6 @@
-package com.walmart.feeds.api.core.utils;
+package com.walmart.feeds.api.unit.core.utils;
 
+import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

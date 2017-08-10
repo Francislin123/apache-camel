@@ -1,0 +1,275 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <property name="uuid_type" value="VARCHAR(36)" dbms="mysql"/>
+    <property name="uuid_type" value="RAW(32)" dbms="oracle"/>
+
+    <property name="now" value="sysdate" dbms="oracle"/>
+    <property name="now" value="now()" dbms="mysql"/>
+    <property name="now" value="now()" dbms="postgresql"/>
+
+    <property name="uuid_function" value="UUID()" dbms="mysql"/>
+    <property name="uuid_function" value="sys_guid()" dbms="oracle"/>
+
+    <changeSet id="createPartnerTable" author="renato.ibanhez">
+
+        <comment>Creating partner table</comment>
+
+        <createTable tableName="partner">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+            <column name="partnerships" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner"/>
+            <dropForeignKeyConstraint baseTableName="partner" constraintName="fk_partner_partnership"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createPartnerHistoryTable" author="renato.ibanhez">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner"/>
+        </preConditions>
+
+        <comment>Creating partner_history table</comment>
+
+        <createTable tableName="partner_history">
+            <column name="history_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)">
+            </column>
+            <column name="partnerships" type="varchar(255)"/>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner_history"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createCommercialStructureTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner"/>
+        </preConditions>
+
+        <comment>Creating Commercial Structure table</comment>
+
+        <createTable tableName="commercial_structure">
+            <column name="id" type="$uuid_type">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="ce_partner_fk" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="commercial_structure"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createCEAssociationTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="commercial_structure"/>
+        </preConditions>
+
+        <comment>Create EC Association table</comment>
+
+        <createTable tableName="ce_association">
+            <column name="id" type="$uuid_type">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="commercial_structure_id" type="${uuid_type}">
+                <constraints foreignKeyName="ce_association_fk" nullable="false"/>
+            </column>
+            <column name="partner_ce_id" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="walmart_taxonomy" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_taxonomy" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="ce_association"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createFeedTable" author="renato.ibanhez">
+
+        <comment>Creating feed table</comment>
+
+        <createTable tableName="feed">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_method" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_format" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_url" type="varchar(255)"/>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="feed"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createFeedHistoryTable" author="renato.ibanhez">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="feed"/>
+        </preConditions>
+
+        <comment>Creating feed_history table</comment>
+        <createTable tableName="feed_history">
+         <column name="history_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_method" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_format" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_url" type="varchar(255)"/>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="feed_history"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="createFeedUtmTable" author="renato.ibanhez">
+
+        <preConditions onError="HALT">
+            <tableExists tableName="feed"/>
+        </preConditions>
+
+        <comment>Creating feed_utms table</comment>
+
+        <createTable tableName="feed_utms">
+            <column name="feed_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="utm_type" type="varchar(20)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="utm_value" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="feed_utms" baseColumnNames="feed_id" constraintName="fk_feed_utm"
+                                 referencedTableName="feed"
+                                 referencedColumnNames="id"/>
+
+        <rollback>
+            <dropTable tableName="feed_utms"/>
+            <dropForeignKeyConstraint baseTableName="feed_utms" constraintName="fk_feed_utms"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
