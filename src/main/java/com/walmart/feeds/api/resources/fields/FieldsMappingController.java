@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.resources.fields;
 
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingService;
@@ -7,7 +8,6 @@ import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.feed.CollectionResponse;
 import com.walmart.feeds.api.resources.fields.request.FieldsMappingRequest;
 import com.walmart.feeds.api.resources.fields.response.FieldsMappingResponse;
-import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -41,9 +41,10 @@ public class FieldsMappingController {
     private FieldsMappingService fieldsMappingService;
 
     @ApiOperation(value = "Create new fields mapping",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successful new fields mapping", response = FieldsMappingRequest.class),
+            @ApiResponse(code = 201, message = "Successful new fields mapping"),
             @ApiResponse(code = 409, message = "FieldsMappingEntity already exists"),
             @ApiResponse(code = 500, message = "Unhandled exception")})
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -81,6 +82,26 @@ public class FieldsMappingController {
                 ).build());
     }
 
+    @ApiOperation(value = "Method to delete fields mapping",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "FieldsMappingEntity delete successfully", response = FieldsMappingRequest.class),
+            @ApiResponse(code = 404, message = "FieldsMappingEntity not delete"),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
+    @RequestMapping(value = "/{slug}",
+            method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<?> deleteFieldsMapping(@PathVariable("slug") String slug) throws EntityNotFoundException {
+
+        fieldsMappingService.deleteFieldsMapping(slug);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @ApiOperation(value = "Update the existent fields mapping",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful on update the fields mapping", response = FieldsMappingRequest.class),
+            @ApiResponse(code = 404, message = "FieldsMappingEntity not found"),
+            @ApiResponse(code = 500, message = "Unhandled exception")})
     @RequestMapping(value = "{slug}", method = RequestMethod.PUT)
     public ResponseEntity updateMapping(@RequestBody @Valid FieldsMappingRequest request,
                                         @PathVariable("slug") String slug) {

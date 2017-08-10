@@ -14,7 +14,7 @@ public interface FieldsMappingService {
 
     void updateFieldsMapping(FieldsMappingEntity mappingEntity) throws EntityNotFoundException;
 
-    void deleteFieldsMapping(FieldsMappingEntity fieldsMappingEntity);
+    void deleteFieldsMapping(String fieldsMappingEntity);
 
     FieldsMappingEntity findBySlug(String slug) throws EntityNotFoundException;
 

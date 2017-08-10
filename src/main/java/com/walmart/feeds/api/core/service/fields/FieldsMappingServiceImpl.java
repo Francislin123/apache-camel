@@ -73,8 +73,8 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     }
 
     @Override
-    public void deleteFieldsMapping(FieldsMappingEntity fieldsMappingEntity) {
-        FieldsMappingEntity fieldsMappingDelete = findBySlug(fieldsMappingEntity.getSlug());
+    public void deleteFieldsMapping(String slug) {
+        FieldsMappingEntity fieldsMappingDelete = findBySlug(slug);
         this.fieldsMappingRepository.delete(fieldsMappingDelete);
     }
 
