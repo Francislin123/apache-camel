@@ -92,6 +92,8 @@ public class FeedsController {
                         .active(feedEntity.getPartner().isActive())
                         .description(feedEntity.getPartner().getDescription())
                         .name(feedEntity.getPartner().getName())
+                        .creationDate(feedEntity.getPartner().getCreationDate())
+                        .updateDate(feedEntity.getPartner().getUpdateDate())
                         .partnerships(feedEntity.getPartner().getPartnershipsAsList())
                         .build())
                 .type(feedEntity.getType())
