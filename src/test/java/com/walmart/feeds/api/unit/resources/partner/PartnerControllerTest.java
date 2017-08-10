@@ -1,12 +1,12 @@
 package com.walmart.feeds.api.unit.resources.partner;
 
-import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
-import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
 import com.walmart.feeds.api.resources.partner.PartnerController;
@@ -20,10 +20,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -32,9 +31,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.*;
@@ -101,7 +97,7 @@ public class PartnerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(PartnerRequest.class)
                     .gimme("valid_partner_request"))))
-            .andExpect(MockMvcResultMatchers.status().isConflict());
+                .andExpect(MockMvcResultMatchers.status().isConflict());
     }
 
     @Test
@@ -109,9 +105,7 @@ public class PartnerControllerTest {
         when(partnerService.findPartnersByStatus(null)).thenReturn(Fixture.from(PartnerEntity.class).gimme(2, "partner_entity"));
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS).contentType(MediaType.APPLICATION_JSON))
-                .andDo(result -> {
-                    logger.info("Result: {}", result.getResponse().getContentAsString());
-                })
+                .andDo(result -> logger.info("Result: {}", result.getResponse().getContentAsString())                )
                 .andExpect(MockMvcResultMatchers.jsonPath("$.result[0].slug", Matchers.is("buscape")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
@@ -120,13 +114,13 @@ public class PartnerControllerTest {
 
     @Test
     public void testFetchAllPartnersWithDatabaseDown() throws Exception {
-        when(partnerService.findPartnersByStatus(anyBoolean())).thenThrow(Exception.class);
+        when(partnerService.findPartnersByStatus(any())).thenThrow(Exception.class);
 
         mockMvc.perform(MockMvcRequestBuilders.get(URI_PARTNERS)
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(MockMvcResultMatchers.status().isInternalServerError());
 
-        verify(partnerService).findPartnersByStatus(anyBoolean());
+        verify(partnerService).findPartnersByStatus(any());
     }
 
     @Test
