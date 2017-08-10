@@ -2,7 +2,6 @@ package com.walmart.feeds.api.resources.feed.validator;
 
 import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyMapEntry;
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
-import org.springframework.util.StringUtils;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -26,28 +25,27 @@ public class NotEmptyMapValidator implements ConstraintValidator<NotEmptyMapEntr
         ((ConstraintValidatorContextImpl) context).addExpressionVariable("regexKeyPattern", allowedKeyPattern);
         ((ConstraintValidatorContextImpl) context).addExpressionVariable("regexValuePattern", allowedValuePattern);
 
+        if (map == null) {
+            return false;
+        }
+
         Set<?> keySet = map.keySet();
 
         long keySetErrorCount = keySet.stream().filter(k -> {
             if (k instanceof String) {
-                if (allowedKeyPattern != null && !allowedKeyPattern.isEmpty()) {
-                    String value = (String) k;
-                    return !value.matches(allowedKeyPattern) || StringUtils.isEmpty(value.trim()) || "null".equals(value.toLowerCase());
-                }
+                return !ValidatorUtils.isValid((String) k, allowedKeyPattern, "null");
             }
             return k == null;
         }).count();
 
         long valuesErrorCount = map.values().stream().filter(v -> {
             if (v instanceof String) {
-                if (allowedValuePattern != null && !allowedValuePattern.isEmpty()) {
-                    String value = (String) v;
-                    return !value.matches(allowedValuePattern) || StringUtils.isEmpty(value.trim()) || "null".equals(value.toLowerCase());
-                }
+                return !ValidatorUtils.isValid((String) v, allowedValuePattern, "null");
             }
             return v == null;
         }).count();
 
         return keySetErrorCount == 0 && valuesErrorCount == 0;
     }
+
 }
