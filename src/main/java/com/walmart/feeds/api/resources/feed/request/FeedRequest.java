@@ -37,12 +37,7 @@ public class FeedRequest {
     @NotNull
     private Boolean active;
 
-
-    // CERTO?
-    // @Transient
+    @NotBlank
     private String template;
-
-
-
 
 }

@@ -30,6 +30,7 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("name", "FeedEntity WM Test");
             add("utms", utms);
             add("active", true);
+            add("template", "template-buscape");
         }});
 
         Fixture.of(FeedRequest.class).addTemplate("feed-full-api-valid").inherits("feed-request-generic-valid", new Rule() {{

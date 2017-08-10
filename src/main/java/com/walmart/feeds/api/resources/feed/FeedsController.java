@@ -87,6 +87,7 @@ public class FeedsController {
 
         return ResponseEntity.ok().body(FeedResponse.builder()
                 .name(feedEntity.getName())
+                .templateEntity(feedEntity.getTemplate())
                 .slug(feedEntity.getSlug())
                 .notification(FeedNotificationData.builder()
                         .format(feedEntity.getNotificationFormat().getType())
@@ -122,6 +123,7 @@ public class FeedsController {
                 .result(listFeedEntity.stream().map(f -> FeedResponse.builder()
                         .name(f.getName())
                         .slug(f.getSlug())
+                        .templateEntity(f.getTemplate())
                         .notification(FeedNotificationData.builder()
                                 .format(f.getNotificationFormat().getType())
                                 .method(f.getNotificationMethod().getType())
