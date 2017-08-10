@@ -42,7 +42,8 @@ public class FieldsMappingController {
     private FeedService feedService = new FeedServiceImpl();
 
     @ApiOperation(value = "Create new fields mapping",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successful new fields mapping"),
             @ApiResponse(code = 409, message = "FieldsMappingEntity already exists"),
@@ -65,7 +66,7 @@ public class FieldsMappingController {
     }
 
     @ApiOperation(value = "Update the existent fields mapping",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful on update the fields mapping", response = FieldsMappingRequest.class),
             @ApiResponse(code = 404, message = "FieldsMappingEntity not found"),

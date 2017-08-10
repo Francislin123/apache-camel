@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
-import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -25,9 +25,11 @@ public class MappedFieldEntity {
     @GenericGenerator(name = "mapped_field_uuid_generator", strategy = "uuid2")
     private UUID id;
 
+    @NotBlank
     @Column
     private String wmField;
 
+    @NotBlank
     @Column
     private String partnerField;
 
