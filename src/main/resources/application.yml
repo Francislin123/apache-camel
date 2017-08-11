@@ -4,10 +4,15 @@ server:
     context-path: /api
 
 spring:
-  h2:
-    console:
-      enabled: true
+  datasource:
+      url: jdbc:oracle:thin:@localhost:1521/xe
+      username: feeds_admin
+      password: feeds_admin
+      hikari:
+        connection-timeout: 60000
+        maximum-pool-size: 5
   jpa:
+    database-platform: org.hibernate.dialect.Oracle10gDialect
     show-sql: true
 
 ---
