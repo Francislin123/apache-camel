@@ -47,7 +47,6 @@
 
         <rollback>
             <dropTable tableName="partner"/>
-            <dropForeignKeyConstraint baseTableName="partner" constraintName="fk_partner_partnership"/>
         </rollback>
 
     </changeSet>
@@ -233,8 +232,8 @@
                                  referencedColumnNames="id"/>
 
         <rollback>
+            <dropForeignKeyConstraint baseTableName="feed_utms" constraintName="fk_feed_utm"/>
             <dropTable tableName="feed_utms"/>
-            <dropForeignKeyConstraint baseTableName="feed_utms" constraintName="fk_feed_utms"/>
         </rollback>
     </changeSet>
 
