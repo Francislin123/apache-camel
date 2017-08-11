@@ -25,10 +25,7 @@ public class NotEmptyElementsValidator implements ConstraintValidator<NotEmptyEl
         return o != null && o.stream().filter(a -> {
 
             if (a instanceof String) {
-                if (allowedPattern != null && !allowedPattern.isEmpty()) {
-                    String value = (String) a;
-                    return !value.matches(allowedPattern) || StringUtils.isEmpty(value.trim());
-                }
+                return !ValidatorUtils.isValid((String)a, allowedPattern, "null");
             }
 
             return a == null;
