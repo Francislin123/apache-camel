@@ -1,6 +1,6 @@
 package com.walmart.feeds.api.resources.feed.validator.annotation;
 
-import com.walmart.feeds.api.resources.feed.validator.NotEmptyMapValidator;
+import com.walmart.feeds.api.resources.feed.validator.NotEmptyElementsValidator;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Constraint;
@@ -8,20 +8,17 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = NotEmptyMapValidator.class)
+@Constraint(validatedBy = NotEmptyElementsValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @NotEmpty
-public @interface NotEmptyMapEntry {
+public @interface NotEmptyElements {
 
-    String message() default "{com.walmart.validation.constraints.NotEmptyMapEntry.message}";
+    String message() default "{com.walmart.validation.constraints.NotEmptyElements.message}";
 
-    String allowedKeyPattern() default ".*";
-
-    String allowedValuePattern() default ".*";
+    String allowedPattern() default ".*";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
-
 }

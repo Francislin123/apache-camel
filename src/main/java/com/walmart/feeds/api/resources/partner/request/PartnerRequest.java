@@ -1,16 +1,12 @@
 package com.walmart.feeds.api.resources.partner.request;
 
+import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyElements;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -24,7 +20,7 @@ public class PartnerRequest {
     @Size(max = 255)
     private String description;
 
-    @NotEmpty
+    @NotEmptyElements(allowedPattern = "[\\w\\d-\\s_]+")
     private List<String> partnerships;
 
     private boolean active;
