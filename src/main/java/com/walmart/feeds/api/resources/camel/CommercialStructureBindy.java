@@ -11,10 +11,10 @@ import org.apache.camel.dataformat.bindy.annotation.DataField;
 @Data
 public class CommercialStructureBindy {
 
-    @DataField(pos = 1)
+    @DataField(pos = 1, required = true , trim = true)
     private String structurePartnerId;
-    @DataField(pos = 2)
+    @DataField(pos = 2, required = true, trim = true)
     private String partnerTaxonomy;
-    @DataField(pos = 3)
+    @DataField(pos = 3, required = true, trim = true)
     private String walmartTaxonomy;
 }

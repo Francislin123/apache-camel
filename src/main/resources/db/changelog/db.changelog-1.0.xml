@@ -90,23 +90,67 @@
 
     </changeSet>
 
-    <changeSet id="createFeedTemplateTable" author="gabriel.cano">
-        <createTable tableName="feed_template">
+    <changeSet id="createCommercialStructureTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner"/>
+        </preConditions>
+
+        <comment>Creating Commercial Structure table</comment>
+
+        <createTable tableName="commercial_structure">
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="slug" type="varchar(50)">
                 <constraints unique="true" nullable="false"/>
             </column>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="cs_partner_fk" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
+
+        <rollback>
+            <dropTable tableName="commercial_structure"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createCSAssociationTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="commercial_structure"/>
+        </preConditions>
+
+        <comment>Create EC Association table</comment>
+
+        <createTable tableName="cs_association">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="commercial_structure_id" type="${uuid_type}">
+                <constraints foreignKeyName="cs_association_fk" nullable="false"/>
+            </column>
+            <column name="partner_cs_id" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="walmart_taxonomy" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_taxonomy" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="ce_association"/>
+        </rollback>
+
     </changeSet>
 
     <changeSet id="createFeedTable" author="renato.ibanhez">
-
-        <preConditions>
-            <tableExists tableName="feed_template"/>
-            <tableExists tableName="partner"/>
-        </preConditions>
 
         <comment>Creating feed table</comment>
 
@@ -119,9 +163,6 @@
             </column>
             <column name="partner_id" type="${uuid_type}">
                 <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
-            </column>
-            <column name="template_id" type="${uuid_type}">
-                <constraints foreignKeyName="feed_template_fk" nullable="false"/>
             </column>
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -148,13 +189,7 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="feed" constraintName="feed_partner_fk" referencedColumnNames="id" referencedTableName="partner" />
-        <addForeignKeyConstraint baseColumnNames="template_id" baseTableName="feed" constraintName="feed_template_fk" referencedColumnNames="id" referencedTableName="feed_template" />
-
         <rollback>
-            <dropForeignKeyConstraint baseTableName="feed" constraintName="feed_partner_fk"/>
-            <dropForeignKeyConstraint baseTableName="feed" constraintName="feed_template_fk"/>
-
             <dropTable tableName="feed"/>
         </rollback>
 
@@ -168,7 +203,7 @@
 
         <comment>Creating feed_history table</comment>
         <createTable tableName="feed_history">
-         <column name="history_id" type="${uuid_type}">
+            <column name="history_id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="slug" type="varchar(50)">
@@ -236,5 +271,4 @@
             <dropTable tableName="feed_utms"/>
         </rollback>
     </changeSet>
-
 </databaseChangeLog>

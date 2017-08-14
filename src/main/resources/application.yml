@@ -3,9 +3,13 @@ server:
   context-path: /api
 
 spring:
-  h2:
-    console:
-      enabled: true
+  datasource:
+      url: jdbc:oracle:thin:@localhost:1521/xe
+      username: FEEDS_ADMIN
+      password: FEEDS_ADMIN
+      hikari:
+        connection-timeout: 60000
+        maximum-pool-size: 5
   jpa:
     show-sql: true
 

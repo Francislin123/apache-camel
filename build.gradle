@@ -28,7 +28,7 @@ apply plugin: 'docker'
 ext {
     springBootVersion = '1.5.6.RELEASE'
     springFoxVersion = '2.4.0'
-    runList = 'main'
+    runList = 'local'
     camelVersion ='2.19.2'
 }
 
@@ -71,6 +71,12 @@ liquibase {
             username 'FEEDS_ADMIN'
             password 'FEEDS_ADMIN'
         }
+        local{
+            changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
+            url 'jdbc:oracle:thin:@localhost:1521/xe'
+            username 'FEEDS_ADMIN'
+            password 'FEEDS_ADMIN'
+        }
     }
     runList = project.ext.runList
 }
@@ -102,11 +108,8 @@ dependencies {
     compile "io.springfox:springfox-swagger2:${springFoxVersion}"
     compile "io.springfox:springfox-swagger-ui:${springFoxVersion}"
     compile 'de.siegmar:logback-gelf:1.0.4'
-    compile "org.apache.camel:camel-core:${camelVersion}"
-    compile "org.apache.camel:camel-spring-boot:${camelVersion}"
     compile "org.apache.camel:camel-spring-boot-starter:${camelVersion}"
     compile "org.apache.camel:camel-csv:${camelVersion}"
-    compile "org.apache.camel:camel-stream:${camelVersion}"
     compile "org.apache.camel:camel-bindy:${camelVersion}"
 
     compile "oracle:ojdbc6:11.2.0.3"

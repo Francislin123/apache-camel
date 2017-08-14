@@ -1,13 +1,12 @@
 package com.walmart.feeds.api.resources.commercialstructure;
 
-import com.walmart.feeds.api.core.exceptions.NotFoundException;
 import com.walmart.feeds.api.resources.commercialstructure.service.CommercialStructureService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.apache.camel.Exchange;
-import org.apache.camel.Produce;
+import org.apache.camel.CamelContext;
+import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -29,7 +28,7 @@ import java.util.Map;
 @RequestMapping(CommercialStructureController.V1_COMMERCIAL_STRUCTURE)
 public class CommercialStructureController {
 
-    public static final String V1_COMMERCIAL_STRUCTURE = "/v1/partners/{partnerSlug}/feeds/{feedSlug}/cs";
+    public static final String V1_COMMERCIAL_STRUCTURE = "/v1/partners/{partnerSlug}/commercialstructure";
 
     @Autowired
     private CommercialStructureService commercialStructureService;
@@ -43,11 +42,11 @@ public class CommercialStructureController {
             @ApiResponse(code = 201, message = "Successful file upload", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "File not found")})
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity uploadCommercialStructure(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("feedSlug") String feedSlug, @RequestParam("file") MultipartFile multipartFile) throws NotFoundException, URISyntaxException, IOException {
+    public ResponseEntity uploadCommercialStructure(@PathVariable("partnerSlug") String partnerSlug, @RequestParam("file") MultipartFile multipartFile) throws URISyntaxException, IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("partnerSlug", partnerSlug);
         map.put("archiveName", multipartFile.getName());
-        producerTemplate.requestBodyAndHeaders("direct:test", multipartFile.getInputStream(), map);
+        producerTemplate.sendBodyAndHeaders("direct:test", multipartFile.getInputStream(), map);
 
         //TODO URI COMPONENT FAILING TO PASS THROUGH
         return ResponseEntity.created(new URI("http:localhost")).build();

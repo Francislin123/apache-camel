@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -19,8 +20,8 @@ import java.util.UUID;
 public class CommercialStructureEntity extends AuditableEntity{
 
     @Id
-    @GeneratedValue(generator = "feed_uuid_generator")
-    @GenericGenerator(name = "feed_uuid_generator", strategy = "uuid2")
+    @GeneratedValue(generator = "commercial_structure_uuid_generator")
+    @GenericGenerator(name = "commercial_structure_uuid_generator", strategy = "uuid2")
     @Column(name = "id")
     private UUID id;
 
@@ -30,28 +31,20 @@ public class CommercialStructureEntity extends AuditableEntity{
     @Column(name = "slug")
     private String slug;
 
-    @Column(name = "structure_partner_id")
-    private String structurePartnerId;
-
-    @Column(name = "partner_taxonomy")
-    private String partnerTaxonomy;
-
-    @Column(name = "walmart_taxonomy")
-    private String walmartTaxonomy;
-
     @ManyToOne
     private PartnerEntity partner;
 
+    @OneToMany
+    private List<CommercialStructureAssociationEntity> associationEntityList;
+
     @Builder
     private CommercialStructureEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String archiveName, String slug,
-    String structurePartnerId, String partnerTaxonomy, String walmartTaxonomy, PartnerEntity partner){
+    PartnerEntity partner, List<CommercialStructureAssociationEntity> associationEntityList){
         super(creationDate, updateDate, user);
         this.id = id;
         this.archiveName = archiveName;
         this.slug = slug;
-        this.structurePartnerId = structurePartnerId;
-        this.partnerTaxonomy = partnerTaxonomy;
-        this.walmartTaxonomy = walmartTaxonomy;
         this.partner = partner;
+        this.associationEntityList = associationEntityList;
     }
 }
