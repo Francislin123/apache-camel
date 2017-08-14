@@ -9,6 +9,7 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 
 public class FeedNotificationFormatValidator implements ConstraintValidator<ValidFeedNotificationFormat, String> {
+
     @Override
     public void initialize(ValidFeedNotificationFormat constraintAnnotation) {
 
@@ -19,4 +20,5 @@ public class FeedNotificationFormatValidator implements ConstraintValidator<Vali
         ((ConstraintValidatorContextImpl) context).addExpressionVariable("feedNotificationFormatPossibleValues", Arrays.asList(FeedNotificationFormat.values()));
         return Arrays.asList(FeedNotificationFormat.values()).stream().anyMatch(f -> f.getType().equals(value));
     }
+
 }

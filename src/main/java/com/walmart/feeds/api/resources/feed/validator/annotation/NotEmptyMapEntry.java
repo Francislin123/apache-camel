@@ -16,6 +16,10 @@ public @interface NotEmptyMapEntry {
 
     String message() default "{com.walmart.validation.constraints.NotEmptyMapEntry.message}";
 
+    String allowedKeyPattern() default ".*";
+
+    String allowedValuePattern() default ".*";
+
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};

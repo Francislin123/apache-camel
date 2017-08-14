@@ -16,7 +16,7 @@ public @interface NotEmptyElements {
 
     String message() default "{com.walmart.validation.constraints.NotEmptyElements.message}";
 
-    String allowedPattern() default "*";
+    String allowedPattern() default ".*";
 
     Class<?>[] groups() default {};
 
