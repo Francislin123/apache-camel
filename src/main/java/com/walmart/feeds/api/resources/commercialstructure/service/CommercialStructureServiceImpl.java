@@ -22,7 +22,7 @@ public class CommercialStructureServiceImpl implements CommercialStructureServic
 
     @Override
     public void loadCommercialStructure(CommercialStructureEntity commercialStructureEntity) throws EntityNotFoundException {
-        
+
     }
 
 

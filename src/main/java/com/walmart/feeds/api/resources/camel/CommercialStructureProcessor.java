@@ -25,10 +25,11 @@ public class CommercialStructureProcessor {
     public CommercialStructureEntity process(Exchange exchange) throws EntityNotFoundException {
         List<CommercialStructureEntity> returnList = new ArrayList<>();
 
-        PartnerEntity partner = new PartnerEntity();
         //TODO next step
-//        PartnerEntity partner = partnerService.findBySlug(exchange.getIn().getHeader("partnerSlug").toString());
-        CommercialStructureEntity entity = CommercialStructureEntity.builder().slug(SlugParserUtil.toSlug(exchange.getIn().getHeader("archiveName").toString())).build();
+        PartnerEntity partner = partnerService.findBySlug(exchange.getIn().getHeader("partnerSlug").toString());
+        CommercialStructureEntity entity = CommercialStructureEntity.builder()
+                .slug(SlugParserUtil.toSlug(exchange.getIn().getHeader("archiveName").toString()))
+                .build();
         //TODO Create line validation
         for (CommercialStructureBindy bindy: (List<CommercialStructureBindy>)exchange.getIn().getBody()) {
 //            returnList.add(CommercialStructureEntity.builder().structurePartnerId(bindy.getStructurePartnerId())
