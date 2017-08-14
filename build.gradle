@@ -28,7 +28,7 @@ apply plugin: 'docker'
 ext {
     springBootVersion = '1.5.6.RELEASE'
     springFoxVersion = '2.4.0'
-    runList = 'main'
+    hibernateVersion = '5.0.12.Final'
 }
 
 repositories {
@@ -37,6 +37,10 @@ repositories {
     maven { url "http://artifactory.vmcommerce.intra/artifactory/libs-release" }
     maven { url "http://artifactory.vmcommerce.intra/artifactory/libs-snapshot" }
     jcenter()
+}
+
+bootRun {
+    jvmArgs = ["-Dspring.profiles.active=${project.env}"]
 }
 
 docker {
@@ -64,14 +68,29 @@ sonarqube {
 
 liquibase {
     activities {
-        main {
+        prod {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             url 'jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF'
             username 'FEEDS_ADMIN'
             password 'FEEDS_ADMIN'
         }
+
+        qa {
+            changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
+            url 'jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF'
+            username 'FEEDS_ADMIN'
+            password 'FEEDS_ADMIN'
+        }
+
+        local {
+            changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
+            url 'jdbc:oracle:thin:@//localhost:1521/xe'
+            username 'feeds_admin'
+            password 'feeds_admin'
+        }
     }
     runList = project.ext.runList
+
 }
 
 task buildDocker(type: Docker) {
@@ -97,6 +116,8 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+
+    compile "org.hibernate:hibernate-java8:${hibernateVersion}"
 
     compile "io.springfox:springfox-swagger2:${springFoxVersion}"
     compile "io.springfox:springfox-swagger-ui:${springFoxVersion}"
