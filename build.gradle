@@ -31,7 +31,6 @@ apply plugin: 'docker'
 ext {
     springBootVersion = '2.0.0.M3'
     springFoxVersion = '2.4.0'
-    runList = 'local'
 }
 
 repositories {
