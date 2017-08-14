@@ -1,18 +1,15 @@
 package com.walmart.feeds.api.core.repository.template.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.UUID;
-@Data
+
+@Getter
 @Entity
 @Table(name = "feed_template")
-@JsonIgnoreProperties(value = {"id"})
 public class TemplateEntity {
 
     @Id
@@ -21,10 +18,16 @@ public class TemplateEntity {
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "slug")
+    @Column(name = "slug" , unique = true)
     private String slug;
 
+    public TemplateEntity() {
+    }
 
-
+    @Builder
+    public TemplateEntity(UUID id, String slug) {
+        this.id = id;
+        this.slug = slug;
+    }
 }
 

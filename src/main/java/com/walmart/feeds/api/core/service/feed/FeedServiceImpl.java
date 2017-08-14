@@ -3,6 +3,7 @@ package com.walmart.feeds.api.core.service.feed;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
+import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
@@ -29,7 +30,7 @@ public class FeedServiceImpl implements FeedService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private FeedRepository  feedRepository;
+    private FeedRepository feedRepository;
 
     @Autowired
     private PartnerRepository partnerRepository;
@@ -56,7 +57,7 @@ public class FeedServiceImpl implements FeedService {
                 new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", feedEntity.getPartner().getSlug())));
 
         TemplateEntity template = templateRepository.findBySlug(feedEntity.getTemplate().getSlug()).orElseThrow(() ->
-                new EntityNotFoundException(String.format("TemplateEntity not found for reference %s", feedEntity.getTemplate().getSlug())));
+                new UserException(String.format("Template not found for reference %s", feedEntity.getTemplate().getSlug())));
 
         FeedEntity newFeed = FeedEntity.builder()
                 .utms(feedEntity.getUtms())

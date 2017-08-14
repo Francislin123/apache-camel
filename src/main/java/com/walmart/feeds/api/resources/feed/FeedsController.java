@@ -47,10 +47,6 @@ public class FeedsController {
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createFeed(@Valid @RequestBody FeedRequest request, @PathVariable("partnerSlug") String partnerSlug, UriComponentsBuilder builder) throws EntityNotFoundException {
 
-        TemplateEntity template = new TemplateEntity();
-
-        template.setSlug(request.getTemplate());
-
         FeedEntity feedEntity = FeedEntity.builder()
                 .slug(SlugParserUtil.toSlug(request.getName()))
                 .name(request.getName())
@@ -62,7 +58,9 @@ public class FeedsController {
                         .slug(partnerSlug)
                         .build())
                 .type(FeedType.getFromCode(request.getType()))
-                .template(template)
+                .template(TemplateEntity.builder()
+                        .slug(request.getTemplate())
+                        .build())
                 .utms(request.getUtms())
                 .build();
 
@@ -87,7 +85,7 @@ public class FeedsController {
 
         return ResponseEntity.ok().body(FeedResponse.builder()
                 .name(feedEntity.getName())
-                .templateEntity(feedEntity.getTemplate())
+                .template(feedEntity.getTemplate().getSlug())
                 .slug(feedEntity.getSlug())
                 .notification(FeedNotificationData.builder()
                         .format(feedEntity.getNotificationFormat().getType())
@@ -125,7 +123,7 @@ public class FeedsController {
                 .result(listFeedEntity.stream().map(f -> FeedResponse.builder()
                         .name(f.getName())
                         .slug(f.getSlug())
-                        .templateEntity(f.getTemplate())
+                        .template(f.getTemplate().getSlug())
                         .notification(FeedNotificationData.builder()
                                 .format(f.getNotificationFormat().getType())
                                 .method(f.getNotificationMethod().getType())

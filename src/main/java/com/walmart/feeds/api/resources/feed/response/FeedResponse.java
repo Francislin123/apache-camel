@@ -25,8 +25,7 @@ public class FeedResponse {
 
     private FeedType type;
 
-    @JsonProperty("template")
-    private TemplateEntity templateEntity;
+    private String template;
 
     private FeedNotificationData notification;
 

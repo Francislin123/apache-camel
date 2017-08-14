@@ -86,7 +86,7 @@ public class FeedsAdminAPIExceptionHandler {
 
     @ExceptionHandler(value = UserException.class)
     public ResponseEntity<ErrorResponse> userExceptionHandler(UserException ex, WebRequest request) {
-        logger.error("An unhandled error occurred", ex);
+        logger.error("An user error occurred", ex);
 
         return ResponseEntity.status(ex.getErrorCode())
                 .body(ErrorResponse.builder()

@@ -34,7 +34,6 @@ public class FeedEntity extends AuditableEntity {
     @Column(name = "name")
     private String name;
 
-    // TODO[r0i001q]: verify if exists another way to set this field with a builder pattern
     @ManyToOne
     private PartnerEntity partner;
 
