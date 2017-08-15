@@ -2,6 +2,7 @@ package com.walmart.feeds.api.unit.core.service.fields;
 
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
@@ -9,7 +10,9 @@ import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingHistory;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingService;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingServiceImpl;
+import com.walmart.feeds.api.persistence.ElasticSearchComponent;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -32,8 +36,19 @@ public class FieldsMappingServiceTest {
     @Mock
     private FieldsMappingHistoryRepository historyRepository;
 
+    @Mock
+    private ElasticSearchComponent elasticSearchComponent;
+
     @InjectMocks
     private FieldsMappingService mappingService = new FieldsMappingServiceImpl();
+
+    @Before
+    public void init() {
+
+        Mockito.when(elasticSearchComponent.getWalmartFields())
+                .thenReturn(Arrays.asList("name"));
+
+    }
 
     @Test
     public void testSaveFieldsdMapping() throws Exception {
@@ -48,6 +63,33 @@ public class FieldsMappingServiceTest {
 
     }
 
+    @Test
+    public void testSaveFieldsdMappingWhenWalmartFieldNotExist() throws Exception {
+
+        Mockito.when(fmRepository.findBySlug(anyString()))
+                .thenReturn(Optional.empty());
+
+        try {
+
+            FieldsMappingEntity fieldsMapping = createFieldsMapping();
+            fieldsMapping.getMappedFields()
+                    .add(MappedFieldEntity.builder().wmField("price").build());
+
+            mappingService.save(fieldsMapping);
+
+            Assert.fail(UserException.class.getName() + " expected");
+
+        } catch (UserException e) {
+
+            Assert.assertEquals("The walmart fields does not exists: [price]", e.getMessage());
+            Mockito.verify(fmRepository).findBySlug(anyString());
+            Mockito.verify(fmRepository, Mockito.times(0)).saveAndFlush(any(FieldsMappingEntity.class));
+            Mockito.verify(historyRepository, Mockito.times(0)).saveAndFlush(any(FieldsMappingHistory.class));
+
+        }
+
+    }
+
     @Test(expected = EntityAlreadyExistsException.class)
     public void testSaveFieldsdMappingDuplicatedConstraint() throws Exception {
 
@@ -55,14 +97,11 @@ public class FieldsMappingServiceTest {
                 .thenReturn(Optional.of(createFieldsMapping()));
 
         mappingService.save(createFieldsMapping());
-        Mockito.verify(fmRepository).findBySlug(Mockito.anyString());
-
-        Mockito.verifyNoMoreInteractions(historyRepository);
 
     }
 
     @Test
-    public void updateFieldsMapping() throws Exception {
+    public void testUpdateFieldsMapping() throws Exception {
 
         FieldsMappingEntity fieldsMapping = createFieldsMapping();
 
@@ -132,10 +171,13 @@ public class FieldsMappingServiceTest {
                 .required(false)
                 .build();
 
+        ArrayList<MappedFieldEntity> mappedFields = new ArrayList<>();
+        mappedFields.add(mappedField);
+
         FieldsMappingEntity mappingEntity = FieldsMappingEntity.builder()
                 .name("Buscapé")
                 .slug("buscape")
-                .mappedFields(Arrays.asList(mappedField))
+                .mappedFields(mappedFields)
                 .build();
 
         return mappingEntity;

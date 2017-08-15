@@ -10,6 +10,7 @@ import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingHistory;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
+import com.walmart.feeds.api.persistence.ElasticSearchComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FieldsMappingServiceImpl implements FieldsMappingService {
@@ -29,6 +31,9 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     @Autowired
     private FieldsMappingHistoryRepository historyRepository;
+
+    @Autowired
+    private ElasticSearchComponent elasticSearchComponent;
 
     @Override
     @Transactional
@@ -92,6 +97,17 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     }
 
     private void persistFieldsMapping(FieldsMappingEntity fieldsMapping) {
+
+        List<String> walmartFields = elasticSearchComponent.getWalmartFields();
+
+        List<String> invalidWalmartFields = fieldsMapping.getMappedFields().stream()
+                .filter(field -> !walmartFields.contains(field.getWmField()))
+                .map(field -> field.getWmField())
+                .collect(Collectors.toList());
+
+        if (!invalidWalmartFields.isEmpty()) {
+            throw new UserException("The walmart fields does not exists: " + invalidWalmartFields);
+        }
 
         fieldsMappingRepository.saveAndFlush(fieldsMapping);
         logger.info("fieldsMapping={} message=saved_successfully", fieldsMapping);

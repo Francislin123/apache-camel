@@ -5,6 +5,7 @@ import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
+import com.walmart.feeds.api.persistence.ElasticSearchComponent;
 import com.walmart.feeds.api.resources.feed.CollectionResponse;
 import com.walmart.feeds.api.resources.fields.request.FieldsMappingRequest;
 import com.walmart.feeds.api.resources.fields.response.FieldsMappingResponse;

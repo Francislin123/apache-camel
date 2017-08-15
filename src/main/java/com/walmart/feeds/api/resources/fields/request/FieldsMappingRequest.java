@@ -2,7 +2,6 @@ package com.walmart.feeds.api.resources.fields.request;
 
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyElements;
-import com.walmart.feeds.api.resources.fields.validator.annotation.ValidWalmartFields;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
@@ -22,7 +21,7 @@ public class FieldsMappingRequest {
     private String name;
 
     @Valid
-    @ValidWalmartFields
+    @NotEmptyElements
     private List<MappedFieldEntity> mappedFields;
 
     @Tolerate
