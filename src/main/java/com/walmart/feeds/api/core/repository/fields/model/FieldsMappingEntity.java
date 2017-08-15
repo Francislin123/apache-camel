@@ -1,11 +1,12 @@
 package com.walmart.feeds.api.core.repository.fields.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
+import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyElements;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
-import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -25,12 +26,15 @@ public class FieldsMappingEntity extends AuditableEntity {
     @GenericGenerator(name = "fields_mapping_uuid_generator", strategy = "uuid2")
     private UUID id;
 
+    @NotBlank
     @Column(name = "name")
     private String name;
 
+    @NotBlank
     @Column(name = "slug", unique = true)
     private String slug;
 
+    @NotEmptyElements
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "fields_mapping_id", referencedColumnName = "id")
     private List<MappedFieldEntity> mappedFields;
@@ -45,6 +49,6 @@ public class FieldsMappingEntity extends AuditableEntity {
     }
 
     @Tolerate
-    public FieldsMappingEntity() {
-    }
+    public FieldsMappingEntity() {}
+
 }

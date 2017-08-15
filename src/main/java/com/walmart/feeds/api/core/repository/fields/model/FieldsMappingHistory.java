@@ -1,6 +1,6 @@
 package com.walmart.feeds.api.core.repository.fields.model;
 
-import com.walmart.feeds.api.core.repository.AuditableEntity;
+import com.walmart.feeds.api.core.repository.AuditableHistoryEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 @Entity
 @Getter
-public class FieldsMappingHistory extends AuditableEntity {
+public class FieldsMappingHistory extends AuditableHistoryEntity {
 
     @Id
     @GeneratedValue(generator = "fields_mapping_uuid_generator")

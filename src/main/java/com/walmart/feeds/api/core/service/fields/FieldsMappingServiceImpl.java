@@ -95,17 +95,20 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
         return fieldsMapping;
     }
 
-    private void persistFieldsMapping(FieldsMappingEntity updatedEntity) {
+    private void persistFieldsMapping(FieldsMappingEntity fieldsMapping) {
+
+        fieldsMappingRepository.saveAndFlush(fieldsMapping);
+        logger.info("fieldsMapping={} message=saved_successfully", fieldsMapping);
+
 
         FieldsMappingHistory history = FieldsMappingHistory.builder()
-            .name(updatedEntity.getName())
-            .slug(updatedEntity.getSlug())
-            .mappedFields(getMappedFieldsAsJson(updatedEntity.getMappedFields()))
-            .build();
-
-
-        fieldsMappingRepository.saveAndFlush(updatedEntity);
-        logger.info("fieldsMapping={} message=saved_successfully", updatedEntity);
+                .name(fieldsMapping.getName())
+                .slug(fieldsMapping.getSlug())
+                .creationDate(fieldsMapping.getCreationDate())
+                .updateDate(fieldsMapping.getUpdateDate())
+                .user(fieldsMapping.getUser())
+                .mappedFields(getMappedFieldsAsJson(fieldsMapping.getMappedFields()))
+                .build();
 
 
         historyRepository.saveAndFlush(history);

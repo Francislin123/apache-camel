@@ -1,6 +1,6 @@
 package com.walmart.feeds.api.core.repository.partner.model;
 
-import com.walmart.feeds.api.core.repository.AuditableEntity;
+import com.walmart.feeds.api.core.repository.AuditableHistoryEntity;
 import lombok.Builder;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "partner_history")
-public class PartnerHistory extends AuditableEntity {
+public class PartnerHistory extends AuditableHistoryEntity {
 
     @Id
     @GeneratedValue(generator = "partner_history_uuid_generator")
@@ -49,13 +49,4 @@ public class PartnerHistory extends AuditableEntity {
         this.active = active;
     }
 
-    @Override
-    protected void prePersist() {
-        //do-nothing
-    }
-
-    @Override
-    protected void preUpdate() {
-        //do-nothing
-    }
 }
