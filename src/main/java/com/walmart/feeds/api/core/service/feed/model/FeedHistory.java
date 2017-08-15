@@ -3,6 +3,7 @@ package com.walmart.feeds.api.core.service.feed.model;
 import com.walmart.feeds.api.core.repository.AuditableEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import lombok.Builder;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
@@ -50,13 +51,17 @@ public class FeedHistory extends AuditableEntity {
     @Column(name = "flag_active")
     private boolean active;
 
+    @Transient
+    private TemplateEntity template;
+
+
     @Tolerate
     public FeedHistory() {
         this.active = true;
     }
 
     @Builder
-    public FeedHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, String notificationMethod, String notificationFormat, String notificationUrl, boolean active) {
+    public FeedHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, String notificationMethod, String notificationFormat, String notificationUrl, boolean active, TemplateEntity template) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
@@ -67,7 +72,11 @@ public class FeedHistory extends AuditableEntity {
         this.notificationFormat = notificationFormat;
         this.notificationUrl = notificationUrl;
         this.active = active;
+        this.template = template;
     }
+
+
+
 
     @Override
     protected void prePersist() {

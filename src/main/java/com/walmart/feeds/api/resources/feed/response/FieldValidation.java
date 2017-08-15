@@ -12,3 +12,4 @@ public class FieldValidation {
     private Object rejectedValue;
 
 }
+

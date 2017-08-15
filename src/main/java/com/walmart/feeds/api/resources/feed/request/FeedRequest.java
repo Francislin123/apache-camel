@@ -36,5 +36,7 @@ public class FeedRequest {
     @NotNull
     private Boolean active;
 
+    @NotBlank
+    private String template;
 
 }

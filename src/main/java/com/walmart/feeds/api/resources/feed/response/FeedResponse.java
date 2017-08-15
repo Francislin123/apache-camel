@@ -1,7 +1,9 @@
 package com.walmart.feeds.api.resources.feed.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
+import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import com.walmart.feeds.api.resources.serializers.LocalDateTimeSerializer;
@@ -22,6 +24,8 @@ public class FeedResponse {
     private PartnerResponse partner;
 
     private FeedType type;
+
+    private String template;
 
     private FeedNotificationData notification;
 
