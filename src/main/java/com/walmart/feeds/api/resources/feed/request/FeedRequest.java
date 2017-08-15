@@ -30,11 +30,13 @@ public class FeedRequest {
     private FeedNotificationData notification;
 
     @Valid
-    @NotEmptyMapEntry
+    @NotEmptyMapEntry(allowedKeyPattern = "[\\w\\d-_]+", allowedValuePattern = "[\\w\\d\\s-_]+")
     private Map<String, String> utms;
 
     @NotNull
     private Boolean active;
 
+    @NotBlank
+    private String template;
 
 }

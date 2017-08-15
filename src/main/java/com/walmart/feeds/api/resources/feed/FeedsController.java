@@ -6,6 +6,7 @@ import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.feed.FeedService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
@@ -57,6 +58,9 @@ public class FeedsController {
                         .slug(partnerSlug)
                         .build())
                 .type(FeedType.getFromCode(request.getType()))
+                .template(TemplateEntity.builder()
+                        .slug(request.getTemplate())
+                        .build())
                 .utms(request.getUtms())
                 .build();
 
@@ -80,6 +84,7 @@ public class FeedsController {
 
         return ResponseEntity.ok().body(FeedResponse.builder()
                 .name(feedEntity.getName())
+                .template(feedEntity.getTemplate().getSlug())
                 .slug(feedEntity.getSlug())
                 .notification(FeedNotificationData.builder()
                         .format(feedEntity.getNotificationFormat().getType())
@@ -91,6 +96,8 @@ public class FeedsController {
                         .active(feedEntity.getPartner().isActive())
                         .description(feedEntity.getPartner().getDescription())
                         .name(feedEntity.getPartner().getName())
+                        .creationDate(feedEntity.getPartner().getCreationDate())
+                        .updateDate(feedEntity.getPartner().getUpdateDate())
                         .partnerships(feedEntity.getPartner().getPartnershipsAsList())
                         .build())
                 .type(feedEntity.getType())
@@ -115,6 +122,7 @@ public class FeedsController {
                 .result(listFeedEntity.stream().map(f -> FeedResponse.builder()
                         .name(f.getName())
                         .slug(f.getSlug())
+                        .template(f.getTemplate().getSlug())
                         .notification(FeedNotificationData.builder()
                                 .format(f.getNotificationFormat().getType())
                                 .method(f.getNotificationMethod().getType())
@@ -125,6 +133,8 @@ public class FeedsController {
                                 .active(f.getPartner().isActive())
                                 .description(f.getPartner().getDescription())
                                 .name(f.getPartner().getName())
+                                .creationDate(f.getPartner().getCreationDate())
+                                .updateDate(f.getPartner().getUpdateDate())
                                 .partnerships(f.getPartner().getPartnershipsAsList())
                                 .build())
                         .type(f.getType())

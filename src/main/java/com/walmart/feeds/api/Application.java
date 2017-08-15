@@ -12,8 +12,8 @@ import java.util.Locale;
 /**
  * Created by r0i001q on 19/07/17.
  */
-@SpringBootApplication(scanBasePackages = "com.walmart.feeds.*")
 @EnableJpaAuditing
+@SpringBootApplication(scanBasePackages = "com.walmart.feeds.*")
 public class Application {
 
     public static void main(String[] args) {
