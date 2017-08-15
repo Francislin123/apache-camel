@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.core.service.feed.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
+import com.walmart.feeds.api.core.repository.AuditableHistoryEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
@@ -18,7 +19,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "feed_history")
-public class FeedHistory extends AuditableEntity {
+public class FeedHistory extends AuditableHistoryEntity {
 
     @Id
     @GeneratedValue(generator = "feed_uuid_generator")
@@ -73,19 +74,6 @@ public class FeedHistory extends AuditableEntity {
         this.notificationUrl = notificationUrl;
         this.active = active;
         this.template = template;
-    }
-
-
-
-
-    @Override
-    protected void prePersist() {
-        //do-nothing
-    }
-
-    @Override
-    protected void preUpdate() {
-        //do-nothing
     }
 
 }
