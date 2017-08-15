@@ -1,11 +1,11 @@
 package com.walmart.feeds.api.unit.core.service.commercialstructure;
 
 import com.walmart.feeds.api.core.repository.commercialstructure.CommercialStructureRepository;
-import com.walmart.feeds.api.resources.commercialstructure.service.CommercialStructureService;
+import com.walmart.feeds.api.core.service.commercialstructure.CommercialStructureService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

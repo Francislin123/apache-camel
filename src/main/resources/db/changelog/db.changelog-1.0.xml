@@ -111,6 +111,13 @@
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <rollback>
@@ -132,7 +139,6 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="commercial_structure_id" type="${uuid_type}">
-                <constraints foreignKeyName="cs_association_fk" nullable="false"/>
             </column>
             <column name="partner_cs_id" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -143,10 +149,24 @@
             <column name="partner_taxonomy" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
+
+        <addForeignKeyConstraint baseTableName="cs_association" baseColumnNames="commercial_structure_id" constraintName="cs_association_fk"
+                                 referencedTableName="commercial_structure"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"/>
         <rollback>
             <dropTable tableName="ce_association"/>
         </rollback>
+
+
 
     </changeSet>
 

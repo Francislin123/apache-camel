@@ -1,12 +1,9 @@
 package com.walmart.feeds.api.resources.commercialstructure;
 
-import com.walmart.feeds.api.resources.commercialstructure.service.CommercialStructureService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.apache.camel.CamelContext;
-import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -29,9 +26,6 @@ import java.util.Map;
 public class CommercialStructureController {
 
     public static final String V1_COMMERCIAL_STRUCTURE = "/v1/partners/{partnerSlug}/commercialstructure";
-
-    @Autowired
-    private CommercialStructureService commercialStructureService;
 
     @Autowired
     private ProducerTemplate producerTemplate;

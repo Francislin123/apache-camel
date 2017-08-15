@@ -4,6 +4,7 @@ import com.walmart.feeds.api.core.repository.AuditableEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -25,7 +26,7 @@ public class CommercialStructureEntity extends AuditableEntity{
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "archiveName")
+    @Column(name = "name")
     private String archiveName;
 
     @Column(name = "slug")
@@ -34,7 +35,8 @@ public class CommercialStructureEntity extends AuditableEntity{
     @ManyToOne
     private PartnerEntity partner;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "commercial_structure_id", referencedColumnName = "id")
     private List<CommercialStructureAssociationEntity> associationEntityList;
 
     @Builder
@@ -46,5 +48,10 @@ public class CommercialStructureEntity extends AuditableEntity{
         this.slug = slug;
         this.partner = partner;
         this.associationEntityList = associationEntityList;
+    }
+
+    @Tolerate
+    public CommercialStructureEntity(){
+
     }
 }

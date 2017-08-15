@@ -1,8 +1,9 @@
 package com.walmart.feeds.api.core.repository.commercialstructure.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
-import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -14,16 +15,16 @@ import java.util.UUID;
  */
 @Entity
 @Getter
-@Table(name = "cs_association", uniqueConstraints = {@UniqueConstraint(columnNames = "slug")})
+@Table(name = "cs_association")
 public class CommercialStructureAssociationEntity extends AuditableEntity {
 
     @Id
-    @GeneratedValue(generator = "feed_uuid_generator")
-    @GenericGenerator(name = "feed_uuid_generator", strategy = "uuid2")
+    @GeneratedValue(generator = "cs_assoc_uuid_generator")
+    @GenericGenerator(name = "cs_assoc_uuid_generator", strategy = "uuid2")
     @Column(name = "id")
     private UUID id;
 
-    @Column(name = "structure_partner_id")
+    @Column(name = "partner_cs_id")
     private String structurePartnerId;
 
     @Column(name = "partner_taxonomy")
@@ -32,17 +33,18 @@ public class CommercialStructureAssociationEntity extends AuditableEntity {
     @Column(name = "walmart_taxonomy")
     private String walmartTaxonomy;
 
-    @ManyToOne
-    private CommercialStructureEntity commercialStructureEntity;
-
+    @Builder
     public CommercialStructureAssociationEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id,
-                                                String structurePartnerId, String partnerTaxonomy, String walmartTaxonomy,
-                                                CommercialStructureEntity commercialStructureEntity){
+                                                String structurePartnerId, String partnerTaxonomy, String walmartTaxonomy){
         super(creationDate, updateDate, user);
         this.id = id;
         this.structurePartnerId = structurePartnerId;
         this.partnerTaxonomy = partnerTaxonomy;
         this.walmartTaxonomy = walmartTaxonomy;
-        this.commercialStructureEntity = commercialStructureEntity;
+    }
+
+    @Tolerate
+    public CommercialStructureAssociationEntity(){
+
     }
 }

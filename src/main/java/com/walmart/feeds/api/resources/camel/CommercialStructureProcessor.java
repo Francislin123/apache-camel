@@ -1,6 +1,8 @@
 package com.walmart.feeds.api.resources.camel;
 
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.repository.commercialstructure.CommercialStructureRepository;
+import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureAssociationEntity;
 import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
@@ -9,8 +11,10 @@ import org.apache.camel.Exchange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -22,21 +26,25 @@ public class CommercialStructureProcessor {
     @Autowired
     PartnerService partnerService;
 
-    public CommercialStructureEntity process(Exchange exchange) throws EntityNotFoundException {
-        List<CommercialStructureEntity> returnList = new ArrayList<>();
+    @Autowired
+    CommercialStructureRepository commercialStructureRepository;
 
-        //TODO next step
+    @Transactional
+    public void process(Exchange exchange) throws EntityNotFoundException {
+
         PartnerEntity partner = partnerService.findBySlug(exchange.getIn().getHeader("partnerSlug").toString());
         CommercialStructureEntity entity = CommercialStructureEntity.builder()
                 .slug(SlugParserUtil.toSlug(exchange.getIn().getHeader("archiveName").toString()))
+                .partner(partner)
+                .archiveName(exchange.getIn().getHeader("archiveName").toString())
+                .associationEntityList(((List<CommercialStructureBindy>)exchange.getIn().getBody()).stream().map(bindy -> (
+                    CommercialStructureAssociationEntity.builder()
+                            .structurePartnerId(bindy.getStructurePartnerId())
+                            .partnerTaxonomy(bindy.getPartnerTaxonomy())
+                            .walmartTaxonomy(bindy.getWalmartTaxonomy())
+                            .build())).collect(Collectors.toList()))
                 .build();
         //TODO Create line validation
-        for (CommercialStructureBindy bindy: (List<CommercialStructureBindy>)exchange.getIn().getBody()) {
-//            returnList.add(CommercialStructureEntity.builder().structurePartnerId(bindy.getStructurePartnerId())
-//                    .partnerTaxonomy(bindy.getPartnerTaxonomy()).walmartTaxonomy(bindy.getWalmartTaxonomy())
-//                    .archiveName(exchange.getIn().getHeader("archiveName").toString())
-//                    .partner(partner).slug(SlugParserUtil.toSlug(exchange.getIn().getHeader("archiveName").toString())).build());
-        }
-        return entity;
+        commercialStructureRepository.saveAndFlush(entity);
     }
 }

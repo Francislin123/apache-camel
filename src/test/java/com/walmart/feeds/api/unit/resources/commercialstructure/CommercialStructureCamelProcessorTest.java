@@ -3,7 +3,7 @@ package com.walmart.feeds.api.unit.resources.commercialstructure;
 import com.walmart.feeds.api.resources.camel.CommercialStructureProcessor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  * Created by vn0y942 on 11/08/17.
