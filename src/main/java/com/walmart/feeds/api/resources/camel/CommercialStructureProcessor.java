@@ -1,10 +1,10 @@
 package com.walmart.feeds.api.resources.camel;
 
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.repository.commercialstructure.CommercialStructureRepository;
 import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureAssociationEntity;
 import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.service.commercialstructure.CommercialStructureService;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.apache.camel.Exchange;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,13 +23,13 @@ import java.util.stream.Collectors;
 public class CommercialStructureProcessor {
 
     @Autowired
-    PartnerService partnerService;
+    private PartnerService partnerService;
 
     @Autowired
-    CommercialStructureRepository commercialStructureRepository;
+    private CommercialStructureService commercialStructureService;
 
     @Transactional
-    public void process(Exchange exchange) throws EntityNotFoundException {
+    public void process(Exchange exchange){
 
         PartnerEntity partner = partnerService.findBySlug(exchange.getIn().getHeader("partnerSlug").toString());
         CommercialStructureEntity entity = CommercialStructureEntity.builder()
@@ -45,6 +44,6 @@ public class CommercialStructureProcessor {
                             .build())).collect(Collectors.toList()))
                 .build();
         //TODO Create line validation
-        commercialStructureRepository.saveAndFlush(entity);
+        commercialStructureService.loadFile(entity);
     }
 }

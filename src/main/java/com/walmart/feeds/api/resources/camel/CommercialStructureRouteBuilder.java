@@ -25,8 +25,7 @@ public class CommercialStructureRouteBuilder extends RouteBuilder {
     public void configure() throws EntityNotFoundException {
         //RECEBER UM CVS -> TRANSFORMAR EM UMA LISTA DE ENTITY -> PRINTAR RESULT
         final DataFormat bindy = new BindyCsvDataFormat(CommercialStructureBindy.class);
-        from("direct:test")
-                .doTry()
+        from("direct:loadCsFile").unmarshal(bindy).doTry()
                     .unmarshal(bindy)
                     .bean(commercialStructureProcessor, "process")
                 .doCatch(IllegalArgumentException.class)

@@ -39,8 +39,8 @@ public class CommercialStructureController {
     public ResponseEntity uploadCommercialStructure(@PathVariable("partnerSlug") String partnerSlug, @RequestParam("file") MultipartFile multipartFile) throws URISyntaxException, IOException {
         Map<String, Object> map = new HashMap<>();
         map.put("partnerSlug", partnerSlug);
-        map.put("archiveName", multipartFile.getName());
-        producerTemplate.sendBodyAndHeaders("direct:test", multipartFile.getInputStream(), map);
+        map.put("archiveName", multipartFile.getOriginalFilename());
+        producerTemplate.sendBodyAndHeaders("direct:loadCsFile", multipartFile.getInputStream(), map);
 
         //TODO URI COMPONENT FAILING TO PASS THROUGH
         return ResponseEntity.created(new URI("http:localhost")).build();

@@ -126,6 +126,40 @@
 
     </changeSet>
 
+    <changeSet id="createCommercialStructureHistoryTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner"/>
+        </preConditions>
+
+        <comment>Creating Commercial Structure table</comment>
+
+        <createTable tableName="commercial_structure_history">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)"/>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="cs_partner_fk" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="commercial_structure_history"/>
+        </rollback>
+
+    </changeSet>
+
     <changeSet id="createCSAssociationTable" author="thiago.lima">
 
         <preConditions onError="WARN">
@@ -163,10 +197,51 @@
                                  onDelete="CASCADE"
                                  referencedColumnNames="id"/>
         <rollback>
-            <dropTable tableName="ce_association"/>
+            <dropTable tableName="cs_association"/>
         </rollback>
 
+    </changeSet>
 
+
+    <changeSet id="createCSAssociationHistoryTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="commercial_structure_history"/>
+        </preConditions>
+
+        <comment>Create EC Association table</comment>
+
+        <createTable tableName="cs_association_history">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="commercial_structure_id" type="${uuid_type}">
+            </column>
+            <column name="partner_cs_id" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="walmart_taxonomy" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_taxonomy" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="cs_association_history" baseColumnNames="commercial_structure_id" constraintName="cs_association_history_fk"
+                                 referencedTableName="commercial_structure_history"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"/>
+        <rollback>
+            <dropTable tableName="cs_association_history"/>
+        </rollback>
 
     </changeSet>
 
