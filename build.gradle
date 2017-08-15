@@ -70,6 +70,7 @@ liquibase {
     activities {
         prod {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
+            contexts 'prod'
             url 'jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF'
             username 'FEEDS_ADMIN'
             password 'FEEDS_ADMIN'
@@ -77,6 +78,7 @@ liquibase {
 
         qa {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
+            contexts 'qa'
             url 'jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF'
             username 'FEEDS_ADMIN'
             password 'FEEDS_ADMIN'

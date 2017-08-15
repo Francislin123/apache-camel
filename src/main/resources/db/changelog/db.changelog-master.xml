@@ -5,6 +5,16 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
+    <property name="uuid_type" value="VARCHAR(36)" dbms="mysql"/>
+    <property name="uuid_type" value="RAW(32)" dbms="oracle"/>
+
+    <property name="now" value="sysdate" dbms="oracle"/>
+    <property name="now" value="now()" dbms="mysql"/>
+    <property name="now" value="now()" dbms="postgresql"/>
+
+    <property name="uuid_function" value="UUID()" dbms="mysql"/>
+    <property name="uuid_function" value="sys_guid()" dbms="oracle"/>
+
     <preConditions>
         <or>
             <dbms type="oracle"/>
@@ -13,5 +23,6 @@
     </preConditions>
 
     <include file="src/main/resources/db/changelog/db.changelog-1.0.xml"/>
+    <include file="src/main/resources/db/changelog/db.changelog-qa-1.0.xml"/>
 
 </databaseChangeLog>
