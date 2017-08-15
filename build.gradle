@@ -119,6 +119,7 @@ dependencies {
     compile 'com.h2database:h2:1.3.160'
 
     testCompile "br.com.six2six:fixture-factory:3.1.0"
+    testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
 
 }
 
