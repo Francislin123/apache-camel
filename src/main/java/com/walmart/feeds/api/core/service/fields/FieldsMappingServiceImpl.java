@@ -3,9 +3,7 @@ package com.walmart.feeds.api.core.service.fields;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
-import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.exceptions.UserException;
+import com.walmart.feeds.api.core.exceptions.*;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
@@ -34,14 +32,14 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     @Override
     @Transactional
-    public void saveFieldsdMapping(FieldsMappingEntity fieldsMappingEntity) throws IllegalArgumentException {
+    public void save(FieldsMappingEntity fieldsMappingEntity) throws IllegalArgumentException {
+
+        if (fieldsMappingEntity == null) {
+            throw new InconsistentEntityException("null fields mapping");
+        }
 
         if (fieldsMappingRepository.findBySlug(fieldsMappingEntity.getSlug()).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("Fields mapping with slug='%s' already exists", fieldsMappingEntity.getSlug()));
-        }
-
-        if (fieldsMappingEntity.getMappedFields().isEmpty()){
-            throw new UserException("No mapped fields related with fields mapping " + fieldsMappingEntity.getName());
         }
 
         persistFieldsMapping(fieldsMappingEntity);
@@ -49,10 +47,10 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     @Override
     @Transactional
-    public void updateFieldsMapping(FieldsMappingEntity fieldsMapping) throws EntityNotFoundException {
+    public void update(FieldsMappingEntity fieldsMapping) throws EntityNotFoundException {
 
         if (fieldsMapping == null) {
-            throw new RuntimeException("null mappingentity");
+            throw new InconsistentEntityException("null fields mapping");
         }
 
         FieldsMappingEntity persistedEntity = fieldsMappingRepository.findBySlug(fieldsMapping.getSlug())
@@ -61,8 +59,6 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
         FieldsMappingEntity updatedEntity = FieldsMappingEntity.builder()
                 .id(persistedEntity.getId())
                 .creationDate(persistedEntity.getCreationDate())
-                .updateDate(LocalDateTime.now())
-                .user(persistedEntity.getUser())
                 .name(fieldsMapping.getName())
                 .slug(SlugParserUtil.toSlug(fieldsMapping.getName()))
                 .mappedFields(fieldsMapping.getMappedFields())
@@ -73,7 +69,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     }
 
     @Override
-    public void deleteFieldsMapping(String slug) {
+    public void delete(String slug) {
         FieldsMappingEntity fieldsMappingDelete = findBySlug(slug);
         this.fieldsMappingRepository.delete(fieldsMappingDelete);
     }
@@ -89,7 +85,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     }
 
     @Override
-    public List<FieldsMappingEntity> findAllFieldsMapping() {
+    public List<FieldsMappingEntity> findAll() {
         List<FieldsMappingEntity> fieldsMapping = fieldsMappingRepository.findAll();
         logger.info("Total of fields mapping: {}", fieldsMapping.size());
         return fieldsMapping;
@@ -97,33 +93,41 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     private void persistFieldsMapping(FieldsMappingEntity fieldsMapping) {
 
+        if (fieldsMapping.getMappedFields().isEmpty()){
+            throw new UserException("No mapped fields related with fields mapping " + fieldsMapping.getName());
+        }
+
         fieldsMappingRepository.saveAndFlush(fieldsMapping);
         logger.info("fieldsMapping={} message=saved_successfully", fieldsMapping);
 
-
-        FieldsMappingHistory history = FieldsMappingHistory.builder()
-                .name(fieldsMapping.getName())
-                .slug(fieldsMapping.getSlug())
-                .creationDate(fieldsMapping.getCreationDate())
-                .updateDate(fieldsMapping.getUpdateDate())
-                .user(fieldsMapping.getUser())
-                .mappedFields(getMappedFieldsAsJson(fieldsMapping.getMappedFields()))
-                .build();
-
+        FieldsMappingHistory history = buildHistory(fieldsMapping);
 
         historyRepository.saveAndFlush(history);
         logger.info("fieldsMappingHistory={} message=saved_successfully", history);
 
     }
 
+    private FieldsMappingHistory buildHistory(FieldsMappingEntity fieldsMapping) {
+        return FieldsMappingHistory.builder()
+                    .name(fieldsMapping.getName())
+                    .slug(fieldsMapping.getSlug())
+                    .creationDate(fieldsMapping.getCreationDate())
+                    .updateDate(fieldsMapping.getUpdateDate())
+                    .user(fieldsMapping.getUser())
+                    .mappedFields(getMappedFieldsAsJson(fieldsMapping.getMappedFields()))
+                    .build();
+    }
+
     private String getMappedFieldsAsJson(List<MappedFieldEntity> mappedFields) {
+
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
+
         try {
             return mapper.writeValueAsString(mappedFields);
         } catch (JsonProcessingException e) {
-            logger.error("Error to convert mapped fields to json", e);
+            throw new SystemException("Error to convert mapped fields to json for history.");
         }
-        return "";
+
     }
 }

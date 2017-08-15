@@ -40,7 +40,7 @@ public class FieldsMappingServiceTest {
 
         Mockito.when(fmRepository.findBySlug(anyString()))
                 .thenReturn(Optional.empty());
-        mappingService.saveFieldsdMapping(createFieldsMapping());
+        mappingService.save(createFieldsMapping());
 
         Mockito.verify(fmRepository).findBySlug(anyString());
         Mockito.verify(fmRepository).saveAndFlush(any(FieldsMappingEntity.class));
@@ -54,7 +54,7 @@ public class FieldsMappingServiceTest {
         Mockito.when(fmRepository.findBySlug(anyString()))
                 .thenReturn(Optional.of(createFieldsMapping()));
 
-        mappingService.saveFieldsdMapping(createFieldsMapping());
+        mappingService.save(createFieldsMapping());
         Mockito.verify(fmRepository).findBySlug(Mockito.anyString());
 
         Mockito.verifyNoMoreInteractions(historyRepository);
@@ -69,7 +69,7 @@ public class FieldsMappingServiceTest {
         Mockito.when(fmRepository.findBySlug(anyString()))
                 .thenReturn(Optional.of(fieldsMapping));
 
-        mappingService.updateFieldsMapping(fieldsMapping);
+        mappingService.update(fieldsMapping);
 
         Mockito.verify(fmRepository).findBySlug(anyString());
         Mockito.verify(fmRepository).saveAndFlush(any(FieldsMappingEntity.class));
@@ -87,7 +87,7 @@ public class FieldsMappingServiceTest {
 
         try {
 
-            mappingService.updateFieldsMapping(fieldsMapping);
+            mappingService.update(fieldsMapping);
             Assert.fail("EntityNotFoundException expected");
 
         } catch (EntityNotFoundException e) {

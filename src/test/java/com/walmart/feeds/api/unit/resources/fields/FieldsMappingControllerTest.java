@@ -74,7 +74,7 @@ public class FieldsMappingControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
 
-        Mockito.verify(fieldsMappingService).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
+        Mockito.verify(fieldsMappingService).save(Mockito.any(FieldsMappingEntity.class));
 
     }
 
@@ -111,7 +111,7 @@ public class FieldsMappingControllerTest {
                         .gimme(FIELDS_MAPPING_REQUEST_EMPTY_MAPPED_FIELDS))))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        verify(fieldsMappingService, times(0)).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
+        verify(fieldsMappingService, times(0)).save(Mockito.any(FieldsMappingEntity.class));
 
     }
 
@@ -124,7 +124,7 @@ public class FieldsMappingControllerTest {
                         .gimme(FIELDS_MAPPING_REQUEST_INVALID_MAPPED_FIELDS))))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        verify(fieldsMappingService, times(0)).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
+        verify(fieldsMappingService, times(0)).save(Mockito.any(FieldsMappingEntity.class));
     }
 
     @Test
@@ -136,7 +136,7 @@ public class FieldsMappingControllerTest {
                         .gimme(FIELDS_MAPPING_REQUEST_NULL_MAPPED_FIELDS))))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        verify(fieldsMappingService, times(0)).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
+        verify(fieldsMappingService, times(0)).save(Mockito.any(FieldsMappingEntity.class));
 
     }
 
@@ -144,7 +144,7 @@ public class FieldsMappingControllerTest {
     public void testCreatedNewWithConflict() throws Exception {
 
         Mockito.doThrow(EntityAlreadyExistsException.class)
-                .when(fieldsMappingService).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
+                .when(fieldsMappingService).save(Mockito.any(FieldsMappingEntity.class));
 
         mockMvc.perform(MockMvcRequestBuilders.post(URI_FIELDSDMAPPING)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -168,7 +168,7 @@ public class FieldsMappingControllerTest {
 
     @Test
     public void testDeleteFieldsMappingNonExistent() throws Exception {
-        doThrow(EntityNotFoundException.class).when(fieldsMappingService).deleteFieldsMapping("buscape");
+        doThrow(EntityNotFoundException.class).when(fieldsMappingService).delete("buscape");
 
         mockMvc.perform(MockMvcRequestBuilders
                 .delete(FieldsMappingController.URI_FIELDSDMAPPING + "/buscape")
@@ -178,7 +178,7 @@ public class FieldsMappingControllerTest {
 
     @Test
     public void testDeleteFieldsMappingUnhandledException() throws Exception {
-        doThrow(Exception.class).when(fieldsMappingService).deleteFieldsMapping("buscape");
+        doThrow(Exception.class).when(fieldsMappingService).delete("buscape");
 
         mockMvc.perform(MockMvcRequestBuilders
                 .delete(FieldsMappingController.URI_FIELDSDMAPPING + "/buscape")
@@ -229,12 +229,12 @@ public class FieldsMappingControllerTest {
                         .gimme(FIELDS_MAPPING_REQUEST_INVALID_MAPPED_FIELDS))))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        verify(fieldsMappingService, times(0)).saveFieldsdMapping(Mockito.any(FieldsMappingEntity.class));
+        verify(fieldsMappingService, times(0)).save(Mockito.any(FieldsMappingEntity.class));
     }
 
     @Test
     public void testUpdateFieldsMappingOccursUnhandledException() throws Exception {
-        doThrow(RuntimeException.class).when(fieldsMappingService).updateFieldsMapping(Mockito.any(FieldsMappingEntity.class));
+        doThrow(RuntimeException.class).when(fieldsMappingService).update(Mockito.any(FieldsMappingEntity.class));
 
         mockMvc.perform(MockMvcRequestBuilders
                 .put(FieldsMappingController.URI_FIELDSDMAPPING + "/buscape")

@@ -10,14 +10,14 @@ public interface FieldsMappingService {
     /**
      * @param fieldsMappingEntity payload
      */
-    void saveFieldsdMapping(FieldsMappingEntity fieldsMappingEntity) throws IllegalArgumentException;
+    void save(FieldsMappingEntity fieldsMappingEntity) throws IllegalArgumentException;
 
-    void updateFieldsMapping(FieldsMappingEntity mappingEntity) throws EntityNotFoundException;
+    void update(FieldsMappingEntity mappingEntity) throws EntityNotFoundException;
 
-    void deleteFieldsMapping(String fieldsMappingEntity);
+    void delete(String fieldsMappingEntity);
 
     FieldsMappingEntity findBySlug(String slug) throws EntityNotFoundException;
 
-    List<FieldsMappingEntity> findAllFieldsMapping();
+    List<FieldsMappingEntity> findAll();
 
 }

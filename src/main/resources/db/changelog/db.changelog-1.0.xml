@@ -286,6 +286,7 @@
 
         <addForeignKeyConstraint baseTableName="mapped_field" baseColumnNames="fields_mapping_id"
                                  constraintName="fk_fields_mapping_id"
+                                 onDelete="CASCADE"
                                  referencedTableName="fields_mapping"
                                  referencedColumnNames="id"/>
         <rollback>
