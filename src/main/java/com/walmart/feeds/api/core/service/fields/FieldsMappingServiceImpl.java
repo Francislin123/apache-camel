@@ -93,10 +93,6 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     private void persistFieldsMapping(FieldsMappingEntity fieldsMapping) {
 
-        if (fieldsMapping.getMappedFields().isEmpty()){
-            throw new UserException("No mapped fields related with fields mapping " + fieldsMapping.getName());
-        }
-
         fieldsMappingRepository.saveAndFlush(fieldsMapping);
         logger.info("fieldsMapping={} message=saved_successfully", fieldsMapping);
 
