@@ -93,12 +93,12 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     private void persistFieldsMapping(FieldsMappingEntity fieldsMapping) {
 
-        fieldsMappingRepository.saveAndFlush(fieldsMapping);
+        fieldsMapping = fieldsMappingRepository.saveAndFlush(fieldsMapping);
         logger.info("fieldsMapping={} message=saved_successfully", fieldsMapping);
 
         FieldsMappingHistory history = buildHistory(fieldsMapping);
 
-        historyRepository.saveAndFlush(history);
+        historyRepository.save(history);
         logger.info("fieldsMappingHistory={} message=saved_successfully", history);
 
     }
