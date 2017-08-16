@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.resources.camel;
 
-import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureAssociationEntity;
 import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
@@ -16,9 +15,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-/**
- * Created by vn0y942 on 09/08/17.
- */
 @Component
 public class CommercialStructureProcessor {
 

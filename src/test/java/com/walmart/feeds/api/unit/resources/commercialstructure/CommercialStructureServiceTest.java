@@ -2,12 +2,15 @@ package com.walmart.feeds.api.unit.resources.commercialstructure;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.commercialstructure.CommercialStructureHistoryRepository;
 import com.walmart.feeds.api.core.repository.commercialstructure.CommercialStructureRepository;
 import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureEntity;
 import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureHistory;
+import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.commercialstructure.CommercialStructureService;
 import com.walmart.feeds.api.core.service.commercialstructure.CommercialStructureServiceImpl;
+import com.walmart.feeds.api.core.service.partner.PartnerService;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +35,9 @@ public class CommercialStructureServiceTest {
     @Mock
     private CommercialStructureHistoryRepository commercialStructureHistoryRepository;
 
+    @Mock
+    private PartnerService partnerService;
+
     @BeforeClass
     public static void init(){
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.commercialstructure.test.template");
@@ -40,7 +46,8 @@ public class CommercialStructureServiceTest {
     public void testDeleteBeforeUpdate(){
         CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
         when(commercialStructureRepository.findBySlug(commercialStructureEntity.getSlug())).thenReturn(Optional.of(commercialStructureEntity));
-        when(commercialStructureRepository.save(commercialStructureEntity)).thenReturn(commercialStructureEntity);
+        when(partnerService.findBySlug(commercialStructureEntity.getPartner().getSlug())).thenReturn(new PartnerEntity());
+        when(commercialStructureRepository.saveAndFlush(commercialStructureEntity)).thenReturn(commercialStructureEntity);
         this.commercialStructureService.loadFile(commercialStructureEntity);
         verify(commercialStructureRepository, times(1)).delete(commercialStructureEntity);
 
@@ -55,9 +62,39 @@ public class CommercialStructureServiceTest {
     public void historyRecordTest(){
         CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
         when(commercialStructureRepository.findBySlug(commercialStructureEntity.getSlug())).thenReturn(Optional.of(commercialStructureEntity));
-        when(commercialStructureRepository.save(commercialStructureEntity)).thenReturn(commercialStructureEntity);
+        when(commercialStructureRepository.saveAndFlush(commercialStructureEntity)).thenReturn(commercialStructureEntity);
+        when(partnerService.findBySlug(commercialStructureEntity.getPartner().getSlug())).thenReturn(new PartnerEntity());
         this.commercialStructureService.loadFile(commercialStructureEntity);
-        verify(commercialStructureRepository, times(1)).save(commercialStructureEntity);
-        verify(commercialStructureHistoryRepository, times(1)).save(any(CommercialStructureHistory.class));
+        verify(commercialStructureRepository, times(1)).saveAndFlush(commercialStructureEntity);
+        verify(commercialStructureHistoryRepository, times(1)).saveAndFlush(any(CommercialStructureHistory.class));
     }
+    @Test
+    public void deleteMappedCommercialStructure(){
+        CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
+        when(commercialStructureRepository.findBySlug("existentSlug")).thenReturn(Optional.of(commercialStructureEntity));
+        when(partnerService.findBySlug("validPartner")).thenReturn(new PartnerEntity());
+        doNothing().when(commercialStructureRepository).delete(commercialStructureEntity);
+        this.commercialStructureService.removeEntityBySlug("validPartner", "existentSlug");
+        verify(commercialStructureRepository, times(1)).delete(commercialStructureEntity);
+
+    }
+    @Test(expected = EntityNotFoundException.class)
+    public void deleteCommercialStructureWithInvalidPartner(){
+        CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
+        doThrow(EntityNotFoundException.class).when(partnerService).findBySlug("invalidPartner");
+        when(commercialStructureRepository.findBySlug("existentSlug")).thenReturn(Optional.of(commercialStructureEntity));
+        this.commercialStructureService.removeEntityBySlug("invalidPartner", "existentSlug");
+        verify(commercialStructureRepository, times(1)).delete(commercialStructureEntity);
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void deleteCommercialStructureWithInvalidSlug(){
+        CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
+        when(commercialStructureRepository.findBySlug(commercialStructureEntity.getSlug())).thenReturn(Optional.of(commercialStructureEntity));
+        doThrow(EntityNotFoundException.class).when(commercialStructureRepository).findBySlug("invalidSlug");
+        this.commercialStructureService.removeEntityBySlug(commercialStructureEntity.getSlug(), "invalidSlug");
+        verify(commercialStructureRepository, times(1)).delete(commercialStructureEntity);
+    }
+
+
 }

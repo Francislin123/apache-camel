@@ -1,6 +1,9 @@
 package com.walmart.feeds.api.unit.resources.commercialstructure;
 
+import br.com.six2six.fixturefactory.Fixture;
+import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureEntity;
 import com.walmart.feeds.api.core.service.commercialstructure.CommercialStructureService;
 import com.walmart.feeds.api.resources.commercialstructure.CommercialStructureController;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
@@ -22,7 +25,10 @@ import java.util.Map;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -45,7 +51,7 @@ public class CommercialStructureControllerTest{
 
     @Before
     public void init() {
-
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.commercialstructure.test.template");
         mockMvc = MockMvcBuilders.standaloneSetup(commercialStructureController)
                 .setControllerAdvice(new FeedsAdminAPIExceptionHandler())
                 .build();
@@ -70,6 +76,26 @@ public class CommercialStructureControllerTest{
                 .file(commercialStructureFile)
                 .contentType(MediaType.MULTIPART_FORM_DATA)).andExpect(status().isNotFound());
 
+    }
+    @Test
+    public void deleteCommercialStructureMapping() throws Exception {
+        doNothing().when(commercialStructureService).removeEntityBySlug("existent", "existentSlug");
+        mockMvc.perform(delete(CommercialStructureController.V1_COMMERCIAL_STRUCTURE + "/existentSlug", "partnerSlug"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteCommercialStructureMappingWithInvalidPartner() throws Exception {
+        doThrow(EntityNotFoundException.class).when(commercialStructureService).removeEntityBySlug("invalidPartner", "validSlug");
+        mockMvc.perform(delete(CommercialStructureController.V1_COMMERCIAL_STRUCTURE + "/validSlug", "invalidPartner"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void listCommercialStructure() throws Exception {
+        CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
+        when(commercialStructureService.fetchBySlug(partnerSlug, commercialStructureEntity.getSlug(), page, size)).thenReturn(commercialStructureEntity);
+        mockMvc.perform(get(CommercialStructureController.V1_COMMERCIAL_STRUCTURE, "validPartner", "validSlug")).andExpect(status().isOk());
     }
 
 
