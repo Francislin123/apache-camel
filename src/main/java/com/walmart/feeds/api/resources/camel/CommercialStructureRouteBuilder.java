@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.resources.camel;
 
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.UserException;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommercialStructureRouteBuilder extends RouteBuilder {
 
+    public static final String ROUTE_LOAD_CSV = "direct:loadCsFile";
+
     private CommercialStructureProcessor commercialStructureProcessor;
 
     public CommercialStructureRouteBuilder(CamelContext context, CommercialStructureProcessor commercialStructureProcessor) {
@@ -23,14 +26,18 @@ public class CommercialStructureRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws EntityNotFoundException {
+
         //RECEBER UM CVS -> TRANSFORMAR EM UMA LISTA DE ENTITY -> PRINTAR RESULT
         final DataFormat bindy = new BindyCsvDataFormat(CommercialStructureBindy.class);
-        from("direct:loadCsFile").unmarshal(bindy).doTry()
-                    .unmarshal(bindy)
-                    .bean(commercialStructureProcessor, "process")
-                .doCatch(IllegalArgumentException.class)
-                    .log(exceptionMessage().toString())
-                .end();
+        from(ROUTE_LOAD_CSV)
+            .doTry()
+                .unmarshal(bindy)
+                .bean(commercialStructureProcessor, "process")
+            .doCatch(IllegalArgumentException.class)
+                .setBody(exceptionMessage())
+                .log("Fail to process CSV: ${body}")
+                .throwException(UserException.class, "${body}")
+            .end();
 
     }
 

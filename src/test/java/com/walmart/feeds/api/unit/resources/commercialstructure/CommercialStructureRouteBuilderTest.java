@@ -1,84 +1,111 @@
 package com.walmart.feeds.api.unit.resources.commercialstructure;
 
-import com.walmart.feeds.api.core.repository.commercialstructure.CommercialStructureRepository;
-import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureEntity;
-import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
-import com.walmart.feeds.api.core.service.partner.PartnerService;
+import com.walmart.feeds.api.core.exceptions.UserException;
+import com.walmart.feeds.api.resources.camel.CommercialStructureBindy;
 import com.walmart.feeds.api.resources.camel.CommercialStructureProcessor;
 import com.walmart.feeds.api.resources.camel.CommercialStructureRouteBuilder;
-import org.apache.camel.EndpointInject;
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
-import org.apache.camel.RoutesBuilder;
+import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
-import org.apache.camel.test.spring.MockEndpoints;
+import org.apache.camel.test.spring.MockEndpointsAndSkip;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-@MockEndpoints
 @RunWith(MockitoJUnitRunner.class)
 public class CommercialStructureRouteBuilderTest extends CamelTestSupport {
 
-    @Produce(uri = "direct:test")
+    @Produce(uri = CommercialStructureRouteBuilder.ROUTE_LOAD_CSV)
     private ProducerTemplate producer;
 
-    @EndpointInject(uri = "mock:direct:end")
-    private MockEndpoint endpoint;
+    @EndpointInject(uri = "mock:direct:failToLoadCsFile")
+    private MockEndpoint failEndpoint;
 
-    @Mock
-    private PartnerService partnerService;
+    private CommercialStructureProcessor commercialStructureProcessor;
 
-    @Mock
-    private CommercialStructureRepository commercialStructureRepository;
+    private ArgumentCaptor<Exchange> argumentCaptor;
 
-    @InjectMocks
-    private CommercialStructureProcessor commercialStructureProcessor = new CommercialStructureProcessor();
+    @Before
+    public void init() {
+        argumentCaptor = ArgumentCaptor.forClass(Exchange.class);
+    }
 
     @Test
     public void testSendFile() throws Exception {
 
-        Mockito.when(partnerService.findBySlug("test")).thenReturn(PartnerEntity.builder().slug("test").build());
-
-        String csv = "id;wm;partner\n123;Informatica;Computadores\n124;Smartphones;Telefonia";
-        ByteArrayInputStream in = new ByteArrayInputStream(csv.getBytes());
+        StringBuilder csvBuilder = new StringBuilder()
+                .append("id;wm;partner\n")
+                .append("123;Informatica;Computadores\n")
+                .append("124;Smartphones;Telefonia");
+        ByteArrayInputStream in = new ByteArrayInputStream(csvBuilder.toString().getBytes());
         Map<String, Object> headers = getHeaders();
 
         producer.sendBodyAndHeaders(in, headers);
 
-        endpoint.assertIsSatisfied();
+        Mockito.verify(commercialStructureProcessor).process(argumentCaptor.capture());
+        Object body = argumentCaptor.getValue().getIn().getBody();
 
+        if(body instanceof List) {
+
+            List<CommercialStructureBindy> commercialStructures = (List) body;
+
+            assertEquals(2, commercialStructures.size());
+            assertEquals("Computadores", commercialStructures.get(0).getWalmartTaxonomy());
+
+        } else {
+            fail("Camel body should be a List");
+        }
     }
 
     @Test
     public void testSendFileWhenHasEmptyColumn() throws Exception {
 
-        Mockito.when(partnerService.findBySlug("test")).thenReturn(PartnerEntity.builder().slug("test").build());
-
-        String csv = "id;wm;partner\n123;;Computadores\n124;Smartphones;Telefonia";
-        ByteArrayInputStream in = new ByteArrayInputStream(csv.getBytes());
+        StringBuilder csvBuilder = new StringBuilder()
+                .append("id;wm;partner\n")
+                .append("123;;Computadores\n")
+                .append("124;Smartphones;Telefonia");
+        ByteArrayInputStream in = new ByteArrayInputStream(csvBuilder.toString().getBytes());
         Map<String, Object> headers = getHeaders();
 
-        producer.sendBodyAndHeaders(in, headers);
+        try {
 
-        endpoint.assertIsSatisfied();
+            producer.sendBodyAndHeaders(in, headers);
+
+        } catch (CamelExecutionException e) {
+
+            System.err.println("CAUSE >> " + e.getCause());
+            assertTrue(e.getCause() instanceof UserException);
+            assertEquals("The mandatory field defined at the position 2 is empty for the line: 1", e.getCause().getMessage());
+
+        }
 
     }
 
     @Override
     protected RoutesBuilder createRouteBuilder() throws Exception {
-        RoutesBuilder routeBuilder = new CommercialStructureRouteBuilder(producer.getCamelContext(), commercialStructureProcessor);
+
+        CamelContext camelContext = producer.getCamelContext();
+        camelContext.addEndpoint("direct:failToLoadCsFile", failEndpoint);
+
+        commercialStructureProcessor = Mockito.mock(CommercialStructureProcessor.class);
+
+        RoutesBuilder routeBuilder = new CommercialStructureRouteBuilder(camelContext, commercialStructureProcessor);
         return routeBuilder;
+
+    }
+
+    @Override
+    public String isMockEndpoints() {
+        return "*";
     }
 
     private Map<String, Object> getHeaders() {
