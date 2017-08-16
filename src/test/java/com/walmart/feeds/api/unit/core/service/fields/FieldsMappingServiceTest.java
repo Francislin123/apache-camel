@@ -38,13 +38,18 @@ public class FieldsMappingServiceTest {
     @Test
     public void testSaveFieldsdMapping() throws Exception {
 
+        FieldsMappingEntity fieldsMapping = createFieldsMapping();
+
         Mockito.when(fmRepository.findBySlug(anyString()))
                 .thenReturn(Optional.empty());
+        Mockito.when(fmRepository.saveAndFlush(any(FieldsMappingEntity.class)))
+                .thenReturn(createFieldsMapping());
+
         mappingService.save(createFieldsMapping());
 
         Mockito.verify(fmRepository).findBySlug(anyString());
         Mockito.verify(fmRepository).saveAndFlush(any(FieldsMappingEntity.class));
-        Mockito.verify(historyRepository).saveAndFlush(any(FieldsMappingHistory.class));
+        Mockito.verify(historyRepository).save(any(FieldsMappingHistory.class));
 
     }
 
@@ -68,12 +73,14 @@ public class FieldsMappingServiceTest {
 
         Mockito.when(fmRepository.findBySlug(anyString()))
                 .thenReturn(Optional.of(fieldsMapping));
+        Mockito.when(fmRepository.saveAndFlush(any(FieldsMappingEntity.class)))
+                .thenReturn(createFieldsMapping());
 
         mappingService.update(fieldsMapping);
 
         Mockito.verify(fmRepository).findBySlug(anyString());
         Mockito.verify(fmRepository).saveAndFlush(any(FieldsMappingEntity.class));
-        Mockito.verify(historyRepository).saveAndFlush(any(FieldsMappingHistory.class));
+        Mockito.verify(historyRepository).save(any(FieldsMappingHistory.class));
 
     }
 

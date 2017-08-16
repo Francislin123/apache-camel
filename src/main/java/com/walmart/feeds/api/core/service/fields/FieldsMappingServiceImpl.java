@@ -3,7 +3,10 @@ package com.walmart.feeds.api.core.service.fields;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.feeds.api.core.exceptions.*;
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
+import com.walmart.feeds.api.core.exceptions.SystemException;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
@@ -16,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -93,10 +95,10 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     private void persistFieldsMapping(FieldsMappingEntity fieldsMapping) {
 
-        fieldsMapping = fieldsMappingRepository.saveAndFlush(fieldsMapping);
+        FieldsMappingEntity managedEntity = fieldsMappingRepository.saveAndFlush(fieldsMapping);
         logger.info("fieldsMapping={} message=saved_successfully", fieldsMapping);
 
-        FieldsMappingHistory history = buildHistory(fieldsMapping);
+        FieldsMappingHistory history = buildHistory(managedEntity);
 
         historyRepository.save(history);
         logger.info("fieldsMappingHistory={} message=saved_successfully", history);
