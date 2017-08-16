@@ -61,7 +61,6 @@ public class FeedServiceImpl implements FeedService {
 
         FeedEntity newFeed = FeedEntity.builder()
                 .utms(feedEntity.getUtms())
-                .id(feedEntity.getId())
                 .slug(feedEntity.getSlug())
                 .type(feedEntity.getType())
                 .partner(partner)
@@ -125,6 +124,7 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .name(feedEntity.getName())
                 .active(active)
+                .template(feedEntity.getTemplate())
                 .creationDate(feedEntity.getCreationDate())
                 .build();
 
@@ -156,6 +156,7 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .utms(feedEntity.getUtms())
                 .active(feedEntity.isActive())
+                .template(feedEntity.getTemplate())
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
 
