@@ -145,6 +145,9 @@ public class FeedServiceImpl implements FeedService {
 
         FeedEntity persistedFeedEntity = feedRepository.findBySlug(feedEntity.getSlug()).orElseThrow(() -> new EntityNotFoundException("FeedEntity not Found"));
 
+        TemplateEntity template = templateRepository.findBySlug(feedEntity.getTemplate().getSlug()).orElseThrow(() ->
+                new UserException(String.format("Template not found for reference %s", feedEntity.getTemplate().getSlug())));
+
         FeedEntity updatedFeed = FeedEntity.builder()
                 .id(persistedFeedEntity.getId())
                 .slug(SlugParserUtil.toSlug(feedEntity.getName()))
@@ -156,7 +159,7 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .utms(feedEntity.getUtms())
                 .active(feedEntity.isActive())
-                .template(feedEntity.getTemplate())
+                .template(template)
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
 
