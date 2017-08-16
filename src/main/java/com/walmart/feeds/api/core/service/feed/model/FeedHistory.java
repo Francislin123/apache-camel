@@ -1,8 +1,10 @@
 package com.walmart.feeds.api.core.service.feed.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
+import com.walmart.feeds.api.core.repository.AuditableHistoryEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import lombok.Builder;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
@@ -17,7 +19,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "feed_history")
-public class FeedHistory extends AuditableEntity {
+public class FeedHistory extends AuditableHistoryEntity {
 
     @Id
     @GeneratedValue(generator = "feed_uuid_generator")
@@ -50,13 +52,17 @@ public class FeedHistory extends AuditableEntity {
     @Column(name = "flag_active")
     private boolean active;
 
+    @Transient
+    private TemplateEntity template;
+
+
     @Tolerate
     public FeedHistory() {
         this.active = true;
     }
 
     @Builder
-    public FeedHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, String notificationMethod, String notificationFormat, String notificationUrl, boolean active) {
+    public FeedHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, String notificationMethod, String notificationFormat, String notificationUrl, boolean active, TemplateEntity template) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
@@ -67,16 +73,7 @@ public class FeedHistory extends AuditableEntity {
         this.notificationFormat = notificationFormat;
         this.notificationUrl = notificationUrl;
         this.active = active;
-    }
-
-    @Override
-    protected void prePersist() {
-        //do-nothing
-    }
-
-    @Override
-    protected void preUpdate() {
-        //do-nothing
+        this.template = template;
     }
 
 }

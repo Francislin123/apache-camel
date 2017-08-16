@@ -2,6 +2,7 @@ package com.walmart.feeds.api.core.repository.feed.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
@@ -51,6 +52,9 @@ public class FeedEntity extends AuditableEntity {
     @Column(name = "notification_url")
     private String notificationUrl;
 
+    @ManyToOne
+    private TemplateEntity template;
+
     @ElementCollection
     @MapKeyColumn(name = "utm_type")
     @CollectionTable(name = "feed_utms", joinColumns =
@@ -66,7 +70,7 @@ public class FeedEntity extends AuditableEntity {
     }
 
     @Builder
-    private FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, Map<String, String> utms, boolean active) {
+    private FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, TemplateEntity template, Map<String, String> utms, boolean active) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
@@ -76,6 +80,7 @@ public class FeedEntity extends AuditableEntity {
         this.notificationMethod = notificationMethod;
         this.notificationFormat = notificationFormat;
         this.notificationUrl = notificationUrl;
+        this.template = template;
         this.utms = utms;
         this.active = active;
     }

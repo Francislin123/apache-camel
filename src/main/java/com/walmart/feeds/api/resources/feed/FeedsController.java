@@ -6,6 +6,7 @@ import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.feed.FeedService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
@@ -57,6 +58,9 @@ public class FeedsController {
                         .slug(partnerSlug)
                         .build())
                 .type(FeedType.getFromCode(request.getType()))
+                .template(TemplateEntity.builder()
+                        .slug(request.getTemplate())
+                        .build())
                 .utms(request.getUtms())
                 .build();
 
@@ -69,8 +73,7 @@ public class FeedsController {
 
     }
 
-    @ApiOperation(value = " Fetch feed by slug ",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "Fetch feed by slug",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return found feed", response = FeedResponse.class),
             @ApiResponse(code = 404, message = "FeedEntity not found by slug")})
@@ -81,6 +84,7 @@ public class FeedsController {
 
         return ResponseEntity.ok().body(FeedResponse.builder()
                 .name(feedEntity.getName())
+                .template(feedEntity.getTemplate().getSlug())
                 .slug(feedEntity.getSlug())
                 .notification(FeedNotificationData.builder()
                         .format(feedEntity.getNotificationFormat().getType())
@@ -118,6 +122,7 @@ public class FeedsController {
                 .result(listFeedEntity.stream().map(f -> FeedResponse.builder()
                         .name(f.getName())
                         .slug(f.getSlug())
+                        .template(f.getTemplate().getSlug())
                         .notification(FeedNotificationData.builder()
                                 .format(f.getNotificationFormat().getType())
                                 .method(f.getNotificationMethod().getType())

@@ -5,16 +5,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    <property name="uuid_type" value="VARCHAR(36)" dbms="mysql"/>
-    <property name="uuid_type" value="RAW(32)" dbms="oracle"/>
-
-    <property name="now" value="sysdate" dbms="oracle"/>
-    <property name="now" value="now()" dbms="mysql"/>
-    <property name="now" value="now()" dbms="postgresql"/>
-
-    <property name="uuid_function" value="UUID()" dbms="mysql"/>
-    <property name="uuid_function" value="sys_guid()" dbms="oracle"/>
-
     <changeSet id="createPartnerTable" author="renato.ibanhez">
 
         <comment>Creating partner table</comment>
@@ -259,6 +249,9 @@
             <column name="partner_id" type="${uuid_type}">
                 <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
             </column>
+            <column name="template_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_template_fk" />
+            </column>
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
@@ -284,7 +277,13 @@
             </column>
         </createTable>
 
+        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="feed" constraintName="feed_partner_fk" referencedColumnNames="id" referencedTableName="partner" />
+        <addForeignKeyConstraint baseColumnNames="template_id" baseTableName="feed" constraintName="feed_template_fk" referencedColumnNames="id" referencedTableName="feed_template" />
+
         <rollback>
+            <dropForeignKeyConstraint baseTableName="feed" constraintName="feed_partner_fk"/>
+            <dropForeignKeyConstraint baseTableName="feed" constraintName="feed_template_fk"/>
+
             <dropTable tableName="feed"/>
         </rollback>
 
@@ -366,4 +365,97 @@
             <dropTable tableName="feed_utms"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="createFieldsMappingTable" author="adisson.gomes">
+
+        <comment>Creating fields mapping table</comment>
+
+        <createTable tableName="fields_mapping">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="fields_mapping"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="createMappedFieldTable" author="francislin.souza">
+
+        <comment>Creating mapping field table</comment>
+
+        <createTable tableName="mapped_field">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="wm_field" type="varchar(50)">
+            </column>
+            <column name="partner_field" type="varchar(50)">
+            </column>
+            <column name="required" type="boolean" defaultValueBoolean="false">
+            </column>
+            <column name="fields_mapping_id" type="${uuid_type}">
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="mapped_field" baseColumnNames="fields_mapping_id"
+                                 constraintName="fk_fields_mapping_id"
+                                 onDelete="CASCADE"
+                                 referencedTableName="fields_mapping"
+                                 referencedColumnNames="id"/>
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="mapped_field" constraintName="fk_fields_mapping_id"/>
+            <dropTable tableName="mapped_field"/>
+        </rollback>
+    </changeSet>
+
+
+    <changeSet id="createFieldsMappingHistoryTable" author="adisson.gomes">
+
+        <comment>Creating fields mapping history table</comment>
+
+        <createTable tableName="fields_mapping_history">
+            <column name="history_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mapped_fields" type="varchar2(4000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime"/>
+            <column name="required" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="fields_mapping_history"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
