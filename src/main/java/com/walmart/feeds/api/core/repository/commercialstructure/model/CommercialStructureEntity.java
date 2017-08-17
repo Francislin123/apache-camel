@@ -32,8 +32,7 @@ public class CommercialStructureEntity extends AuditableEntity{
     @ManyToOne
     private PartnerEntity partner;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "commercial_structure_id", referencedColumnName = "id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "commercialStructure")
     private List<CommercialStructureAssociationEntity> associationEntityList;
 
     @Builder

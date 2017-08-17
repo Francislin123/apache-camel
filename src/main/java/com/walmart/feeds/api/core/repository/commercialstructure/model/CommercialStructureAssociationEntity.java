@@ -31,14 +31,17 @@ public class CommercialStructureAssociationEntity extends AuditableEntity {
     @Column(name = "walmart_taxonomy")
     private String walmartTaxonomy;
 
+    @ManyToOne
+    private CommercialStructureEntity commercialStructure;
+
     @Builder
-    public CommercialStructureAssociationEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id,
-                                                String structurePartnerId, String partnerTaxonomy, String walmartTaxonomy){
+    public CommercialStructureAssociationEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String structurePartnerId, String partnerTaxonomy, String walmartTaxonomy, CommercialStructureEntity commercialStructure) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.structurePartnerId = structurePartnerId;
         this.partnerTaxonomy = partnerTaxonomy;
         this.walmartTaxonomy = walmartTaxonomy;
+        this.commercialStructure = commercialStructure;
     }
 
     @Tolerate

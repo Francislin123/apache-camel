@@ -235,7 +235,23 @@
 
     </changeSet>
 
+    <changeSet id="createFeedTemplateTable" author="gabriel.cano">
+        <createTable tableName="feed_template">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
     <changeSet id="createFeedTable" author="renato.ibanhez">
+
+        <preConditions>
+            <tableExists tableName="feed_template"/>
+            <tableExists tableName="partner"/>
+        </preConditions>
 
         <comment>Creating feed table</comment>
 

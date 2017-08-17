@@ -10,7 +10,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.apache.camel.ProducerTemplate;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -26,9 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Api
@@ -41,9 +38,6 @@ public class CommercialStructureController {
     public static final String TEXT_CSV = "text/csv";
 
     @Autowired
-    private ProducerTemplate producerTemplate;
-
-    @Autowired
     private CommercialStructureService commercialStructureService;
 
     @ApiOperation(value = "Upload a commercial structure file",
@@ -54,10 +48,7 @@ public class CommercialStructureController {
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity uploadCommercialStructure(@PathVariable("partnerSlug") String partnerSlug, @RequestParam("file") MultipartFile multipartFile, UriComponentsBuilder builder) throws URISyntaxException, IOException {
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("partnerSlug", partnerSlug);
-        map.put("archiveName", FilenameUtils.getBaseName(multipartFile.getOriginalFilename()));
-        producerTemplate.sendBodyAndHeaders("direct:loadCsFile", multipartFile.getInputStream(), map);
+        commercialStructureService.processFile(partnerSlug, multipartFile);
 
         //TODO URI COMPONENT FAILING TO PASS THROUGH
 

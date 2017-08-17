@@ -8,19 +8,27 @@ import com.walmart.feeds.api.core.repository.commercialstructure.model.Commercia
 import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureHistory;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
+import org.apache.camel.ProducerTemplate;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.walmart.feeds.api.resources.camel.CommercialStructureRouteBuilder.ROUTE_LOAD_CSV;
+
 @Service
-public class CommercialStructureServiceImpl implements CommercialStructureService{
+public class CommercialStructureServiceImpl implements CommercialStructureService {
 
     @Autowired
     private CommercialStructureRepository commercialStructureRepository;
@@ -30,6 +38,9 @@ public class CommercialStructureServiceImpl implements CommercialStructureServic
 
     @Autowired
     private PartnerService partnerService;
+
+    @Autowired
+    private ProducerTemplate producerTemplate;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -41,11 +52,24 @@ public class CommercialStructureServiceImpl implements CommercialStructureServic
             throw new EntityNotFoundException("Partner not found");
         }
         commercialStructureRepository.findBySlug(commercialStructureEntity.getSlug())
-                .ifPresent(entity -> this.deleteEntity(entity));
+                .ifPresent(this::deleteEntity);
         commercialStructureEntity = commercialStructureRepository.saveAndFlush(commercialStructureEntity);
         commercialStructureHistoryRepository.saveAndFlush(entityToHistoryTransform(commercialStructureEntity));
 
         logger.info("commercialStructureEntity={} message=update_successfully", commercialStructureEntity);
+    }
+
+    @Override
+    @Transactional
+    public void processFile(String partnerSlug, MultipartFile importedFile) throws IOException {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("partnerSlug", partnerSlug);
+        map.put("archiveName", FilenameUtils.getBaseName(importedFile.getOriginalFilename()));
+
+
+        producerTemplate.sendBodyAndHeaders(ROUTE_LOAD_CSV, importedFile.getInputStream(), map);
+
     }
 
     @Override
