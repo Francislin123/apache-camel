@@ -18,6 +18,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -95,6 +98,30 @@ public class CommercialStructureServiceTest {
         this.commercialStructureService.removeEntityBySlug(commercialStructureEntity.getSlug(), "invalidSlug");
         verify(commercialStructureRepository, times(1)).delete(commercialStructureEntity);
     }
+    @Test
+    public void fetchCommercialStructureBySlugAndPartner(){
+        CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
+        List<CommercialStructureEntity> list = new ArrayList<>();
+        list.add(commercialStructureEntity);
+
+        when(commercialStructureRepository.findBySlug(commercialStructureEntity.getSlug())).thenReturn(Optional.of(commercialStructureEntity));
+        when(partnerService.findBySlug(commercialStructureEntity.getPartner().getSlug())).thenReturn(commercialStructureEntity.getPartner());
+        this.commercialStructureService.fetchCommercialStructure(commercialStructureEntity.getPartner().getSlug(),commercialStructureEntity.getSlug());
+        verify(commercialStructureRepository, times(1)).findBySlug(commercialStructureEntity.getSlug());
+
+    }
+    @Test
+    public void fetchCommercialStructureByPartner(){
+        CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
+        List<CommercialStructureEntity> list = new ArrayList<>();
+        list.add(commercialStructureEntity);
+
+        when(commercialStructureRepository.findByPartner(commercialStructureEntity.getPartner())).thenReturn(Optional.of(list));
+        when(partnerService.findBySlug(commercialStructureEntity.getPartner().getSlug())).thenReturn(commercialStructureEntity.getPartner());
+        this.commercialStructureService.fetchCommercialStructure(commercialStructureEntity.getPartner().getSlug(),null);
+        verify(commercialStructureRepository, times(1)).findByPartner(commercialStructureEntity.getPartner());
+    }
+
 
 
 }

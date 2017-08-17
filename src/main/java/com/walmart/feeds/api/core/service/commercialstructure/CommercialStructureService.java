@@ -2,11 +2,10 @@ package com.walmart.feeds.api.core.service.commercialstructure;
 
 import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureEntity;
 import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureHistory;
-import org.springframework.data.domain.Page;
 
-/**
- * Created by vn0y942 on 15/08/17.
- */
+import java.util.List;
+
+
 public interface CommercialStructureService {
 
     void loadFile(CommercialStructureEntity commercialStructureEntity);
@@ -15,5 +14,8 @@ public interface CommercialStructureService {
 
     void removeEntityBySlug(String partnerSlug, String slug);
 
-    Page<CommercialStructureEntity> fetchBySlug(String partnerSlug, String slug, int page, int size);
+    List<CommercialStructureEntity> fetchCommercialStructure(String partnerSlug, String slug);
+
+    CommercialStructureEntity fetchOneCommercialStructure(String partnerSlug, String slug);
+
 }

@@ -20,6 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Matchers.any;
@@ -94,9 +96,21 @@ public class CommercialStructureControllerTest{
     @Test
     public void listCommercialStructure() throws Exception {
         CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
-        when(commercialStructureService.fetchBySlug(partnerSlug, commercialStructureEntity.getSlug(), page, size)).thenReturn(commercialStructureEntity);
-        mockMvc.perform(get(CommercialStructureController.V1_COMMERCIAL_STRUCTURE, "validPartner", "validSlug")).andExpect(status().isOk());
+        List<CommercialStructureEntity> list = new ArrayList<>();
+        list.add(commercialStructureEntity);
+        when(commercialStructureService.fetchCommercialStructure(commercialStructureEntity.getPartner().getSlug(), commercialStructureEntity.getSlug())).thenReturn(list);
+        mockMvc.perform(get(CommercialStructureController.V1_COMMERCIAL_STRUCTURE+ "/{csSlug}",
+                commercialStructureEntity.getPartner().getSlug(), commercialStructureEntity.getSlug())).andExpect(status().isOk());
     }
+
+    @Test
+    public void createCSVFile() throws Exception {
+        CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
+        when(commercialStructureService.fetchOneCommercialStructure(commercialStructureEntity.getPartner().getSlug(), commercialStructureEntity.getSlug())).thenReturn(commercialStructureEntity);
+        mockMvc.perform(get(CommercialStructureController.V1_COMMERCIAL_STRUCTURE+ "/download/{csSlug}",
+                commercialStructureEntity.getPartner().getSlug(), commercialStructureEntity.getSlug())).andExpect(status().isOk());
+    }
+
 
 
 }

@@ -11,10 +11,13 @@ import com.walmart.feeds.api.core.service.partner.PartnerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,9 +74,29 @@ public class CommercialStructureServiceImpl implements CommercialStructureServic
     }
 
     @Override
-    public Page<CommercialStructureEntity> fetchBySlug(String partnerSlug, String slug, int page, int size) {
-//        commercialStructureRepository.f
-        return null;
+    public List<CommercialStructureEntity> fetchCommercialStructure(String partnerSlug, String slug) {
+        PartnerEntity partner = partnerService.findBySlug(partnerSlug);
+        List<CommercialStructureEntity> list = new ArrayList<>();
+        if(null == partner){
+            throw new EntityNotFoundException("Inexistent partner");
+        }else{
+            if(StringUtils.isEmpty(slug) || null == slug) {
+                list = commercialStructureRepository.findByPartner(partner).get();
+            }else{
+                list.add(commercialStructureRepository.findBySlug(slug).get());
+            }
+        }
+        return list;
+    }
+
+    @Override
+    public CommercialStructureEntity fetchOneCommercialStructure(String partnerSlug, String slug) {
+        PartnerEntity partner = partnerService.findBySlug(partnerSlug);
+        if(null == partner){
+            throw new EntityNotFoundException("Inexistent partner");
+        }
+
+        return commercialStructureRepository.findBySlug(slug).get();
     }
 
     private void deleteEntity(CommercialStructureEntity entity){
