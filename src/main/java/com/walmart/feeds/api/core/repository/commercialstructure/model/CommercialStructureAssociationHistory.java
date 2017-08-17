@@ -10,9 +10,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * Created by vn0y942 on 14/08/17.
- */
 @Entity
 @Getter
 @Table(name = "cs_association_history")

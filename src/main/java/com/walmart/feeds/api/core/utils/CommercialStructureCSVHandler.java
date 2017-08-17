@@ -11,8 +11,9 @@ public class CommercialStructureCSVHandler {
 
     public static File createCSVFile(CommercialStructureEntity commercialStructureEntity) throws IOException {
 
-        if(commercialStructureEntity.getAssociationEntityList().isEmpty())
+        if(commercialStructureEntity.getAssociationEntityList().isEmpty()) {
             return null;
+        }
 
         File returnFile = new File(commercialStructureEntity.getArchiveName() + ".csv");
         FileOutputStream fop = new FileOutputStream(returnFile);

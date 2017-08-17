@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,8 +37,9 @@ public class CommercialStructureServiceImpl implements CommercialStructureServic
     @Transactional
     public void loadFile(CommercialStructureEntity commercialStructureEntity){
         PartnerEntity partner = partnerService.findBySlug(commercialStructureEntity.getPartner().getSlug());
-        if(null == partner)
-            throw  new EntityNotFoundException("Partner not found");
+        if(null == partner) {
+            throw new EntityNotFoundException("Partner not found");
+        }
         commercialStructureRepository.findBySlug(commercialStructureEntity.getSlug())
                 .ifPresent(entity -> this.deleteEntity(entity));
         commercialStructureEntity = commercialStructureRepository.saveAndFlush(commercialStructureEntity);
@@ -64,10 +64,12 @@ public class CommercialStructureServiceImpl implements CommercialStructureServic
         PartnerEntity partner = partnerService.findBySlug(partnerSlug);
         CommercialStructureEntity commercialStructureEntity = commercialStructureRepository.findBySlug(slug).get();
         if(null == partner || null ==commercialStructureEntity){
-            if(null == partner)
+            if(null == partner) {
                 throw new EntityNotFoundException("Inexistent partner");
-            if(null == commercialStructureEntity)
+            }
+            if(null == commercialStructureEntity) {
                 throw new EntityNotFoundException("Inexistent Commercial Structure");
+            }
         }else{
             commercialStructureRepository.delete(commercialStructureEntity);
         }
@@ -95,8 +97,9 @@ public class CommercialStructureServiceImpl implements CommercialStructureServic
         if(null == partner){
             throw new EntityNotFoundException("Inexistent partner");
         }
-
-        return commercialStructureRepository.findBySlug(slug).get();
+        CommercialStructureEntity entity = (CommercialStructureEntity)commercialStructureRepository.findBySlug(slug).
+                orElseThrow( () -> new EntityNotFoundException("Invalid commercial structure slug"));
+        return entity;
     }
 
     private void deleteEntity(CommercialStructureEntity entity){

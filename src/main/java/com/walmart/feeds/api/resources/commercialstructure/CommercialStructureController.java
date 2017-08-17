@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.resources.commercialstructure;
 
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureEntity;
 import com.walmart.feeds.api.core.service.commercialstructure.CommercialStructureService;
 import com.walmart.feeds.api.core.utils.CommercialStructureCSVHandler;
@@ -10,7 +11,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.camel.ProducerTemplate;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
@@ -22,11 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.print.attribute.standard.Media;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
@@ -106,7 +104,9 @@ public class CommercialStructureController {
     public @ResponseBody Resource downloadCSVFile(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("csSlug") String csSlug, UriComponentsBuilder builder, HttpServletResponse response) throws IOException {
         CommercialStructureEntity entity = commercialStructureService.fetchOneCommercialStructure(partnerSlug, csSlug);
         File file = CommercialStructureCSVHandler.createCSVFile(entity);
-
+        if(null == file){
+            throw new EntityNotFoundException("There's no content to create a file");
+        }
         response.setContentType(TEXT_CSV);
         response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
         response.setHeader("Content-Length", String.valueOf(file.length()));

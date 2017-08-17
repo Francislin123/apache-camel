@@ -12,9 +12,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Created by vn0y942 on 08/08/17.
- */
 @Entity
 @Getter
 @Table(name = "commercial_structure", uniqueConstraints = {@UniqueConstraint(columnNames = "slug")})
