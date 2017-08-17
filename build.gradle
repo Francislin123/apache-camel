@@ -129,6 +129,7 @@ dependencies {
     compile "org.apache.camel:camel-spring-boot-starter:${camelVersion}"
     compile "org.apache.camel:camel-csv:${camelVersion}"
     compile "org.apache.camel:camel-bindy:${camelVersion}"
+    compile "commons-io:commons-io:2.5"
 
     compile "oracle:ojdbc6:11.2.0.3"
 
