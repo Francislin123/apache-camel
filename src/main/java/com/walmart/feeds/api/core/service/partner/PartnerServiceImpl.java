@@ -53,6 +53,11 @@ public class PartnerServiceImpl implements PartnerService {
         if (!partner.getSlug().equals(newSlug))
             hasConflict(newSlug);
 
+        String newSlug = SlugParserUtil.toSlug(partner.getName());
+
+        if (!partner.getSlug().equals(newSlug))
+            hasConflict(newSlug);
+
         PartnerEntity currentPartner = findPartnerByReference(partner.getSlug());
 
         PartnerEntity updatedPartner = PartnerEntity.builder()

@@ -66,7 +66,7 @@ public class FeedServiceImplTest {
         when(repository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity()));
         when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(createFeedEntity());
 
-        this.feedService.updateFeed(createFeedEntity());
+            this.feedService.updateFeed(createFeedEntity());
 
         verify(repository).findBySlug(anyString());
         verify(repository).saveAndFlush(Mockito.any(FeedEntity.class));
