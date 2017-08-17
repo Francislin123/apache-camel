@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.service.partner;
 
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 
@@ -35,5 +36,7 @@ public interface PartnerService {
      * @param status true whether active, false otherwise
      */
     void changePartnerStatus(String reference, boolean status);
+
+    public void hasConflict(String slug) throws EntityAlreadyExistsException ;
 
 }

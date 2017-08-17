@@ -161,6 +161,19 @@ public class PartnerControllerTest {
     }
 
     @Test
+    public void testUpdatePartnerWhenOccursConflict() throws Exception {
+
+        doThrow(EntityAlreadyExistsException.class).when(partnerService).updatePartner(Mockito.any(PartnerEntity.class));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put(PartnerController.V1_PARTNERS + "/zoom")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(PartnerUpdateRequest.class).gimme("partner_update_request"))))
+                .andExpect(MockMvcResultMatchers.status().isConflict());
+
+    }
+
+    @Test
     public void testUpdatePartnerNotfoundWhenInexistentPartner() throws Exception {
         doThrow(EntityNotFoundException.class).when(partnerService).updatePartner(Mockito.any(PartnerEntity.class));
 

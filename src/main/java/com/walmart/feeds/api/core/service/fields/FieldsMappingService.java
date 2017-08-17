@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.service.fields;
 
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 
@@ -20,4 +21,5 @@ public interface FieldsMappingService {
 
     List<FieldsMappingEntity> findAll();
 
+    void hasConflict(String slug) throws EntityAlreadyExistsException;
 }

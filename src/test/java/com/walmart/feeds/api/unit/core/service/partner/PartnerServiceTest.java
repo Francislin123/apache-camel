@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.unit.core.service.partner;
 
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.repository.partner.PartnerHistoryRepository;
@@ -46,22 +47,31 @@ public class PartnerServiceTest {
     }
 
     //--------------------------------------------------------------------------------------------------------------//
+
     @Test
     public void testUpdatePartner() {
-        try {
-            when(repository.findBySlug(anyString())).thenReturn(Optional.of(new PartnerEntity()));
-            when(repository.saveAndFlush(any(PartnerEntity.class))).thenReturn(createPartner());
 
-            PartnerEntity request = PartnerEntity.builder().name("Teste 123").slug("teste").build();
+        when(repository.findBySlug(anyString())).thenReturn(Optional.of(new PartnerEntity()));
+        when(repository.saveAndFlush(any(PartnerEntity.class))).thenReturn(createPartner());
 
-            this.service.updatePartner(request);
+        PartnerEntity request = PartnerEntity.builder().name("Teste").slug("teste").build();
+        this.service.updatePartner(request);
 
-            verify(repository).findBySlug(anyString());
-            verify(repository).saveAndFlush(Mockito.any(PartnerEntity.class));
-            verify(historyRepository).save(any(PartnerHistory.class));
-        } catch (EntityNotFoundException e) {
-            fail("Exception should not have been fired!");
-        }
+        verify(repository).findBySlug(anyString());
+        verify(repository).saveAndFlush(Mockito.any(PartnerEntity.class));
+        verify(historyRepository).save(any(PartnerHistory.class));
+
+    }
+
+    @Test(expected = EntityAlreadyExistsException.class)
+    public void testUpdatePartnerWhenOccursConflict() {
+
+        PartnerEntity partner = PartnerEntity.builder().name("Teste 123").slug("teste").build();
+
+        when(repository.findBySlug(anyString())).thenReturn(Optional.of(new PartnerEntity()));
+
+        this.service.updatePartner(partner);
+
     }
 
     @Test(expected = InconsistentEntityException.class)
@@ -91,6 +101,16 @@ public class PartnerServiceTest {
     }
 
     private PartnerEntity createPartner() {
+        PartnerEntity partner = PartnerEntity.builder()
+                .name("PartnerEntity")
+                .slug("partner")
+                .description("New partner")
+                .partnerships("teste123").build();
+
+        return partner;
+    }
+
+    private PartnerEntity createPartnerUpdateName() {
         PartnerEntity partner = PartnerEntity.builder()
                 .name("PartnerEntity")
                 .slug("partner")

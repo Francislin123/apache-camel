@@ -141,13 +141,19 @@ public class FeedServiceImpl implements FeedService {
             throw new InconsistentEntityException("Feed must have a partner");
         }
 
+        String newSlug = SlugParserUtil.toSlug(feedEntity.getName());
+
+        if (!feedEntity.getSlug().equalsIgnoreCase(newSlug))
+            hasConflict(newSlug);
+
+
         PartnerEntity partner = partnerRepository.findBySlug(feedEntity.getPartner().getSlug()).orElseThrow(() -> new EntityNotFoundException("PartnerEntity not Found"));
 
         FeedEntity persistedFeedEntity = feedRepository.findBySlug(feedEntity.getSlug()).orElseThrow(() -> new EntityNotFoundException("FeedEntity not Found"));
 
         FeedEntity updatedFeed = FeedEntity.builder()
                 .id(persistedFeedEntity.getId())
-                .slug(SlugParserUtil.toSlug(feedEntity.getName()))
+                .slug(newSlug)
                 .name(feedEntity.getName())
                 .type(feedEntity.getType())
                 .partner(partner)
@@ -162,6 +168,14 @@ public class FeedServiceImpl implements FeedService {
         saveFeedWithHistory(updatedFeed);
 
         logger.info("feedEntity={} message=update_successfully", feedEntity);
+    }
+
+    @Override
+    public void hasConflict(String slug) throws EntityAlreadyExistsException {
+
+        if (feedRepository.findBySlug(slug).isPresent())
+            throw new EntityAlreadyExistsException(String.format("The feed called %s already exists", slug));
+
     }
 
     private FeedEntity saveFeedWithHistory(FeedEntity feed) {

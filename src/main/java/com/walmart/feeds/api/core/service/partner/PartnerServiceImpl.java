@@ -37,10 +37,7 @@ public class PartnerServiceImpl implements PartnerService {
             throw new InconsistentEntityException("No partnership related with partner " + partner.getSlug());
         }
 
-        if (partnerRepository.findBySlug(partner.getSlug()).isPresent()) {
-            logger.info("partner={} error=already_exists", partner);
-            throw new EntityAlreadyExistsException(String.format("Partner with slug='%s' already exists", partner.getSlug()));
-        }
+        hasConflict(partner.getSlug());
 
         persistPartner(partner);
 
@@ -50,11 +47,16 @@ public class PartnerServiceImpl implements PartnerService {
     @Transactional
     public void updatePartner(PartnerEntity partner) throws IllegalArgumentException, EntityNotFoundException {
 
+        String newSlug = SlugParserUtil.toSlug(partner.getName());
+
+        if (!partner.getSlug().equals(newSlug))
+            hasConflict(newSlug);
+
         PartnerEntity currentPartner = findPartnerByReference(partner.getSlug());
 
         PartnerEntity updatedPartner = PartnerEntity.builder()
                 .id(currentPartner.getId())
-                .slug(SlugParserUtil.toSlug(partner.getName()))
+                .slug(newSlug)
                 .name(partner.getName())
                 .description(partner.getDescription())
                 .partnerships(partner.getPartnerships())
@@ -67,7 +69,13 @@ public class PartnerServiceImpl implements PartnerService {
         logger.info("PartnerEntity {} updated.", partner.getSlug());
     }
 
-
+    @Override
+    public void hasConflict(String slug) throws EntityAlreadyExistsException {
+        if (partnerRepository.findBySlug(slug).isPresent()) {
+            logger.info("partner={} error=already_exists", slug);
+            throw new EntityAlreadyExistsException(String.format("The partner called %s already exists", slug));
+        }
+    }
 
     public PartnerEntity findBySlug(String reference) throws EntityNotFoundException {
         return findPartnerByReference(reference);

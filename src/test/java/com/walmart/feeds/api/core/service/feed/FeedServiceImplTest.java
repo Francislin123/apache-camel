@@ -57,22 +57,46 @@ public class FeedServiceImplTest {
 
     @Test
     public void testUpdateFeed() throws EntityNotFoundException {
-        try {
-            when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity().getPartner()));
-            when(repository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity()));
-            when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(createFeedEntity());
+        when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity().getPartner()));
+        when(repository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity()));
+        when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(createFeedEntity());
 
-            this.feedService.updateFeed(createFeedEntity());
+        this.feedService.updateFeed(createFeedEntity());
 
-            verify(repository).findBySlug(anyString());
-            verify(repository).saveAndFlush(Mockito.any(FeedEntity.class));
-            verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
-        } catch (Exception e) {
-            fail("Exception should not have been fired!");
-        }
+        verify(repository).findBySlug(anyString());
+        verify(repository).saveAndFlush(Mockito.any(FeedEntity.class));
+        verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
+    }
+
+    @Test(expected = EntityAlreadyExistsException.class)
+    public void testUpdateFeedWhenOcurrsConflict() throws EntityNotFoundException {
+
+        FeedEntity feedEntityUpdateName = createFeedEntityUpdateName();
+        FeedEntity existentFeed = createFeedEntity();
+
+        when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntityUpdateName.getPartner()));
+        when(repository.findBySlug(anyString())).thenReturn(Optional.of(existentFeed));
+
+        this.feedService.updateFeed(feedEntityUpdateName);
+
     }
 
     private FeedEntity createFeedEntity() {
+        PartnerEntity partnerTO = PartnerEntity.builder()
+                .slug("teste123")
+                .build();
+        FeedEntity to = FeedEntity.builder()
+                .name("Big")
+                .slug("big")
+                .active(true)
+                .partner(partnerTO)
+                .notificationFormat(FeedNotificationFormat.JSON)
+                .notificationMethod(FeedNotificationMethod.FILE)
+                .type(INVENTORY).build();
+        return to;
+    }
+
+    private FeedEntity createFeedEntityUpdateName() {
         PartnerEntity partnerTO = PartnerEntity.builder()
                 .slug("teste123")
                 .build();

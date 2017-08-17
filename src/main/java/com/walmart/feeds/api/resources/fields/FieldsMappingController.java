@@ -74,8 +74,6 @@ public class FieldsMappingController {
     public ResponseEntity updateMapping(@RequestBody @Valid FieldsMappingRequest request,
                                         @PathVariable("slug") String slug) {
 
-        // TODO: 09/08/17 validate null elements on request.mappedfields
-
         FieldsMappingEntity mappingEntity = FieldsMappingEntity.builder()
                 .name(request.getName())
                 .slug(slug)
@@ -115,12 +113,13 @@ public class FieldsMappingController {
         
     }
 
-    @ApiOperation(value = "List of all fields mapping",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "List of all fields mapping",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of all fields mapping",
                     response = CollectionResponse.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "Unhandled exception")})
-    @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CollectionResponse<FieldsMappingResponse>> listAllFieldsMapping() {
 
         List<FieldsMappingEntity> allFieldsMapping = fieldsMappingService.findAll();
@@ -135,7 +134,7 @@ public class FieldsMappingController {
 
     @ApiOperation(value = "Method to delete fields mapping",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "Fields mapping deleted successfully", response = FieldsMappingRequest.class),
+            @ApiResponse(code = 204, message = "Fields mapping deleted successfully"),
             @ApiResponse(code = 404, message = "Fields mapping does not deleted because it was not found."),
             @ApiResponse(code = 500, message = "Internal Server Error")})
     @RequestMapping(value = "/{slug}",

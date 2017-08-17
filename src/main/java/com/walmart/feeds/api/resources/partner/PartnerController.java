@@ -97,16 +97,16 @@ public class PartnerController {
 
 
         PartnerEntity partner = PartnerEntity.builder()
-                .slug(SlugParserUtil.toSlug(partnerRequest.getName()))
-                .partnerships(String.join(PartnerEntity.PARTNERSHIP_SEPARATOR, partnerRequest.getPartnerships()))
-                .name(partnerRequest.getName())
-                .description(partnerRequest.getDescription())
-                .active(partnerRequest.isActive())
-                .build();
+            .slug(slug)
+            .partnerships(String.join(PartnerEntity.PARTNERSHIP_SEPARATOR, partnerRequest.getPartnerships()))
+            .name(partnerRequest.getName())
+            .description(partnerRequest.getDescription())
+            .active(partnerRequest.isActive())
+            .build();
 
-            service.updatePartner(partner);
+        service.updatePartner(partner);
 
-            return ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
 
 	}
 

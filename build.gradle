@@ -87,8 +87,8 @@ liquibase {
         local {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             url 'jdbc:oracle:thin:@//localhost:1521/xe'
-            username 'feeds_admin'
-            password 'feeds_admin'
+            username 'FEEDS_ADMIN'
+            password 'FEEDS_ADMIN'
         }
     }
     runList = project.ext.runList
