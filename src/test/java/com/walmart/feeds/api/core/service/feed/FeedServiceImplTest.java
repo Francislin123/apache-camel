@@ -62,11 +62,14 @@ public class FeedServiceImplTest {
 
     @Test
     public void testUpdateFeed() throws EntityNotFoundException {
-        when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity().getPartner()));
-        when(repository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity()));
-        when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(createFeedEntity());
 
-            this.feedService.updateFeed(createFeedEntity());
+        FeedEntity feedEntity = createFeedEntity();
+        when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getPartner()));
+        when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
+        when(repository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
+        when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+
+        this.feedService.updateFeed(feedEntity);
 
         verify(repository).findBySlug(anyString());
         verify(repository).saveAndFlush(Mockito.any(FeedEntity.class));
@@ -98,6 +101,7 @@ public class FeedServiceImplTest {
                 .slug("big")
                 .active(true)
                 .partner(partner)
+                .template(templateEntity)
                 .notificationFormat(FeedNotificationFormat.JSON)
                 .notificationMethod(FeedNotificationMethod.FILE)
                 .type(INVENTORY).build();

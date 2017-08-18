@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 public class FeedRequest {
 
     @NotBlank
+    @Pattern(regexp = "^[^\\s].*", message = "The name cannot start with whitespace")
     @Size(max = 50)
     private String name;
 

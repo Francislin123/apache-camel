@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 /**
@@ -19,6 +20,7 @@ import java.util.List;
 public class FieldsMappingRequest {
 
     @NotBlank
+    @Pattern(regexp = "^[^\\s].*", message = "The name cannot start with whitespace")
     private String name;
 
     @Valid
