@@ -9,6 +9,8 @@ import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.template.TemplateRepository;
+import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +42,9 @@ public class FeedServiceImplTest {
     @Mock
     private PartnerRepository partnerRepository;
 
+    @Mock
+    private TemplateRepository templateRepository;
+
     @Test(expected = EntityNotFoundException.class)
     public void createFeedWhenPartnerNoExists() throws Exception {
         when(partnerRepository.findActiveBySlug(anyString())).thenReturn(Optional.empty());
@@ -57,30 +62,33 @@ public class FeedServiceImplTest {
 
     @Test
     public void testUpdateFeed() throws EntityNotFoundException {
-        try {
-            when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity().getPartner()));
-            when(repository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity()));
-            when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(createFeedEntity());
 
-            this.feedService.updateFeed(createFeedEntity());
+        when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity().getPartner()));
+        when(templateRepository.findBySlug("template")).thenReturn(Optional.of(TemplateEntity.builder().build()));
+        when(repository.findBySlug(anyString())).thenReturn(Optional.of(createFeedEntity()));
+        when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(createFeedEntity());
 
-            verify(repository).findBySlug(anyString());
-            verify(repository).saveAndFlush(Mockito.any(FeedEntity.class));
-            verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
-        } catch (Exception e) {
-            fail("Exception should not have been fired!");
-        }
+        this.feedService.updateFeed(createFeedEntity());
+
+        verify(repository).findBySlug(anyString());
+        verify(repository).saveAndFlush(Mockito.any(FeedEntity.class));
+        verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
+
     }
 
     private FeedEntity createFeedEntity() {
-        PartnerEntity partnerTO = PartnerEntity.builder()
+        PartnerEntity partner = PartnerEntity.builder()
                 .slug("teste123")
+                .build();
+        TemplateEntity templateEntity = TemplateEntity.builder()
+                .slug("template")
                 .build();
         FeedEntity to = FeedEntity.builder()
                 .name("Big")
                 .slug("partner-teste")
                 .active(true)
-                .partner(partnerTO)
+                .partner(partner)
+                .template(templateEntity)
                 .notificationFormat(FeedNotificationFormat.JSON)
                 .notificationMethod(FeedNotificationMethod.FILE)
                 .type(INVENTORY).build();
