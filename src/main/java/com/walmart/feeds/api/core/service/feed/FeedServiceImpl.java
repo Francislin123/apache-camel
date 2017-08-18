@@ -61,7 +61,6 @@ public class FeedServiceImpl implements FeedService {
 
         FeedEntity newFeed = FeedEntity.builder()
                 .utms(feedEntity.getUtms())
-                .id(feedEntity.getId())
                 .slug(feedEntity.getSlug())
                 .type(feedEntity.getType())
                 .partner(partner)
@@ -125,6 +124,7 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .name(feedEntity.getName())
                 .active(active)
+                .template(feedEntity.getTemplate())
                 .creationDate(feedEntity.getCreationDate())
                 .build();
 
@@ -151,6 +151,9 @@ public class FeedServiceImpl implements FeedService {
 
         FeedEntity persistedFeedEntity = feedRepository.findBySlug(feedEntity.getSlug()).orElseThrow(() -> new EntityNotFoundException("FeedEntity not Found"));
 
+        TemplateEntity template = templateRepository.findBySlug(feedEntity.getTemplate().getSlug()).orElseThrow(() ->
+                new UserException(String.format("Template not found for reference %s", feedEntity.getTemplate().getSlug())));
+
         FeedEntity updatedFeed = FeedEntity.builder()
                 .id(persistedFeedEntity.getId())
                 .slug(newSlug)
@@ -162,6 +165,7 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .utms(feedEntity.getUtms())
                 .active(feedEntity.isActive())
+                .template(template)
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
 

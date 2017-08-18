@@ -9,6 +9,8 @@ import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.template.TemplateRepository;
+import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +23,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Optional;
 
 import static com.walmart.feeds.api.core.repository.feed.model.FeedType.INVENTORY;
+import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -38,6 +41,9 @@ public class FeedServiceImplTest {
 
     @Mock
     private PartnerRepository partnerRepository;
+
+    @Mock
+    private TemplateRepository templateRepository;
 
     @Test(expected = EntityNotFoundException.class)
     public void createFeedWhenPartnerNoExists() throws Exception {
@@ -81,14 +87,17 @@ public class FeedServiceImplTest {
     }
 
     private FeedEntity createFeedEntity() {
-        PartnerEntity partnerTO = PartnerEntity.builder()
+        PartnerEntity partner = PartnerEntity.builder()
                 .slug("teste123")
+                .build();
+        TemplateEntity templateEntity = TemplateEntity.builder()
+                .slug("template")
                 .build();
         FeedEntity to = FeedEntity.builder()
                 .name("Big")
                 .slug("big")
                 .active(true)
-                .partner(partnerTO)
+                .partner(partner)
                 .notificationFormat(FeedNotificationFormat.JSON)
                 .notificationMethod(FeedNotificationMethod.FILE)
                 .type(INVENTORY).build();
@@ -96,14 +105,18 @@ public class FeedServiceImplTest {
     }
 
     private FeedEntity createFeedEntityUpdateName() {
-        PartnerEntity partnerTO = PartnerEntity.builder()
+        PartnerEntity partner = PartnerEntity.builder()
                 .slug("teste123")
+                .build();
+        TemplateEntity templateEntity = TemplateEntity.builder()
+                .slug("template")
                 .build();
         FeedEntity to = FeedEntity.builder()
                 .name("Big")
                 .slug("partner-teste")
                 .active(true)
-                .partner(partnerTO)
+                .partner(partner)
+                .template(templateEntity)
                 .notificationFormat(FeedNotificationFormat.JSON)
                 .notificationMethod(FeedNotificationMethod.FILE)
                 .type(INVENTORY).build();
