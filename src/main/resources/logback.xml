@@ -29,25 +29,25 @@
         </layout>
     </appender>
 
-    <!--<appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">-->
-        <!--<graylogHost>radio.qa.vmcommerce.intra</graylogHost>-->
-        <!--<graylogPort>12202</graylogPort>-->
-        <!--<layout class="de.siegmar.logbackgelf.GelfLayout">-->
-            <!--<shortPatternLayout class="ch.qos.logback.classic.PatternLayout">-->
-                <!--<pattern>%m%nopex</pattern>-->
-            <!--</shortPatternLayout>-->
-            <!--<fullPatternLayout class="ch.qos.logback.classic.PatternLayout">-->
-                <!--<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${APP} [%thread] %-5level %logger{36} - %msg%n</pattern>-->
-            <!--</fullPatternLayout>-->
-        <!--</layout>-->
-    <!--</appender>-->
+    <appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">
+        <graylogHost>radio.qa.vmcommerce.intra</graylogHost>
+        <graylogPort>12202</graylogPort>
+        <layout class="de.siegmar.logbackgelf.GelfLayout">
+            <shortPatternLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%m%nopex</pattern>
+            </shortPatternLayout>
+            <fullPatternLayout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${APP} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </fullPatternLayout>
+        </layout>
+    </appender>
 
     <!-- Loggers -->
     <logger name="com.walmart" level="info"/>
 
     <root level="info">
         <appender-ref ref="FILE"/>
-        <!--<appender-ref ref="GELF"/>-->
+        <appender-ref ref="GELF"/>
         <appender-ref ref="STDOUT"/>
     </root>
 
