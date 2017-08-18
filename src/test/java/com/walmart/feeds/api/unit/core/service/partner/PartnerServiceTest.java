@@ -18,8 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.QueryTimeoutException;
+import org.springframework.dao.DataAccessResourceFailureException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,10 +119,10 @@ public class PartnerServiceTest {
         List<PartnerEntity> partners = partnerService.search(null);
     }
 
-    @Test(expected = DataAccessException.class)
+    @Test(expected = DataAccessResourceFailureException.class)
     public void testSearchPartnersWhenDatabaseIsDown() {
 
-        when(partnerRepository.searchPartners(anyString())).thenThrow(QueryTimeoutException.class);
+        when(partnerRepository.searchPartners(anyString())).thenThrow(DataAccessResourceFailureException.class);
         List<PartnerEntity> partners = partnerService.search("buscape");
 
     }
