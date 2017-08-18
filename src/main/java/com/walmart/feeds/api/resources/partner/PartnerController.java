@@ -53,7 +53,7 @@ public class PartnerController {
                 .active(partnerRequest.isActive())
                 .build();
 
-        service.savePartner(partner);
+        service.save(partner);
 
         UriComponents uriComponents = builder.path(V1_PARTNERS.concat("/{partnerSlug}")).buildAndExpand(partner.getSlug());
 
@@ -104,7 +104,7 @@ public class PartnerController {
             .active(partnerRequest.isActive())
             .build();
 
-        service.updatePartner(partner);
+        service.update(partner);
 
         return ResponseEntity.ok().build();
 
@@ -119,7 +119,7 @@ public class PartnerController {
     public ResponseEntity<?> changePartnerStatus(@PathVariable("slug") String slug,
                                                  @RequestParam("active") Boolean active) throws EntityNotFoundException {
 
-        service.changePartnerStatus(slug, active);
+        service.changeStatus(slug, active);
 
         return ResponseEntity.noContent().build();
     }
@@ -132,7 +132,7 @@ public class PartnerController {
     @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CollectionResponse<PartnerResponse>> fetchAllPartners(@RequestParam(value = "active", required = false) Boolean active) {
 
-        List<PartnerEntity> allPartners = service.findPartnersByStatus(active);
+        List<PartnerEntity> allPartners = service.findByStatus(active);
 
         return ResponseEntity.ok().body(CollectionResponse.<PartnerResponse>builder()
                 .result(allPartners.stream().map(p -> PartnerResponse.builder()
@@ -153,9 +153,8 @@ public class PartnerController {
             @ApiResponse(code = 404, message = "Empty result")})
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public ResponseEntity<CollectionResponse<PartnerResponse>> searchPartners(@RequestParam("q") String query) {
-        logger.info("Searching partners using query text = {}", query);
 
-        List<PartnerEntity> partnerResponses = this.service.searchPartners(query);
+        List<PartnerEntity> partnerResponses = this.service.search(query);
 
         if (partnerResponses.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -172,6 +171,7 @@ public class PartnerController {
                         .partnerships(p.getPartnershipsAsList())
                         .build()).collect(Collectors.toList())
                 ).build());
+
     }
 
 }

@@ -55,9 +55,9 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
         String newSlug = SlugParserUtil.toSlug(fieldsMapping.getName());
 
-        if (!fieldsMapping.getSlug().equals(newSlug))
+        if (!fieldsMapping.getSlug().equals(newSlug)) {
             hasConflict(newSlug);
-
+        }
 
         FieldsMappingEntity persistedEntity = fieldsMappingRepository.findBySlug(fieldsMapping.getSlug())
                 .orElseThrow(() -> new EntityNotFoundException(String.format("FieldsMapping %s not found", fieldsMapping.getSlug())));
@@ -101,8 +101,9 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     @Override
     public void hasConflict(String slug) throws EntityAlreadyExistsException {
 
-        if (fieldsMappingRepository.findBySlug(slug).isPresent())
+        if (fieldsMappingRepository.findBySlug(slug).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("Fields mapping called '%s' already exists", slug));
+        }
 
     }
 

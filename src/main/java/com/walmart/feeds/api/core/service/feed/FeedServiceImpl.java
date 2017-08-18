@@ -143,9 +143,9 @@ public class FeedServiceImpl implements FeedService {
 
         String newSlug = SlugParserUtil.toSlug(feedEntity.getName());
 
-        if (!feedEntity.getSlug().equalsIgnoreCase(newSlug))
+        if (!feedEntity.getSlug().equals(newSlug)) {
             hasConflict(newSlug);
-
+        }
 
         PartnerEntity partner = partnerRepository.findBySlug(feedEntity.getPartner().getSlug()).orElseThrow(() -> new EntityNotFoundException("PartnerEntity not Found"));
 
@@ -173,8 +173,9 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public void hasConflict(String slug) throws EntityAlreadyExistsException {
 
-        if (feedRepository.findBySlug(slug).isPresent())
+        if (feedRepository.findBySlug(slug).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("The feed called %s already exists", slug));
+        }
 
     }
 

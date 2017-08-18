@@ -21,7 +21,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Optional;
 
 import static com.walmart.feeds.api.core.repository.feed.model.FeedType.INVENTORY;
-import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
