@@ -1,8 +1,9 @@
-package com.walmart.feeds.api.resources.feed.validator;
+package com.walmart.feeds.api.unit.resources.feed.validator;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
+import com.walmart.feeds.api.resources.feed.validator.FeedNotificationDataURLValidator;
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class FeedNotificationDataURLValidatorTest {
 
     @BeforeClass
     public static void setUp() {
-        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.resources.feed.test.template");
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.feed.test.template");
     }
 
     @Test

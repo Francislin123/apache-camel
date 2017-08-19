@@ -23,6 +23,9 @@ public class CommercialStructureHistory extends AuditableEntity{
     @Column(name = "id")
     private UUID id;
 
+    @Column(name = "commercial_structure_id")
+    private UUID commercialStructureId;
+
     @Column(name = "name")
     private String archiveName;
 
@@ -32,18 +35,23 @@ public class CommercialStructureHistory extends AuditableEntity{
     @ManyToOne
     private PartnerEntity partner;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private ImportStatus status;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "commercial_structure_id", referencedColumnName = "id")
     private List<CommercialStructureAssociationHistory> associationEntityList;
 
     @Builder
-    private CommercialStructureHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String archiveName, String slug,
-                                       PartnerEntity partner, List<CommercialStructureAssociationHistory> associationEntityList){
+    public CommercialStructureHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, UUID commercialStructureId, String archiveName, String slug, PartnerEntity partner, ImportStatus status, List<CommercialStructureAssociationHistory> associationEntityList) {
         super(creationDate, updateDate, user);
         this.id = id;
+        this.commercialStructureId = commercialStructureId;
         this.archiveName = archiveName;
         this.slug = slug;
         this.partner = partner;
+        this.status = status;
         this.associationEntityList = associationEntityList;
     }
 

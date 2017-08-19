@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FeedTemplateLoader implements TemplateLoader {
+
     @Override
     public void load() {
         Map<String, String> utms = new HashMap<>();

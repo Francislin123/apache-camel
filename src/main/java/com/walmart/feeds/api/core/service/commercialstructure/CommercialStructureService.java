@@ -10,11 +10,7 @@ import java.util.List;
 
 public interface CommercialStructureService {
 
-    void loadFile(CommercialStructureEntity commercialStructureEntity);
-
     void processFile(String partnerSlug, MultipartFile importedFile) throws IOException;
-
-    CommercialStructureHistory entityToHistoryTransform(CommercialStructureEntity commercialStructureEntity);
 
     void removeEntityBySlug(String partnerSlug, String slug);
 
@@ -22,4 +18,5 @@ public interface CommercialStructureService {
 
     CommercialStructureEntity fetchOneCommercialStructure(String partnerSlug, String slug);
 
+    CommercialStructureEntity saveWithHistory(CommercialStructureEntity entity);
 }

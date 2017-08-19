@@ -8,6 +8,7 @@ import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.feed.response.FieldValidation;
 import org.apache.camel.CamelExecutionException;
+import org.apache.camel.Exchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -100,8 +101,10 @@ public class FeedsAdminAPIExceptionHandler {
     public ResponseEntity<ErrorResponse> camelExceptionHandler(CamelExecutionException ex, WebRequest request) {
         logger.error("An unhandled error occurred", ex);
 
-        if(ex.getCause() != null && ex.getCause() instanceof UserException) {
-            return userExceptionHandler((UserException) ex.getCause(), request);
+        Exception camelExceptionCaught = ex.getExchange().getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
+
+        if (camelExceptionCaught instanceof UserException) {
+            return userExceptionHandler((UserException) camelExceptionCaught, request);
         }
 
         return genericExceptionHandler(ex, request);

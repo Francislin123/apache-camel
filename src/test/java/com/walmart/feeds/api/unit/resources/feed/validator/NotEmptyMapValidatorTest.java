@@ -1,5 +1,6 @@
-package com.walmart.feeds.api.resources.feed.validator;
+package com.walmart.feeds.api.unit.resources.feed.validator;
 
+import com.walmart.feeds.api.resources.feed.validator.NotEmptyMapValidator;
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;

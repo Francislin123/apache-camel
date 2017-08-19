@@ -2,7 +2,6 @@ package com.walmart.feeds.api.unit.resources.commercialstructure;
 
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.resources.camel.CommercialStructureBindy;
-import com.walmart.feeds.api.resources.camel.CommercialStructureProcessor;
 import com.walmart.feeds.api.resources.camel.CommercialStructureRouteBuilder;
 import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -22,13 +21,11 @@ import java.util.Map;
 @RunWith(MockitoJUnitRunner.class)
 public class CommercialStructureRouteBuilderTest extends CamelTestSupport {
 
-    @Produce(uri = CommercialStructureRouteBuilder.ROUTE_LOAD_CSV)
+    @Produce(uri = CommercialStructureRouteBuilder.VALIDATE_FILE_ROUTE)
     private ProducerTemplate producer;
 
     @EndpointInject(uri = "mock:direct:failToLoadCsFile")
     private MockEndpoint failEndpoint;
-
-    private CommercialStructureProcessor commercialStructureProcessor;
 
     private ArgumentCaptor<Exchange> argumentCaptor;
 
@@ -49,7 +46,6 @@ public class CommercialStructureRouteBuilderTest extends CamelTestSupport {
 
         producer.sendBodyAndHeaders(in, headers);
 
-        Mockito.verify(commercialStructureProcessor).process(argumentCaptor.capture());
         Object body = argumentCaptor.getValue().getIn().getBody();
 
         if(body instanceof List) {
@@ -94,9 +90,7 @@ public class CommercialStructureRouteBuilderTest extends CamelTestSupport {
         CamelContext camelContext = producer.getCamelContext();
         camelContext.addEndpoint("direct:failToLoadCsFile", failEndpoint);
 
-        commercialStructureProcessor = Mockito.mock(CommercialStructureProcessor.class);
-
-        RoutesBuilder routeBuilder = new CommercialStructureRouteBuilder(camelContext, commercialStructureProcessor);
+        RoutesBuilder routeBuilder = new CommercialStructureRouteBuilder(camelContext);
         return routeBuilder;
 
     }

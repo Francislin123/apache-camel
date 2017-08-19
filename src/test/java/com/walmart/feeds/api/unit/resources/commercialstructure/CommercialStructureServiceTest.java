@@ -50,23 +50,18 @@ public class CommercialStructureServiceTest {
         when(commercialStructureRepository.findBySlug(commercialStructureEntity.getSlug())).thenReturn(Optional.of(commercialStructureEntity));
         when(partnerService.findBySlug(commercialStructureEntity.getPartner().getSlug())).thenReturn(new PartnerEntity());
         when(commercialStructureRepository.saveAndFlush(commercialStructureEntity)).thenReturn(commercialStructureEntity);
-        this.commercialStructureService.loadFile(commercialStructureEntity);
+//        this.commercialStructureService.loadFile(commercialStructureEntity);
         verify(commercialStructureRepository, times(1)).delete(commercialStructureEntity);
 
     }
-    @Test
-    public void testEntityToHistoryTransform(){
-        CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
-        CommercialStructureHistory history = this.commercialStructureService.entityToHistoryTransform(commercialStructureEntity);
-        assertEquals(history.getSlug(), commercialStructureEntity.getSlug());
-    }
+
     @Test
     public void historyRecordTest(){
         CommercialStructureEntity commercialStructureEntity = Fixture.from(CommercialStructureEntity.class).gimme("cs-input-ok");
         when(commercialStructureRepository.findBySlug(commercialStructureEntity.getSlug())).thenReturn(Optional.of(commercialStructureEntity));
         when(commercialStructureRepository.saveAndFlush(commercialStructureEntity)).thenReturn(commercialStructureEntity);
         when(partnerService.findBySlug(commercialStructureEntity.getPartner().getSlug())).thenReturn(new PartnerEntity());
-        this.commercialStructureService.loadFile(commercialStructureEntity);
+//        this.commercialStructureService.loadFile(commercialStructureEntity);
         verify(commercialStructureRepository, times(1)).saveAndFlush(commercialStructureEntity);
         verify(commercialStructureHistoryRepository, times(1)).saveAndFlush(any(CommercialStructureHistory.class));
     }

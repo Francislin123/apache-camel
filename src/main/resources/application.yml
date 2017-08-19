@@ -30,7 +30,7 @@ spring:
     password: FEEDS_ADMIN
     tomcat:
       max-wait: 60000
-      initial-size: 50
+      initial-size: 10
       max-active: 150
       test-on-borrow: true
   jpa:

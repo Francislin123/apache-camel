@@ -101,6 +101,9 @@
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
             <column name="creation_date" type="datetime" defaultValueComputed="${now}">
                 <constraints nullable="false"/>
             </column>
@@ -128,11 +131,17 @@
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="commercial_structure_id" type="${uuid_type}">
+                <constraints nullable="false"/>
+            </column>
             <column name="slug" type="varchar(50)"/>
             <column name="partner_id" type="${uuid_type}">
                 <constraints foreignKeyName="cs_partner_fk" nullable="false"/>
             </column>
             <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="creation_date" type="datetime" defaultValueComputed="${now}">

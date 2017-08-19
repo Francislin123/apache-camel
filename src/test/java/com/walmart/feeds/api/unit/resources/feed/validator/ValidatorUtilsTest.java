@@ -1,5 +1,6 @@
-package com.walmart.feeds.api.resources.feed.validator;
+package com.walmart.feeds.api.unit.resources.feed.validator;
 
+import com.walmart.feeds.api.resources.feed.validator.ValidatorUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
