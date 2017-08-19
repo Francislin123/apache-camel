@@ -84,6 +84,19 @@ public class FieldsMappingServiceTest {
 
     }
 
+    @Test(expected = EntityAlreadyExistsException.class)
+    public void updateFieldsMappingWhenOccursConflict() throws Exception {
+
+        FieldsMappingEntity fieldsMapping = createFieldsMappingUpdateName();
+
+        // return a existent fields mapping
+        Mockito.when(fmRepository.findBySlug(anyString()))
+                .thenReturn(Optional.of(createFieldsMapping()));
+
+        mappingService.update(fieldsMapping);
+
+    }
+
     @Test
     public void testUpdateFieldsMappingInexistentEntity() throws Exception {
 
@@ -142,6 +155,22 @@ public class FieldsMappingServiceTest {
         FieldsMappingEntity mappingEntity = FieldsMappingEntity.builder()
                 .name("Buscapé")
                 .slug("buscape")
+                .mappedFields(Arrays.asList(mappedField))
+                .build();
+
+        return mappingEntity;
+    }
+
+    private FieldsMappingEntity createFieldsMappingUpdateName() {
+        MappedFieldEntity mappedField = MappedFieldEntity.builder()
+                .partnerField("nome")
+                .wmField("name")
+                .required(false)
+                .build();
+
+        FieldsMappingEntity mappingEntity = FieldsMappingEntity.builder()
+                .name("Buscapé")
+                .slug("zoom")
                 .mappedFields(Arrays.asList(mappedField))
                 .build();
 

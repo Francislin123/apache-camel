@@ -12,8 +12,8 @@ spring:
   profiles: local
   datasource:
       url: jdbc:oracle:thin:@localhost:1521/xe
-      username: feeds_admin
-      password: feeds_admin
+      username: FEEDS_ADMIN
+      password: FEEDS_ADMIN
       hikari:
         connection-timeout: 60000
         maximum-pool-size: 5
