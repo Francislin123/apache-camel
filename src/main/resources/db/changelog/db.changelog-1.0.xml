@@ -80,15 +80,15 @@
 
     </changeSet>
 
-    <changeSet id="createCommercialStructureTable" author="thiago.lima">
+    <changeSet id="createPartnerTaxonomyTable" author="thiago.lima">
 
         <preConditions onError="WARN">
             <tableExists tableName="partner"/>
         </preConditions>
 
-        <comment>Creating Commercial Structure table</comment>
+        <comment>Creating Partner Taxonomy table</comment>
 
-        <createTable tableName="commercial_structure">
+        <createTable tableName="partner_taxonomy">
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -98,7 +98,7 @@
             <column name="partner_id" type="${uuid_type}">
                 <constraints foreignKeyName="cs_partner_fk" nullable="false"/>
             </column>
-            <column name="name" type="varchar(50)">
+            <column name="file_name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="varchar(50)">
@@ -114,31 +114,31 @@
         </createTable>
 
         <rollback>
-            <dropTable tableName="commercial_structure"/>
+            <dropTable tableName="partner_taxonomy"/>
         </rollback>
 
     </changeSet>
 
-    <changeSet id="createCommercialStructureHistoryTable" author="thiago.lima">
+    <changeSet id="createPartnerTaxonomyHistoryTable" author="thiago.lima">
 
         <preConditions onError="WARN">
             <tableExists tableName="partner"/>
         </preConditions>
 
-        <comment>Creating Commercial Structure table</comment>
+        <comment>Creating Partner Taxonomy History table</comment>
 
-        <createTable tableName="commercial_structure_history">
+        <createTable tableName="partner_taxonomy_history">
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="commercial_structure_id" type="${uuid_type}">
+            <column name="partner_taxonomy_id" type="${uuid_type}">
                 <constraints nullable="false"/>
             </column>
             <column name="slug" type="varchar(50)"/>
             <column name="partner_id" type="${uuid_type}">
                 <constraints foreignKeyName="cs_partner_fk" nullable="false"/>
             </column>
-            <column name="name" type="varchar(50)">
+            <column name="file_name" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="varchar(50)">
@@ -154,32 +154,30 @@
         </createTable>
 
         <rollback>
-            <dropTable tableName="commercial_structure_history"/>
+            <dropTable tableName="partner_taxonomy_history"/>
         </rollback>
 
     </changeSet>
 
-    <changeSet id="createCSAssociationTable" author="thiago.lima">
+    <changeSet id="createTaxonomyMappingTable" author="thiago.lima">
 
         <preConditions onError="WARN">
-            <tableExists tableName="commercial_structure"/>
+            <tableExists tableName="partner_taxonomy"/>
         </preConditions>
 
-        <comment>Create EC Association table</comment>
+        <comment>Create Taxonomy Mapping table</comment>
 
-        <createTable tableName="cs_association">
+        <createTable tableName="taxonomy_mapping">
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="commercial_structure_id" type="${uuid_type}">
+            <column name="partner_taxonomy_id" type="${uuid_type}"/>
+            <column name="partner_path_id" type="${uuid_type}">
             </column>
-            <column name="partner_cs_id" type="varchar(50)">
+            <column name="walmart_path" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="walmart_taxonomy" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="partner_taxonomy" type="varchar(255)">
+            <column name="partner_path" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="creation_date" type="datetime" defaultValueComputed="${now}">
@@ -191,38 +189,38 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="cs_association" baseColumnNames="commercial_structure_id" constraintName="cs_association_fk"
-                                 referencedTableName="commercial_structure"
+        <addForeignKeyConstraint baseTableName="taxonomy_mapping" baseColumnNames="partner_taxonomy_id" constraintName="taxonomy_mapping_fk"
+                                 referencedTableName="partner_taxonomy"
                                  onDelete="CASCADE"
                                  referencedColumnNames="id"/>
         <rollback>
-            <dropTable tableName="cs_association"/>
+            <dropTable tableName="taxonomy_mapping"/>
         </rollback>
 
     </changeSet>
 
 
-    <changeSet id="createCSAssociationHistoryTable" author="thiago.lima">
+    <changeSet id="createTaxonomyMappingHistoryTable" author="thiago.lima">
 
         <preConditions onError="WARN">
-            <tableExists tableName="commercial_structure_history"/>
+            <tableExists tableName="partner_taxonomy_history"/>
         </preConditions>
 
         <comment>Create EC Association table</comment>
 
-        <createTable tableName="cs_association_history">
+        <createTable tableName="taxonomy_mapping_history">
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="commercial_structure_id" type="${uuid_type}">
+            <column name="partner_taxonomy_id" type="${uuid_type}">
             </column>
-            <column name="partner_cs_id" type="varchar(50)">
+            <column name="partner_path_id" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="walmart_taxonomy" type="varchar(255)">
+            <column name="walmart_path" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="partner_taxonomy" type="varchar(255)">
+            <column name="partner_path" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="creation_date" type="datetime" defaultValueComputed="${now}">
@@ -234,12 +232,12 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="cs_association_history" baseColumnNames="commercial_structure_id" constraintName="cs_association_history_fk"
-                                 referencedTableName="commercial_structure_history"
+        <addForeignKeyConstraint baseTableName="taxonomy_mapping_history" baseColumnNames="partner_taxonomy_id" constraintName="taxonomy_mapping_history_fk"
+                                 referencedTableName="partner_taxonomy_history"
                                  onDelete="CASCADE"
                                  referencedColumnNames="id"/>
         <rollback>
-            <dropTable tableName="cs_association_history"/>
+            <dropTable tableName="taxonomy_mapping_history"/>
         </rollback>
 
     </changeSet>

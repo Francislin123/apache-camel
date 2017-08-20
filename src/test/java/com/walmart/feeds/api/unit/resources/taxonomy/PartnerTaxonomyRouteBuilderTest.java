@@ -1,8 +1,8 @@
-package com.walmart.feeds.api.unit.resources.commercialstructure;
+package com.walmart.feeds.api.unit.resources.taxonomy;
 
 import com.walmart.feeds.api.core.exceptions.UserException;
-import com.walmart.feeds.api.resources.camel.CommercialStructureBindy;
-import com.walmart.feeds.api.resources.camel.CommercialStructureRouteBuilder;
+import com.walmart.feeds.api.resources.camel.TaxonomyMappingBindy;
+import com.walmart.feeds.api.resources.camel.PartnerTaxonomyRouteBuilder;
 import org.apache.camel.*;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
@@ -19,9 +18,9 @@ import java.util.List;
 import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CommercialStructureRouteBuilderTest extends CamelTestSupport {
+public class PartnerTaxonomyRouteBuilderTest extends CamelTestSupport {
 
-    @Produce(uri = CommercialStructureRouteBuilder.VALIDATE_FILE_ROUTE)
+    @Produce(uri = PartnerTaxonomyRouteBuilder.VALIDATE_FILE_ROUTE)
     private ProducerTemplate producer;
 
     @EndpointInject(uri = "mock:direct:failToLoadCsFile")
@@ -50,10 +49,10 @@ public class CommercialStructureRouteBuilderTest extends CamelTestSupport {
 
         if(body instanceof List) {
 
-            List<CommercialStructureBindy> commercialStructures = (List) body;
+            List<TaxonomyMappingBindy> taxonomies = (List) body;
 
-            assertEquals(2, commercialStructures.size());
-            assertEquals("Computadores", commercialStructures.get(0).getWalmartTaxonomy());
+            assertEquals(2, taxonomies.size());
+            assertEquals("Computadores", taxonomies.get(0).getWalmartTaxonomy());
 
         } else {
             fail("Camel body should be a List");
@@ -90,7 +89,7 @@ public class CommercialStructureRouteBuilderTest extends CamelTestSupport {
         CamelContext camelContext = producer.getCamelContext();
         camelContext.addEndpoint("direct:failToLoadCsFile", failEndpoint);
 
-        RoutesBuilder routeBuilder = new CommercialStructureRouteBuilder(camelContext);
+        RoutesBuilder routeBuilder = new PartnerTaxonomyRouteBuilder(camelContext);
         return routeBuilder;
 
     }

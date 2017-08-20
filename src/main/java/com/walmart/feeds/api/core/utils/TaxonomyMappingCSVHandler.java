@@ -1,24 +1,24 @@
 package com.walmart.feeds.api.core.utils;
 
-import com.walmart.feeds.api.core.repository.commercialstructure.model.CommercialStructureEntity;
+import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 
 import java.io.*;
 
 
-public class CommercialStructureCSVHandler {
+public class TaxonomyMappingCSVHandler {
 
     public static final String DEFAULT_SEPARATOR = ";";
 
-    public static File createCSVFile(CommercialStructureEntity commercialStructureEntity) throws IOException {
+    public static File createCSVFile(PartnerTaxonomyEntity partnerTaxonomyEntity) throws IOException {
 
-        if(commercialStructureEntity.getAssociationEntityList().isEmpty()) {
+        if(partnerTaxonomyEntity.getTaxonomyMappings().isEmpty()) {
             return null;
         }
 
-        File returnFile = new File(commercialStructureEntity.getArchiveName() + ".csv");
+        File returnFile = new File(partnerTaxonomyEntity.getFileName() + ".csv");
         FileOutputStream fop = new FileOutputStream(returnFile);
         StringBuilder builder = createGenericHeader();
-        returnFileBody(commercialStructureEntity, builder);
+        returnFileBody(partnerTaxonomyEntity, builder);
         fop.write(builder.toString().getBytes());
         fop.flush();
         fop.close();
@@ -37,13 +37,13 @@ public class CommercialStructureCSVHandler {
         return sb;
     }
 
-    public static void returnFileBody(CommercialStructureEntity commercialStructureEntity, StringBuilder sb){
-        commercialStructureEntity.getAssociationEntityList().forEach( assoc -> {
-            sb.append(assoc.getStructurePartnerId());
+    public static void returnFileBody(PartnerTaxonomyEntity partnerTaxonomyEntity, StringBuilder sb){
+        partnerTaxonomyEntity.getTaxonomyMappings().forEach(assoc -> {
+            sb.append(assoc.getPartnerPathId());
             sb.append(DEFAULT_SEPARATOR);
-            sb.append(assoc.getPartnerTaxonomy());
+            sb.append(assoc.getPartnerPath());
             sb.append(DEFAULT_SEPARATOR);
-            sb.append(assoc.getWalmartTaxonomy());
+            sb.append(assoc.getWalmartPath());
             sb.append(System.lineSeparator());
         });
     }

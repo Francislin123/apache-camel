@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.commercialstructure.response;
+package com.walmart.feeds.api.resources.taxonomy.response;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class CommercialStructureResponse {
+public class PartnerTaxonomyResponse {
 
     private String slug;
 

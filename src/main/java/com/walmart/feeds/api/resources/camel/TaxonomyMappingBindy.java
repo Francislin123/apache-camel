@@ -9,7 +9,7 @@ import org.apache.camel.dataformat.bindy.annotation.DataField;
 
 @CsvRecord(separator = ";", skipFirstLine = true)
 @Data
-public class CommercialStructureBindy {
+public class TaxonomyMappingBindy {
 
     @DataField(pos = 1, required = true , trim = true)
     private String structurePartnerId;
