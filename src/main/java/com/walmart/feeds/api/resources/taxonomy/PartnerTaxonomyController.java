@@ -81,8 +81,12 @@ public class PartnerTaxonomyController {
         List<PartnerTaxonomyEntity> entities = partnerTaxonomyService.fetchPartnerTaxonomies(partnerSlug, taxonomySlug);
         List<PartnerTaxonomyResponse> response = entities.stream().map(t ->
                 PartnerTaxonomyResponse.builder()
-                .archiveName(t.getFileName()).slug(t.getSlug()).mappingDate(t.getCreationDate())
-                .link(builder.path(V1_PARTNER_TAXONOMY.concat("/download/{slug}")).buildAndExpand(t.getPartner().getSlug(), t.getSlug()).toUriString()).build()).collect(Collectors.toList());
+                        .archiveName(t.getFileName())
+                        .status(t.getStatus())
+                        .slug(t.getSlug())
+                        .mappingDate(t.getCreationDate())
+                        .link(builder.path(V1_PARTNER_TAXONOMY.concat("/download/{slug}")).buildAndExpand(t.getPartner().getSlug(), t.getSlug()).toUriString()).build())
+                .collect(Collectors.toList());
         return ResponseEntity.ok().body(response);
     }
 
