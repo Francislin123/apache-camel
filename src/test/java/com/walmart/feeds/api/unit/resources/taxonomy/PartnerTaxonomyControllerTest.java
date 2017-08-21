@@ -5,8 +5,9 @@ import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
-import com.walmart.feeds.api.resources.taxonomy.PartnerTaxonomyController;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
+import com.walmart.feeds.api.resources.taxonomy.PartnerTaxonomyController;
+import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
 import org.apache.camel.ProducerTemplate;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,10 +20,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -59,19 +58,23 @@ public class PartnerTaxonomyControllerTest {
     public void testUploadFile() throws Exception {
         MockMultipartFile taxonomyMappingFile = new MockMultipartFile("file", "id ".getBytes());
 
-        doNothing().when(producerTemplate).sendBodyAndHeaders(any(String.class), any(InputStream.class), any(Map.class));
+        doNothing().when(partnerTaxonomyService).processFile(mock(UploadTaxonomyMappingTO.class));
 
         mockMvc.perform(fileUpload(PartnerTaxonomyController.V1_PARTNER_TAXONOMY, "anyExistentPartnerSlug", "anyExistentFeedSlug")
-                .file(taxonomyMappingFile).contentType(MediaType.MULTIPART_FORM_DATA)).andExpect(status().isCreated());
+                .file(taxonomyMappingFile)
+                .param("name", "Taxonomy 123")
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isAccepted());
     }
     @Test
     public void sendAEmptyFileAndReturnAndHandleException() throws Exception {
         MockMultipartFile taxonomyMappingFile = new MockMultipartFile("file", "id ".getBytes());
 
-        doThrow(EntityNotFoundException.class).when(producerTemplate).sendBodyAndHeaders(any(String.class), any(InputStream.class), any(Map.class));
+        doThrow(EntityNotFoundException.class).when(partnerTaxonomyService).processFile(any(UploadTaxonomyMappingTO.class));
 
         mockMvc.perform(fileUpload(PartnerTaxonomyController.V1_PARTNER_TAXONOMY, "anyExistentPartnerSlug", "anyExistentFeedSlug")
                 .file(taxonomyMappingFile)
+                .param("name", "Taxonomy 123")
                 .contentType(MediaType.MULTIPART_FORM_DATA)).andExpect(status().isNotFound());
 
     }
@@ -79,7 +82,7 @@ public class PartnerTaxonomyControllerTest {
     public void deleteTaxonomyMapping() throws Exception {
         doNothing().when(partnerTaxonomyService).removeEntityBySlug("existent", "existentSlug");
         mockMvc.perform(delete(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/existentSlug", "partnerSlug"))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test

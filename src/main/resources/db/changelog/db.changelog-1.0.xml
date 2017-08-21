@@ -95,6 +95,9 @@
             <column name="slug" type="varchar(50)">
                 <constraints unique="true" nullable="false"/>
             </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
             <column name="partner_id" type="${uuid_type}">
                 <constraints foreignKeyName="cs_partner_fk" nullable="false"/>
             </column>
@@ -137,6 +140,9 @@
             <column name="slug" type="varchar(50)"/>
             <column name="partner_id" type="${uuid_type}">
                 <constraints foreignKeyName="cs_partner_fk" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
             </column>
             <column name="file_name" type="varchar(50)">
                 <constraints nullable="false"/>

@@ -76,6 +76,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
         PartnerTaxonomyEntity partnerTaxonomy = this.saveWithHistory(PartnerTaxonomyEntity.builder()
                 .slug(uploadTaxonomyMappingTO.getSlug())
+                .name(uploadTaxonomyMappingTO.getName())
                 .partner(partner)
                 .fileName(archiveName)
                 .status(ImportStatus.INITIAL)
@@ -136,6 +137,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
         PartnerTaxonomyHistory history = PartnerTaxonomyHistory.builder()
                 .fileName(persistedEntity.getFileName())
+                .name(persistedEntity.getName())
                 .partnerTaxonomyId(persistedEntity.getId())
                 .partner(persistedEntity.getPartner())
                 .slug(persistedEntity.getSlug())

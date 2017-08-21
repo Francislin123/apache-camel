@@ -29,6 +29,9 @@ public class PartnerTaxonomyHistory extends AuditableEntity{
     @Column(name = "file_name")
     private String fileName;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "slug")
     private String slug;
 
@@ -44,11 +47,12 @@ public class PartnerTaxonomyHistory extends AuditableEntity{
     private List<TaxonomyMappingHistory> taxonomyMappings;
 
     @Builder
-    public PartnerTaxonomyHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, UUID partnerTaxonomyId, String fileName, String slug, PartnerEntity partner, ImportStatus status, List<TaxonomyMappingHistory> taxonomyMappings) {
+    public PartnerTaxonomyHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, UUID partnerTaxonomyId, String fileName, String name, String slug, PartnerEntity partner, ImportStatus status, List<TaxonomyMappingHistory> taxonomyMappings) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.partnerTaxonomyId = partnerTaxonomyId;
         this.fileName = fileName;
+        this.name = name;
         this.slug = slug;
         this.partner = partner;
         this.status = status;

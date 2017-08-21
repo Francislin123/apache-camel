@@ -66,6 +66,7 @@ public class PartnerTaxonomyRouteBuilder extends RouteBuilder {
                     exchange.getOut().setBody(PartnerTaxonomyEntity.builder()
                             .id(partnerTaxonomy.getId())
                             .fileName(partnerTaxonomy.getFileName())
+                            .name(partnerTaxonomy.getName())
                             .partner(partnerTaxonomy.getPartner())
                             .slug(partnerTaxonomy.getSlug())
                             .taxonomyMappings(associationsList)

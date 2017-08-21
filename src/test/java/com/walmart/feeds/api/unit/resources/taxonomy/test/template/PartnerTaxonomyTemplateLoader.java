@@ -26,13 +26,14 @@ public class PartnerTaxonomyTemplateLoader implements TemplateLoader {
         }});
 
         Fixture.of(TaxonomyMappingEntity.class).addTemplate("csa-entity", new Rule(){{
-            add("structurePartnerId", "123123");
-            add("partnerTaxonomy", "any string");
-            add("walmartTaxonomy", "any string");
+            add("partnerPathId", "123123");
+            add("partnerPath", "any string");
+            add("walmartPath", "any string");
         }});
 
         Fixture.of(PartnerTaxonomyEntity.class).addTemplate("cs-input-ok", new Rule(){{
-            add("archiveName", "any-name");
+            add("name", "any-name");
+            add("fileName", "taxonomy-file.csv");
             add("slug", "any-slug");
             PartnerEntity partner = Fixture.from(PartnerEntity.class).gimme("partner_entity");
             add("partner", partner);
@@ -41,7 +42,7 @@ public class PartnerTaxonomyTemplateLoader implements TemplateLoader {
                     .gimme("csa-entity");
             List<TaxonomyMappingEntity> csaList = new ArrayList<>();
             csaList.add(csa);
-            add("associationEntityList", csaList);
+            add("taxonomyMappings", csaList);
 
         }});
     }
