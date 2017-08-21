@@ -88,6 +88,7 @@ liquibase {
         local {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             url 'jdbc:oracle:thin:@localhost:1521/xe'
+            contexts 'local'
             username 'FEEDS_ADMIN'
             password 'FEEDS_ADMIN'
         }
