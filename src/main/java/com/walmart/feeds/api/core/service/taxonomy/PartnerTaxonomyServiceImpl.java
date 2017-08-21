@@ -106,7 +106,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
         if(slug == null || StringUtils.isEmpty(slug)) {
             list = partnerTaxonomyRepository.findByPartner(partner).orElseThrow(() -> new EntityNotFoundException(String.format("Partner Taxonomy not found for partner=%s", partnerSlug)));
         } else {
-            list.add(partnerTaxonomyRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException(String.format("Partner Taxonomy not found for partner=%s and slug=%s", partnerSlug, slug))));
+            list.add(partnerTaxonomyRepository.findBySlugAndPartner(slug, partner).orElseThrow(() -> new EntityNotFoundException(String.format("Partner Taxonomy not found for partner=%s and slug=%s", partnerSlug, slug))));
         }
 
         return list;
