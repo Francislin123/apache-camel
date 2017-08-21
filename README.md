@@ -2,6 +2,8 @@
 
 This application responsible for setting up a feed, through it you can register a new partner, feed or map their fields to a template.
 
+For more details access [Admin e API Interna Feeds](https://confluence.wmxp.com.br/display/MI/2.+Admin+e+API+interna+Feeds).
+
 # Technologies
 
   - Java 8
