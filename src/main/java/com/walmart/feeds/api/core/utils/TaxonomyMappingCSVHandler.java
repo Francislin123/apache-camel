@@ -9,23 +9,6 @@ public class TaxonomyMappingCSVHandler {
 
     public static final String DEFAULT_SEPARATOR = ";";
 
-    public static File createCSVFile(PartnerTaxonomyEntity partnerTaxonomyEntity) throws IOException {
-
-        if(partnerTaxonomyEntity.getTaxonomyMappings().isEmpty()) {
-            return null;
-        }
-
-        File returnFile = new File(partnerTaxonomyEntity.getFileName() + ".csv");
-        FileOutputStream fop = new FileOutputStream(returnFile);
-        StringBuilder builder = createGenericHeader();
-        returnFileBody(partnerTaxonomyEntity, builder);
-        fop.write(builder.toString().getBytes());
-        fop.flush();
-        fop.close();
-
-        return returnFile;
-    }
-
     public static StringBuilder createGenericHeader(){
         StringBuilder sb = new StringBuilder();
         sb.append("PARTNER_CS_ID");

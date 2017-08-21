@@ -38,6 +38,8 @@ public class PartnerTaxonomyController {
 
     public static final String TEXT_CSV = "text/csv";
 
+    public static final String DEFAULT_SEPARATOR = ";";
+
     @Autowired
     private PartnerTaxonomyService partnerTaxonomyService;
 
@@ -107,16 +109,17 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 200, message = "Successful download", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Partner Taxonomy or partner not found")})
     @RequestMapping(value = "download/{taxonomySlug}", method = RequestMethod.GET)
-    public @ResponseBody Resource downloadCSVFile(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("taxonomySlug") String taxonomySlug, UriComponentsBuilder builder, HttpServletResponse response) throws IOException {
+    public @ResponseBody ResponseEntity downloadCSVFile(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("taxonomySlug") String taxonomySlug, UriComponentsBuilder builder, HttpServletResponse response) throws IOException {
         PartnerTaxonomyEntity entity = partnerTaxonomyService.fetchPartnerTaxonomy(partnerSlug, taxonomySlug);
-        File file = TaxonomyMappingCSVHandler.createCSVFile(entity);
-        if(null == file){
-            throw new EntityNotFoundException("There's no content to create a file");
-        }
+
         response.setContentType(TEXT_CSV);
-        response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
-        response.setHeader("Content-Length", String.valueOf(file.length()));
-        return new FileSystemResource(file);
+
+        StringBuilder sb = TaxonomyMappingCSVHandler.createGenericHeader();
+        TaxonomyMappingCSVHandler.returnFileBody(entity, sb);
+
+        response.getOutputStream().write(sb.toString().getBytes());
+
+        return ResponseEntity.ok().build();
     }
 
 }
