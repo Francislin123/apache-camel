@@ -93,18 +93,9 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
     @Override
     public void removeEntityBySlug(String partnerSlug, String slug) {
-        PartnerEntity partner = partnerService.findBySlug(partnerSlug);
-        PartnerTaxonomyEntity partnerTaxonomyEntity = partnerTaxonomyRepository.findBySlug(slug).get();
-        if(null == partner || null == partnerTaxonomyEntity){
-            if(null == partner) {
-                throw new EntityNotFoundException("Inexistent partner");
-            }
-            if(null == partnerTaxonomyEntity) {
-                throw new EntityNotFoundException("Inexistent Partner Taxonomy");
-            }
-        }else{
-            partnerTaxonomyRepository.delete(partnerTaxonomyEntity);
-        }
+        partnerService.findBySlug(partnerSlug);
+        PartnerTaxonomyEntity partnerTaxonomyEntity = partnerTaxonomyRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException("Inexistent Partner Taxonomy"));
+        partnerTaxonomyRepository.delete(partnerTaxonomyEntity);
     }
 
     @Override
