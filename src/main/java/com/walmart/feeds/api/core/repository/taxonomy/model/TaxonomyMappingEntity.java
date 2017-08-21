@@ -5,8 +5,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -22,15 +24,19 @@ public class TaxonomyMappingEntity extends AuditableEntity {
     @Column(name = "id")
     private UUID id;
 
+    @NotBlank
     @Column(name = "partner_path_id")
     private String partnerPathId;
 
+    @NotBlank
     @Column(name = "partner_path")
     private String partnerPath;
 
+    @NotBlank
     @Column(name = "walmart_path")
     private String walmartPath;
 
+    @NotNull
     @ManyToOne
     private PartnerTaxonomyEntity partnerTaxonomy;
 

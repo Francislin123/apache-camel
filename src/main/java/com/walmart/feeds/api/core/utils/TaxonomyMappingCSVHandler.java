@@ -11,7 +11,7 @@ public class TaxonomyMappingCSVHandler {
 
     public static File createCSVFile(PartnerTaxonomyEntity partnerTaxonomyEntity) throws IOException {
 
-        if(partnerTaxonomyEntity.getTaxonomyMappings().isEmpty()) {
+        if(null == partnerTaxonomyEntity.getTaxonomyMappings() || partnerTaxonomyEntity.getTaxonomyMappings().isEmpty()) {
             return null;
         }
 
