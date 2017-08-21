@@ -94,17 +94,8 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
     @Override
     public void removeEntityBySlug(String partnerSlug, String slug) {
         PartnerEntity partner = partnerService.findBySlug(partnerSlug);
-        PartnerTaxonomyEntity partnerTaxonomyEntity = partnerTaxonomyRepository.findBySlug(slug).get();
-        if(null == partner || null == partnerTaxonomyEntity){
-            if(null == partner) {
-                throw new EntityNotFoundException("Inexistent partner");
-            }
-            if(null == partnerTaxonomyEntity) {
-                throw new EntityNotFoundException("Inexistent Partner Taxonomy");
-            }
-        }else{
-            partnerTaxonomyRepository.delete(partnerTaxonomyEntity);
-        }
+        PartnerTaxonomyEntity partnerTaxonomyEntity = partnerTaxonomyRepository.findBySlugAndPartner(slug, partner).orElseThrow(() -> new EntityNotFoundException("Inexistent Partner Taxonomy"));
+        partnerTaxonomyRepository.delete(partnerTaxonomyEntity);
     }
 
     @Override
@@ -112,10 +103,10 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
         PartnerEntity partner = partnerService.findBySlug(partnerSlug);
         List<PartnerTaxonomyEntity> list = new ArrayList<>();
 
-        if(slug == null || StringUtils.isEmpty(slug)) {
+        if(StringUtils.isEmpty(slug)) {
             list = partnerTaxonomyRepository.findByPartner(partner).orElseThrow(() -> new EntityNotFoundException(String.format("Partner Taxonomy not found for partner=%s", partnerSlug)));
         } else {
-            list.add(partnerTaxonomyRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException(String.format("Partner Taxonomy not found for partner=%s and slug=%s", partnerSlug, slug))));
+            list.add(partnerTaxonomyRepository.findBySlugAndPartner(slug, partner).orElseThrow(() -> new EntityNotFoundException(String.format("Partner Taxonomy not found for partner=%s and slug=%s", partnerSlug, slug))));
         }
 
         return list;
@@ -123,9 +114,9 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
     @Override
     public PartnerTaxonomyEntity fetchPartnerTaxonomy(String partnerSlug, String slug) {
-        partnerService.findBySlug(partnerSlug);
+        PartnerEntity partner = partnerService.findBySlug(partnerSlug);
 
-        PartnerTaxonomyEntity entity = partnerTaxonomyRepository.findBySlug(slug).
+        PartnerTaxonomyEntity entity = partnerTaxonomyRepository.findBySlugAndPartner(slug, partner).
                 orElseThrow( () -> new EntityNotFoundException("Invalid Partner Taxonomy slug"));
         return entity;
     }

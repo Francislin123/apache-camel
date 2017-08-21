@@ -2,13 +2,17 @@ package com.walmart.feeds.api.core.repository.taxonomy.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyElements;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -25,22 +29,28 @@ public class PartnerTaxonomyEntity extends AuditableEntity {
     @Column(name = "id")
     private UUID id;
 
+    @NotBlank
     @Column(name = "name")
     private String name;
 
+    @NotBlank
     @Column(name = "file_name")
     private String fileName;
 
+    @NotBlank
     @Column(name = "slug")
     private String slug;
 
+    @NotNull
     @ManyToOne
     private PartnerEntity partner;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private ImportStatus status;
 
+    @NotEmptyElements
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "partnerTaxonomy")
     private List<TaxonomyMappingEntity> taxonomyMappings;
 

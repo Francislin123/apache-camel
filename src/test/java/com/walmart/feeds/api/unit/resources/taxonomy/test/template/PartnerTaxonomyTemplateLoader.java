@@ -6,7 +6,9 @@ import br.com.six2six.fixturefactory.loader.TemplateLoader;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,12 @@ public class PartnerTaxonomyTemplateLoader implements TemplateLoader {
             add("partnerPathId", "123123");
             add("partnerPath", "any string");
             add("walmartPath", "any string");
+        }});
+
+        Fixture.of(UploadTaxonomyMappingTO.class).addTemplate("to-mapping", new Rule(){{
+            add("name", "Buscape");
+            add("slug", "buscape");
+            add("partnerSlug", "buscape");
         }});
 
         Fixture.of(PartnerTaxonomyEntity.class).addTemplate("cs-input-ok", new Rule(){{

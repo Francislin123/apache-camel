@@ -15,4 +15,6 @@ public interface PartnerTaxonomyRepository extends JpaRepository<PartnerTaxonomy
     Optional<PartnerTaxonomyEntity> findBySlug(String slug);
 
     Optional<List<PartnerTaxonomyEntity>> findByPartner(PartnerEntity partner);
+
+    Optional<PartnerTaxonomyEntity> findBySlugAndPartner(String slug, PartnerEntity partner);
 }
