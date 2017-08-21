@@ -2,28 +2,31 @@ package com.walmart.feeds.api.core.service.taxonomy;
 
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyHistoryRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
-import com.walmart.feeds.api.core.repository.taxonomy.model.*;
-import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
+import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
+import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHistory;
+import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
-import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.camel.TaxonomyMappingBindy;
+import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.walmart.feeds.api.resources.camel.PartnerTaxonomyRouteBuilder.*;
@@ -50,13 +53,15 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
     @Override
     @Transactional
-    public void processFile(String partnerSlug, MultipartFile importedFile) throws IOException {
+    public void processFile(UploadTaxonomyMappingTO uploadTaxonomyMappingTO) throws IOException {
 
-        PartnerEntity partner = partnerService.findBySlug(partnerSlug);
+        PartnerEntity partner = partnerService.findBySlug(uploadTaxonomyMappingTO.getPartnerSlug());
+
+        MultipartFile importedFile = uploadTaxonomyMappingTO.getTaxonomyMapping();
 
         String archiveName = FilenameUtils.getBaseName(importedFile.getOriginalFilename());
 
-        PartnerTaxonomyEntity persistedTaxonomy = partnerTaxonomyRepository.findBySlug(SlugParserUtil.toSlug(archiveName)).orElse(null);
+        PartnerTaxonomyEntity persistedTaxonomy = partnerTaxonomyRepository.findBySlug(uploadTaxonomyMappingTO.getSlug()).orElse(null);
 
         if (persistedTaxonomy != null &&
                 (ImportStatus.INITIAL.equals(persistedTaxonomy.getStatus()) || ImportStatus.PENDING.equals(persistedTaxonomy.getStatus()))) {
@@ -70,7 +75,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
         }
 
         PartnerTaxonomyEntity partnerTaxonomy = this.saveWithHistory(PartnerTaxonomyEntity.builder()
-                .slug(SlugParserUtil.toSlug(archiveName))
+                .slug(uploadTaxonomyMappingTO.getSlug())
                 .partner(partner)
                 .fileName(archiveName)
                 .status(ImportStatus.INITIAL)

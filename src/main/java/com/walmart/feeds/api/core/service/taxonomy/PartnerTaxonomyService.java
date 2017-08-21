@@ -1,7 +1,7 @@
 package com.walmart.feeds.api.core.service.taxonomy;
 
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
-import org.springframework.web.multipart.MultipartFile;
+import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
 
 import java.io.IOException;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PartnerTaxonomyService {
 
-    void processFile(String partnerSlug, MultipartFile importedFile) throws IOException;
+    void processFile(UploadTaxonomyMappingTO uploadTaxonomyMappingTO) throws IOException;
 
     void removeEntityBySlug(String partnerSlug, String slug);
 
