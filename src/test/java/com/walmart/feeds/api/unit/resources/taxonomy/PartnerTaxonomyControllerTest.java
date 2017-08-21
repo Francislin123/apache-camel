@@ -105,7 +105,7 @@ public class PartnerTaxonomyControllerTest {
     @Test
     public void createCSVFile() throws Exception {
         PartnerTaxonomyEntity partnerTaxonomyEntity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-ok");
-        when(partnerTaxonomyService.fetchPartnerTaxonomy(partnerTaxonomyEntity.getPartner().getSlug(), partnerTaxonomyEntity.getSlug())).thenReturn(partnerTaxonomyEntity);
+        when(partnerTaxonomyService.fetchProcessedPartnerTaxonomy(partnerTaxonomyEntity.getPartner().getSlug(), partnerTaxonomyEntity.getSlug())).thenReturn(partnerTaxonomyEntity);
         mockMvc.perform(get(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/download/{csSlug}",
                 partnerTaxonomyEntity.getPartner().getSlug(), partnerTaxonomyEntity.getSlug())).andExpect(status().isOk());
     }

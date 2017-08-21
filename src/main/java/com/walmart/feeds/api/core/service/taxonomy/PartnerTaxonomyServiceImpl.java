@@ -113,11 +113,12 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
     }
 
     @Override
-    public PartnerTaxonomyEntity fetchPartnerTaxonomy(String partnerSlug, String slug) {
+    public PartnerTaxonomyEntity fetchProcessedPartnerTaxonomy(String partnerSlug, String slug) {
         PartnerEntity partner = partnerService.findBySlug(partnerSlug);
 
-        PartnerTaxonomyEntity entity = partnerTaxonomyRepository.findBySlugAndPartner(slug, partner).
-                orElseThrow( () -> new EntityNotFoundException("Invalid Partner Taxonomy slug"));
+        PartnerTaxonomyEntity entity = partnerTaxonomyRepository.findBySlugAndPartnerAndStatus(slug, partner, ImportStatus.PROCESSED).
+                orElseThrow( () -> new EntityNotFoundException("Partner Taxonomy not found or imported with invalid status"));
+
         return entity;
     }
 

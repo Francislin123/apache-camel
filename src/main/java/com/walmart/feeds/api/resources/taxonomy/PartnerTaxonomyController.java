@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.resources.taxonomy;
 
-import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
@@ -12,8 +11,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +20,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -110,7 +106,7 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 404, message = "Partner Taxonomy or partner not found")})
     @RequestMapping(value = "download/{taxonomySlug}", method = RequestMethod.GET)
     public @ResponseBody ResponseEntity downloadCSVFile(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("taxonomySlug") String taxonomySlug, UriComponentsBuilder builder, HttpServletResponse response) throws IOException {
-        PartnerTaxonomyEntity entity = partnerTaxonomyService.fetchPartnerTaxonomy(partnerSlug, taxonomySlug);
+        PartnerTaxonomyEntity entity = partnerTaxonomyService.fetchProcessedPartnerTaxonomy(partnerSlug, taxonomySlug);
 
         response.setContentType(TEXT_CSV);
 

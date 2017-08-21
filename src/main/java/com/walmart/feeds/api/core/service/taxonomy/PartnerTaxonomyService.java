@@ -15,7 +15,7 @@ public interface PartnerTaxonomyService {
 
     List<PartnerTaxonomyEntity> fetchPartnerTaxonomies(String partnerSlug, String slug);
 
-    PartnerTaxonomyEntity fetchPartnerTaxonomy(String partnerSlug, String slug);
+    PartnerTaxonomyEntity fetchProcessedPartnerTaxonomy(String partnerSlug, String slug);
 
     PartnerTaxonomyEntity saveWithHistory(PartnerTaxonomyEntity entity);
 }
