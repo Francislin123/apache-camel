@@ -50,7 +50,6 @@ public class PartnerTaxonomyEntity extends AuditableEntity {
     @Column(name = "status")
     private ImportStatus status;
 
-    @NotEmptyElements
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "partnerTaxonomy")
     private List<TaxonomyMappingEntity> taxonomyMappings;
 
