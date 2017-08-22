@@ -61,7 +61,6 @@ public class FeedServiceImpl implements FeedService {
 
         FeedEntity newFeed = FeedEntity.builder()
                 .utms(feedEntity.getUtms())
-                .id(feedEntity.getId())
                 .slug(feedEntity.getSlug())
                 .type(feedEntity.getType())
                 .partner(partner)
@@ -125,6 +124,7 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .name(feedEntity.getName())
                 .active(active)
+                .template(feedEntity.getTemplate())
                 .creationDate(feedEntity.getCreationDate())
                 .build();
 
@@ -141,13 +141,22 @@ public class FeedServiceImpl implements FeedService {
             throw new InconsistentEntityException("Feed must have a partner");
         }
 
+        String newSlug = SlugParserUtil.toSlug(feedEntity.getName());
+
+        if (!feedEntity.getSlug().equals(newSlug)) {
+            hasConflict(newSlug);
+        }
+
         PartnerEntity partner = partnerRepository.findBySlug(feedEntity.getPartner().getSlug()).orElseThrow(() -> new EntityNotFoundException("PartnerEntity not Found"));
 
         FeedEntity persistedFeedEntity = feedRepository.findBySlug(feedEntity.getSlug()).orElseThrow(() -> new EntityNotFoundException("FeedEntity not Found"));
 
+        TemplateEntity template = templateRepository.findBySlug(feedEntity.getTemplate().getSlug()).orElseThrow(() ->
+                new UserException(String.format("Template not found for reference %s", feedEntity.getTemplate().getSlug())));
+
         FeedEntity updatedFeed = FeedEntity.builder()
                 .id(persistedFeedEntity.getId())
-                .slug(SlugParserUtil.toSlug(feedEntity.getName()))
+                .slug(newSlug)
                 .name(feedEntity.getName())
                 .type(feedEntity.getType())
                 .partner(partner)
@@ -156,12 +165,22 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .utms(feedEntity.getUtms())
                 .active(feedEntity.isActive())
+                .template(template)
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
 
         saveFeedWithHistory(updatedFeed);
 
         logger.info("feedEntity={} message=update_successfully", feedEntity);
+    }
+
+    @Override
+    public void hasConflict(String slug) throws EntityAlreadyExistsException {
+
+        if (feedRepository.findBySlug(slug).isPresent()) {
+            throw new EntityAlreadyExistsException(String.format("The feed called %s already exists", slug));
+        }
+
     }
 
     private FeedEntity saveFeedWithHistory(FeedEntity feed) {

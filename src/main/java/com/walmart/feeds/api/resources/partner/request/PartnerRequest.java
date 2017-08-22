@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
 public class PartnerRequest {
 
     @NotBlank
+    @Pattern(regexp = "^[^\\s].*", message = "The name cannot start with whitespace")
     @Size(max = 50)
     private String name;
 

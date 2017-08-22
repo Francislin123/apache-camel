@@ -53,13 +53,18 @@ public class FieldsMappingServiceTest {
     @Test
     public void testSaveFieldsdMapping() throws Exception {
 
+        FieldsMappingEntity fieldsMapping = createFieldsMapping();
+
         Mockito.when(fmRepository.findBySlug(anyString()))
                 .thenReturn(Optional.empty());
+        Mockito.when(fmRepository.saveAndFlush(any(FieldsMappingEntity.class)))
+                .thenReturn(createFieldsMapping());
+
         mappingService.save(createFieldsMapping());
 
         Mockito.verify(fmRepository).findBySlug(anyString());
         Mockito.verify(fmRepository).saveAndFlush(any(FieldsMappingEntity.class));
-        Mockito.verify(historyRepository).saveAndFlush(any(FieldsMappingHistory.class));
+        Mockito.verify(historyRepository).save(any(FieldsMappingHistory.class));
 
     }
 
@@ -107,12 +112,27 @@ public class FieldsMappingServiceTest {
 
         Mockito.when(fmRepository.findBySlug(anyString()))
                 .thenReturn(Optional.of(fieldsMapping));
+        Mockito.when(fmRepository.saveAndFlush(any(FieldsMappingEntity.class)))
+                .thenReturn(createFieldsMapping());
 
         mappingService.update(fieldsMapping);
 
         Mockito.verify(fmRepository).findBySlug(anyString());
         Mockito.verify(fmRepository).saveAndFlush(any(FieldsMappingEntity.class));
-        Mockito.verify(historyRepository).saveAndFlush(any(FieldsMappingHistory.class));
+        Mockito.verify(historyRepository).save(any(FieldsMappingHistory.class));
+
+    }
+
+    @Test(expected = EntityAlreadyExistsException.class)
+    public void updateFieldsMappingWhenOccursConflict() throws Exception {
+
+        FieldsMappingEntity fieldsMapping = createFieldsMappingUpdateName();
+
+        // return a existent fields mapping
+        Mockito.when(fmRepository.findBySlug(anyString()))
+                .thenReturn(Optional.of(createFieldsMapping()));
+
+        mappingService.update(fieldsMapping);
 
     }
 
@@ -178,6 +198,22 @@ public class FieldsMappingServiceTest {
                 .name("Buscapé")
                 .slug("buscape")
                 .mappedFields(mappedFields)
+                .build();
+
+        return mappingEntity;
+    }
+
+    private FieldsMappingEntity createFieldsMappingUpdateName() {
+        MappedFieldEntity mappedField = MappedFieldEntity.builder()
+                .partnerField("nome")
+                .wmField("name")
+                .required(false)
+                .build();
+
+        FieldsMappingEntity mappingEntity = FieldsMappingEntity.builder()
+                .name("Buscapé")
+                .slug("zoom")
+                .mappedFields(Arrays.asList(mappedField))
                 .build();
 
         return mappingEntity;

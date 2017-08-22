@@ -136,6 +136,7 @@ public class FeedsControllerTest {
         mockMvc.perform(put(FeedsController.V1_FEEDS + "/teste123", "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
                 ).andExpect(status().isOk());
     }
+
     @Test
     public void testUpdateFeedAndDealWithDuplicatedReference() throws Exception {
         doThrow(EntityAlreadyExistsException.class).when(feedService).updateFeed(any(FeedEntity.class));

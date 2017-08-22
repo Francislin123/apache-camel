@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,9 +42,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
             throw new InconsistentEntityException("null fields mapping");
         }
 
-        if (fieldsMappingRepository.findBySlug(fieldsMappingEntity.getSlug()).isPresent()) {
-            throw new EntityAlreadyExistsException(String.format("Fields mapping with slug='%s' already exists", fieldsMappingEntity.getSlug()));
-        }
+        hasConflict(fieldsMappingEntity.getSlug());
 
         persistFieldsMapping(fieldsMappingEntity);
     }
@@ -58,14 +55,21 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
             throw new InconsistentEntityException("null fields mapping");
         }
 
+        String newSlug = SlugParserUtil.toSlug(fieldsMapping.getName());
+
+        if (!fieldsMapping.getSlug().equals(newSlug)) {
+            hasConflict(newSlug);
+        }
+
         FieldsMappingEntity persistedEntity = fieldsMappingRepository.findBySlug(fieldsMapping.getSlug())
                 .orElseThrow(() -> new EntityNotFoundException(String.format("FieldsMapping %s not found", fieldsMapping.getSlug())));
+
 
         FieldsMappingEntity updatedEntity = FieldsMappingEntity.builder()
                 .id(persistedEntity.getId())
                 .creationDate(persistedEntity.getCreationDate())
                 .name(fieldsMapping.getName())
-                .slug(SlugParserUtil.toSlug(fieldsMapping.getName()))
+                .slug(newSlug)
                 .mappedFields(fieldsMapping.getMappedFields())
                 .build();
 
@@ -96,6 +100,15 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
         return fieldsMapping;
     }
 
+    @Override
+    public void hasConflict(String slug) throws EntityAlreadyExistsException {
+
+        if (fieldsMappingRepository.findBySlug(slug).isPresent()) {
+            throw new EntityAlreadyExistsException(String.format("Fields mapping called '%s' already exists", slug));
+        }
+
+    }
+
     private void persistFieldsMapping(FieldsMappingEntity fieldsMapping) {
 
         List<String> walmartFields = elasticSearchComponent.getWalmartFields();
@@ -109,12 +122,12 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
             throw new UserException("The walmart fields does not exists: " + invalidWalmartFields);
         }
 
-        fieldsMappingRepository.saveAndFlush(fieldsMapping);
+        FieldsMappingEntity managedEntity = fieldsMappingRepository.saveAndFlush(fieldsMapping);
         logger.info("fieldsMapping={} message=saved_successfully", fieldsMapping);
 
-        FieldsMappingHistory history = buildHistory(fieldsMapping);
+        FieldsMappingHistory history = buildHistory(managedEntity);
 
-        historyRepository.saveAndFlush(history);
+        historyRepository.save(history);
         logger.info("fieldsMappingHistory={} message=saved_successfully", history);
 
     }

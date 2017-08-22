@@ -200,6 +200,19 @@ public class FieldsMappingControllerTest {
     }
 
     @Test
+    public void testUpdateFieldsMappingWhenOccursConflict() throws Exception {
+
+        doThrow(EntityAlreadyExistsException.class).when(fieldsMappingService).update(any(FieldsMappingEntity.class));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put(FieldsMappingController.URI_FIELDSDMAPPING + "/zoom")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(FieldsMappingRequest.class).gimme(FIELDS_MAPPING_REQUEST))))
+                .andExpect(MockMvcResultMatchers.status().isConflict());
+
+    }
+
+    @Test
     public void testUpdateFieldsMappingWithEmptyMappedFields() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders
