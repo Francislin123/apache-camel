@@ -22,6 +22,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Matchers.any;
@@ -42,11 +43,47 @@ public class FieldsMappingServiceTest {
     @InjectMocks
     private FieldsMappingService mappingService = new FieldsMappingServiceImpl();
 
+    public static final List<String> WM_FIELDS;
+
+    static {
+        WM_FIELDS = Arrays.asList(
+                "offers.seller.name",
+                "offers.seller.id",
+                "offers.listprice",
+                "offers.quantity",
+                "offers.price",
+                "offers.active",
+                "image.thumb",
+                "image.main",
+                "gtin",
+                "product.image.thumb",
+                "product.image.main",
+                "product.active",
+                "product.id",
+                "product.title",
+                "product.url.web",
+                "product.url.mobile",
+                "active",
+                "specification.dimension.weight",
+                "title",
+                "url.web",
+                "url.mobile",
+                "skuWalmart",
+                "lastUpdate",
+                "categories.depth",
+                "categories.name",
+                "categories.active",
+                "categories.id",
+                "id",
+                "brand.name",
+                "brand.id");
+    }
+
     @Before
     public void init() {
 
         Mockito.when(elasticSearchComponent.getWalmartFields())
-                .thenReturn(Arrays.asList("name"));
+                .thenReturn(WM_FIELDS);
 
     }
 
@@ -187,7 +224,7 @@ public class FieldsMappingServiceTest {
     private FieldsMappingEntity createFieldsMapping() {
         MappedFieldEntity mappedField = MappedFieldEntity.builder()
                 .partnerField("nome")
-                .wmField("name")
+                .wmField("title")
                 .required(false)
                 .build();
 
@@ -206,7 +243,7 @@ public class FieldsMappingServiceTest {
     private FieldsMappingEntity createFieldsMappingUpdateName() {
         MappedFieldEntity mappedField = MappedFieldEntity.builder()
                 .partnerField("nome")
-                .wmField("name")
+                .wmField("title")
                 .required(false)
                 .build();
 

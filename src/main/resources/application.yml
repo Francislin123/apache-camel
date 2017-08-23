@@ -20,6 +20,10 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.Oracle10gDialect
 
+elastic:
+  mapping:
+    sku: http://napsao-qa-nix-feeds-reg-1.qa.vmcommerce.intra:8080/feeds/_mapping/sku
+
 ---
 
 spring:
@@ -31,3 +35,7 @@ spring:
     hikari:
       connection-timeout: 60000
       maximum-pool-size: 5
+
+elastic:
+  mapping:
+    skus-url: http://napsao-qa-nix-feeds-reg-1.qa.vmcommerce.intra:8080/feeds/_mapping/sku

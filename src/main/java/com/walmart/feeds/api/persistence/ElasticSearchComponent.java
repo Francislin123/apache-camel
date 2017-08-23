@@ -3,23 +3,29 @@ package com.walmart.feeds.api.persistence;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component("elasticSearch")
+@Component
 public class ElasticSearchComponent {
 
-    public static final String URL_MAPPING = "http://napsao-qa-nix-feeds-reg-1.qa.vmcommerce.intra:8080/feeds/_mapping/sku";
+    private Logger logger = LoggerFactory.getLogger(ElasticSearchComponent.class);
+
+    @Value("${elastic.mapping.sku}")
+    public String urlMapping;
 
     public List<String> getWalmartFields() {
 
+        logger.info("Retrieve walmart fields from Elasticsearch");
+
         RestTemplate template = new RestTemplate();
-        String response = template.getForEntity(URL_MAPPING, String.class).getBody();
+        String response = template.getForEntity(urlMapping, String.class).getBody();
 
         List<String> listFields = new ArrayList<>();
 
