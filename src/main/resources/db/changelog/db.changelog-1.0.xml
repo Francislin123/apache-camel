@@ -80,6 +80,174 @@
 
     </changeSet>
 
+    <changeSet id="createPartnerTaxonomyTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner"/>
+        </preConditions>
+
+        <comment>Creating Partner Taxonomy table</comment>
+
+        <createTable tableName="partner_taxonomy">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="cs_partner_fk" nullable="false"/>
+            </column>
+            <column name="file_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner_taxonomy"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createPartnerTaxonomyHistoryTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner"/>
+        </preConditions>
+
+        <comment>Creating Partner Taxonomy History table</comment>
+
+        <createTable tableName="partner_taxonomy_history">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="partner_taxonomy_id" type="${uuid_type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)"/>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="cs_partner_fk" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner_taxonomy_history"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTaxonomyMappingTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner_taxonomy"/>
+        </preConditions>
+
+        <comment>Create Taxonomy Mapping table</comment>
+
+        <createTable tableName="taxonomy_mapping">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="partner_taxonomy_id" type="${uuid_type}"/>
+            <column name="partner_path_id" type="${uuid_type}">
+            </column>
+            <column name="walmart_path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="taxonomy_mapping" baseColumnNames="partner_taxonomy_id" constraintName="taxonomy_mapping_fk"
+                                 referencedTableName="partner_taxonomy"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"/>
+        <rollback>
+            <dropTable tableName="taxonomy_mapping"/>
+        </rollback>
+
+    </changeSet>
+
+
+    <changeSet id="createTaxonomyMappingHistoryTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner_taxonomy_history"/>
+        </preConditions>
+
+        <comment>Create EC Association table</comment>
+
+        <createTable tableName="taxonomy_mapping_history">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="partner_taxonomy_id" type="${uuid_type}">
+            </column>
+            <column name="partner_path_id" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="walmart_path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="taxonomy_mapping_history" baseColumnNames="partner_taxonomy_id" constraintName="taxonomy_mapping_history_fk"
+                                 referencedTableName="partner_taxonomy_history"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"/>
+        <rollback>
+            <dropTable tableName="taxonomy_mapping_history"/>
+        </rollback>
+
+    </changeSet>
+
     <changeSet id="createFeedTemplateTable" author="gabriel.cano">
         <createTable tableName="feed_template">
             <column name="id" type="${uuid_type}">

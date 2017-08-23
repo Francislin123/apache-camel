@@ -1,6 +1,8 @@
 package com.walmart.feeds.api.core.repository;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.walmart.feeds.api.resources.serializers.LocalDateTimeSerializer;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -18,9 +20,11 @@ import java.util.Calendar;
 public abstract class AuditableEntity {
 
     @Column(name = "creation_date")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     protected LocalDateTime creationDate;
 
     @Column(name = "update_date")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     protected LocalDateTime updateDate;
 
     @Column(name = "user_login")

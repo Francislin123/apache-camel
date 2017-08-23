@@ -1,24 +1,26 @@
 package com.walmart.feeds.api.resources.infrastructure;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.SystemException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
 import com.walmart.feeds.api.resources.feed.response.FieldValidation;
+import org.apache.camel.CamelExecutionException;
+import org.apache.camel.Exchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
+import javax.servlet.ServletException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -84,6 +86,20 @@ public class FeedsAdminAPIExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(value = {
+            MissingServletRequestPartException.class,
+            MissingServletRequestParameterException.class
+    })
+    public ResponseEntity<ErrorResponse> servletExceptionHandler(ServletException ex, WebRequest request) {
+        logger.error("An user error occurred", ex);
+
+        return ResponseEntity.badRequest()
+                .body(ErrorResponse.builder()
+                        .code(String.valueOf(HttpStatus.BAD_REQUEST.value()))
+                        .description(ex.getMessage())
+                        .build());
+    }
+
     @ExceptionHandler(value = UserException.class)
     public ResponseEntity<ErrorResponse> userExceptionHandler(UserException ex, WebRequest request) {
         logger.error("An user error occurred", ex);
@@ -93,6 +109,19 @@ public class FeedsAdminAPIExceptionHandler {
                         .code(ex.getErrorCode().toString())
                         .description(ex.getMessage())
                         .build());
+    }
+
+    @ExceptionHandler(value = CamelExecutionException.class)
+    public ResponseEntity<ErrorResponse> camelExceptionHandler(CamelExecutionException ex, WebRequest request) {
+        logger.error("An unhandled error occurred", ex);
+
+        Exception camelExceptionCaught = ex.getExchange().getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
+
+        if (camelExceptionCaught instanceof UserException) {
+            return userExceptionHandler((UserException) camelExceptionCaught, request);
+        }
+
+        return genericExceptionHandler(ex, request);
     }
 
 }

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @RequestMapping(FeedsController.V1_FEEDS)
 public class FeedsController {
 
-    static final String V1_FEEDS = "/v1/partners/{partnerSlug}/feeds";
+    public static final String V1_FEEDS = "/v1/partners/{partnerSlug}/feeds";
 
     @Autowired
     private FeedService feedService;

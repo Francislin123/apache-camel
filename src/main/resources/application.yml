@@ -28,6 +28,10 @@ spring:
     url: jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF
     username: FEEDS_ADMIN
     password: FEEDS_ADMIN
-    hikari:
-      connection-timeout: 60000
-      maximum-pool-size: 5
+    tomcat:
+      max-wait: 60000
+      initial-size: 10
+      max-active: 150
+      test-on-borrow: true
+  jpa:
+    show-sql: true

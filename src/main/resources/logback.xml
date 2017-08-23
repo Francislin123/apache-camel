@@ -3,7 +3,7 @@
 
     <contextName>feeds-admin-api</contextName>
     <property name="APP" value="feeds-admin-api"/>
-    <property name="FILE_PATH" value="/walmart/log/"/>
+    <property name="FILE_PATH" value="/walmart/log"/>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
