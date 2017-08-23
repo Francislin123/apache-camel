@@ -22,8 +22,10 @@ import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.mock.web.MockMultipartFile;
@@ -36,6 +38,7 @@ import java.util.Optional;
 
 import static com.walmart.feeds.api.resources.camel.PartnerTaxonomyRouteBuilder.VALIDATE_FILE_ROUTE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -174,17 +177,6 @@ public class PartnerTaxonomyServiceTest {
         verify(partnerTaxonomyRepository, never()).flush();
 
     }
-
-    @Test
-    public void historyRecordTest(){
-        PartnerTaxonomyEntity partnerTaxonomyEntity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-ok");
-        when(partnerTaxonomyRepository.findBySlug(partnerTaxonomyEntity.getSlug())).thenReturn(Optional.of(partnerTaxonomyEntity));
-        when(partnerTaxonomyRepository.saveAndFlush(partnerTaxonomyEntity)).thenReturn(partnerTaxonomyEntity);
-        when(partnerService.findBySlug(partnerTaxonomyEntity.getPartner().getSlug())).thenReturn(new PartnerEntity());
-//        this.partnerTaxonomyService.loadFile(partnerTaxonomyEntity);
-        verify(partnerTaxonomyRepository, times(1)).saveAndFlush(partnerTaxonomyEntity);
-        verify(partnerTaxonomyHistoryRepository, times(1)).saveAndFlush(any(PartnerTaxonomyHistory.class));
-    }
     @Test
     public void deleteMappedTaxonomy(){
 
@@ -210,20 +202,78 @@ public class PartnerTaxonomyServiceTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void deleteTaxonomyWithInvalidSlug(){
-        PartnerTaxonomyEntity partnerTaxonomyEntity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-ok");
-        when(partnerTaxonomyRepository.findBySlug(partnerTaxonomyEntity.getSlug())).thenReturn(Optional.of(partnerTaxonomyEntity));
-        doThrow(EntityNotFoundException.class).when(partnerTaxonomyRepository).findBySlug("invalidSlug");
-        this.partnerTaxonomyService.removeEntityBySlug(partnerTaxonomyEntity.getSlug(), "invalidSlug");
-        verify(partnerTaxonomyRepository, times(1)).delete(partnerTaxonomyEntity);
+
+        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme("partner_entity");
+
+        when(partnerService.findBySlug(partnerEntity.getSlug())).thenReturn(partnerEntity);
+        doThrow(EntityNotFoundException.class).when(partnerTaxonomyRepository).findBySlugAndPartner("invalidSlug", partnerEntity);
+
+        this.partnerTaxonomyService.removeEntityBySlug(partnerEntity.getSlug(), "invalidSlug");
+
     }
     @Test
     public void fetchTaxonomyBySlugAndPartner(){
         PartnerTaxonomyEntity partnerTaxonomyEntity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-ok");
-        PartnerTaxonomyEntity serviceResponse = this.partnerTaxonomyService.fetchProcessedPartnerTaxonomy(partnerTaxonomyEntity.getPartner().getSlug(),partnerTaxonomyEntity.getSlug());
         when(partnerService.findBySlug(partnerTaxonomyEntity.getPartner().getSlug())).thenReturn(partnerTaxonomyEntity.getPartner());
         when(partnerTaxonomyRepository.findBySlugAndPartnerAndStatus(partnerTaxonomyEntity.getSlug(),partnerTaxonomyEntity.getPartner(),ImportStatus.PROCESSED)).thenReturn(Optional.of(partnerTaxonomyEntity));
+        PartnerTaxonomyEntity serviceResponse = this.partnerTaxonomyService.fetchProcessedPartnerTaxonomy(partnerTaxonomyEntity.getPartner().getSlug(),partnerTaxonomyEntity.getSlug());
         assertEquals(partnerTaxonomyEntity,serviceResponse);
     }
+    @Test(expected = EntityNotFoundException.class)
+    public void fetchTaxonomyBySlugAndPartnerAndThrowAnException(){
+        PartnerTaxonomyEntity partnerTaxonomyEntity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-ok");
+        when(partnerService.findBySlug(partnerTaxonomyEntity.getPartner().getSlug())).thenReturn(partnerTaxonomyEntity.getPartner());
+        when(partnerTaxonomyRepository.findBySlugAndPartnerAndStatus(partnerTaxonomyEntity.getSlug(),partnerTaxonomyEntity.getPartner(),ImportStatus.PROCESSED)).thenThrow(EntityNotFoundException.class);
+        this.partnerTaxonomyService.fetchProcessedPartnerTaxonomy(partnerTaxonomyEntity.getPartner().getSlug(),partnerTaxonomyEntity.getSlug());
+    }
+
+    @Test
+    public void saveWithHistoryWhenTernaryIsNull(){
+        PartnerTaxonomyEntity entity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-mapping-null");
+        when(partnerTaxonomyRepository.saveAndFlush(entity)).thenReturn(entity);
+
+        this.partnerTaxonomyService.saveWithHistory(entity);
+
+        ArgumentCaptor<PartnerTaxonomyHistory> argument = ArgumentCaptor.forClass(PartnerTaxonomyHistory.class);
+        verify(partnerTaxonomyHistoryRepository).saveAndFlush(argument.capture());
+
+        assertEquals(null,argument.getValue().getTaxonomyMappings());
+
+    }
+
+    @Test
+    public void saveWithHistoryWhenTernaryNotNull(){
+        PartnerTaxonomyEntity entity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-ok");
+        when(partnerTaxonomyRepository.saveAndFlush(entity)).thenReturn(entity);
+
+        this.partnerTaxonomyService.saveWithHistory(entity);
+
+        ArgumentCaptor<PartnerTaxonomyHistory> argument = ArgumentCaptor.forClass(PartnerTaxonomyHistory.class);
+        verify(partnerTaxonomyHistoryRepository).saveAndFlush(argument.capture());
+
+        assertEquals(entity.getTaxonomyMappings().get(0).getPartnerPathId(),argument.getValue().getTaxonomyMappings().get(0).getPartnerPathId());
+
+    }
+    @Test(expected = EntityNotFoundException.class)
+    public void fetchPartnerTaxonomiesWhenSlugIsEmptyAndThrowException(){
+        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme("partner_entity");
+        when(partnerService.findBySlug(partnerEntity.getSlug())).thenReturn(partnerEntity);
+        when(partnerTaxonomyRepository.findByPartner(partnerEntity)).thenThrow(EntityNotFoundException.class);
+        this.partnerTaxonomyService.fetchPartnerTaxonomies(partnerEntity.getSlug(),null);
+
+    }
+    @Test
+    public void fetchPartnerTaxonomiesWhenSlugIsNotNull(){
+        PartnerTaxonomyEntity partnerTaxonomyEntity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-ok");
+        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme("partner_entity");
+        when(partnerService.findBySlug(partnerEntity.getSlug())).thenReturn(partnerEntity);
+        when(partnerTaxonomyRepository.findByPartner(partnerEntity)).thenThrow(EntityNotFoundException.class);
+        when(partnerTaxonomyRepository.findBySlugAndPartner(partnerTaxonomyEntity.getSlug(), partnerEntity)).thenReturn(Optional.of(partnerTaxonomyEntity));
+        List<PartnerTaxonomyEntity> returnList = this.partnerTaxonomyService.fetchPartnerTaxonomies(partnerEntity.getSlug(),partnerTaxonomyEntity.getSlug());
+        assertNotEquals(0 , returnList.size());
+
+    }
+
     @Test
     public void fetchTaxonomyByPartner(){
         PartnerTaxonomyEntity partnerTaxonomyEntity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-ok");
@@ -234,8 +284,7 @@ public class PartnerTaxonomyServiceTest {
         when(partnerService.findBySlug(partnerTaxonomyEntity.getPartner().getSlug())).thenReturn(partnerTaxonomyEntity.getPartner());
         this.partnerTaxonomyService.fetchPartnerTaxonomies(partnerTaxonomyEntity.getPartner().getSlug(),null);
         verify(partnerTaxonomyRepository, times(1)).findByPartner(partnerTaxonomyEntity.getPartner());
+
     }
-
-
 
 }

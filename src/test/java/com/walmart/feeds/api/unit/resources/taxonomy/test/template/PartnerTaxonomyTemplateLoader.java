@@ -63,6 +63,17 @@ public class PartnerTaxonomyTemplateLoader implements TemplateLoader {
             add("taxonomyMappings", csaList);
 
         }});
+        Fixture.of(PartnerTaxonomyEntity.class).addTemplate("cs-input-mapping-null", new Rule(){{
+            add("name", "any-name");
+            add("fileName", "taxonomy-file.csv");
+            add("slug", "any-slug");
+            PartnerEntity partner = Fixture.from(PartnerEntity.class).gimme("partner_entity");
+            add("partner", partner);
+
+            TaxonomyMappingEntity csa = Fixture.from(TaxonomyMappingEntity.class)
+                    .gimme("csa-entity");
+
+        }});
         Fixture.of(PartnerTaxonomyHistory.class).addTemplate("cs-history-input-ok", new Rule(){{
             add("name", "any-name");
             add("fileName", "taxonomy-file.csv");
