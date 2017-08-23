@@ -22,6 +22,7 @@ public class TemplateEntity {
     private String slug;
 
     public TemplateEntity() {
+        //default constructor for hibernate
     }
 
     @Builder

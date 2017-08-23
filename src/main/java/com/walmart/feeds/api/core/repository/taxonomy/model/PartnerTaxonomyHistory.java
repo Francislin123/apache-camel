@@ -61,6 +61,6 @@ public class PartnerTaxonomyHistory extends AuditableEntity{
 
     @Tolerate
     public PartnerTaxonomyHistory(){
-
+        //default constructor for hibernate
     }
 }

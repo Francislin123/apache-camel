@@ -42,6 +42,6 @@ public class TaxonomyMappingHistory extends AuditableEntity {
 
     @Tolerate
     public TaxonomyMappingHistory(){
-
+        //default constructor for hibernate
     }
 }

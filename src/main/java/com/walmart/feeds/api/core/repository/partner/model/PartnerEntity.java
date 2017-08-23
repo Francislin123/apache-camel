@@ -1,7 +1,8 @@
 package com.walmart.feeds.api.core.repository.partner.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -40,6 +41,7 @@ public class PartnerEntity extends AuditableEntity {
 
     @Tolerate
     public PartnerEntity() {
+        //default constructor for hibernate
     }
 
     @Builder

@@ -21,7 +21,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,8 +33,6 @@ public class PartnerTaxonomyController {
 
     public static final String TEXT_CSV = "text/csv";
 
-    public static final String DEFAULT_SEPARATOR = ";";
-
     @Autowired
     private PartnerTaxonomyService partnerTaxonomyService;
 
@@ -45,7 +42,7 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 202, message = "Request to import taxonomy file was accepted and will be executed asynchronously", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "File not found")})
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity uploadTaxonomyMappingFile(@PathVariable("partnerSlug") String partnerSlug, @RequestParam("name") String taxonomyName, @RequestParam("file") MultipartFile taxonomyMappingFile, UriComponentsBuilder builder) throws URISyntaxException, IOException {
+    public ResponseEntity uploadTaxonomyMappingFile(@PathVariable("partnerSlug") String partnerSlug, @RequestParam("name") String taxonomyName, @RequestParam("file") MultipartFile taxonomyMappingFile, UriComponentsBuilder builder) throws IOException {
 
         String taxonomySlug = SlugParserUtil.toSlug(taxonomyName);
 
@@ -68,7 +65,7 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 204, message = "Successful delete", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Partner Taxonomy not found")})
     @RequestMapping(value = "{taxonomySlug}", method = RequestMethod.DELETE)
-    public ResponseEntity removeBySlug(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("taxonomySlug") String taxonomySlug) throws URISyntaxException, IOException {
+    public ResponseEntity removeBySlug(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("taxonomySlug") String taxonomySlug) {
 
         partnerTaxonomyService.removeEntityBySlug(partnerSlug, taxonomySlug);
 
@@ -105,7 +102,7 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 200, message = "Successful download", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Partner Taxonomy or partner not found")})
     @RequestMapping(value = "download/{taxonomySlug}", method = RequestMethod.GET)
-    public @ResponseBody ResponseEntity downloadCSVFile(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("taxonomySlug") String taxonomySlug, UriComponentsBuilder builder, HttpServletResponse response) throws IOException {
+    public ResponseEntity downloadCSVFile(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("taxonomySlug") String taxonomySlug, UriComponentsBuilder builder, HttpServletResponse response) throws IOException {
         PartnerTaxonomyEntity entity = partnerTaxonomyService.fetchProcessedPartnerTaxonomy(partnerSlug, taxonomySlug);
 
         response.setContentType(TEXT_CSV);

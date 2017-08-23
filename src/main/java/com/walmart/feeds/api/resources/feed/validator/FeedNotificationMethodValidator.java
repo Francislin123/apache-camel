@@ -12,7 +12,7 @@ public class FeedNotificationMethodValidator implements ConstraintValidator<Vali
 
     @Override
     public void initialize(ValidFeedNotificationMethod constraintAnnotation) {
-
+        //do-nothing
     }
 
     @Override

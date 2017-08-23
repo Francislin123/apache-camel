@@ -1,9 +1,9 @@
 package com.walmart.feeds.api.resources.camel;
 
 import com.walmart.feeds.api.core.exceptions.UserException;
+import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
-import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;

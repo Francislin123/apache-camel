@@ -3,6 +3,7 @@ package com.walmart.feeds.api.resources.fields.response;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import lombok.Builder;
 import lombok.Getter;
+
 import java.util.List;
 
 /**

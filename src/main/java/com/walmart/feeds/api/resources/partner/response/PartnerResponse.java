@@ -3,11 +3,8 @@ package com.walmart.feeds.api.resources.partner.response;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.walmart.feeds.api.resources.serializers.LocalDateTimeSerializer;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 

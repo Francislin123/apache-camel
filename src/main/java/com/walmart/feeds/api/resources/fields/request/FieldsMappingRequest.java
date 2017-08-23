@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
@@ -29,5 +28,6 @@ public class FieldsMappingRequest {
 
     @Tolerate
     public FieldsMappingRequest() {
+        //default constructor
     }
 }

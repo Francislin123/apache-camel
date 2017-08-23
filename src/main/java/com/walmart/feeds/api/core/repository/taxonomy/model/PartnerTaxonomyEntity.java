@@ -2,14 +2,12 @@ package com.walmart.feeds.api.core.repository.taxonomy.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
-import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyElements;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -67,6 +65,6 @@ public class PartnerTaxonomyEntity extends AuditableEntity {
 
     @Tolerate
     public PartnerTaxonomyEntity(){
-
+        //default constructor for hibernate
     }
 }

@@ -36,6 +36,7 @@ public class PartnerHistory extends AuditableHistoryEntity {
 
     @Tolerate
     public PartnerHistory() {
+        //default constructor for hibernate
     }
 
     @Builder

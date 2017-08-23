@@ -26,7 +26,8 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class FeedsAdminAPIExceptionHandler {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(FeedsAdminAPIExceptionHandler.class);
+    public static final String DEFAULT_ERROR_MESSAGE = "An unhandled error occurred";
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(MethodArgumentNotValidException ex, WebRequest request) {
@@ -44,7 +45,7 @@ public class FeedsAdminAPIExceptionHandler {
 
     @ExceptionHandler(value = EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(EntityNotFoundException ex, WebRequest request) {
-        logger.info("An not found error occurred", ex);
+        LOGGER.info("An not found error occurred", ex);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ErrorResponse.builder()
@@ -55,7 +56,7 @@ public class FeedsAdminAPIExceptionHandler {
 
     @ExceptionHandler(value = EntityAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleConflictException(EntityAlreadyExistsException ex, WebRequest request) {
-        logger.info("A conflict error occurred", ex);
+        LOGGER.info("A conflict error occurred", ex);
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.builder()
@@ -67,7 +68,7 @@ public class FeedsAdminAPIExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ErrorResponse> genericExceptionHandler(Exception ex, WebRequest request) {
-        logger.error("An unhandled error occurred", ex);
+        LOGGER.error(DEFAULT_ERROR_MESSAGE, ex);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.builder()
@@ -77,7 +78,7 @@ public class FeedsAdminAPIExceptionHandler {
 
     @ExceptionHandler(value = SystemException.class)
     public ResponseEntity<ErrorResponse> systemExceptionHandler(SystemException ex, WebRequest request) {
-        logger.error("An unhandled error occurred", ex);
+        LOGGER.error(DEFAULT_ERROR_MESSAGE, ex);
 
         return ResponseEntity.status(ex.getErrorCode())
                 .body(ErrorResponse.builder()
@@ -91,7 +92,7 @@ public class FeedsAdminAPIExceptionHandler {
             MissingServletRequestParameterException.class
     })
     public ResponseEntity<ErrorResponse> servletExceptionHandler(ServletException ex, WebRequest request) {
-        logger.error("An user error occurred", ex);
+        LOGGER.error("An user error occurred", ex);
 
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.builder()
@@ -102,7 +103,7 @@ public class FeedsAdminAPIExceptionHandler {
 
     @ExceptionHandler(value = UserException.class)
     public ResponseEntity<ErrorResponse> userExceptionHandler(UserException ex, WebRequest request) {
-        logger.error("An user error occurred", ex);
+        LOGGER.error("An user error occurred", ex);
 
         return ResponseEntity.status(ex.getErrorCode())
                 .body(ErrorResponse.builder()
@@ -113,7 +114,7 @@ public class FeedsAdminAPIExceptionHandler {
 
     @ExceptionHandler(value = CamelExecutionException.class)
     public ResponseEntity<ErrorResponse> camelExceptionHandler(CamelExecutionException ex, WebRequest request) {
-        logger.error("An unhandled error occurred", ex);
+        LOGGER.error(DEFAULT_ERROR_MESSAGE, ex);
 
         Exception camelExceptionCaught = ex.getExchange().getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class);
 

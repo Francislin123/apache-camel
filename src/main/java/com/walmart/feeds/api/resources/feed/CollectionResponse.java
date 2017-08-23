@@ -14,5 +14,6 @@ public class CollectionResponse<T> {
 
     @Tolerate
     public CollectionResponse() {
+        //default constructor
     }
 }

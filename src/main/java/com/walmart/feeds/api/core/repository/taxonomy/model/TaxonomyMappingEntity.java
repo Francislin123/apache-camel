@@ -52,6 +52,6 @@ public class TaxonomyMappingEntity extends AuditableEntity {
 
     @Tolerate
     public TaxonomyMappingEntity(){
-
+        //default constructor for hibernate
     }
 }

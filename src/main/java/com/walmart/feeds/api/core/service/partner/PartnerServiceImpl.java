@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 public class PartnerServiceImpl implements PartnerService {
 
-    private Logger logger = LoggerFactory.getLogger(PartnerServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PartnerServiceImpl.class);
 
     @Autowired
     private PartnerRepository partnerRepository;
@@ -34,7 +34,7 @@ public class PartnerServiceImpl implements PartnerService {
     public void save(PartnerEntity partner) {
 
         if (partner.getPartnerships().isEmpty()){
-            logger.info("No partnership related with partner " + partner.getSlug());
+            LOGGER.info("No partnership related with partner " + partner.getSlug());
             throw new InconsistentEntityException("No partnership related with partner " + partner.getSlug());
         }
 
@@ -46,7 +46,7 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Override
     @Transactional
-    public void update(PartnerEntity partner) throws IllegalArgumentException, EntityNotFoundException {
+    public void update(PartnerEntity partner) {
 
         String newSlug = SlugParserUtil.toSlug(partner.getName());
 
@@ -68,18 +68,23 @@ public class PartnerServiceImpl implements PartnerService {
 
         persistPartner(updatedPartner);
 
-        logger.info("PartnerEntity {} updated.", partner.getSlug());
+        LOGGER.info("PartnerEntity {} updated.", partner.getSlug());
     }
 
     @Override
-    public void hasConflict(String slug) throws EntityAlreadyExistsException {
+    public void hasConflict(String slug) {
         if (partnerRepository.findBySlug(slug).isPresent()) {
-            logger.info("partner={} error=already_exists", slug);
+            LOGGER.info("partner={} error=already_exists", slug);
             throw new EntityAlreadyExistsException(String.format("The partner called %s already exists", slug));
         }
     }
 
-    public PartnerEntity findBySlug(String reference) throws EntityNotFoundException {
+    @Override
+    public PartnerEntity findActiveBySlug(String slug) {
+        return partnerRepository.findActiveBySlug(slug).orElseThrow(() -> new EntityNotFoundException(String.format("No Partner active found for slug='%s'", slug)));
+    }
+
+    public PartnerEntity findBySlug(String reference) {
         return findPartnerByReference(reference);
     }
 
@@ -101,7 +106,7 @@ public class PartnerServiceImpl implements PartnerService {
     public List<PartnerEntity> findAll() {
 
         List<PartnerEntity> partners = partnerRepository.findAll();
-        logger.info("Total of fetched partners: {}", partners.size());
+        LOGGER.info("Total of fetched partners: {}", partners.size());
         return partners;
 
     }
@@ -118,8 +123,8 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Override
     @Transactional
-    public void changeStatus(String slug, boolean active) throws EntityNotFoundException {
-        logger.info("Changing partner {} status to {}", slug, active);
+    public void changeStatus(String slug, boolean active) {
+        LOGGER.info("Changing partner {} status to {}", slug, active);
 
         PartnerEntity currentPartner = findPartnerByReference(slug);
 
@@ -157,21 +162,21 @@ public class PartnerServiceImpl implements PartnerService {
 
         PartnerEntity savedPartner = partnerRepository.saveAndFlush(partner);
 
-        logger.info("partner={} message=saved_successfully", savedPartner);
+        LOGGER.info("partner={} message=saved_successfully", savedPartner);
 
         PartnerHistory partnerHistory = buildPartnerHistory(savedPartner);
         partnerHistory = partnerHistoryRepository.save(partnerHistory);
 
-        logger.info("partnerHistory={} message=saved_successfully", partnerHistory);
+        LOGGER.info("partnerHistory={} message=saved_successfully", partnerHistory);
 
         return savedPartner;
     }
 
-    private PartnerEntity findPartnerByReference(String slug) throws EntityNotFoundException {
-        logger.info("Finding partner {}.", slug);
+    private PartnerEntity findPartnerByReference(String slug) {
+        LOGGER.info("Finding partner {}.", slug);
 
         return partnerRepository.findBySlug(slug)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("PartnerEntity not for slug='%s'", slug)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Partner not for slug='%s'", slug)));
     }
 
 }

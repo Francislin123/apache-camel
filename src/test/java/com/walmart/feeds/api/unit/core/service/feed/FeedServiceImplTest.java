@@ -2,6 +2,8 @@ package com.walmart.feeds.api.unit.core.service.feed;
 
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
+import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
@@ -9,10 +11,11 @@ import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
-import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
+import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
+import com.walmart.feeds.api.core.service.partner.PartnerService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,7 +27,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Optional;
 
 import static com.walmart.feeds.api.core.repository.feed.model.FeedType.INVENTORY;
-import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -41,17 +43,69 @@ public class FeedServiceImplTest {
     private FeedRepository repository;
 
     @Mock
-    private PartnerRepository partnerRepository;
+    private PartnerService partnerService;
 
     @Mock
     private TemplateRepository templateRepository;
 
-    @Test(expected = EntityNotFoundException.class)
-    public void createFeedWhenPartnerNoExists() throws Exception {
-        when(partnerRepository.findActiveBySlug(anyString())).thenReturn(Optional.empty());
-        when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
+    @Test(expected = UserException.class)
+    public void createFeedWithNotExistentTemplate() {
 
-        feedService.createFeed(createFeedEntity());
+        FeedEntity f = FeedEntity.builder()
+                .name("Feed Teste")
+                .partner(PartnerEntity.builder()
+                        .slug("teste-123")
+                    .build())
+                .template(TemplateEntity.builder()
+                        .slug("template-123")
+                    .build())
+            .build();
+
+        when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(partnerService.findActiveBySlug(anyString())).thenReturn(mock(PartnerEntity.class));
+        when(templateRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+
+        feedService.createFeed(f);
+
+    }
+
+    @Test(expected = UserException.class)
+    public void createFeedSuccess() {
+
+        FeedEntity f = FeedEntity.builder()
+                .name("Feed Teste")
+                .partner(PartnerEntity.builder()
+                        .slug("teste-123")
+                        .build())
+                .template(TemplateEntity.builder()
+                        .slug("template-123")
+                        .build())
+                .build();
+
+        when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(partnerService.findActiveBySlug(anyString())).thenReturn(mock(PartnerEntity.class));
+        when(templateRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+
+        when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(f);
+        when(feedHistoryRepository.save(any(FeedHistory.class))).thenReturn(mock(FeedHistory.class));
+
+        feedService.createFeed(f);
+
+        verify(repository, times(1)).saveAndFlush(f);
+        verify(feedHistoryRepository, times(1)).save(any(FeedHistory.class));
+
+    }
+
+    @Test(expected = InconsistentEntityException.class)
+    public void createFeedWhenPartnerIsNull() {
+
+        FeedEntity f = FeedEntity.builder()
+                .name("Feed Teste")
+                .partner(null)
+            .build();
+
+        feedService.createFeed(f);
+
     }
 
     @Test(expected = EntityAlreadyExistsException.class)
@@ -65,7 +119,7 @@ public class FeedServiceImplTest {
     public void testUpdateFeed() throws EntityNotFoundException {
 
         FeedEntity feedEntity = createFeedEntity();
-        when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getPartner()));
+        when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
         when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
         when(repository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
         when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
@@ -83,7 +137,7 @@ public class FeedServiceImplTest {
         FeedEntity feedEntityUpdateName = createFeedEntityUpdateName();
         FeedEntity existentFeed = createFeedEntity();
 
-        when(partnerRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntityUpdateName.getPartner()));
+        when(partnerService.findBySlug(anyString())).thenReturn(feedEntityUpdateName.getPartner());
         when(repository.findBySlug(anyString())).thenReturn(Optional.of(existentFeed));
 
         this.feedService.updateFeed(feedEntityUpdateName);

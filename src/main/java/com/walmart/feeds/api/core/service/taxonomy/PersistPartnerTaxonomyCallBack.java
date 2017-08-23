@@ -2,9 +2,9 @@ package com.walmart.feeds.api.core.service.taxonomy;
 
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyHistoryRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
+import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHistory;
-import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import org.apache.camel.Exchange;
 import org.apache.camel.spi.Synchronization;
 import org.springframework.beans.factory.annotation.Autowired;

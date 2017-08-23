@@ -29,5 +29,6 @@ public class PartnerRequest {
 
     @Tolerate
     public PartnerRequest() {
+        //default constructor
     }
 }

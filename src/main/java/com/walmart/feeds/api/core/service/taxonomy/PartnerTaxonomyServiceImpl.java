@@ -34,7 +34,7 @@ import static com.walmart.feeds.api.resources.camel.PartnerTaxonomyRouteBuilder.
 @Service
 public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(PartnerTaxonomyServiceImpl.class);
 
     @Autowired
     private PartnerTaxonomyRepository partnerTaxonomyRepository;

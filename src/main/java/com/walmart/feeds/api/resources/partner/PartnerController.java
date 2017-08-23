@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.resources.partner;
 
-import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
@@ -31,7 +30,7 @@ public class PartnerController {
 
     public static final String V1_PARTNERS = "/v1/partners";
 
-    private Logger logger = LoggerFactory.getLogger(PartnerController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PartnerController.class);
 
     @Autowired
     private PartnerService service;
@@ -68,7 +67,7 @@ public class PartnerController {
             @ApiResponse(code = 404, message = "PartnerEntity not found")})
 	@RequestMapping(value = "/{slug}",
             method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity fetchPartnerBySlug(@PathVariable("slug") String slug) throws EntityNotFoundException {
+    public ResponseEntity fetchPartnerBySlug(@PathVariable("slug") String slug) {
 
         PartnerEntity partner = service.findBySlug(slug);
 
@@ -92,8 +91,8 @@ public class PartnerController {
             @ApiResponse(code = 500, message = "Internal Server Error")})
     @RequestMapping(value = "/{slug}",
             method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<?> updatePartner(@PathVariable("slug") String slug, @RequestBody PartnerRequest partnerRequest) throws EntityNotFoundException {
-        logger.info("Updating partner slug by {}", slug);
+    public ResponseEntity<?> updatePartner(@PathVariable("slug") String slug, @RequestBody PartnerRequest partnerRequest) {
+        LOGGER.info("Updating partner slug by {}", slug);
 
 
         PartnerEntity partner = PartnerEntity.builder()
@@ -117,7 +116,7 @@ public class PartnerController {
     @RequestMapping(value = "/{slug}",
             method = RequestMethod.PATCH, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> changePartnerStatus(@PathVariable("slug") String slug,
-                                                 @RequestParam("active") Boolean active) throws EntityNotFoundException {
+                                                 @RequestParam("active") Boolean active) {
 
         service.changeStatus(slug, active);
 

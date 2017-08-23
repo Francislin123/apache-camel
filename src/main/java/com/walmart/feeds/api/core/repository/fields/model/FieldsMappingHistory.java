@@ -45,5 +45,6 @@ public class FieldsMappingHistory extends AuditableHistoryEntity {
 
     @Tolerate
     public FieldsMappingHistory() {
+        //default constructor for hibernate
     }
 }

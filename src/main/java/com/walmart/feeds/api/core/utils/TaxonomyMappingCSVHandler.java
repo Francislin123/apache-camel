@@ -2,12 +2,14 @@ package com.walmart.feeds.api.core.utils;
 
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 
-import java.io.*;
-
 
 public class TaxonomyMappingCSVHandler {
 
     public static final String DEFAULT_SEPARATOR = ";";
+
+    private TaxonomyMappingCSVHandler() {
+        //default constructor
+    }
 
     public static StringBuilder createGenericHeader(){
         StringBuilder sb = new StringBuilder();

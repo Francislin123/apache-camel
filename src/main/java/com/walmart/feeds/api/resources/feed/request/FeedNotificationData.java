@@ -25,7 +25,7 @@ public class FeedNotificationData {
     private String url;
 
     @Tolerate
-
     public FeedNotificationData() {
+        //default constructor
     }
 }

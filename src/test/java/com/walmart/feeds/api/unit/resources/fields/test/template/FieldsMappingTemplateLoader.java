@@ -3,12 +3,8 @@ package com.walmart.feeds.api.unit.resources.fields.test.template;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
-import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.resources.fields.request.FieldsMappingRequest;
-import com.walmart.feeds.api.resources.partner.request.PartnerRequest;
-import com.walmart.feeds.api.resources.partner.request.PartnerUpdateRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
