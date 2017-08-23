@@ -138,7 +138,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
         try {
             return mapper.writeValueAsString(mappedFields);
         } catch (JsonProcessingException e) {
-            throw new SystemException("Error to convert mapped fields to json for history.");
+            throw new SystemException("Error to convert mapped fields to json for history.", e);
         }
 
     }
