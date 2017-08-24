@@ -2,6 +2,7 @@ package com.walmart.feeds.api.unit.core.service.fields;
 
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
@@ -9,7 +10,9 @@ import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingHistory;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingService;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingServiceImpl;
+import com.walmart.feeds.api.persistence.ElasticSearchComponent;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,7 +20,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Matchers.any;
@@ -32,8 +37,55 @@ public class FieldsMappingServiceTest {
     @Mock
     private FieldsMappingHistoryRepository historyRepository;
 
+    @Mock
+    private ElasticSearchComponent elasticSearchComponent;
+
     @InjectMocks
     private FieldsMappingService mappingService = new FieldsMappingServiceImpl();
+
+    public static final List<String> WM_FIELDS;
+
+    static {
+        WM_FIELDS = Arrays.asList(
+                "offers.seller.name",
+                "offers.seller.id",
+                "offers.listprice",
+                "offers.quantity",
+                "offers.price",
+                "offers.active",
+                "image.thumb",
+                "image.main",
+                "gtin",
+                "product.image.thumb",
+                "product.image.main",
+                "product.active",
+                "product.id",
+                "product.title",
+                "product.url.web",
+                "product.url.mobile",
+                "active",
+                "specification.dimension.weight",
+                "title",
+                "url.web",
+                "url.mobile",
+                "skuWalmart",
+                "lastUpdate",
+                "categories.depth",
+                "categories.name",
+                "categories.active",
+                "categories.id",
+                "id",
+                "brand.name",
+                "brand.id");
+    }
+
+    @Before
+    public void init() {
+
+        Mockito.when(elasticSearchComponent.getWalmartFields())
+                .thenReturn(WM_FIELDS);
+
+    }
 
     @Test
     public void testSaveFieldsdMapping() throws Exception {
@@ -53,6 +105,33 @@ public class FieldsMappingServiceTest {
 
     }
 
+    @Test
+    public void testSaveFieldsdMappingWhenWalmartFieldNotExist() throws Exception {
+
+        Mockito.when(fmRepository.findBySlug(anyString()))
+                .thenReturn(Optional.empty());
+
+        try {
+
+            FieldsMappingEntity fieldsMapping = createFieldsMapping();
+            fieldsMapping.getMappedFields()
+                    .add(MappedFieldEntity.builder().wmField("price").build());
+
+            mappingService.save(fieldsMapping);
+
+            Assert.fail(UserException.class.getName() + " expected");
+
+        } catch (UserException e) {
+
+            Assert.assertEquals("These walmart fields does not exists: [price]", e.getMessage());
+            Mockito.verify(fmRepository).findBySlug(anyString());
+            Mockito.verify(fmRepository, Mockito.times(0)).saveAndFlush(any(FieldsMappingEntity.class));
+            Mockito.verify(historyRepository, Mockito.times(0)).saveAndFlush(any(FieldsMappingHistory.class));
+
+        }
+
+    }
+
     @Test(expected = EntityAlreadyExistsException.class)
     public void testSaveFieldsdMappingDuplicatedConstraint() throws Exception {
 
@@ -60,14 +139,11 @@ public class FieldsMappingServiceTest {
                 .thenReturn(Optional.of(createFieldsMapping()));
 
         mappingService.save(createFieldsMapping());
-        Mockito.verify(fmRepository).findBySlug(Mockito.anyString());
-
-        Mockito.verifyNoMoreInteractions(historyRepository);
 
     }
 
     @Test
-    public void updateFieldsMapping() throws Exception {
+    public void testUpdateFieldsMapping() throws Exception {
 
         FieldsMappingEntity fieldsMapping = createFieldsMapping();
 
@@ -148,14 +224,17 @@ public class FieldsMappingServiceTest {
     private FieldsMappingEntity createFieldsMapping() {
         MappedFieldEntity mappedField = MappedFieldEntity.builder()
                 .partnerField("nome")
-                .wmField("name")
+                .wmField("title")
                 .required(false)
                 .build();
+
+        ArrayList<MappedFieldEntity> mappedFields = new ArrayList<>();
+        mappedFields.add(mappedField);
 
         FieldsMappingEntity mappingEntity = FieldsMappingEntity.builder()
                 .name("Buscapé")
                 .slug("buscape")
-                .mappedFields(Arrays.asList(mappedField))
+                .mappedFields(mappedFields)
                 .build();
 
         return mappingEntity;
@@ -164,7 +243,7 @@ public class FieldsMappingServiceTest {
     private FieldsMappingEntity createFieldsMappingUpdateName() {
         MappedFieldEntity mappedField = MappedFieldEntity.builder()
                 .partnerField("nome")
-                .wmField("name")
+                .wmField("title")
                 .required(false)
                 .build();
 

@@ -3,16 +3,14 @@ package com.walmart.feeds.api.core.service.fields;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
-import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
-import com.walmart.feeds.api.core.exceptions.SystemException;
+import com.walmart.feeds.api.core.exceptions.*;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingHistory;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
+import com.walmart.feeds.api.persistence.ElasticSearchComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FieldsMappingServiceImpl implements FieldsMappingService {
@@ -31,6 +30,9 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     @Autowired
     private FieldsMappingHistoryRepository historyRepository;
+
+    @Autowired
+    private ElasticSearchComponent elasticSearchComponent;
 
     @Override
     @Transactional
@@ -108,6 +110,17 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     }
 
     private void persistFieldsMapping(FieldsMappingEntity fieldsMapping) {
+
+        List<String> walmartFields = elasticSearchComponent.getWalmartFields();
+
+        List<String> invalidWalmartFields = fieldsMapping.getMappedFields().stream()
+                .filter(field -> !walmartFields.contains(field.getWmField()))
+                .map(field -> field.getWmField())
+                .collect(Collectors.toList());
+
+        if (!invalidWalmartFields.isEmpty()) {
+            throw new UserException("These walmart fields does not exists: " + invalidWalmartFields);
+        }
 
         FieldsMappingEntity managedEntity = fieldsMappingRepository.saveAndFlush(fieldsMapping);
         LOGGER.info("fieldsMapping={} message=saved_successfully", fieldsMapping);
