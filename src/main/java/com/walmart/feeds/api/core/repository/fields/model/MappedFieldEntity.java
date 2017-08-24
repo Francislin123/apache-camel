@@ -1,14 +1,12 @@
 package com.walmart.feeds.api.core.repository.fields.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotBlank;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -42,5 +40,6 @@ public class MappedFieldEntity {
 
     @Tolerate
     public MappedFieldEntity() {
+        //default constructor for hibernate
     }
 }

@@ -2,7 +2,6 @@ package com.walmart.feeds.api.resources.feed.validator;
 
 import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyElements;
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
-import org.springframework.util.StringUtils;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

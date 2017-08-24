@@ -12,7 +12,7 @@ public class FeedTypeValidator implements ConstraintValidator<ValidFeedType, Str
 
     @Override
     public void initialize(ValidFeedType constraintAnnotation) {
-
+        //do-nothing
     }
 
     @Override

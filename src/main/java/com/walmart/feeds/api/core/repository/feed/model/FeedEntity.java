@@ -67,6 +67,7 @@ public class FeedEntity extends AuditableEntity {
 
     @Tolerate
     public FeedEntity() {
+        //default constructor for hibernate
     }
 
     @Builder

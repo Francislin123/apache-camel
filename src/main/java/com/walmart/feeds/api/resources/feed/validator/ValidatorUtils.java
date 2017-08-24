@@ -6,6 +6,10 @@ import java.util.Arrays;
 
 public class ValidatorUtils {
 
+    private ValidatorUtils() {
+        //default constructor
+    }
+
     public static boolean isValid(String value, String regexPattern, String... notAllowedValues) {
 
         if (value == null || StringUtils.isEmpty(value.trim())) {

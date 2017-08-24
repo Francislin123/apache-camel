@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.feed;
+package com.walmart.feeds.api.unit.resources.feed;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
@@ -7,6 +7,7 @@ import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
+import com.walmart.feeds.api.resources.feed.FeedsController;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
 import org.junit.Before;
@@ -44,7 +45,7 @@ public class FeedsControllerTest {
 
     @BeforeClass
     public static void setUp() {
-        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.resources.feed.test.template");
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.feed.test.template");
     }
 
     @Before

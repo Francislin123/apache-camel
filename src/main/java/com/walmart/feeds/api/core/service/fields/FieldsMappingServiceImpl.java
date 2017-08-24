@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Service
 public class FieldsMappingServiceImpl implements FieldsMappingService {
 
-    private Logger logger = LoggerFactory.getLogger(FieldsMappingServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FieldsMappingServiceImpl.class);
 
     @Autowired
     private FieldsMappingRepository fieldsMappingRepository;
@@ -36,7 +36,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     @Override
     @Transactional
-    public void save(FieldsMappingEntity fieldsMappingEntity) throws IllegalArgumentException {
+    public void save(FieldsMappingEntity fieldsMappingEntity) {
 
         if (fieldsMappingEntity == null) {
             throw new InconsistentEntityException("null fields mapping");
@@ -49,7 +49,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     @Override
     @Transactional
-    public void update(FieldsMappingEntity fieldsMapping) throws EntityNotFoundException {
+    public void update(FieldsMappingEntity fieldsMapping) {
 
         if (fieldsMapping == null) {
             throw new InconsistentEntityException("null fields mapping");
@@ -84,7 +84,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     }
 
     @Override
-    public FieldsMappingEntity findBySlug(String slug) throws EntityNotFoundException {
+    public FieldsMappingEntity findBySlug(String slug) {
 
         FieldsMappingEntity fieldsMapping = fieldsMappingRepository.findBySlug(slug).orElseThrow(() ->
                 new EntityNotFoundException(String.format("FieldsMappging %s not found!", slug)));
@@ -96,12 +96,12 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     @Override
     public List<FieldsMappingEntity> findAll() {
         List<FieldsMappingEntity> fieldsMapping = fieldsMappingRepository.findAll();
-        logger.info("Total of fields mapping: {}", fieldsMapping.size());
+        LOGGER.info("Total of fields mapping: {}", fieldsMapping.size());
         return fieldsMapping;
     }
 
     @Override
-    public void hasConflict(String slug) throws EntityAlreadyExistsException {
+    public void hasConflict(String slug) {
 
         if (fieldsMappingRepository.findBySlug(slug).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("Fields mapping called '%s' already exists", slug));
@@ -123,12 +123,12 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
         }
 
         FieldsMappingEntity managedEntity = fieldsMappingRepository.saveAndFlush(fieldsMapping);
-        logger.info("fieldsMapping={} message=saved_successfully", fieldsMapping);
+        LOGGER.info("fieldsMapping={} message=saved_successfully", fieldsMapping);
 
         FieldsMappingHistory history = buildHistory(managedEntity);
 
         historyRepository.save(history);
-        logger.info("fieldsMappingHistory={} message=saved_successfully", history);
+        LOGGER.info("fieldsMappingHistory={} message=saved_successfully", history);
 
     }
 
@@ -151,7 +151,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
         try {
             return mapper.writeValueAsString(mappedFields);
         } catch (JsonProcessingException e) {
-            throw new SystemException("Error to convert mapped fields to json for history.");
+            throw new SystemException("Error to convert mapped fields to json for history.", e);
         }
 
     }

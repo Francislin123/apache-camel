@@ -28,5 +28,6 @@ public class FieldsMappingRequest {
 
     @Tolerate
     public FieldsMappingRequest() {
+        //default constructor
     }
 }

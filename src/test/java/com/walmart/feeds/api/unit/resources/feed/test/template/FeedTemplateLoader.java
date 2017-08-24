@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.feed.test.template;
+package com.walmart.feeds.api.unit.resources.feed.test.template;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FeedTemplateLoader implements TemplateLoader {
+
     @Override
     public void load() {
         Map<String, String> utms = new HashMap<>();

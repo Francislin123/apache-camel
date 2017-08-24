@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.core.service.partner;
 
-import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 
@@ -12,7 +11,7 @@ public interface PartnerService {
      *
      * @param partner payload
      */
-    void save(PartnerEntity partner) throws IllegalArgumentException;
+    void save(PartnerEntity partner);
 
     /**
      *
@@ -37,6 +36,7 @@ public interface PartnerService {
 
     List<PartnerEntity> search(String query);
 
-    void hasConflict(String slug) throws EntityAlreadyExistsException ;
+    void hasConflict(String slug);
 
+    PartnerEntity findActiveBySlug(String slug);
 }

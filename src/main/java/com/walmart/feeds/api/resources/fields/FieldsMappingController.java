@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.resources.fields;
 
-import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingService;
@@ -13,8 +12,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +32,6 @@ import java.util.stream.Collectors;
 public class FieldsMappingController {
 
     public static final String URI_FIELDSDMAPPING = "/v1/fieldsmapping";
-
-    private Logger logger = LoggerFactory.getLogger(FieldsMappingController.class);
 
     @Autowired
     private FieldsMappingService fieldsMappingService;
@@ -138,7 +133,7 @@ public class FieldsMappingController {
             @ApiResponse(code = 500, message = "Internal Server Error")})
     @RequestMapping(value = "/{slug}",
             method = RequestMethod.DELETE)
-    public ResponseEntity deleteFieldsMapping(@PathVariable("slug") String slug) throws EntityNotFoundException {
+    public ResponseEntity deleteFieldsMapping(@PathVariable("slug") String slug) {
 
         fieldsMappingService.delete(slug);
 

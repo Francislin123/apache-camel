@@ -8,6 +8,10 @@ public class SlugParserUtil {
     private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
     private static final Pattern SPECIAL_CHAR = Pattern.compile("[^\\w-]");
 
+    private SlugParserUtil() {
+        //default constructor
+    }
+
     public static String toSlug(String input) {
         String lowerCasedInput = input.toLowerCase();
         String inputWithoutWhiteSpace = WHITESPACE.matcher(lowerCasedInput).replaceAll("-");

@@ -1,51 +1,58 @@
-package com.walmart.feeds.api.resources.feed.validator;
+package com.walmart.feeds.api.unit.resources.feed.validator;
 
+import com.walmart.feeds.api.resources.feed.validator.FeedTypeValidator;
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
-public class FeedNotificationMethodValidatorTest {
+public class FeedTypeValidatorTest {
 
-    private FeedNotificationMethodValidator validator = new FeedNotificationMethodValidator();
+    private FeedTypeValidator validator = new FeedTypeValidator();
 
     @Test
-    public void validateWhenMethodIsInvalid(){
+    public void validateWhenTypeIsInvalid(){
         boolean isValid = validator.isValid("teste123", Mockito.mock(ConstraintValidatorContextImpl.class));
         assertEquals(false, isValid);
     }
 
     @Test
-    public void validateWhenMethodIsNull(){
+    public void validateWhenTypeIsNull(){
         boolean isValid = validator.isValid(null, Mockito.mock(ConstraintValidatorContextImpl.class));
         assertEquals(false, isValid);
     }
 
     @Test
-    public void validateWhenMethodIsEmpty(){
+    public void validateWhenTypeIsEmpty(){
         boolean isValid = validator.isValid("", Mockito.mock(ConstraintValidatorContextImpl.class));
         assertEquals(false, isValid);
     }
 
     @Test
-    public void validateWhenMethodIsBlank(){
+    public void validateWhenTypeIsBlank(){
         boolean isValid = validator.isValid("  ", Mockito.mock(ConstraintValidatorContextImpl.class));
         assertEquals(false, isValid);
     }
 
     @Test
-    public void validateWhenMethodIsAPI(){
-        boolean isValid = validator.isValid("api", Mockito.mock(ConstraintValidatorContextImpl.class));
+    public void validateWhenTypeIsFULL(){
+        boolean isValid = validator.isValid("full", Mockito.mock(ConstraintValidatorContextImpl.class));
         assertEquals(true, isValid);
     }
 
     @Test
-    public void validateWhenMethodIsFILE(){
-        boolean isValid = validator.isValid("file", Mockito.mock(ConstraintValidatorContextImpl.class));
+    public void validateWhenTypeIsINVENTORY(){
+        boolean isValid = validator.isValid("inventory", Mockito.mock(ConstraintValidatorContextImpl.class));
+        assertEquals(true, isValid);
+    }
+
+    @Test
+    public void validateWhenTypeIsPARTIAL(){
+        boolean isValid = validator.isValid("partial", Mockito.mock(ConstraintValidatorContextImpl.class));
         assertEquals(true, isValid);
     }
 

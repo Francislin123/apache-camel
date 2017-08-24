@@ -7,11 +7,11 @@ import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
-import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
+import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +27,13 @@ import java.util.List;
 @Service
 public class FeedServiceImpl implements FeedService {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(FeedServiceImpl.class);
 
     @Autowired
     private FeedRepository feedRepository;
 
     @Autowired
-    private PartnerRepository partnerRepository;
+    private PartnerService partnerService;
 
     @Autowired
     private FeedHistoryRepository feedHistoryRepository;
@@ -53,8 +53,7 @@ public class FeedServiceImpl implements FeedService {
             throw new EntityAlreadyExistsException(String.format("Feed with slug='%s' already exists", feedEntity.getSlug()));
         }
 
-        PartnerEntity partner = partnerRepository.findActiveBySlug(feedEntity.getPartner().getSlug()).orElseThrow(() ->
-                new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", feedEntity.getPartner().getSlug())));
+        PartnerEntity partner = partnerService.findActiveBySlug(feedEntity.getPartner().getSlug());
 
         TemplateEntity template = templateRepository.findBySlug(feedEntity.getTemplate().getSlug()).orElseThrow(() ->
                 new UserException(String.format("Template not found for reference %s", feedEntity.getTemplate().getSlug())));
@@ -75,7 +74,7 @@ public class FeedServiceImpl implements FeedService {
 
         FeedEntity savedFeedEntity = saveFeedWithHistory(newFeed);
 
-        logger.info("feedEntity={} message=saved_successfully", savedFeedEntity);
+        LOGGER.info("feedEntity={} message=saved_successfully", savedFeedEntity);
 
         return savedFeedEntity;
 
@@ -84,7 +83,7 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public FeedEntity fetchByPartner(String feedSlug, String partnerSlug) {
 
-        partnerRepository.findBySlug(partnerSlug).orElseThrow(() -> new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", partnerSlug)));
+        partnerService.findBySlug(partnerSlug);
 
         return feedRepository.findBySlug(feedSlug).orElseThrow(() -> new EntityNotFoundException(String.format("FeedEntity not found for slug='%s'", feedSlug)));
     }
@@ -92,7 +91,7 @@ public class FeedServiceImpl implements FeedService {
     @Override
     public List<FeedEntity> fetchActiveByPartner(String partnerSlug, Boolean active) {
 
-        PartnerEntity partner = partnerRepository.findBySlug(partnerSlug).orElseThrow(() -> new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", partnerSlug)));
+        PartnerEntity partner = partnerService.findBySlug(partnerSlug);
 
         List<FeedEntity> feedsActivesByPartner;
 
@@ -109,9 +108,9 @@ public class FeedServiceImpl implements FeedService {
     @Transactional
     public void changeFeedStatus(String partnerSlug, String slug, Boolean active) {
 
-        partnerRepository.findBySlug(partnerSlug).orElseThrow(() -> new EntityNotFoundException(String.format("Partner slug='%s' not activated or not existent", partnerSlug)));
+        partnerService.findBySlug(partnerSlug);
 
-        FeedEntity feedEntity = feedRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException(String.format("FeedEntity not found for slug='%s'", slug)));//busca no banco a partir do slug
+        FeedEntity feedEntity = feedRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException(String.format("FeedEntity not found for slug='%s'", slug)));
 
         FeedEntity updatedFeed = FeedEntity.builder()
                 .utms(feedEntity.getUtms())
@@ -130,7 +129,7 @@ public class FeedServiceImpl implements FeedService {
 
         saveFeedWithHistory(updatedFeed);
 
-        logger.info("feed={} message=updated_successfully", feedEntity);
+        LOGGER.info("feed={} message=updated_successfully", feedEntity);
     }
 
     @Override
@@ -147,7 +146,7 @@ public class FeedServiceImpl implements FeedService {
             hasConflict(newSlug);
         }
 
-        PartnerEntity partner = partnerRepository.findBySlug(feedEntity.getPartner().getSlug()).orElseThrow(() -> new EntityNotFoundException("PartnerEntity not Found"));
+        PartnerEntity partner = partnerService.findBySlug(feedEntity.getPartner().getSlug());
 
         FeedEntity persistedFeedEntity = feedRepository.findBySlug(feedEntity.getSlug()).orElseThrow(() -> new EntityNotFoundException("FeedEntity not Found"));
 
@@ -171,11 +170,11 @@ public class FeedServiceImpl implements FeedService {
 
         saveFeedWithHistory(updatedFeed);
 
-        logger.info("feedEntity={} message=update_successfully", feedEntity);
+        LOGGER.info("feedEntity={} message=update_successfully", feedEntity);
     }
 
     @Override
-    public void hasConflict(String slug) throws EntityAlreadyExistsException {
+    public void hasConflict(String slug) {
 
         if (feedRepository.findBySlug(slug).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("The feed called %s already exists", slug));

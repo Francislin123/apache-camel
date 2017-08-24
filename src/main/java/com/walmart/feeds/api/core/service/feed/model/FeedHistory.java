@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.core.service.feed.model;
 
-import com.walmart.feeds.api.core.repository.AuditableEntity;
 import com.walmart.feeds.api.core.repository.AuditableHistoryEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
@@ -58,7 +57,7 @@ public class FeedHistory extends AuditableHistoryEntity {
 
     @Tolerate
     public FeedHistory() {
-        this.active = true;
+        //default constructor for hibernate
     }
 
     @Builder

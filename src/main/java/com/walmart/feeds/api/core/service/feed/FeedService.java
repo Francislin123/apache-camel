@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.core.service.feed;
 
-import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 
 import java.util.List;
@@ -21,5 +20,5 @@ public interface FeedService {
 
     FeedEntity fetchByPartner(String feedSlug, String partnerSlug);
 
-    void hasConflict(String slug) throws EntityAlreadyExistsException;
+    void hasConflict(String slug);
 }

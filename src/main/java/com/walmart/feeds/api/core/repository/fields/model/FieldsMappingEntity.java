@@ -49,6 +49,8 @@ public class FieldsMappingEntity extends AuditableEntity {
     }
 
     @Tolerate
-    public FieldsMappingEntity() {}
+    public FieldsMappingEntity() {
+        //default constructor for hibernate
+    }
 
 }

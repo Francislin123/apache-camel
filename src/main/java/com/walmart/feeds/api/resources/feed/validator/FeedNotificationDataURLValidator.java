@@ -12,7 +12,7 @@ public class FeedNotificationDataURLValidator implements ConstraintValidator<Val
 
     @Override
     public void initialize(ValidFeedNotificationUrl constraintAnnotation) {
-
+        //do-nothing
     }
 
     @Override
