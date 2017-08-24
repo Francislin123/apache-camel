@@ -79,12 +79,4 @@ public class ElasticSearchComponent {
 
     }
 
-
-    public static void main(String[] args) {
-
-        ElasticSearchComponent component = new ElasticSearchComponent();
-        System.out.println(component.getWalmartFields());
-
-    }
-
 }

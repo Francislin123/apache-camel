@@ -119,7 +119,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
                 .collect(Collectors.toList());
 
         if (!invalidWalmartFields.isEmpty()) {
-            throw new UserException("The walmart fields does not exists: " + invalidWalmartFields);
+            throw new UserException("These walmart fields does not exists: " + invalidWalmartFields);
         }
 
         FieldsMappingEntity managedEntity = fieldsMappingRepository.saveAndFlush(fieldsMapping);

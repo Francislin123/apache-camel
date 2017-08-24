@@ -6,17 +6,21 @@ spring:
   jpa:
     show-sql: true
 
+elastic:
+  mapping:
+    sku: http://napsao-qa-nix-feeds-reg-1.qa.vmcommerce.intra:8080/feeds/_mapping/sku
+
 ---
 
 spring:
   profiles: local
   datasource:
-      url: jdbc:oracle:thin:@localhost:1521/xe
-      username: FEEDS_ADMIN
-      password: FEEDS_ADMIN
-      hikari:
-        connection-timeout: 60000
-        maximum-pool-size: 5
+    url: jdbc:oracle:thin:@localhost:1521/xe
+    username: FEEDS_ADMIN
+    password: FEEDS_ADMIN
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 5
   jpa:
     database-platform: org.hibernate.dialect.Oracle10gDialect
 
@@ -28,19 +32,10 @@ spring:
     url: jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF
     username: FEEDS_ADMIN
     password: FEEDS_ADMIN
-
-server:
-  tomcat:
-    max-wait: 60000
-    initial-size: 10
-    max-active: 150
-    test-on-borrow: true
-  jpa:
+    tomcat:
+      max-wait: 60000
+      initial-size: 10
+      max-active: 150
+      test-on-borrow: true
+    jpa:
     show-sql: true
-    hikari:
-      connection-timeout: 60000
-      maximum-pool-size: 5
-
-elastic:
-  mapping:
-    skus-url: http://napsao-qa-nix-feeds-reg-1.qa.vmcommerce.intra:8080/feeds/_mapping/sku

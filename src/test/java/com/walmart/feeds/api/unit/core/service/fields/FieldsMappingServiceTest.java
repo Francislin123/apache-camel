@@ -123,7 +123,7 @@ public class FieldsMappingServiceTest {
 
         } catch (UserException e) {
 
-            Assert.assertEquals("The walmart fields does not exists: [price]", e.getMessage());
+            Assert.assertEquals("These walmart fields does not exists: [price]", e.getMessage());
             Mockito.verify(fmRepository).findBySlug(anyString());
             Mockito.verify(fmRepository, Mockito.times(0)).saveAndFlush(any(FieldsMappingEntity.class));
             Mockito.verify(historyRepository, Mockito.times(0)).saveAndFlush(any(FieldsMappingHistory.class));
