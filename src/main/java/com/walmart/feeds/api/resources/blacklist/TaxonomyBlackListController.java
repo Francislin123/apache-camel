@@ -1,7 +1,7 @@
-package com.walmart.feeds.api.resources.partner.blacklist;
+package com.walmart.feeds.api.resources.blacklist;
 
 
-import com.walmart.feeds.api.resources.partner.blacklist.request.TaxonomyBlacklistRequest;
+import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

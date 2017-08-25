@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.partner.blacklist.request;
+package com.walmart.feeds.api.resources.blacklist.request;
 
 import lombok.Data;
 import org.springframework.validation.annotation.Validated;
