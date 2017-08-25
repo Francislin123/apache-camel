@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.partner.blacklist.request;
+package com.walmart.feeds.api.resources.blacklist.request;
 
 /**
  * Created by vn0y942 on 24/08/17.
