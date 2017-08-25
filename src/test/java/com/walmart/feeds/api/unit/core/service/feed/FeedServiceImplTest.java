@@ -4,12 +4,13 @@ import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.exceptions.UserException;
+import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
-import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
@@ -40,10 +41,13 @@ public class FeedServiceImplTest {
     private FeedHistoryRepository feedHistoryRepository;
 
     @Mock
-    private FeedRepository repository;
+    private FeedRepository feedRepository;
 
     @Mock
     private PartnerService partnerService;
+
+    @Mock
+    private TaxonomyBlacklistRepository taxonomyBlacklistRepository;
 
     @Mock
     private TemplateRepository templateRepository;
@@ -61,7 +65,7 @@ public class FeedServiceImplTest {
                     .build())
             .build();
 
-        when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
         when(partnerService.findActiveBySlug(anyString())).thenReturn(mock(PartnerEntity.class));
         when(templateRepository.findBySlug(anyString())).thenReturn(Optional.empty());
 
@@ -82,18 +86,35 @@ public class FeedServiceImplTest {
                         .build())
                 .build();
 
-        when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
         when(partnerService.findActiveBySlug(anyString())).thenReturn(mock(PartnerEntity.class));
         when(templateRepository.findBySlug(anyString())).thenReturn(Optional.empty());
 
-        when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(f);
+        when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(f);
         when(feedHistoryRepository.save(any(FeedHistory.class))).thenReturn(mock(FeedHistory.class));
 
         feedService.createFeed(f);
 
-        verify(repository, times(1)).saveAndFlush(f);
+        verify(feedRepository, times(1)).saveAndFlush(f);
         verify(feedHistoryRepository, times(1)).save(any(FeedHistory.class));
 
+    }
+
+    @Test
+    public void testCreateFeedWithoutTaxonomyBlacklist() {
+
+        FeedEntity feedEntity = createFeedEntityWithoutTaxonomyBlacklist();
+
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
+        when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
+        when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+
+        this.feedService.createFeed(feedEntity);
+
+        verify(feedRepository).findBySlug(anyString());
+        verify(feedRepository).saveAndFlush(Mockito.any(FeedEntity.class));
+        verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
     }
 
     @Test(expected = InconsistentEntityException.class)
@@ -110,24 +131,69 @@ public class FeedServiceImplTest {
 
     @Test(expected = EntityAlreadyExistsException.class)
     public void createFeedWhenFeedAlreadyExists() throws Exception {
-        when(repository.findBySlug(anyString())).thenReturn(Optional.of(new FeedEntity()));
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(new FeedEntity()));
 
         feedService.createFeed(createFeedEntity());
     }
 
+    @Test(expected = UserException.class)
+    public void createFeedWithNonExistentTaxonomyBlacklist() {
+
+
+        FeedEntity f = FeedEntity.builder()
+                .name("Feed Teste")
+                .partner(PartnerEntity.builder()
+                        .slug("teste-123")
+                        .build())
+                .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
+                        .slug("taxonomy-nonexistent")
+                        .build())
+                .template(TemplateEntity.builder()
+                        .slug("template-123")
+                        .build())
+                .build();
+
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(partnerService.findActiveBySlug(anyString())).thenReturn(mock(PartnerEntity.class));
+        when(templateRepository.findBySlug(anyString())).thenReturn(Optional.of(mock(TemplateEntity.class)));
+        when(taxonomyBlacklistRepository.findBySlug("taxonomy-nonexistent")).thenReturn(Optional.empty());
+        when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(f);
+
+        feedService.createFeed(f);
+
+    }
+
     @Test
-    public void testUpdateFeed() throws EntityNotFoundException {
+    public void testUpdateFeed() {
 
         FeedEntity feedEntity = createFeedEntity();
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
         when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
         when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
-        when(repository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
-        when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+        when(taxonomyBlacklistRepository.findBySlug(feedEntity.getTaxonomyBlacklist().getSlug())).thenReturn(Optional.of(feedEntity.getTaxonomyBlacklist()));
+        when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
 
         this.feedService.updateFeed(feedEntity);
 
-        verify(repository).findBySlug(anyString());
-        verify(repository).saveAndFlush(Mockito.any(FeedEntity.class));
+        verify(feedRepository).findBySlug(anyString());
+        verify(feedRepository).saveAndFlush(Mockito.any(FeedEntity.class));
+        verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
+    }
+
+    @Test
+    public void testUpdateFeedWithoutTaxonomyBlacklist() {
+
+        FeedEntity feedEntity = createFeedEntityWithoutTaxonomyBlacklist();
+
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
+        when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
+        when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
+        when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+
+        this.feedService.updateFeed(feedEntity);
+
+        verify(feedRepository).findBySlug(anyString());
+        verify(feedRepository).saveAndFlush(Mockito.any(FeedEntity.class));
         verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
     }
 
@@ -138,13 +204,35 @@ public class FeedServiceImplTest {
         FeedEntity existentFeed = createFeedEntity();
 
         when(partnerService.findBySlug(anyString())).thenReturn(feedEntityUpdateName.getPartner());
-        when(repository.findBySlug(anyString())).thenReturn(Optional.of(existentFeed));
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(existentFeed));
 
         this.feedService.updateFeed(feedEntityUpdateName);
 
     }
 
     private FeedEntity createFeedEntity() {
+        PartnerEntity partner = PartnerEntity.builder()
+                .slug("teste123")
+                .build();
+        TemplateEntity templateEntity = TemplateEntity.builder()
+                .slug("template")
+                .build();
+        FeedEntity to = FeedEntity.builder()
+                .name("Big")
+                .slug("big")
+                .active(true)
+                .partner(partner)
+                .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
+                        .slug("blacklist-test")
+                        .build())
+                .template(templateEntity)
+                .notificationFormat(FeedNotificationFormat.JSON)
+                .notificationMethod(FeedNotificationMethod.FILE)
+                .type(INVENTORY).build();
+        return to;
+    }
+
+    private FeedEntity createFeedEntityWithoutTaxonomyBlacklist() {
         PartnerEntity partner = PartnerEntity.builder()
                 .slug("teste123")
                 .build();
@@ -175,10 +263,14 @@ public class FeedServiceImplTest {
                 .slug("partner-teste")
                 .active(true)
                 .partner(partner)
+                .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
+                        .slug("blacklist-test")
+                        .build())
                 .template(templateEntity)
                 .notificationFormat(FeedNotificationFormat.JSON)
                 .notificationMethod(FeedNotificationMethod.FILE)
                 .type(INVENTORY).build();
         return to;
     }
+
 }

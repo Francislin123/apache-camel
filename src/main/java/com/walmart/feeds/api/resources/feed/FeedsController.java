@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.resources.feed;
 
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
@@ -55,6 +56,9 @@ public class FeedsController {
                 .active(request.getActive())
                 .partner(PartnerEntity.builder()
                         .slug(partnerSlug)
+                        .build())
+                .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
+                        .slug(request.getTaxonomyBlackliskSlug())
                         .build())
                 .type(FeedType.getFromCode(request.getType()))
                 .template(TemplateEntity.builder()
@@ -179,6 +183,9 @@ public class FeedsController {
                 .active(request.getActive())
                 .partner(PartnerEntity.builder()
                         .slug(partnerSlug)
+                        .build())
+                .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
+                        .slug(request.getTaxonomyBlackliskSlug())
                         .build())
                 .type(FeedType.getFromCode(request.getType()))
                 .utms(request.getUtms())
