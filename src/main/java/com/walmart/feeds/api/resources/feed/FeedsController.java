@@ -53,6 +53,7 @@ public class FeedsController {
                 .notificationMethod(FeedNotificationMethod.getFromCode(request.getNotification().getMethod()))
                 .notificationUrl(request.getNotification().getUrl())
                 .active(request.getActive())
+                .collectionId(request.getCollectionId())
                 .partner(PartnerEntity.builder()
                         .slug(partnerSlug)
                         .build())

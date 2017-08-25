@@ -62,8 +62,7 @@ public class FeedsControllerTest {
 
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
-        ).andExpect(status().isCreated())
-                .andExpect(header().string("location", "http://localhost/v1/partners/partnerReferenceTest/feeds/feed-test"));
+        ).andExpect(status().isCreated()).andExpect(header().string("location", "http://localhost/v1/partners/partnerReferenceTest/feeds/feed-test"));
 
         verify(feedService, times(1)).createFeed(any(FeedEntity.class));
 

@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.service.feed;
 
+import com.walmart.feeds.api.client.tags.TagAdmimCollectionClient;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
@@ -30,6 +31,9 @@ public class FeedServiceImpl implements FeedService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeedServiceImpl.class);
 
     @Autowired
+    private TagAdmimCollectionClient tagAdminCollectionClient;
+
+    @Autowired
     private FeedRepository feedRepository;
 
     @Autowired
@@ -47,6 +51,10 @@ public class FeedServiceImpl implements FeedService {
 
         if (feedEntity.getPartner() == null) {
             throw new InconsistentEntityException("Feed must have a partner");
+        }
+
+        if(feedEntity.getCollectionId() != null && tagAdminCollectionClient.findById(feedEntity.getCollectionId()) == null) {
+            throw new UserException(String.format("TagAdmin collection '%d' not found!", feedEntity.getCollectionId()));
         }
 
         if (feedRepository.findBySlug(feedEntity.getSlug()).isPresent()) {
@@ -68,6 +76,7 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .name(feedEntity.getName())
                 .active(feedEntity.isActive())
+                .collectionId(feedEntity.getCollectionId())
                 .creationDate(feedEntity.getCreationDate())
                 .template(template)
                 .build();

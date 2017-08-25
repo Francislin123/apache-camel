@@ -39,6 +39,8 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("format", "xml");
         }});
 
+        // Testing integration
+
         Fixture.of(FeedRequest.class).addTemplate("feed-request-generic-valid", new Rule() {{
             add("name", "FeedEntity WM Test");
             add("utms", utms);
@@ -48,6 +50,7 @@ public class FeedTemplateLoader implements TemplateLoader {
 
         Fixture.of(FeedRequest.class).addTemplate("feed-full-api-valid").inherits("feed-request-generic-valid", new Rule() {{
             add("type", FeedType.FULL.getType());
+            add("collectionId", 7380);
             FeedNotificationData notification = Fixture.from(FeedNotificationData.class).gimme("notification-api-valid");
             add("notification", notification);
         }});
