@@ -84,6 +84,19 @@ public class FeedsControllerTest {
     }
 
     @Test
+    public void testCreateFeedWhenTaxonomyBlacklistNotExists() throws Exception {
+        doThrow(EntityNotFoundException.class).when(feedService).createFeed(any(FeedEntity.class));
+
+        mockMvc.perform(
+                post(FeedsController.V1_FEEDS, "partnerReferenceTest")
+                        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
+        ).andExpect(status().isNotFound());
+
+        verify(feedService, times(1)).createFeed(any(FeedEntity.class));
+
+    }
+
+    @Test
     public void testCreateFeedWhenReferenceAlreadyExists() throws Exception {
 
         doThrow(EntityAlreadyExistsException.class).when(feedService).createFeed(any(FeedEntity.class));

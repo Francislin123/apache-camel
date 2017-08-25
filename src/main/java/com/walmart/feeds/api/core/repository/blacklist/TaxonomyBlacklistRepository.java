@@ -9,5 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface TaxonomyBlacklistRepository extends JpaRepository<TaxonomyBlacklistEntity, UUID> {
+
     Optional<TaxonomyBlacklistEntity> findBySlug(String slug);
+
 }

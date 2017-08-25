@@ -383,6 +383,7 @@
         <preConditions>
             <tableExists tableName="feed_template"/>
             <tableExists tableName="partner"/>
+            <tableExists tableName="taxonomy_blacklist"/>
         </preConditions>
 
         <comment>Creating feed table</comment>
@@ -413,6 +414,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="notification_url" type="varchar(255)"/>
+            <column name="taxonomy_blacklist_id" type="${uuid_type}">
+                <constraints referencedTableName="taxonomy_blacklist" referencedColumnNames="id"
+                             foreignKeyName="fk_taxonomy_blacklist"/>
+            </column>
             <column name="flag_active" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
