@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.core.repository.blacklist;
+package com.walmart.feeds.api.core.repository.blacklist.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,7 +15,6 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "taxonomy_blacklist_mapping")
-@Builder
 @Getter
 @JsonIgnoreProperties({"id"})
 public class TaxonomyBlacklistMapping {
@@ -37,6 +36,7 @@ public class TaxonomyBlacklistMapping {
     public TaxonomyBlacklistMapping() {
     }
 
+    @Builder
     public TaxonomyBlacklistMapping(UUID id, String taxonomy, TaxonomyOwner owner) {
         this.id = id;
         this.taxonomy = taxonomy;

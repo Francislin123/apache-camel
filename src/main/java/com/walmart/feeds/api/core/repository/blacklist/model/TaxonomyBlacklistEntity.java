@@ -1,27 +1,25 @@
-package com.walmart.feeds.api.core.repository.blacklist;
+package com.walmart.feeds.api.core.repository.blacklist.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
+import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Getter
-@Builder
 @Entity
 @Table(name = "taxonomy_blacklist")
 public class TaxonomyBlacklistEntity extends AuditableEntity {
 
     @Id
-    @GeneratedValue(generator = "taxonomy_bkl_mapping_uuid_generator")
-    @GenericGenerator(name = "taxonomy_bkl_mapping_uuid_generator", strategy = "uuid2")
-    @ApiModelProperty(hidden = true)
+    @GeneratedValue(generator = "taxonomy_blacklist_uuid_generator")
+    @GenericGenerator(name = "taxonomy_blacklist_uuid_generator", strategy = "uuid2")
     private UUID id;
 
     @Column(nullable = false)
@@ -31,7 +29,7 @@ public class TaxonomyBlacklistEntity extends AuditableEntity {
     private String slug;
 
     @ManyToMany
-    @JoinTable(name = "taxonomy_blacklist_taxonomy_mapping",
+    @JoinTable(name = "taxonomy_blk_taxonomy_mp",
             joinColumns = {
                 @JoinColumn(name = "taxonomy_blacklist_id", referencedColumnName = "id", table = "taxonomy_blacklist",
                         foreignKey = @ForeignKey(name = "fk_taxonomy")),
@@ -40,4 +38,16 @@ public class TaxonomyBlacklistEntity extends AuditableEntity {
             })
     private List<TaxonomyBlacklistMapping> list;
 
+    @Tolerate
+    public TaxonomyBlacklistEntity() {
+    }
+
+    @Builder
+    public TaxonomyBlacklistEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String name, String slug, List<TaxonomyBlacklistMapping> list) {
+        super(creationDate, updateDate, user);
+        this.id = id;
+        this.name = name;
+        this.slug = slug;
+        this.list = list;
+    }
 }
