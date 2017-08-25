@@ -10,9 +10,6 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.UUID;
 
-/**
- * Created by vn0y942 on 24/08/17.
- */
 @Entity
 @Table(name = "taxonomy_blacklist_mapping")
 @Getter

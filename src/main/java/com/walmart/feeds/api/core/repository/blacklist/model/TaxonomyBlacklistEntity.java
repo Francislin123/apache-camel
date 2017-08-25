@@ -10,6 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -28,22 +29,15 @@ public class TaxonomyBlacklistEntity extends AuditableEntity {
     @Column(nullable = false)
     private String slug;
 
-    @ManyToMany
-    @JoinTable(name = "taxonomy_blk_taxonomy_mp",
-            joinColumns = {
-                @JoinColumn(name = "taxonomy_blacklist_id", referencedColumnName = "id", table = "taxonomy_blacklist",
-                        foreignKey = @ForeignKey(name = "fk_taxonomy")),
-                @JoinColumn(name = "taxonomy_blacklist_mapping_id", referencedColumnName = "id", table = "taxonomy_blacklist_mapping",
-                        foreignKey = @ForeignKey(name = "fk_mapping"))
-            })
-    private List<TaxonomyBlacklistMapping> list;
+    @OneToMany
+    private Set<TaxonomyBlacklistMapping> list;
 
     @Tolerate
     public TaxonomyBlacklistEntity() {
     }
 
     @Builder
-    public TaxonomyBlacklistEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String name, String slug, List<TaxonomyBlacklistMapping> list) {
+    public TaxonomyBlacklistEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String name, String slug, Set<TaxonomyBlacklistMapping> list) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.name = name;
