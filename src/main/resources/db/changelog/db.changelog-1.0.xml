@@ -291,7 +291,7 @@
             </column>
             <column name="taxonomy_blacklist_id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"
-                             foreignKeyName="fk_taxonomy_blacklist"
+                             foreignKeyName="fk_blacklist"
                              referencedTableName="taxonomy_blacklist"
                              referencedColumnNames="id"/>
             </column>
