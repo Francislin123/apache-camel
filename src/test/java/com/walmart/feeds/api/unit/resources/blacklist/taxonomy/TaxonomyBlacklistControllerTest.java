@@ -20,8 +20,12 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -118,6 +122,29 @@ public class TaxonomyBlacklistControllerTest {
         mockMvc.perform(get(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY + "/" + slug)
                     .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isNotFound());
+
+    }
+
+    @Test
+    public void testFetchAll() throws Exception {
+
+        when(taxonomyBlacklistService.findAll())
+                .thenReturn(Fixture.from(TaxonomyBlacklistEntity.class).gimme(2, "tax-bl-entity"));
+
+        mockMvc.perform(get(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").isArray())
+                .andExpect(jsonPath("$.result").isNotEmpty());
+
+    }
+
+    @Test
+    public void testFetchAllWhenOccursRuntimeException() throws Exception {
+
+        when(taxonomyBlacklistService.findAll()).thenThrow(RuntimeException.class);
+
+        mockMvc.perform(get(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isInternalServerError());
 
     }
 
