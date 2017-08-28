@@ -295,13 +295,7 @@
             <column name="flag_active" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
-
-            // CollectionId -----------------------------------------------------------------
-
             <column name="collection_id" type="integer"></column>
-
-            //collectionId ------------------------------------------------------------------
-
             <column name="creation_date" type="datetime" defaultValueComputed="${now}">
                 <constraints nullable="false"/>
             </column>
