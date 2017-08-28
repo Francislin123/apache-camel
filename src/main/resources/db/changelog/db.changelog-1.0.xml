@@ -289,43 +289,16 @@
             <column name="taxonomy" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
-        </createTable>
-
-        <rollback>
-            <dropTable tableName="taxonomy_blacklist_mapping"/>
-        </rollback>
-
-    </changeSet>
-
-    <changeSet id="createTaxonomyBlacklistMappingRelationshipTable" author="adisson.gomes">
-
-        <preConditions onError="WARN">
-            <tableExists tableName="taxonomy_blacklist"/>
-            <tableExists tableName="taxonomy_blacklist_mapping"/>
-        </preConditions>
-
-        <comment>Create taxonomy blacklist mapping table</comment>
-
-        <createTable tableName="taxonomy_blk_taxonomy_mp">
-
             <column name="taxonomy_blacklist_id" type="${uuid_type}">
                 <constraints primaryKey="true" nullable="false"
-                             foreignKeyName="fk_taxonomy"
+                             foreignKeyName="fk_taxonomy_blacklist"
                              referencedTableName="taxonomy_blacklist"
                              referencedColumnNames="id"/>
             </column>
-
-            <column name="taxonomy_blacklist_mapping_id" type="${uuid_type}">
-                <constraints primaryKey="true" nullable="false"
-                             foreignKeyName="fk_mapping"
-                             referencedTableName="taxonomy_blacklist_mapping"
-                             referencedColumnNames="id"/>
-            </column>
-
         </createTable>
 
         <rollback>
-            <dropTable tableName="taxonomy_blacklist_taxonomy_mapping" cascadeConstraints="true"/>
+            <dropTable tableName="taxonomy_blacklist_mapping" cascadeConstraints="true"/>
         </rollback>
 
     </changeSet>
