@@ -6,6 +6,7 @@ import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistSe
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistRequest;
 import com.walmart.feeds.api.resources.blacklist.response.TaxonomyBlacklistResponse;
+import com.walmart.feeds.api.resources.feed.CollectionResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Api
 @RestController
@@ -46,11 +48,26 @@ public class TaxonomyBlackListController {
         return ResponseEntity.created(uriComponents.toUri()).build();
     }
 
+    @ApiOperation(value = "Update a taxonomy blacklist",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful taxonomy blacklist update", response = ResponseEntity.class),
+            @ApiResponse(code = 400, message = "Validation error"),
+            @ApiResponse(code = 404, message = "Taxonomy blacklist not found")})
+    @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateTaxonomyBlackList(@Valid @RequestBody TaxonomyBlacklistRequest taxonomyBlacklistRequest,
+                                                  UriComponentsBuilder builder){
+        taxonomyBlacklistService.update(requestToEntity(taxonomyBlacklistRequest));
+        return ResponseEntity.ok().build();
+    }
+
     @ApiOperation(value = "Fetch a list or a single taxonomy blacklist",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful taxonomy blacklist fetch", response = ResponseEntity.class),
-            @ApiResponse(code = 404, message = "Taxonomy blacklist not found")})
+            @ApiResponse(code = 404, message = "Taxonomy blacklist not found"),
+            @ApiResponse(code = 500, message = "Unhandled error")
+    })
     @RequestMapping(value = "{taxonomyBlacklistSlug}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity fetchTaxonomyBlackList(@PathVariable(value = "taxonomyBlacklistSlug", required = false) String slug){
 
@@ -67,17 +84,19 @@ public class TaxonomyBlackListController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "Update a taxonomy blacklist",
+    @ApiOperation(value = "Fetch a list or a single taxonomy blacklist",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful taxonomy blacklist update", response = ResponseEntity.class),
-            @ApiResponse(code = 400, message = "Validation error"),
-            @ApiResponse(code = 404, message = "Taxonomy blacklist not found")})
-    @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateTaxonomyBlackList(@Valid @RequestBody TaxonomyBlacklistRequest taxonomyBlacklistRequest,
-                                                  UriComponentsBuilder builder){
-        taxonomyBlacklistService.update(requestToEntity(taxonomyBlacklistRequest));
-        return ResponseEntity.ok().build();
+            @ApiResponse(code = 200, message = "Successful taxonomy blacklist fetch", response = CollectionResponse.class),
+            @ApiResponse(code = 500, message = "Unhandled error")
+    })
+    @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CollectionResponse> fetchAll(){
+
+        List taxonomyBlacklist = taxonomyBlacklistService.findAll();
+
+        return ResponseEntity.ok(CollectionResponse.builder().result(taxonomyBlacklist).build());
+
     }
 
     @ApiOperation(value = "Delete a taxonomy blacklist",

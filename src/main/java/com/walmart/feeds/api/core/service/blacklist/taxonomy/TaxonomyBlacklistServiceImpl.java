@@ -11,6 +11,8 @@ import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
 
@@ -50,6 +52,11 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
     public TaxonomyBlacklistEntity find(String slug) {
         return taxonomyBlacklistRepository.findBySlug(slug)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Taxonomy Blacklist '%s' not found", slug)));
+    }
+
+    @Override
+    public List<TaxonomyBlacklistEntity> findAll() {
+        return taxonomyBlacklistRepository.findAll();
     }
 
     private TaxonomyBlacklistHistory entityToHistory(TaxonomyBlacklistEntity entity){

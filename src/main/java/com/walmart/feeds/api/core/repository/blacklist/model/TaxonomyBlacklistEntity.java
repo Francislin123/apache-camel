@@ -29,7 +29,7 @@ public class TaxonomyBlacklistEntity extends AuditableEntity {
     @Column(nullable = false)
     private String slug;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TaxonomyBlacklistMapping> list;
 
     @Tolerate
