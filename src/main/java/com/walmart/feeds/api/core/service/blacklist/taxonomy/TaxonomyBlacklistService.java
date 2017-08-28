@@ -15,4 +15,5 @@ public interface TaxonomyBlacklistService {
 
     List<TaxonomyBlacklistEntity> findAll();
 
+    void hasConflict(String slug);
 }
