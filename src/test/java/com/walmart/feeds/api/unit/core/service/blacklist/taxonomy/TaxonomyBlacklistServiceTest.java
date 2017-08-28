@@ -3,6 +3,7 @@ package com.walmart.feeds.api.unit.core.service.blacklist.taxonomy;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistHistoryRepository;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
@@ -80,4 +81,25 @@ public class TaxonomyBlacklistServiceTest {
         verify(taxonomyBlacklistRepository, times(1)).saveAndFlush(entity);
 
     }
+
+    @Test
+    public void testFind() {
+
+        when(taxonomyBlacklistRepository.findBySlug("any-name")).thenReturn(Optional.of(Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity")));
+
+        TaxonomyBlacklistEntity entity = taxonomyBlacklistService.find("any-name");
+
+        assertEquals("any name", entity.getName());
+
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void testFindWhenItNotExists() {
+
+        when(taxonomyBlacklistRepository.findBySlug("any-name")).thenReturn(Optional.empty());
+
+        TaxonomyBlacklistEntity entity = taxonomyBlacklistService.find("any-name");
+
+    }
+
 }

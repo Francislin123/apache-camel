@@ -5,6 +5,7 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEn
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistRequest;
+import com.walmart.feeds.api.resources.blacklist.response.TaxonomyBlacklistResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -51,8 +52,19 @@ public class TaxonomyBlackListController {
             @ApiResponse(code = 200, message = "Successful taxonomy blacklist fetch", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Taxonomy blacklist not found")})
     @RequestMapping(value = "{taxonomyBlacklistSlug}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity fetchTaxonomyBlackList(@PathVariable(value = "taxonomyBlacklistSlug", required = false) String slug, UriComponentsBuilder builder){
-        return null;
+    public ResponseEntity fetchTaxonomyBlackList(@PathVariable(value = "taxonomyBlacklistSlug", required = false) String slug){
+
+        TaxonomyBlacklistEntity taxonomyBlacklist = taxonomyBlacklistService.find(slug);
+
+        TaxonomyBlacklistResponse response = TaxonomyBlacklistResponse.builder()
+                .name(taxonomyBlacklist.getName())
+                .slug(taxonomyBlacklist.getSlug())
+                .list(taxonomyBlacklist.getList())
+                .creationDate(taxonomyBlacklist.getCreationDate())
+                .updateDate(taxonomyBlacklist.getUpdateDate())
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @ApiOperation(value = "Update a taxonomy blacklist",
