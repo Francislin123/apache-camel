@@ -30,6 +30,7 @@ public class TaxonomyBlacklistEntity extends AuditableEntity {
     private String slug;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "taxonomy_blacklist_id", referencedColumnName = "id")
     private Set<TaxonomyBlacklistMapping> list;
 
     @Tolerate
