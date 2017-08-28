@@ -10,6 +10,7 @@ import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
     private TaxonomyBlacklistHistoryRepository taxonomyBlacklistHistoryRepository;
 
     @Override
+    @Transactional
     public TaxonomyBlacklistEntity create(TaxonomyBlacklistEntity taxonomyBlacklistEntity) {
 
         TaxonomyBlacklistEntity entity = taxonomyBlacklistRepository.saveAndFlush(taxonomyBlacklistEntity);
@@ -33,6 +35,7 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
     }
 
     @Override
+    @Transactional
     public void update(TaxonomyBlacklistEntity taxonomyBlacklistEntity) {
         TaxonomyBlacklistEntity persistedEntity = find(taxonomyBlacklistEntity.getSlug());
 
@@ -64,6 +67,9 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
                 .name(entity.getName())
                 .slug(entity.getSlug())
                 .list(MapperUtil.getMapsAsJson(entity.getList()))
+                .creationDate(entity.getCreationDate())
+                .updateDate(entity.getUpdateDate())
+                .user(entity.getUser())
                 .build();
     }
 }

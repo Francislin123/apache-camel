@@ -289,9 +289,11 @@
             <column name="taxonomy" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="owner" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
             <column name="taxonomy_blacklist_id" type="${uuid_type}">
-                <constraints primaryKey="true" nullable="false"
-                             foreignKeyName="fk_blacklist"
+                <constraints foreignKeyName="fk_blacklist"
                              referencedTableName="taxonomy_blacklist"
                              referencedColumnNames="id"/>
             </column>
