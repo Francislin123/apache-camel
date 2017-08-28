@@ -62,13 +62,13 @@ public class TaxonomyBlackListController {
     }
 
     @ApiOperation(value = "Fetch a list or a single taxonomy blacklist",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful taxonomy blacklist fetch", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Taxonomy blacklist not found"),
             @ApiResponse(code = 500, message = "Unhandled error")
     })
-    @RequestMapping(value = "{taxonomyBlacklistSlug}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{taxonomyBlacklistSlug}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity fetchTaxonomyBlackList(@PathVariable(value = "taxonomyBlacklistSlug", required = false) String slug){
 
         TaxonomyBlacklistEntity taxonomyBlacklist = taxonomyBlacklistService.find(slug);
@@ -85,12 +85,12 @@ public class TaxonomyBlackListController {
     }
 
     @ApiOperation(value = "Fetch a list or a single taxonomy blacklist",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful taxonomy blacklist fetch", response = CollectionResponse.class),
             @ApiResponse(code = 500, message = "Unhandled error")
     })
-    @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionResponse> fetchAll(){
 
         List taxonomyBlacklist = taxonomyBlacklistService.findAll();
