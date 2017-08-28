@@ -7,4 +7,6 @@ public interface TaxonomyBlacklistService {
     TaxonomyBlacklistEntity create(TaxonomyBlacklistEntity taxonomyBlacklistEntity);
 
     void update(TaxonomyBlacklistEntity taxonomyBlacklistEntity);
+
+    TaxonomyBlacklistEntity find(String slug);
 }

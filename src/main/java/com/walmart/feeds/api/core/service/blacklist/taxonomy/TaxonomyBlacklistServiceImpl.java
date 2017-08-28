@@ -32,8 +32,7 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
 
     @Override
     public void update(TaxonomyBlacklistEntity taxonomyBlacklistEntity) {
-        TaxonomyBlacklistEntity persistedEntity = taxonomyBlacklistRepository.findBySlug(taxonomyBlacklistEntity.getSlug())
-                .orElseThrow(() -> new EntityNotFoundException("Taxonomy Blacklist not found"));
+        TaxonomyBlacklistEntity persistedEntity = find(taxonomyBlacklistEntity.getSlug());
 
         TaxonomyBlacklistEntity toHistoryEntity = taxonomyBlacklistRepository.saveAndFlush(TaxonomyBlacklistEntity.builder()
                 .creationDate(persistedEntity.getCreationDate())
@@ -45,6 +44,12 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
         );
         taxonomyBlacklistHistoryRepository.save(entityToHistory(toHistoryEntity));
 
+    }
+
+    @Override
+    public TaxonomyBlacklistEntity find(String slug) {
+        return taxonomyBlacklistRepository.findBySlug(slug)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Taxonomy Blacklist '%s' not found", slug)));
     }
 
     private TaxonomyBlacklistHistory entityToHistory(TaxonomyBlacklistEntity entity){

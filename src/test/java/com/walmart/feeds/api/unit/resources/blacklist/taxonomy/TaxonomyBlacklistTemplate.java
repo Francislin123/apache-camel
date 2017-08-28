@@ -8,10 +8,7 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEn
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMapping;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TaxonomyBlacklistTemplate implements TemplateLoader{
 
@@ -27,6 +24,7 @@ public class TaxonomyBlacklistTemplate implements TemplateLoader{
         list.add(Fixture.from(TaxonomyBlacklistMapping.class).gimme("tax-bl-mapping-entity"));
 
         Fixture.of(TaxonomyBlacklistEntity.class).addTemplate("tax-bl-entity", new Rule() {{
+            add("id", UUID.randomUUID());
             add("name", "any name");
             add("slug", "any-name");
             add("list", list);
