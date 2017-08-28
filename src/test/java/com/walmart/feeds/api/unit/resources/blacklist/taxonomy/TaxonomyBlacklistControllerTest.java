@@ -81,7 +81,7 @@ public class TaxonomyBlacklistControllerTest {
 
         doNothing().when(taxonomyBlacklistService).update(any(TaxonomyBlacklistEntity.class));
 
-        mockMvc.perform(put(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(put(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY+"/slug").contentType(MediaType.APPLICATION_JSON)
                 .content(MapperUtil.getMapsAsJson(entity))).andExpect(status().isOk());
 
     }
@@ -93,7 +93,7 @@ public class TaxonomyBlacklistControllerTest {
 
         doThrow(EntityNotFoundException.class).when(taxonomyBlacklistService).update(any(TaxonomyBlacklistEntity.class));
 
-        mockMvc.perform(put(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(put(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY+ "/anySlug").contentType(MediaType.APPLICATION_JSON)
                 .content(MapperUtil.getMapsAsJson(entity))).andExpect(status().isNotFound());
 
 

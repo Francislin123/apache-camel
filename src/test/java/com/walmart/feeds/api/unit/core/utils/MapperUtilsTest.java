@@ -27,9 +27,4 @@ public class MapperUtilsTest {
         String json = "[{\"taxonomy\":\"any > taxonomy\",\"owner\":\"PARTNER\"}]";
         assertEquals(json, MapperUtil.getMapsAsJson(list));
     }
-
-    @Test(expected = SystemException.class)
-    public void testMappingNull(){
-        MapperUtil.getMapsAsJson(null);
-    }
 }

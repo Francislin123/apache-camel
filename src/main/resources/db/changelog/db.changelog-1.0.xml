@@ -257,7 +257,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="slug" type="varchar(50)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true"/>
             </column>
             <column name="creation_date" type="datetime" defaultValueComputed="${now}">
                 <constraints nullable="false"/>

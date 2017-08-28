@@ -4,7 +4,6 @@ import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.exceptions.SystemException;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistHistoryRepository;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
@@ -23,7 +22,6 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -76,13 +74,13 @@ public class TaxonomyBlacklistServiceTest {
 
         when(taxonomyBlacklistRepository.findBySlug(entity.getSlug())).thenReturn(Optional.of(entity));
 
-        when(taxonomyBlacklistRepository.saveAndFlush(entity)).thenReturn(entity);
+        when(taxonomyBlacklistRepository.saveAndFlush(any(TaxonomyBlacklistEntity.class))).thenReturn(entity);
 
         when(taxonomyBlacklistHistoryRepository.save(any(TaxonomyBlacklistHistory.class))).thenReturn(any(TaxonomyBlacklistHistory.class));
 
         this.taxonomyBlacklistService.update(entity);
 
-        verify(taxonomyBlacklistRepository, times(1)).saveAndFlush(entity);
+        verify(taxonomyBlacklistRepository, times(1)).saveAndFlush(any(TaxonomyBlacklistEntity.class));
 
     }
 

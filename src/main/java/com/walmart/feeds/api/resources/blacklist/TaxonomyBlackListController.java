@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Api
 @RestController
@@ -40,7 +41,7 @@ public class TaxonomyBlackListController {
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createTaxonomyBlacklist(@Valid @RequestBody TaxonomyBlacklistRequest taxonomyBlacklistRequest, UriComponentsBuilder builder){
 
-        TaxonomyBlacklistEntity savedTaxonomyBlacklist = taxonomyBlacklistService.create(requestToEntity(taxonomyBlacklistRequest));
+        TaxonomyBlacklistEntity savedTaxonomyBlacklist = taxonomyBlacklistService.create(requestToEntity(taxonomyBlacklistRequest, SlugParserUtil.toSlug(taxonomyBlacklistRequest.getName())));
 
         UriComponents uriComponents =
                 builder.path(V1_BLACKLIST_TAXONOMY.concat("/{slug}")).buildAndExpand(savedTaxonomyBlacklist.getSlug());
@@ -54,10 +55,10 @@ public class TaxonomyBlackListController {
             @ApiResponse(code = 200, message = "Successful taxonomy blacklist update", response = ResponseEntity.class),
             @ApiResponse(code = 400, message = "Validation error"),
             @ApiResponse(code = 404, message = "Taxonomy blacklist not found")})
-    @RequestMapping(method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{taxonomyBlacklistSlug}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateTaxonomyBlackList(@Valid @RequestBody TaxonomyBlacklistRequest taxonomyBlacklistRequest,
-                                                  UriComponentsBuilder builder){
-        taxonomyBlacklistService.update(requestToEntity(taxonomyBlacklistRequest));
+                                                  @PathVariable(value = "taxonomyBlacklistSlug")String  taxonomyBlacklistSlug, UriComponentsBuilder builder){
+        taxonomyBlacklistService.update(requestToEntity(taxonomyBlacklistRequest, taxonomyBlacklistSlug));
         return ResponseEntity.ok().build();
     }
 
@@ -93,9 +94,17 @@ public class TaxonomyBlackListController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionResponse> fetchAll(){
 
-        List taxonomyBlacklist = taxonomyBlacklistService.findAll();
+        List<TaxonomyBlacklistEntity> taxonomyBlacklist = taxonomyBlacklistService.findAll();
 
-        return ResponseEntity.ok(CollectionResponse.builder().result(taxonomyBlacklist).build());
+        List returnList = taxonomyBlacklist.stream().map(i -> TaxonomyBlacklistResponse.builder()
+                .name(i.getName())
+                .slug(i.getSlug())
+                .list(i.getList())
+                .creationDate(i.getCreationDate())
+                .updateDate(i.getUpdateDate())
+                .build()).collect(Collectors.toList());
+
+        return ResponseEntity.ok(CollectionResponse.builder().result(returnList).build());
 
     }
 
@@ -109,10 +118,10 @@ public class TaxonomyBlackListController {
         return null;
     }
 
-    private TaxonomyBlacklistEntity requestToEntity(TaxonomyBlacklistRequest taxonomyBlacklistRequest){
+    private TaxonomyBlacklistEntity requestToEntity(TaxonomyBlacklistRequest taxonomyBlacklistRequest, String slug){
         return TaxonomyBlacklistEntity.builder()
                 .name(taxonomyBlacklistRequest.getName())
-                .slug(SlugParserUtil.toSlug(taxonomyBlacklistRequest.getName()))
+                .slug(slug)
                 .list(taxonomyBlacklistRequest.getList())
                 .build();
     }
