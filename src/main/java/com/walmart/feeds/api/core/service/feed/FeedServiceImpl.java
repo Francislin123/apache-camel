@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.core.service.feed;
 
 import com.walmart.feeds.api.client.tags.TagAdmimCollectionClient;
+import com.walmart.feeds.api.client.tags.TagAdminCollection;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
@@ -53,8 +54,10 @@ public class FeedServiceImpl implements FeedService {
             throw new InconsistentEntityException("Feed must have a partner");
         }
 
-        if(feedEntity.getCollectionId() != null && tagAdminCollectionClient.findById(feedEntity.getCollectionId()) == null) {
-            throw new UserException(String.format("TagAdmin collection '%d' not found!", feedEntity.getCollectionId()));
+        TagAdminCollection collectionId = tagAdminCollectionClient.findById(feedEntity.getCollectionId());
+
+        if(collectionId == null || !collectionId.getStatus().equals("ACTIVE")) {
+            throw new UserException(String.format("TagAdmin collection '%d' not found or not active!", feedEntity.getCollectionId()));
         }
 
         if (feedRepository.findBySlug(feedEntity.getSlug()).isPresent()) {
@@ -149,6 +152,12 @@ public class FeedServiceImpl implements FeedService {
             throw new InconsistentEntityException("Feed must have a partner");
         }
 
+        TagAdminCollection collectionId = tagAdminCollectionClient.findById(feedEntity.getCollectionId());
+
+        if(collectionId == null || !collectionId.getStatus().equals("ACTIVE")) {
+            throw new UserException(String.format("TagAdmin collection '%d' not found or not active!", feedEntity.getCollectionId()));
+        }
+
         String newSlug = SlugParserUtil.toSlug(feedEntity.getName());
 
         if (!feedEntity.getSlug().equals(newSlug)) {
@@ -173,6 +182,7 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .utms(feedEntity.getUtms())
                 .active(feedEntity.isActive())
+                .collectionId(feedEntity.getCollectionId())
                 .template(template)
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();

@@ -3,25 +3,33 @@ package com.walmart.feeds.api.unit.resources.feed;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.walmart.feeds.api.client.tags.TagAdmimCollectionClient;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.resources.feed.FeedsController;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
+import lombok.SneakyThrows;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static com.walmart.feeds.api.unit.resources.partner.PartnerControllerTest.URI_PARTNERS;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -40,6 +48,9 @@ public class FeedsControllerTest {
 
     @Mock
     private FeedServiceImpl feedService;
+
+    @Mock
+    private TagAdmimCollectionClient tagAdmimCollectionClient;
 
     private static MockMvc mockMvc;
 
@@ -131,10 +142,20 @@ public class FeedsControllerTest {
     }
 
     @Test
+    public void testCreatedNewFeedWithInexistenCollectionId() throws Exception {
+        when((feedService.createFeed(any(FeedEntity.class)))).thenThrow(UserException.class);
+        mockMvc.perform(MockMvcRequestBuilders.post(FeedsController.V1_FEEDS,  "/facebook")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-invalid-collection-id"))))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        verify(feedService, times(1)).createFeed(Mockito.any(FeedEntity.class));
+    }
+
+    @Test
     public void testUpdateFeed() throws Exception {
         doNothing().when(feedService).updateFeed(any(FeedEntity.class));
         mockMvc.perform(put(FeedsController.V1_FEEDS + "/teste123", "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
-                ).andExpect(status().isOk());
+        ).andExpect(status().isOk());
     }
 
     @Test

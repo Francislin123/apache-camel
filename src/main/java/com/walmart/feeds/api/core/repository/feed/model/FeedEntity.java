@@ -66,7 +66,7 @@ public class FeedEntity extends AuditableEntity {
     private boolean active;
 
     @Column(name = "collection_id")
-    private Integer collectionId;
+    private Long collectionId;
 
     @Tolerate
     public FeedEntity() {
@@ -74,7 +74,7 @@ public class FeedEntity extends AuditableEntity {
     }
 
     @Builder
-    private FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, TemplateEntity template, Map<String, String> utms, boolean active, Integer collectionId) {
+    private FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, TemplateEntity template, Map<String, String> utms, boolean active, Long collectionId) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
@@ -89,6 +89,5 @@ public class FeedEntity extends AuditableEntity {
         this.active = active;
         this.collectionId = collectionId;
     }
-
 }
 

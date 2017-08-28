@@ -142,6 +142,7 @@ public class FeedsController {
                         .creationDate(f.getCreationDate())
                         .updateDate(f.getUpdateDate())
                         .active(f.isActive())
+                        .collectionId(f.getCollectionId())
                         .build())
                         .collect(Collectors.toList())).build());
     }
@@ -178,6 +179,7 @@ public class FeedsController {
                         .slug(request.getTemplate())
                         .build())
                 .active(request.getActive())
+                .collectionId(request.getCollectionId())
                 .partner(PartnerEntity.builder()
                         .slug(partnerSlug)
                         .build())

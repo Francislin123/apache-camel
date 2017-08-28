@@ -4,8 +4,6 @@ import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
 
-import java.util.List;
-
 /**
  * Created by vn0gshm on 25/08/17.
  */

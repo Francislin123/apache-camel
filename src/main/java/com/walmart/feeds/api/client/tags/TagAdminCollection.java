@@ -10,8 +10,7 @@ import java.util.Date;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TagAdminCollection
-{
+public class TagAdminCollection {
     private Integer id;
     private Integer version;
     private String name;
