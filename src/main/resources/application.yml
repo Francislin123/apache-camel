@@ -10,10 +10,6 @@ elastic:
   mapping:
     sku: http://napsao-qa-nix-feeds-reg-1.qa.vmcommerce.intra:8080/feeds/_mapping/sku
 
-tagadmin:
-  username: admin
-  password: admin
-
 ---
 
 spring:
@@ -43,3 +39,8 @@ spring:
       test-on-borrow: true
     jpa:
     show-sql: true
+
+---
+    tagadmin:
+      username: admin
+      password: admin
