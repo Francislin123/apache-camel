@@ -13,7 +13,7 @@ import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHisto
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyServiceImpl;
-import com.walmart.feeds.api.resources.camel.TaxonomyMappingBindy;
+import com.walmart.feeds.api.camel.TaxonomyMappingBindy;
 import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
 import org.apache.camel.ProducerTemplate;
 import org.junit.BeforeClass;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.walmart.feeds.api.resources.camel.PartnerTaxonomyRouteBuilder.VALIDATE_FILE_ROUTE;
+import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.VALIDATE_FILE_ROUTE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.*;

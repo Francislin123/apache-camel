@@ -7,7 +7,7 @@ import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHistory;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
-import com.walmart.feeds.api.resources.camel.TaxonomyMappingBindy;
+import com.walmart.feeds.api.camel.TaxonomyMappingBindy;
 import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
 import org.springframework.mock.web.MockMultipartFile;
 

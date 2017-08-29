@@ -1,11 +1,8 @@
 package com.walmart.feeds.api.resources.infrastructure;
 
-import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
-import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.exceptions.SystemException;
-import com.walmart.feeds.api.core.exceptions.UserException;
-import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
-import com.walmart.feeds.api.resources.feed.response.FieldValidation;
+import com.walmart.feeds.api.core.exceptions.*;
+import com.walmart.feeds.api.resources.common.response.ErrorResponse;
+import com.walmart.feeds.api.resources.common.response.FieldErrorResponse;
 import org.apache.camel.CamelExecutionException;
 import org.apache.camel.Exchange;
 import org.slf4j.Logger;
@@ -36,8 +33,8 @@ public class FeedsAdminAPIExceptionHandler {
                 .body(ErrorResponse.builder()
                         .code(HttpStatus.BAD_REQUEST.toString())
                         .description("Invalid Request")
-                        .validations(ex.getBindingResult().getAllErrors().stream().map(b ->
-                                (FieldError) b).map(f -> new FieldValidation(f.getField(), f.getDefaultMessage(), f.getRejectedValue()))
+                        .errors(ex.getBindingResult().getAllErrors().stream().map(b ->
+                                (FieldError) b).map(f -> new FieldErrorResponse(f.getField(), f.getDefaultMessage(), f.getRejectedValue()))
                                 .collect(Collectors.toList()))
                         .build());
 
@@ -105,10 +102,34 @@ public class FeedsAdminAPIExceptionHandler {
     public ResponseEntity<ErrorResponse> userExceptionHandler(UserException ex, WebRequest request) {
         LOGGER.error("An user error occurred", ex);
 
+        if (ex instanceof InvalidFileException) {
+
+            InvalidFileException invalidFileException = (InvalidFileException) ex;
+
+            return ResponseEntity.status(ex.getErrorCode())
+                    .body(ErrorResponse.builder()
+                            .code(ex.getErrorCode().toString())
+                            .description(ex.getMessage())
+                            .errors(invalidFileException.getErrors())
+                            .build());
+        }
+
         return ResponseEntity.status(ex.getErrorCode())
                 .body(ErrorResponse.builder()
                         .code(ex.getErrorCode().toString())
                         .description(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(value = InvalidFileException.class)
+    public ResponseEntity<ErrorResponse> invalidFileExceptionHandler(InvalidFileException ex, WebRequest request) {
+        LOGGER.error("An user error occurred", ex);
+
+        return ResponseEntity.status(ex.getErrorCode())
+                .body(ErrorResponse.builder()
+                        .code(ex.getErrorCode().toString())
+                        .description(ex.getMessage())
+                        .errors(ex.getErrors())
                         .build());
     }
 

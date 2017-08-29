@@ -1,18 +1,17 @@
-package com.walmart.feeds.api.resources.camel;
+package com.walmart.feeds.api.camel;
 
-import com.walmart.feeds.api.core.exceptions.UserException;
+import com.walmart.feeds.api.core.exceptions.InvalidFileException;
 import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import org.apache.camel.CamelContext;
-import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.dataformat.bindy.csv.BindyCsvDataFormat;
-import org.apache.camel.spi.DataFormat;
+import org.apache.camel.model.dataformat.BindyType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +25,7 @@ public class PartnerTaxonomyRouteBuilder extends RouteBuilder {
     public static final String PARSE_BINDY_ROUTE = "direct:parseBindy";
     public static final String PERSIST_PARTNER_TAXONOMY_ROUTE = "direct:persistCommercialStructure";
     public static final String PERSISTED_PARTNER_TAXONOMY = "partnerTaxonomy";
+    public static final String ERROR_LIST = "errorList";
 
     @Autowired
     private PartnerTaxonomyService partnerTaxonomyService;
@@ -37,16 +37,23 @@ public class PartnerTaxonomyRouteBuilder extends RouteBuilder {
     @Override
     public void configure() {
 
-        final DataFormat bindy = new BindyCsvDataFormat(TaxonomyMappingBindy.class);
-
         from(VALIDATE_FILE_ROUTE)
-            .doTry()
-                .unmarshal(bindy)
-            .doCatch(IllegalArgumentException.class)
+                .setHeader(ERROR_LIST, LinkedList::new)
+                .unmarshal()
+                    .bindy(BindyType.Csv, TaxonomyMappingBindy.class)
+                .split(body(), new LinkedListAggregationStrategy())
+                    .process(new ValidateTaxonomyBindyProcessor())
+                .end()
                 .process(exchange -> {
-                    throw new UserException(exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Exception.class).getMessage());
-                });
+                    List errorList = exchange.getIn().getHeader(ERROR_LIST, List.class);
 
+                    if (!errorList.isEmpty()) {
+                        throw new InvalidFileException("Invalid file content", errorList);
+                    }
+                    exchange.getIn().getHeaders().clear();
+                    exchange.getProperties().clear();
+
+                });
 
         from(PARSE_BINDY_ROUTE)
                 .process(exchange -> {

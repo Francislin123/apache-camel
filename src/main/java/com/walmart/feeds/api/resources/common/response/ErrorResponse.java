@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.feed.response;
+package com.walmart.feeds.api.resources.common.response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +15,7 @@ public class ErrorResponse {
 
     private String code;
     private String description;
-	private List<FieldValidation> fieldValidations;
+	private List<? extends ErrorElementResponse> errors;
 
     @Tolerate
     public ErrorResponse() {
@@ -23,11 +23,9 @@ public class ErrorResponse {
     }
 
     @Builder
-    private ErrorResponse(String code, String description, List<FieldValidation> validations) {
-        super();
-		this.code = code;
-		this.description = description;
-		this.fieldValidations = validations;
-	}
-
+    public ErrorResponse(String code, String description, List<? extends ErrorElementResponse> errors) {
+        this.code = code;
+        this.description = description;
+        this.errors = errors;
+    }
 }
