@@ -11,7 +11,6 @@ import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
-import com.walmart.feeds.api.core.repository.partner.PartnerRepository;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
@@ -59,13 +58,13 @@ public class FeedServiceImplTest {
         FeedEntity f = FeedEntity.builder()
                 .name("Feed Teste")
                 .partner(PartnerEntity.builder()
-                .slug("teste-123")
-                .build())
+                        .slug("teste-123")
+                        .build())
                 .collectionId(7380L)
                 .template(TemplateEntity.builder()
-                .slug("template-123")
-                .build())
-            .build();
+                        .slug("template-123")
+                        .build())
+                .build();
 
         when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
         when(partnerService.findActiveBySlug(anyString())).thenReturn(mock(PartnerEntity.class));
@@ -108,7 +107,7 @@ public class FeedServiceImplTest {
         FeedEntity f = FeedEntity.builder()
                 .name("Feed Teste")
                 .partner(null)
-            .build();
+                .build();
 
         feedService.createFeed(f);
 
@@ -158,6 +157,22 @@ public class FeedServiceImplTest {
 
         this.feedService.updateFeed(feedEntityUpdateName);
 
+    }
+
+    @Test(expected = InconsistentEntityException.class)
+    public void createFeedWhenCollectionIdIsNull() {
+
+        FeedEntity f = FeedEntity.builder()
+                .name("Feed Teste")
+                .collectionId(null)
+                .build();
+
+        feedService.createFeed(f);
+    }
+
+    @Test(expected = UserException.class)
+    public void testCreateFeedNull(){
+        feedService.createFeed(null);
     }
 
     private FeedEntity createFeedEntity() {

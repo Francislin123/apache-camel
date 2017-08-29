@@ -11,7 +11,7 @@ import java.util.Date;
 /**
  * Created by vn0gshm on 24/08/17.
  */
-@Getter
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TagAdminCollection {
     private Integer id;

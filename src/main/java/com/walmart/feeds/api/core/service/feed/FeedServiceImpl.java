@@ -50,14 +50,21 @@ public class FeedServiceImpl implements FeedService {
     @Transactional
     public FeedEntity createFeed(FeedEntity feedEntity) {
 
+        if (feedEntity == null) {
+            throw new UserException(String.format("Feed can not be null!"));
+        }
+
         if (feedEntity.getPartner() == null) {
             throw new InconsistentEntityException("Feed must have a partner");
         }
 
-        TagAdminCollection collectionId = tagAdminCollectionClient.findById(feedEntity.getCollectionId());
+        if (feedEntity.getCollectionId() != null) {
 
-        if(collectionId == null || !collectionId.getStatus().equals("ACTIVE")) {
-            throw new UserException(String.format("TagAdmin collection '%d' not found or not active!", feedEntity.getCollectionId()));
+            TagAdminCollection collectionId = tagAdminCollectionClient.findById(feedEntity.getCollectionId());
+
+            if (collectionId == null || !collectionId.getStatus().equals("ACTIVE")) {
+                throw new UserException(String.format("TagAdmin collection '%d' not found or not active!", feedEntity.getCollectionId()));
+            }
         }
 
         if (feedRepository.findBySlug(feedEntity.getSlug()).isPresent()) {
@@ -148,14 +155,21 @@ public class FeedServiceImpl implements FeedService {
     @Transactional
     public void updateFeed(FeedEntity feedEntity) {
 
+        if (feedEntity == null) {
+            throw new UserException(String.format("Feed can not be null!"));
+        }
+
         if (feedEntity.getPartner() == null) {
             throw new InconsistentEntityException("Feed must have a partner");
         }
 
-        TagAdminCollection collectionId = tagAdminCollectionClient.findById(feedEntity.getCollectionId());
+        if (feedEntity.getCollectionId() != null) {
 
-        if(collectionId == null || !collectionId.getStatus().equals("ACTIVE")) {
-            throw new UserException(String.format("TagAdmin collection '%d' not found or not active!", feedEntity.getCollectionId()));
+            TagAdminCollection collectionId = tagAdminCollectionClient.findById(feedEntity.getCollectionId());
+
+            if (collectionId == null || !collectionId.getStatus().equals("ACTIVE")) {
+                throw new UserException(String.format("TagAdmin collection '%d' not found or not active!", feedEntity.getCollectionId()));
+            }
         }
 
         String newSlug = SlugParserUtil.toSlug(feedEntity.getName());
