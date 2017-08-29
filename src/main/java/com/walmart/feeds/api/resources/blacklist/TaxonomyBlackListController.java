@@ -111,11 +111,12 @@ public class TaxonomyBlackListController {
     @ApiOperation(value = "Delete a taxonomy blacklist",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful taxonomy blacklist delete", response = ResponseEntity.class),
+            @ApiResponse(code = 204, message = "Successful taxonomy blacklist delete", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Taxonomy blacklist not found")})
-    @RequestMapping(value = "{taxonomyBlacklistSlug}", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{taxonomyBlacklistSlug}", method = RequestMethod.DELETE)
     public ResponseEntity deleteTaxonomyBlackList(@PathVariable(value = "taxonomyBlacklistSlug") String slug, UriComponentsBuilder builder){
-        return null;
+        taxonomyBlacklistService.deleteBySlug(slug);
+        return ResponseEntity.noContent().build();
     }
 
     private TaxonomyBlacklistEntity requestToEntity(TaxonomyBlacklistRequest taxonomyBlacklistRequest, String slug){

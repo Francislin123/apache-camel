@@ -16,4 +16,6 @@ public interface TaxonomyBlacklistService {
     List<TaxonomyBlacklistEntity> findAll();
 
     void hasConflict(String slug);
+
+    void deleteBySlug(String slug);
 }
