@@ -39,8 +39,6 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("format", "xml");
         }});
 
-        // Testing integration
-
         Fixture.of(FeedRequest.class).addTemplate("feed-request-generic-valid", new Rule() {{
             add("name", "FeedEntity WM Test");
             add("utms", utms);

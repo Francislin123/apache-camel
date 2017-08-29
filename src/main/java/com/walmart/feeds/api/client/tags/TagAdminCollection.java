@@ -3,7 +3,6 @@ package com.walmart.feeds.api.client.tags;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.experimental.Tolerate;
 
 import java.util.Date;

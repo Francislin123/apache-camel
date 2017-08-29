@@ -12,8 +12,6 @@ import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.resources.feed.FeedsController;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
-import lombok.SneakyThrows;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,7 +27,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static com.walmart.feeds.api.unit.resources.partner.PartnerControllerTest.URI_PARTNERS;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -108,8 +105,6 @@ public class FeedsControllerTest {
     @Test
     public void testCreateFeedWithInvalidUtmList() throws Exception {
 
-//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
-
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-with-invalid-utm-list")))
         ).andExpect(status().isBadRequest());
@@ -120,8 +115,6 @@ public class FeedsControllerTest {
     @Test
     public void testCreateFeedWithAnEmptyName() throws Exception {
 
-//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
-
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-with-empty-name")))
         ).andExpect(status().isBadRequest());
@@ -131,8 +124,6 @@ public class FeedsControllerTest {
 
     @Test
     public void testCreateFeedWhenRequestIsIvalid() throws Exception {
-
-//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
 
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-without-name")))
