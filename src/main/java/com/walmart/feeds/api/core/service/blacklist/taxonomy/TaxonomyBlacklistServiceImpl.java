@@ -88,4 +88,11 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
             throw new EntityAlreadyExistsException(String.format("The Taxonomy Blacklist called %s already exists", slug));
         }
     }
+
+    @Override
+    public void deleteBySlug(String slug) {
+        TaxonomyBlacklistEntity toDelete = find(slug);
+        taxonomyBlacklistRepository.delete(toDelete);
+        LOGGER.info("taxonomyBlacklist={} message=deleted", toDelete);
+    }
 }

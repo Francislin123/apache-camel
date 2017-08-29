@@ -10,8 +10,6 @@ import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistSe
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.resources.blacklist.TaxonomyBlackListController;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,19 +18,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.hamcrest.Matchers.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -146,6 +136,22 @@ public class TaxonomyBlacklistControllerTest {
         mockMvc.perform(get(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isInternalServerError());
 
+    }
+
+    @Test
+    public void deleteTaxonomyBlacklist() throws Exception {
+
+        doNothing().when(taxonomyBlacklistService).deleteBySlug("anySlug");
+
+        mockMvc.perform(delete(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY+ "/anySlug")).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void callDeleteAndReturnNotFoundError() throws Exception {
+
+        doThrow(EntityNotFoundException.class).when(taxonomyBlacklistService).deleteBySlug("invalidSlug");
+
+        mockMvc.perform(delete(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY+ "/invalidSlug")).andExpect(status().isNotFound());
     }
 
 }

@@ -116,4 +116,26 @@ public class TaxonomyBlacklistServiceTest {
 
     }
 
+    @Test
+    public void testDelete(){
+
+        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity");
+
+        when(taxonomyBlacklistRepository.findBySlug("any-name")).thenReturn(Optional.of(entity));
+        doNothing().when(taxonomyBlacklistRepository).delete(entity);
+
+        this.taxonomyBlacklistService.deleteBySlug("any-name");
+
+        verify(taxonomyBlacklistRepository, times(1)).delete(entity);
+
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void testDeleteInvalidSlug(){
+
+        doThrow(EntityNotFoundException.class).when(taxonomyBlacklistRepository).findBySlug("invalidSlug");
+
+        this.taxonomyBlacklistService.deleteBySlug("invalidSlug");
+    }
+
 }
