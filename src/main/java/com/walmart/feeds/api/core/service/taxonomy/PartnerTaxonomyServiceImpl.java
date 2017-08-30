@@ -52,9 +52,6 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
     @Autowired
     private ProducerTemplate producerTemplate;
 
-    @Autowired
-    private TaxonomyMappingRepository taxonomyMappingRepository;
-
     @Override
     @Transactional
     public void processFile(UploadTaxonomyMappingTO uploadTaxonomyMappingTO) throws IOException {
