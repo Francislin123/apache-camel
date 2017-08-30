@@ -1,16 +1,17 @@
 package com.walmart.feeds.api.core.service.taxonomy;
 
+import com.walmart.feeds.api.camel.TaxonomyMappingBindy;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyHistoryRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
+import com.walmart.feeds.api.core.repository.taxonomy.TaxonomyMappingRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHistory;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
-import com.walmart.feeds.api.camel.TaxonomyMappingBindy;
 import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.io.FilenameUtils;
@@ -51,6 +52,9 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
     @Autowired
     private ProducerTemplate producerTemplate;
 
+    @Autowired
+    private TaxonomyMappingRepository taxonomyMappingRepository;
+
     @Override
     @Transactional
     public void processFile(UploadTaxonomyMappingTO uploadTaxonomyMappingTO) throws IOException {
@@ -70,16 +74,15 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
         List<TaxonomyMappingBindy> taxonomyMappingBindy = producerTemplate.requestBody(VALIDATE_FILE_ROUTE, importedFile.getInputStream(), List.class);
 
-        if (persistedTaxonomy != null) {
-            deleteEntity(persistedTaxonomy);
-        }
-
         PartnerTaxonomyEntity partnerTaxonomy = this.saveWithHistory(PartnerTaxonomyEntity.builder()
+                .id(persistedTaxonomy == null ? null : persistedTaxonomy.getId())
                 .slug(uploadTaxonomyMappingTO.getSlug())
                 .name(uploadTaxonomyMappingTO.getName())
                 .partner(partner)
                 .fileName(archiveName)
                 .status(ImportStatus.INITIAL)
+                .taxonomyMappings(persistedTaxonomy == null ? null : persistedTaxonomy.getTaxonomyMappings())
+                .creationDate(persistedTaxonomy == null ? null : persistedTaxonomy.getCreationDate())
                 .build());
 
         Map<String, Object> map = new HashMap<>();
@@ -152,11 +155,5 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
         return persistedEntity;
     }
-
-    private void deleteEntity(PartnerTaxonomyEntity entity){
-        partnerTaxonomyRepository.delete(entity);
-        partnerTaxonomyRepository.flush();
-    }
-
 
 }

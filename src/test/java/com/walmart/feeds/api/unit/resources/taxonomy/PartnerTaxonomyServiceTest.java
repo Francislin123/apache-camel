@@ -2,6 +2,7 @@ package com.walmart.feeds.api.unit.resources.taxonomy;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
+import com.walmart.feeds.api.camel.TaxonomyMappingBindy;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
@@ -13,7 +14,6 @@ import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHisto
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyServiceImpl;
-import com.walmart.feeds.api.camel.TaxonomyMappingBindy;
 import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
 import org.apache.camel.ProducerTemplate;
 import org.junit.BeforeClass;
@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -112,8 +113,9 @@ public class PartnerTaxonomyServiceTest {
 
         partnerTaxonomyService.processFile(to);
 
-        verify(partnerTaxonomyRepository, times(1)).delete(eq(pendingPartnerEntity));
-        verify(partnerTaxonomyRepository, times(1)).flush();
+        verify(producerTemplate, times(1)).requestBody(eq(VALIDATE_FILE_ROUTE), any(InputStream.class), eq(List.class));
+        verify(partnerTaxonomyRepository, times(1)).saveAndFlush(any(PartnerTaxonomyEntity.class));
+        verify(partnerTaxonomyHistoryRepository, times(1)).saveAndFlush(any(PartnerTaxonomyHistory.class));
 
     }
 
@@ -140,8 +142,10 @@ public class PartnerTaxonomyServiceTest {
 
         partnerTaxonomyService.processFile(to);
 
-        verify(partnerTaxonomyRepository, times(1)).delete(eq(pendingPartnerEntity));
-        verify(partnerTaxonomyRepository, times(1)).flush();
+        verify(producerTemplate, times(1)).requestBody(eq(VALIDATE_FILE_ROUTE), any(InputStream.class), eq(List.class));
+        verify(partnerTaxonomyRepository, times(1)).saveAndFlush(any(PartnerTaxonomyEntity.class));
+        verify(partnerTaxonomyHistoryRepository, times(1)).saveAndFlush(any(PartnerTaxonomyHistory.class));
+
 
     }
 

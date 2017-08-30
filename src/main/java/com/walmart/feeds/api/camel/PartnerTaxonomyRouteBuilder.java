@@ -11,6 +11,7 @@ import org.apache.camel.model.dataformat.BindyType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,13 +71,32 @@ public class PartnerTaxonomyRouteBuilder extends RouteBuilder {
                                     .build()
                     ).collect(Collectors.toList());
 
+                    List<TaxonomyMappingEntity> taxonomiesToPersist = null;
+
+                    if (partnerTaxonomy.getTaxonomyMappings() != null) {
+
+                        taxonomiesToPersist = new ArrayList<>(partnerTaxonomy.getTaxonomyMappings());
+
+                        //Remove taxonomies that are not longer in file
+                        taxonomiesToPersist.retainAll(associationsList);
+
+                        //Segregate taxonomies to be added
+                        associationsList.removeAll(partnerTaxonomy.getTaxonomyMappings());
+
+                        //Add segregated taxonomies to the persisted list
+                        taxonomiesToPersist.addAll(associationsList);
+
+                    } else {
+                        taxonomiesToPersist = associationsList;
+                    }
+
                     exchange.getOut().setBody(PartnerTaxonomyEntity.builder()
                             .id(partnerTaxonomy.getId())
                             .fileName(partnerTaxonomy.getFileName())
                             .name(partnerTaxonomy.getName())
                             .partner(partnerTaxonomy.getPartner())
                             .slug(partnerTaxonomy.getSlug())
-                            .taxonomyMappings(associationsList)
+                            .taxonomyMappings(taxonomiesToPersist)
                             .status(ImportStatus.PENDING)
                             .creationDate(partnerTaxonomy.getCreationDate())
                             .updateDate(partnerTaxonomy.getUpdateDate())
