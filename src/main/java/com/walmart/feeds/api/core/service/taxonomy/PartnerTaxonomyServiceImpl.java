@@ -52,7 +52,6 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
     private ProducerTemplate producerTemplate;
 
     @Override
-    @Transactional
     public void processFile(UploadTaxonomyMappingTO uploadTaxonomyMappingTO) throws IOException {
 
         PartnerEntity partner = partnerService.findBySlug(uploadTaxonomyMappingTO.getPartnerSlug());
@@ -122,6 +121,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
     }
 
     @Override
+    @Transactional
     public PartnerTaxonomyEntity saveWithHistory(PartnerTaxonomyEntity entity) {
 
         PartnerTaxonomyEntity persistedEntity = partnerTaxonomyRepository.saveAndFlush(entity);
