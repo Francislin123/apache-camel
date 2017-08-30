@@ -6,8 +6,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Entity
@@ -22,9 +24,11 @@ public class TaxonomyBlacklistMapping {
     @ApiModelProperty(hidden = true)
     private UUID id;
 
+    @NotBlank
     @Column(nullable = false)
     private String taxonomy;
 
+    @NotNull
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TaxonomyOwner owner;

@@ -19,7 +19,7 @@ import java.util.List;
 public class FieldsMappingRequest {
 
     @NotBlank
-    @Pattern(regexp = "^[^\\s].*", message = "The name cannot start with whitespace")
+    @Pattern(regexp = "^[\\S].*\\S", message = "The name cannot start or ends with whitespace")
     private String name;
 
     @Valid
