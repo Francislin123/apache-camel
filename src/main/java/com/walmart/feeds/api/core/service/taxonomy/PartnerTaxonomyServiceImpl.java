@@ -6,7 +6,6 @@ import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyHistoryRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
-import com.walmart.feeds.api.core.repository.taxonomy.TaxonomyMappingRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHistory;
