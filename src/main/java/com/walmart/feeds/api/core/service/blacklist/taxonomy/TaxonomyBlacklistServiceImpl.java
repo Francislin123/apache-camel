@@ -9,13 +9,20 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEn
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistHistory;
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 @Component
 public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
@@ -27,6 +34,9 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
 
     @Autowired
     private TaxonomyBlacklistHistoryRepository taxonomyBlacklistHistoryRepository;
+
+    @Autowired
+    private ElasticsearchTemplate elasticsearchTemplate;
 
     @Override
     @Transactional
@@ -95,4 +105,18 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
         taxonomyBlacklistRepository.delete(toDelete);
         LOGGER.info("taxonomyBlacklist={} message=deleted", toDelete);
     }
+
+    private boolean validateWalmartTaxonomy(String categoryName, Integer depth) {
+        BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
+        queryBuilder.must(matchQuery("categories.name", categoryName));
+        queryBuilder.must(matchQuery("categories.depth", depth));
+        NestedQueryBuilder nestedQueryBuilder = QueryBuilders.nestedQuery("categories", queryBuilder);
+
+        return elasticsearchTemplate.count(new NativeSearchQueryBuilder()
+                .withIndices("skus")
+                .withTypes("sku")
+                .withQuery(nestedQueryBuilder)
+                .build()) > 0;
+    }
+
 }
