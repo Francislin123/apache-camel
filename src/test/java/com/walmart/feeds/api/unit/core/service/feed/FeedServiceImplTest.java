@@ -159,17 +159,6 @@ public class FeedServiceImplTest {
 
     }
 
-    @Test(expected = InconsistentEntityException.class)
-    public void createFeedWhenCollectionIdIsNull() {
-
-        FeedEntity f = FeedEntity.builder()
-                .name("Feed Teste")
-                .collectionId(null)
-                .build();
-
-        feedService.createFeed(f);
-    }
-
     @Test(expected = UserException.class)
     public void testCreateFeedNull(){
         feedService.createFeed(null);

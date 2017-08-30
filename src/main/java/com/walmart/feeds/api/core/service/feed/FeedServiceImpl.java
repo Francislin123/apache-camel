@@ -58,15 +58,6 @@ public class FeedServiceImpl implements FeedService {
             throw new InconsistentEntityException("Feed must have a partner");
         }
 
-        if (feedEntity.getCollectionId() != null) {
-
-            TagAdminCollection collectionId = tagAdminCollectionClient.findById(feedEntity.getCollectionId());
-
-            if (collectionId == null || !collectionId.getStatus().equals("ACTIVE")) {
-                throw new UserException(String.format("TagAdmin collection '%d' not found or not active!", feedEntity.getCollectionId()));
-            }
-        }
-
         if (feedRepository.findBySlug(feedEntity.getSlug()).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("Feed with slug='%s' already exists", feedEntity.getSlug()));
         }
@@ -75,6 +66,15 @@ public class FeedServiceImpl implements FeedService {
 
         TemplateEntity template = templateRepository.findBySlug(feedEntity.getTemplate().getSlug()).orElseThrow(() ->
                 new UserException(String.format("Template not found for reference %s", feedEntity.getTemplate().getSlug())));
+
+        if (feedEntity.getCollectionId() != null) {
+
+            TagAdminCollection collectionId = tagAdminCollectionClient.findById(feedEntity.getCollectionId());
+
+            if (collectionId == null || !collectionId.getStatus().equals("ACTIVE")) {
+                throw new UserException(String.format("TagAdmin collection '%d' not found or not active!", feedEntity.getCollectionId()));
+            }
+        }
 
         FeedEntity newFeed = FeedEntity.builder()
                 .utms(feedEntity.getUtms())

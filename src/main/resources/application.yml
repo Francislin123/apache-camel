@@ -44,3 +44,4 @@ spring:
     tagadmin:
       username: admin
       password: admin
+      uri: http://vip-cat-serv.qa.vmcommerce.intra/ws/

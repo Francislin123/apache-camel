@@ -30,6 +30,9 @@ public class Application {
     @Value("${tagadmin.password}")
     private String tagAdminPassword;
 
+    @Value("${tagadmin.uri}")
+    private String uri;
+
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
@@ -55,6 +58,6 @@ public class Application {
                 .logger(new Slf4jLogger(TagAdmimCollectionClient.class))
                 .logLevel(Logger.Level.FULL)
                 .requestInterceptor(new BasicAuthRequestInterceptor(tagAdminUser, tagAdminPassword))
-                .target(TagAdmimCollectionClient.class, "http://vip-cat-serv.qa.vmcommerce.intra/ws/");
+                .target(TagAdmimCollectionClient.class, uri);
     }
 }
