@@ -12,7 +12,7 @@ import java.util.List;
 public class PartnerUpdateRequest {
 
     @NotBlank
-    @Pattern(regexp = "^[^\\s].*", message = "The name cannot start with whitespace")
+    @Pattern(regexp = "^[\\S].*\\S", message = "The name cannot start or ends with whitespace")
     private String name;
 
     private String description;
