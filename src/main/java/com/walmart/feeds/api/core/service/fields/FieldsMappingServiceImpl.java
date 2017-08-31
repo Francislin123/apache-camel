@@ -9,6 +9,7 @@ import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingHistory;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
+import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.persistence.ElasticSearchComponent;
 import org.slf4j.Logger;
@@ -139,20 +140,8 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
                     .creationDate(fieldsMapping.getCreationDate())
                     .updateDate(fieldsMapping.getUpdateDate())
                     .user(fieldsMapping.getUser())
-                    .mappedFields(getMappedFieldsAsJson(fieldsMapping.getMappedFields()))
+                    .mappedFields(MapperUtil.getMapsAsJson(fieldsMapping.getMappedFields()))
                     .build();
     }
 
-    private String getMappedFieldsAsJson(List<MappedFieldEntity> mappedFields) {
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
-
-        try {
-            return mapper.writeValueAsString(mappedFields);
-        } catch (JsonProcessingException e) {
-            throw new SystemException("Error to convert mapped fields to json for history.", e);
-        }
-
-    }
 }

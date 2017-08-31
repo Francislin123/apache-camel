@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.resources.feed.request;
 
+import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistRequest;
 import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyMapEntry;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedNotificationUrl;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedType;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class FeedRequest {
 
     @NotBlank
-    @Pattern(regexp = "^[^\\s].*", message = "The name cannot start with whitespace")
+    @Pattern(regexp = "^[\\S].*\\S", message = "The name cannot start or ends with whitespace")
     @Size(max = 50)
     private String name;
 
@@ -30,6 +31,8 @@ public class FeedRequest {
     @NotNull
     @ValidFeedNotificationUrl
     private FeedNotificationData notification;
+
+    private String taxonomyBlackliskSlug;
 
     @Valid
     @NotEmptyMapEntry(allowedKeyPattern = "[\\w\\d-_]+", allowedValuePattern = "[\\w\\d\\s-_]+")

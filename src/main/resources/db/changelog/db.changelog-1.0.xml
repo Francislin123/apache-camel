@@ -77,7 +77,6 @@
         </rollback>
 
     </changeSet>
-
     <changeSet id="createPartnerTaxonomyTable" author="thiago.lima">
 
         <preConditions onError="WARN">
@@ -246,6 +245,103 @@
 
     </changeSet>
 
+    <changeSet id="createTaxonomyBlacklistTable" author="adisson.gomes">
+
+        <comment>Create taxonomy blacklist table</comment>
+
+        <createTable tableName="taxonomy_blacklist">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="taxonomy_blacklist"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTaxonomyBlacklistMappingTable" author="adisson.gomes">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="taxonomy_blacklist"/>
+        </preConditions>
+
+        <comment>Create taxonomy blacklist mapping table</comment>
+
+        <createTable tableName="taxonomy_blacklist_mapping">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="taxonomy" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owner" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="taxonomy_blacklist_id" type="${uuid_type}">
+                <constraints foreignKeyName="fk_blacklist"
+                             referencedTableName="taxonomy_blacklist"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="taxonomy_blacklist_mapping" cascadeConstraints="true"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTaxonomyBlacklistTableHistory" author="adisson.gomes">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="taxonomy_blacklist"/>
+        </preConditions>
+
+        <comment>Create taxonomy blacklist history table</comment>
+
+        <createTable tableName="taxonomy_blacklist_history">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="list" type="NCLOB">
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="taxonomy_blacklist_history"/>
+        </rollback>
+
+    </changeSet>
+
+
     <changeSet id="createFeedTemplateTable" author="gabriel.cano">
         <createTable tableName="feed_template">
             <column name="id" type="${uuid_type}">
@@ -262,6 +358,7 @@
         <preConditions>
             <tableExists tableName="feed_template"/>
             <tableExists tableName="partner"/>
+            <tableExists tableName="taxonomy_blacklist"/>
         </preConditions>
 
         <comment>Creating feed table</comment>
@@ -292,6 +389,10 @@
                 <constraints nullable="false"/>
             </column>
             <column name="notification_url" type="varchar(255)"/>
+            <column name="taxonomy_blacklist_id" type="${uuid_type}">
+                <constraints referencedTableName="taxonomy_blacklist" referencedColumnNames="id"
+                             foreignKeyName="fk_taxonomy_blacklist"/>
+            </column>
             <column name="flag_active" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>

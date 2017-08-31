@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.core.repository.feed.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import lombok.Builder;
@@ -53,6 +54,9 @@ public class FeedEntity extends AuditableEntity {
     private String notificationUrl;
 
     @ManyToOne
+    private TaxonomyBlacklistEntity taxonomyBlacklist;
+
+    @ManyToOne
     private TemplateEntity template;
 
     @ElementCollection
@@ -71,7 +75,11 @@ public class FeedEntity extends AuditableEntity {
     }
 
     @Builder
-    private FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, TemplateEntity template, Map<String, String> utms, boolean active) {
+    public FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug,
+                      String name, PartnerEntity partner, FeedType type,
+                      FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat,
+                      String notificationUrl, TaxonomyBlacklistEntity taxonomyBlacklist, TemplateEntity template,
+                      Map<String, String> utms, boolean active) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
@@ -81,10 +89,10 @@ public class FeedEntity extends AuditableEntity {
         this.notificationMethod = notificationMethod;
         this.notificationFormat = notificationFormat;
         this.notificationUrl = notificationUrl;
+        this.taxonomyBlacklist = taxonomyBlacklist;
         this.template = template;
         this.utms = utms;
         this.active = active;
     }
-
 }
 
