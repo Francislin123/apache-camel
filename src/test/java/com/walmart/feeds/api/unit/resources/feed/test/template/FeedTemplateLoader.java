@@ -44,6 +44,8 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("utms", utms);
             add("active", true);
             add("template", "template-buscape");
+            add("fieldMapping", "google-fields");
+            add("taxonomy", "google-taxonomy");
         }});
 
         Fixture.of(FeedRequest.class).addTemplate("feed-full-api-valid").inherits("feed-request-generic-valid", new Rule() {{

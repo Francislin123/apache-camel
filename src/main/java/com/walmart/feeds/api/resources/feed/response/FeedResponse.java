@@ -27,6 +27,10 @@ public class FeedResponse {
 
     private FeedNotificationData notification;
 
+    private String taxonomy;
+
+    private String fieldMapping;
+
     private Map<String, String> utms;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)

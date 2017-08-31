@@ -1,7 +1,9 @@
 package com.walmart.feeds.api.core.repository.feed.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
+import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -36,6 +39,13 @@ public class FeedEntity extends AuditableEntity {
 
     @ManyToOne
     private PartnerEntity partner;
+
+    @ManyToOne
+    private PartnerTaxonomyEntity partnerTaxonomy;
+
+    @ManyToOne
+    @NotNull
+    private FieldsMappingEntity fieldsMapping;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
@@ -71,12 +81,14 @@ public class FeedEntity extends AuditableEntity {
     }
 
     @Builder
-    private FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, TemplateEntity template, Map<String, String> utms, boolean active) {
+    public FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, PartnerTaxonomyEntity partnerTaxonomy, FieldsMappingEntity fieldsMapping, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, TemplateEntity template, Map<String, String> utms, boolean active) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
         this.name = name;
         this.partner = partner;
+        this.partnerTaxonomy = partnerTaxonomy;
+        this.fieldsMapping = fieldsMapping;
         this.type = type;
         this.notificationMethod = notificationMethod;
         this.notificationFormat = notificationFormat;
@@ -85,6 +97,5 @@ public class FeedEntity extends AuditableEntity {
         this.utms = utms;
         this.active = active;
     }
-
 }
 
