@@ -65,13 +65,16 @@ public class FeedEntity extends AuditableEntity {
     @Column(name = "flag_active")
     private boolean active;
 
+    @Column(name = "collection_id")
+    private Long collectionId;
+
     @Tolerate
     public FeedEntity() {
         //default constructor for hibernate
     }
 
     @Builder
-    private FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, TemplateEntity template, Map<String, String> utms, boolean active) {
+    private FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, TemplateEntity template, Map<String, String> utms, boolean active, Long collectionId) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
@@ -84,7 +87,7 @@ public class FeedEntity extends AuditableEntity {
         this.template = template;
         this.utms = utms;
         this.active = active;
+        this.collectionId = collectionId;
     }
-
 }
 

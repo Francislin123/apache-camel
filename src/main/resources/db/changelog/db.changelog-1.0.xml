@@ -193,7 +193,8 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="taxonomy_mapping" baseColumnNames="partner_taxonomy_id" constraintName="taxonomy_mapping_fk"
+        <addForeignKeyConstraint baseTableName="taxonomy_mapping" baseColumnNames="partner_taxonomy_id"
+                                 constraintName="taxonomy_mapping_fk"
                                  referencedTableName="partner_taxonomy"
                                  onDelete="CASCADE"
                                  referencedColumnNames="id"/>
@@ -236,7 +237,8 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseTableName="taxonomy_mapping_history" baseColumnNames="partner_taxonomy_id" constraintName="taxonomy_mapping_history_fk"
+        <addForeignKeyConstraint baseTableName="taxonomy_mapping_history" baseColumnNames="partner_taxonomy_id"
+                                 constraintName="taxonomy_mapping_history_fk"
                                  referencedTableName="partner_taxonomy_history"
                                  onDelete="CASCADE"
                                  referencedColumnNames="id"/>
@@ -277,7 +279,7 @@
                 <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
             </column>
             <column name="template_id" type="${uuid_type}">
-                <constraints foreignKeyName="feed_template_fk" />
+                <constraints foreignKeyName="feed_template_fk"/>
             </column>
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -295,6 +297,7 @@
             <column name="flag_active" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
+            <column name="collection_id" type="integer"></column>
             <column name="creation_date" type="datetime" defaultValueComputed="${now}">
                 <constraints nullable="false"/>
             </column>
@@ -304,8 +307,10 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="feed" constraintName="feed_partner_fk" referencedColumnNames="id" referencedTableName="partner" />
-        <addForeignKeyConstraint baseColumnNames="template_id" baseTableName="feed" constraintName="feed_template_fk" referencedColumnNames="id" referencedTableName="feed_template" />
+        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="feed" constraintName="feed_partner_fk"
+                                 referencedColumnNames="id" referencedTableName="partner"/>
+        <addForeignKeyConstraint baseColumnNames="template_id" baseTableName="feed" constraintName="feed_template_fk"
+                                 referencedColumnNames="id" referencedTableName="feed_template"/>
 
         <rollback>
             <dropForeignKeyConstraint baseTableName="feed" constraintName="feed_partner_fk"/>
