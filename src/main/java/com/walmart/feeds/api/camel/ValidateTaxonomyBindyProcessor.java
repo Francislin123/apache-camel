@@ -3,12 +3,15 @@ package com.walmart.feeds.api.camel;
 import com.walmart.feeds.api.core.exceptions.FileError;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.ERROR_LIST;
 import static org.apache.camel.Exchange.SPLIT_INDEX;
 
+@Component
 public class ValidateTaxonomyBindyProcessor implements Processor {
 
     @Override

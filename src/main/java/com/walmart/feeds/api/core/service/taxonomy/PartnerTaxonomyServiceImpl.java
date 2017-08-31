@@ -83,7 +83,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
         Map<String, Object> map = new HashMap<>();
         map.put(PERSISTED_PARTNER_TAXONOMY, partnerTaxonomy);
 
-        PartnerTaxonomyEntity entityToSave = producerTemplate.requestBodyAndHeaders(PARSE_BINDY_ROUTE, taxonomyMappingBindy, map, PartnerTaxonomyEntity.class);
+        PartnerTaxonomyEntity entityToSave = producerTemplate.requestBodyAndHeaders(PARSE_FILE_ROUTE, taxonomyMappingBindy, map, PartnerTaxonomyEntity.class);
 
         producerTemplate.asyncCallbackSendBody(PERSIST_PARTNER_TAXONOMY_ROUTE, entityToSave, persistPartnerTaxonomyCallBack);
 
