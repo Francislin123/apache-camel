@@ -208,12 +208,16 @@ public class FeedServiceImpl implements FeedService {
     }
 
     private TaxonomyBlacklistEntity getTaxonomyBlacklist(FeedEntity feedEntity) {
-        if (feedEntity.getTaxonomyBlacklist() != null) {
-            return taxonomyBlacklistRepository.findBySlug(feedEntity.getTaxonomyBlacklist().getSlug()).orElseThrow(() ->
-                    new UserException(String.format("Taxonomy blacklist '%s' not found", feedEntity.getTaxonomyBlacklist().getSlug())));
+
+        TaxonomyBlacklistEntity blacklist = feedEntity.getTaxonomyBlacklist();
+
+        if (blacklist == null || blacklist.getSlug() == null || blacklist.getSlug().trim().isEmpty()) {
+            return null;
         }
 
-        return null;
+        return taxonomyBlacklistRepository.findBySlug(feedEntity.getTaxonomyBlacklist().getSlug()).orElseThrow(() ->
+                new UserException(String.format("Taxonomy blacklist '%s' not found", feedEntity.getTaxonomyBlacklist().getSlug())));
+
     }
 
     private FeedHistory buildPartnerHistory(FeedEntity currentFeed) {

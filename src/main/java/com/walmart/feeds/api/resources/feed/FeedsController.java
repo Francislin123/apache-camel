@@ -58,7 +58,7 @@ public class FeedsController {
                         .slug(partnerSlug)
                         .build())
                 .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
-                        .slug(request.getTaxonomyBlackliskSlug())
+                        .slug(request.getTaxonomyBlacklist())
                         .build())
                 .type(FeedType.getFromCode(request.getType()))
                 .template(TemplateEntity.builder()
@@ -88,6 +88,7 @@ public class FeedsController {
         return ResponseEntity.ok().body(FeedResponse.builder()
                 .name(feedEntity.getName())
                 .template(feedEntity.getTemplate().getSlug())
+                .taxonomyBlacklist(getTaxonomyBlacklistSlug(feedEntity))
                 .slug(feedEntity.getSlug())
                 .notification(FeedNotificationData.builder()
                         .format(feedEntity.getNotificationFormat().getType())
@@ -126,6 +127,7 @@ public class FeedsController {
                         .name(f.getName())
                         .slug(f.getSlug())
                         .template(f.getTemplate().getSlug())
+                        .taxonomyBlacklist(getTaxonomyBlacklistSlug(f))
                         .notification(FeedNotificationData.builder()
                                 .format(f.getNotificationFormat().getType())
                                 .method(f.getNotificationMethod().getType())
@@ -169,7 +171,7 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "FeedEntity removed with success", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Invalid feed reference")})
     @RequestMapping(value = "{feedSlug}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateFeed(@Valid @RequestBody FeedRequest request, @PathVariable("feedSlug") String feedSlug, @PathVariable("partnerSlug") String partnerSlug, UriComponentsBuilder builder) {
+    public ResponseEntity updateFeed(@Valid @RequestBody FeedRequest request, @PathVariable("feedSlug") String feedSlug, @PathVariable("partnerSlug") String partnerSlug) {
 
         FeedEntity feedEntity = FeedEntity.builder()
                 .slug(feedSlug)
@@ -185,7 +187,7 @@ public class FeedsController {
                         .slug(partnerSlug)
                         .build())
                 .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
-                        .slug(request.getTaxonomyBlackliskSlug())
+                        .slug(request.getTaxonomyBlacklist())
                         .build())
                 .type(FeedType.getFromCode(request.getType()))
                 .utms(request.getUtms())
@@ -193,9 +195,14 @@ public class FeedsController {
 
         feedService.updateFeed(feedEntity);
 
-        UriComponents uriComponents =
-                builder.path(V1_FEEDS.concat("/{slug}")).buildAndExpand(partnerSlug, feedEntity.getSlug());
-
         return ResponseEntity.ok().build();
     }
+
+    private String getTaxonomyBlacklistSlug(FeedEntity feedEntity) {
+        if(feedEntity.getTaxonomyBlacklist() == null) {
+            return null;
+        }
+        return feedEntity.getTaxonomyBlacklist().getSlug();
+    }
+
 }
