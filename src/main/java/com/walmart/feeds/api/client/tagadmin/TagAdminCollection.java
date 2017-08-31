@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.client.tags;
+package com.walmart.feeds.api.client.tagadmin;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;

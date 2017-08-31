@@ -1,10 +1,8 @@
 package com.walmart.feeds.api.unit.core.service.feed;
 
-import com.walmart.feeds.api.client.tags.TagAdmimCollectionClient;
-import com.walmart.feeds.api.client.tags.TagAdminCollection;
+import com.walmart.feeds.api.client.tagadmin.TagAdminCollection;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
@@ -15,6 +13,7 @@ import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
+import com.walmart.feeds.api.core.service.feed.ProductCollectionService;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import org.junit.Test;
@@ -50,7 +49,7 @@ public class FeedServiceImplTest {
     private TemplateRepository templateRepository;
 
     @Mock
-    private TagAdmimCollectionClient tagAdminCollectionClient;
+    private ProductCollectionService productCollectionService;
 
     @Test(expected = UserException.class)
     public void createFeedWithNotExistentTemplate() {
@@ -90,6 +89,7 @@ public class FeedServiceImplTest {
         when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
         when(partnerService.findActiveBySlug(anyString())).thenReturn(mock(PartnerEntity.class));
         when(templateRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        doNothing().when(productCollectionService).validateCollectionExists(7380L);
 
         when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(f);
         when(feedHistoryRepository.save(any(FeedHistory.class))).thenReturn(mock(FeedHistory.class));
@@ -98,18 +98,7 @@ public class FeedServiceImplTest {
 
         verify(repository, times(1)).saveAndFlush(f);
         verify(feedHistoryRepository, times(1)).save(any(FeedHistory.class));
-
-    }
-
-    @Test(expected = InconsistentEntityException.class)
-    public void createFeedWhenPartnerIsNull() {
-
-        FeedEntity f = FeedEntity.builder()
-                .name("Feed Teste")
-                .partner(null)
-                .build();
-
-        feedService.createFeed(f);
+        verify(productCollectionService, times(1)).validateCollectionExists(f.getCollectionId());
 
     }
 
@@ -118,7 +107,7 @@ public class FeedServiceImplTest {
 
         TagAdminCollection tagAdminCollection = TagAdminCollection.builder().status("ACTIVE").build();
 
-        when(tagAdminCollectionClient.findById(7380L)).thenReturn(tagAdminCollection);
+        doNothing().when(productCollectionService).validateCollectionExists(7380L);
         when(repository.findBySlug(anyString())).thenReturn(Optional.of(new FeedEntity()));
 
         feedService.createFeed(createFeedEntity());
@@ -129,9 +118,7 @@ public class FeedServiceImplTest {
 
         FeedEntity feedEntity = createFeedEntity();
 
-        TagAdminCollection tagAdminCollection = TagAdminCollection.builder().status("ACTIVE").build();
-
-        when(tagAdminCollectionClient.findById(7380L)).thenReturn(tagAdminCollection);
+        doNothing().when(productCollectionService).validateCollectionExists(feedEntity.getCollectionId());
         when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
         when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
         when(repository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
@@ -142,16 +129,47 @@ public class FeedServiceImplTest {
         verify(repository).findBySlug(anyString());
         verify(repository).saveAndFlush(Mockito.any(FeedEntity.class));
         verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
+        verify(productCollectionService, times(1)).validateCollectionExists(feedEntity.getCollectionId());
+    }
+
+    @Test
+    public void testUpdateFeedWhenCollectionIdIsNull() throws EntityNotFoundException {
+
+        PartnerEntity partner = PartnerEntity.builder().slug("big").build();
+        TemplateEntity templateEntity = TemplateEntity.builder().slug("template").build();
+
+        FeedEntity feedEntity = FeedEntity.builder()
+                .name("Facebook")
+                .slug("facebook")
+                .partner(partner)
+                .notificationFormat(FeedNotificationFormat.JSON)
+                .notificationMethod(FeedNotificationMethod.FILE)
+                .active(true)
+                .collectionId(null)
+                .template(templateEntity)
+                .notificationUrl("http://localhost:8080/teste")
+                .type(INVENTORY).build();
+
+        doNothing().when(productCollectionService).validateCollectionExists(feedEntity.getCollectionId());
+        when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
+        when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
+        when(repository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
+        when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+
+        this.feedService.updateFeed(feedEntity);
+
+        verify(repository).findBySlug(anyString());
+        verify(repository).saveAndFlush(Mockito.any(FeedEntity.class));
+        verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
+        verify(productCollectionService, never()).validateCollectionExists(feedEntity.getCollectionId());
     }
 
     @Test(expected = EntityAlreadyExistsException.class)
-    public void testUpdateFeedWhenOcurrsConflict() throws EntityNotFoundException {
+    public void testUpdateFeedWhenOccursConflict() throws EntityNotFoundException {
 
         FeedEntity feedEntityUpdateName = createFeedEntityUpdateName();
         FeedEntity existentFeed = createFeedEntity();
-        TagAdminCollection tagAdminCollection = TagAdminCollection.builder().status("ACTIVE").build();
 
-        when(tagAdminCollectionClient.findById(7380L)).thenReturn(tagAdminCollection);
         when(partnerService.findBySlug(anyString())).thenReturn(feedEntityUpdateName.getPartner());
         when(repository.findBySlug(anyString())).thenReturn(Optional.of(existentFeed));
 
@@ -159,9 +177,33 @@ public class FeedServiceImplTest {
 
     }
 
-    @Test(expected = UserException.class)
-    public void testCreateFeedNull(){
-        feedService.createFeed(null);
+    @Test
+    public void testCreateFeedCollectionIdNull() {
+
+        PartnerEntity partner = PartnerEntity.builder().slug("big").build();
+        TemplateEntity templateEntity = TemplateEntity.builder().slug("template").build();
+
+        FeedEntity feedEntity = FeedEntity.builder()
+                .name("Facebook")
+                .slug("facebook")
+                .partner(partner)
+                .notificationFormat(FeedNotificationFormat.JSON)
+                .notificationMethod(FeedNotificationMethod.FILE)
+                .active(true)
+                .collectionId(null)
+                .template(templateEntity)
+                .notificationUrl("http://localhost:8080/teste")
+                .type(INVENTORY).build();
+
+        when(repository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(templateRepository.findBySlug(anyString())).thenReturn(Optional.of(templateEntity));
+        when(repository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+        doNothing().when(productCollectionService).validateCollectionExists(anyLong());
+
+        feedService.createFeed(feedEntity);
+
+        verify(feedHistoryRepository).save(any(FeedHistory.class));
+        verify(productCollectionService, never()).validateCollectionExists(anyLong());
     }
 
     private FeedEntity createFeedEntity() {
@@ -202,13 +244,4 @@ public class FeedServiceImplTest {
         return to;
     }
 
-    private TagAdminCollection createTagAdminUpdate() {
-        TagAdminCollection admim = TagAdminCollection.builder()
-                .id(7380)
-                .version(1)
-                .name("Tags")
-                .domain("Tags")
-                .status("ACTIVE").build();
-        return admim;
-    }
 }

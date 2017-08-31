@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.client.tags;
+package com.walmart.feeds.api.client.tagadmin;
 
 import feign.Headers;
 import feign.Param;
@@ -11,5 +11,5 @@ public interface TagAdmimCollectionClient {
 
     @RequestLine("GET /tags/{id}")
     @Headers("Content-Type: application/json")
-    TagAdminCollection findById(@Param("id") long id);
+    TagAdminCollection findById(@Param("id") Long id);
 }
