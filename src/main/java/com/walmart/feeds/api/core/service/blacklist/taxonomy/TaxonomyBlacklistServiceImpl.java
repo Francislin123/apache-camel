@@ -36,11 +36,13 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
     private TaxonomyBlacklistHistoryRepository taxonomyBlacklistHistoryRepository;
 
     @Autowired
-    private ElasticsearchTemplate elasticsearchTemplate;
+    private ElasticSearchService elasticSearchService;
 
     @Override
     @Transactional
     public TaxonomyBlacklistEntity create(TaxonomyBlacklistEntity taxonomyBlacklistEntity) {
+
+        validateBlacklist(taxonomyBlacklistEntity);
 
         TaxonomyBlacklistEntity entity = taxonomyBlacklistRepository.saveAndFlush(taxonomyBlacklistEntity);
 
@@ -55,8 +57,10 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
         if(!SlugParserUtil.toSlug(taxonomyBlacklistEntity.getName()).equals(taxonomyBlacklistEntity.getSlug())){
             this.hasConflict(SlugParserUtil.toSlug(taxonomyBlacklistEntity.getName()));
         }
-        TaxonomyBlacklistEntity persistedEntity = find(taxonomyBlacklistEntity.getSlug());
 
+        validateBlacklist(taxonomyBlacklistEntity);
+
+        TaxonomyBlacklistEntity persistedEntity = find(taxonomyBlacklistEntity.getSlug());
 
         TaxonomyBlacklistEntity toHistoryEntity = taxonomyBlacklistRepository.saveAndFlush(TaxonomyBlacklistEntity.builder()
                 .creationDate(persistedEntity.getCreationDate())
