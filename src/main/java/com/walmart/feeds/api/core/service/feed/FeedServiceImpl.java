@@ -174,16 +174,15 @@ public class FeedServiceImpl implements FeedService {
 
         TemplateEntity template = templateRepository.findBySlug(feedEntity.getTemplate().getSlug()).orElseThrow(() -> new UserException(String.format("Template not found for reference %s", feedEntity.getTemplate().getSlug())));
 
-        if (feedEntity.getCollectionId() != null) {
-            productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
-        }
-
         PartnerTaxonomyEntity partnerTaxonomyEntity = partnerTaxonomyRepository.findBySlugAndPartner(feedEntity.getPartnerTaxonomy().getSlug(), partner).orElseThrow(() ->
                 new UserException(String.format("Taxonomy not found for slug='%s' or is not from partner=%s", feedEntity.getPartnerTaxonomy().getSlug(), partner.getSlug())));
 
         FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
                 new UserException(String.format("Field mapping not found for slug='%s'",feedEntity.getFieldsMapping().getSlug())));
 
+        if (feedEntity.getCollectionId() != null) {
+            productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
+        }
 
         FeedEntity updatedFeed = FeedEntity.builder()
                 .id(persistedFeedEntity.getId())

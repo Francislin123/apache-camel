@@ -183,18 +183,6 @@ public class FeedServiceImplTest {
         this.feedService.createFeed(feedEntity);
     }
 
-    @Test(expected = InconsistentEntityException.class)
-    public void createFeedWhenPartnerIsNull() {
-
-        FeedEntity f = FeedEntity.builder()
-                .name("Feed Teste")
-                .partner(null)
-            .build();
-
-        feedService.createFeed(f);
-
-    }
-
     @Test(expected = EntityAlreadyExistsException.class)
     public void createFeedWhenFeedAlreadyExists() throws Exception {
 
@@ -241,6 +229,12 @@ public class FeedServiceImplTest {
                 .notificationMethod(FeedNotificationMethod.FILE)
                 .active(true)
                 .collectionId(null)
+                .partnerTaxonomy(PartnerTaxonomyEntity.builder()
+                        .slug("taxonomy-slug")
+                        .build())
+                .fieldsMapping(FieldsMappingEntity.builder()
+                        .slug("field-mapping-slug")
+                        .build())
                 .template(templateEntity)
                 .notificationUrl("http://localhost:8080/teste")
                 .type(INVENTORY).build();
@@ -248,6 +242,8 @@ public class FeedServiceImplTest {
         doNothing().when(productCollectionService).validateCollectionExists(feedEntity.getCollectionId());
         when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
         when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
+        when(partnerTaxonomyRepository.findBySlugAndPartner(feedEntity.getPartnerTaxonomy().getSlug(), feedEntity.getPartner())).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
+        when(fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug())).thenReturn(Optional.of(feedEntity.getFieldsMapping()));
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
 
@@ -287,12 +283,21 @@ public class FeedServiceImplTest {
                 .active(true)
                 .collectionId(null)
                 .template(templateEntity)
+                .partnerTaxonomy(PartnerTaxonomyEntity.builder()
+                        .slug("taxonomy-slug")
+                    .build())
+                .fieldsMapping(FieldsMappingEntity.builder()
+                        .slug("field-mapping-slug")
+                    .build())
                 .notificationUrl("http://localhost:8080/teste")
                 .type(INVENTORY).build();
 
+        when(partnerService.findActiveBySlug(feedEntity.getPartner().getSlug())).thenReturn(feedEntity.getPartner());
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
         when(templateRepository.findBySlug(anyString())).thenReturn(Optional.of(templateEntity));
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+        when(partnerTaxonomyRepository.findBySlugAndPartner(feedEntity.getPartnerTaxonomy().getSlug(), feedEntity.getPartner())).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
+        when(fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug())).thenReturn(Optional.of(feedEntity.getFieldsMapping()));
         doNothing().when(productCollectionService).validateCollectionExists(anyLong());
 
         feedService.createFeed(feedEntity);
