@@ -3,10 +3,13 @@ package com.walmart.feeds.api.core.service.blacklist.taxonomy;
 
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.UserException;
+import com.walmart.feeds.api.core.persistence.elasticsearch.ElasticSearchService;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistHistoryRepository;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistHistory;
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
@@ -110,17 +114,15 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
         LOGGER.info("taxonomyBlacklist={} message=deleted", toDelete);
     }
 
-    private boolean validateWalmartTaxonomy(String categoryName, Integer depth) {
-        BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
-        queryBuilder.must(matchQuery("categories.name", categoryName));
-        queryBuilder.must(matchQuery("categories.depth", depth));
-        NestedQueryBuilder nestedQueryBuilder = QueryBuilders.nestedQuery("categories", queryBuilder);
-
-        return elasticsearchTemplate.count(new NativeSearchQueryBuilder()
-                .withIndices("skus")
-                .withTypes("sku")
-                .withQuery(nestedQueryBuilder)
-                .build()) > 0;
+    private void validateBlacklist(TaxonomyBlacklistEntity taxonomyBlacklistEntity) {
+        List<String> expList = taxonomyBlacklistEntity.getList().stream()
+                .filter(mapping ->
+                        mapping.getOwner() == TaxonomyOwner.WALMART && !elasticSearchService.validateWalmartTaxonomy(mapping.getTaxonomy())
+                )
+                .map(mapping -> mapping.getTaxonomy())
+                .collect(Collectors.toList());
+        if(!expList.isEmpty()){
+            throw new UserException("The following walmart taxonomies aren't in walmart structure: " + expList);
+        }
     }
-
 }
