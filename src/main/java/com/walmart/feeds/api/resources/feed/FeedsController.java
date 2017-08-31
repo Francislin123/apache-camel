@@ -55,6 +55,7 @@ public class FeedsController {
                 .notificationMethod(FeedNotificationMethod.getFromCode(request.getNotification().getMethod()))
                 .notificationUrl(request.getNotification().getUrl())
                 .active(request.getActive())
+                .collectionId(request.getCollectionId())
                 .partnerTaxonomy(PartnerTaxonomyEntity.builder()
                         .slug(request.getTaxonomy())
                         .build())
@@ -153,6 +154,7 @@ public class FeedsController {
                         .creationDate(f.getCreationDate())
                         .updateDate(f.getUpdateDate())
                         .active(f.isActive())
+                        .collectionId(f.getCollectionId())
                         .build())
                         .collect(Collectors.toList())).build());
     }
@@ -195,6 +197,7 @@ public class FeedsController {
                         .slug(request.getFieldMapping())
                         .build())
                 .active(request.getActive())
+                .collectionId(request.getCollectionId())
                 .partner(PartnerEntity.builder()
                         .slug(partnerSlug)
                         .build())

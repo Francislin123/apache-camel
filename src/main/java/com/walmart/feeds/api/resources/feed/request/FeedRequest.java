@@ -41,6 +41,8 @@ public class FeedRequest {
     @NotBlank
     private String template;
 
+    private Long collectionId;
+
     @NotBlank
     private String fieldMapping;
 

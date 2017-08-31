@@ -1,8 +1,8 @@
 package com.walmart.feeds.api.core.service.feed;
 
+import com.walmart.feeds.api.client.tagadmin.TagAdmimCollectionClient;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
@@ -34,6 +34,9 @@ public class FeedServiceImpl implements FeedService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeedServiceImpl.class);
 
     @Autowired
+    private TagAdmimCollectionClient tagAdminCollectionClient;
+
+    @Autowired
     private FeedRepository feedRepository;
 
     @Autowired
@@ -46,6 +49,9 @@ public class FeedServiceImpl implements FeedService {
     private TemplateRepository templateRepository;
 
     @Autowired
+    private ProductCollectionService productCollectionService;
+
+    @Autowired
     private PartnerTaxonomyRepository partnerTaxonomyRepository;
 
     @Autowired
@@ -54,10 +60,6 @@ public class FeedServiceImpl implements FeedService {
     @Override
     @Transactional
     public FeedEntity createFeed(FeedEntity feedEntity) {
-
-        if (feedEntity.getPartner() == null) {
-            throw new InconsistentEntityException("Feed must have a partner");
-        }
 
         if (feedRepository.findBySlug(feedEntity.getSlug()).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("Feed with slug='%s' already exists", feedEntity.getSlug()));
@@ -74,6 +76,10 @@ public class FeedServiceImpl implements FeedService {
         FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
                 new UserException(String.format("Field mapping not found for slug='%s'",feedEntity.getFieldsMapping().getSlug())));
 
+        if (feedEntity.getCollectionId() != null) {
+            productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
+        }
+
         FeedEntity newFeed = FeedEntity.builder()
                 .utms(feedEntity.getUtms())
                 .slug(feedEntity.getSlug())
@@ -84,6 +90,7 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .name(feedEntity.getName())
                 .active(feedEntity.isActive())
+                .collectionId(feedEntity.getCollectionId())
                 .creationDate(feedEntity.getCreationDate())
                 .template(template)
                 .partnerTaxonomy(partnerTaxonomyEntity)
@@ -95,7 +102,6 @@ public class FeedServiceImpl implements FeedService {
         LOGGER.info("feedEntity={} message=saved_successfully", savedFeedEntity);
 
         return savedFeedEntity;
-
     }
 
     @Override
@@ -156,10 +162,6 @@ public class FeedServiceImpl implements FeedService {
     @Transactional
     public void updateFeed(FeedEntity feedEntity) {
 
-        if (feedEntity.getPartner() == null) {
-            throw new InconsistentEntityException("Feed must have a partner");
-        }
-
         String newSlug = SlugParserUtil.toSlug(feedEntity.getName());
 
         if (!feedEntity.getSlug().equals(newSlug)) {
@@ -170,8 +172,11 @@ public class FeedServiceImpl implements FeedService {
 
         FeedEntity persistedFeedEntity = feedRepository.findBySlug(feedEntity.getSlug()).orElseThrow(() -> new EntityNotFoundException("FeedEntity not Found"));
 
-        TemplateEntity template = templateRepository.findBySlug(feedEntity.getTemplate().getSlug()).orElseThrow(() ->
-                new UserException(String.format("Template not found for reference %s", feedEntity.getTemplate().getSlug())));
+        TemplateEntity template = templateRepository.findBySlug(feedEntity.getTemplate().getSlug()).orElseThrow(() -> new UserException(String.format("Template not found for reference %s", feedEntity.getTemplate().getSlug())));
+
+        if (feedEntity.getCollectionId() != null) {
+            productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
+        }
 
         PartnerTaxonomyEntity partnerTaxonomyEntity = partnerTaxonomyRepository.findBySlugAndPartner(feedEntity.getPartnerTaxonomy().getSlug(), partner).orElseThrow(() ->
                 new UserException(String.format("Taxonomy not found for slug='%s' or is not from partner=%s", feedEntity.getPartnerTaxonomy().getSlug(), partner.getSlug())));
@@ -191,12 +196,12 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .utms(feedEntity.getUtms())
                 .active(feedEntity.isActive())
+                .collectionId(feedEntity.getCollectionId())
                 .template(template)
                 .fieldsMapping(fieldsMappingEntity)
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
-
         saveFeedWithHistory(updatedFeed);
 
         LOGGER.info("feedEntity={} message=update_successfully", feedEntity);
@@ -208,7 +213,6 @@ public class FeedServiceImpl implements FeedService {
         if (feedRepository.findBySlug(slug).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("The feed called %s already exists", slug));
         }
-
     }
 
     private FeedEntity saveFeedWithHistory(FeedEntity feed) {

@@ -3,6 +3,7 @@ package com.walmart.feeds.api.unit.resources.feed;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.walmart.feeds.api.client.tagadmin.TagAdmimCollectionClient;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
@@ -41,6 +42,9 @@ public class FeedsControllerTest {
     @Mock
     private FeedServiceImpl feedService;
 
+    @Mock
+    private TagAdmimCollectionClient tagAdmimCollectionClient;
+
     private static MockMvc mockMvc;
 
     @BeforeClass
@@ -62,8 +66,7 @@ public class FeedsControllerTest {
 
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
-        ).andExpect(status().isCreated())
-                .andExpect(header().string("location", "http://localhost/v1/partners/partnerReferenceTest/feeds/feed-test"));
+        ).andExpect(status().isCreated()).andExpect(header().string("location", "http://localhost/v1/partners/partnerReferenceTest/feeds/feed-test"));
 
         verify(feedService, times(1)).createFeed(any(FeedEntity.class));
 
@@ -98,8 +101,6 @@ public class FeedsControllerTest {
     @Test
     public void testCreateFeedWithInvalidUtmList() throws Exception {
 
-//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
-
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-with-invalid-utm-list")))
         ).andExpect(status().isBadRequest());
@@ -110,8 +111,6 @@ public class FeedsControllerTest {
     @Test
     public void testCreateFeedWithAnEmptyName() throws Exception {
 
-//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
-
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-with-empty-name")))
         ).andExpect(status().isBadRequest());
@@ -121,8 +120,6 @@ public class FeedsControllerTest {
 
     @Test
     public void testCreateFeedWhenRequestIsIvalid() throws Exception {
-
-//        when(feedService.createFeed(any(FeedEntity.class))).thenReturn(new FeedEntity());
 
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-without-name")))
@@ -135,7 +132,7 @@ public class FeedsControllerTest {
     public void testUpdateFeed() throws Exception {
         doNothing().when(feedService).updateFeed(any(FeedEntity.class));
         mockMvc.perform(put(FeedsController.V1_FEEDS + "/teste123", "partnerReferenceTest").contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
-                ).andExpect(status().isOk());
+        ).andExpect(status().isOk());
     }
 
     @Test

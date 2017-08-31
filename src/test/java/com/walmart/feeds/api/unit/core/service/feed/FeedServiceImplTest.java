@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.unit.core.service.feed;
 
+import com.walmart.feeds.api.client.tagadmin.TagAdminCollection;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
@@ -17,6 +18,7 @@ import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntit
 import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
+import com.walmart.feeds.api.core.service.feed.ProductCollectionService;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import org.junit.Test;
@@ -52,6 +54,9 @@ public class FeedServiceImplTest {
     private TemplateRepository templateRepository;
 
     @Mock
+    private ProductCollectionService productCollectionService;
+
+    @Mock
     private PartnerTaxonomyRepository partnerTaxonomyRepository;
 
     @Mock
@@ -64,11 +69,12 @@ public class FeedServiceImplTest {
                 .name("Feed Teste")
                 .partner(PartnerEntity.builder()
                         .slug("teste-123")
-                    .build())
+                        .build())
+                .collectionId(7380L)
                 .template(TemplateEntity.builder()
                         .slug("template-123")
-                    .build())
-            .build();
+                        .build())
+                .build();
 
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
         when(partnerService.findActiveBySlug(anyString())).thenReturn(mock(PartnerEntity.class));
@@ -120,6 +126,7 @@ public class FeedServiceImplTest {
                 .partner(PartnerEntity.builder()
                         .slug("teste-123")
                         .build())
+                .collectionId(7380L)
                 .template(TemplateEntity.builder()
                         .slug("template-123")
                         .build())
@@ -133,7 +140,7 @@ public class FeedServiceImplTest {
                 .notificationMethod(FeedNotificationMethod.API)
                 .build();
 
-        PartnerEntity mockPartner = mock(PartnerEntity.class);
+        PartnerEntity mockPartner =mock(PartnerEntity.class);doNothing().when(productCollectionService).validateCollectionExists(7380L);
 
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
         when(partnerService.findActiveBySlug(anyString())).thenReturn(mockPartner);
@@ -147,6 +154,7 @@ public class FeedServiceImplTest {
 
         verify(feedRepository, times(1)).saveAndFlush(any(FeedEntity.class));
         verify(feedHistoryRepository, times(1)).save(any(FeedHistory.class));
+        verify(productCollectionService, times(1)).validateCollectionExists(f.getCollectionId());
 
     }
 
@@ -189,6 +197,10 @@ public class FeedServiceImplTest {
 
     @Test(expected = EntityAlreadyExistsException.class)
     public void createFeedWhenFeedAlreadyExists() throws Exception {
+
+        TagAdminCollection tagAdminCollection = TagAdminCollection.builder().status("ACTIVE").build();
+
+        doNothing().when(productCollectionService).validateCollectionExists(7380L);
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(new FeedEntity()));
 
         feedService.createFeed(createFeedEntity());
@@ -198,6 +210,8 @@ public class FeedServiceImplTest {
     public void testUpdateFeed() throws EntityNotFoundException {
 
         FeedEntity feedEntity = createFeedEntity();
+
+        doNothing().when(productCollectionService).validateCollectionExists(feedEntity.getCollectionId());
         when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
         when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
         when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
@@ -210,10 +224,43 @@ public class FeedServiceImplTest {
         verify(feedRepository).findBySlug(anyString());
         verify(feedRepository).saveAndFlush(Mockito.any(FeedEntity.class));
         verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
+        verify(productCollectionService, times(1)).validateCollectionExists(feedEntity.getCollectionId());
+    }
+
+    @Test
+    public void testUpdateFeedWhenCollectionIdIsNull() throws EntityNotFoundException {
+
+        PartnerEntity partner = PartnerEntity.builder().slug("big").build();
+        TemplateEntity templateEntity = TemplateEntity.builder().slug("template").build();
+
+        FeedEntity feedEntity = FeedEntity.builder()
+                .name("Facebook")
+                .slug("facebook")
+                .partner(partner)
+                .notificationFormat(FeedNotificationFormat.JSON)
+                .notificationMethod(FeedNotificationMethod.FILE)
+                .active(true)
+                .collectionId(null)
+                .template(templateEntity)
+                .notificationUrl("http://localhost:8080/teste")
+                .type(INVENTORY).build();
+
+        doNothing().when(productCollectionService).validateCollectionExists(feedEntity.getCollectionId());
+        when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
+        when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
+        when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+
+        this.feedService.updateFeed(feedEntity);
+
+        verify(feedRepository).findBySlug(anyString());
+        verify(feedRepository).saveAndFlush(Mockito.any(FeedEntity.class));
+        verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
+        verify(productCollectionService, never()).validateCollectionExists(feedEntity.getCollectionId());
     }
 
     @Test(expected = EntityAlreadyExistsException.class)
-    public void testUpdateFeedWhenOcurrsConflict() throws EntityNotFoundException {
+    public void testUpdateFeedWhenOccursConflict() throws EntityNotFoundException {
 
         FeedEntity feedEntityUpdateName = createFeedEntityUpdateName();
         FeedEntity existentFeed = createFeedEntity();
@@ -225,14 +272,42 @@ public class FeedServiceImplTest {
 
     }
 
+    @Test
+    public void testCreateFeedCollectionIdNull() {
+
+        PartnerEntity partner = PartnerEntity.builder().slug("big").build();
+        TemplateEntity templateEntity = TemplateEntity.builder().slug("template").build();
+
+        FeedEntity feedEntity = FeedEntity.builder()
+                .name("Facebook")
+                .slug("facebook")
+                .partner(partner)
+                .notificationFormat(FeedNotificationFormat.JSON)
+                .notificationMethod(FeedNotificationMethod.FILE)
+                .active(true)
+                .collectionId(null)
+                .template(templateEntity)
+                .notificationUrl("http://localhost:8080/teste")
+                .type(INVENTORY).build();
+
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(templateRepository.findBySlug(anyString())).thenReturn(Optional.of(templateEntity));
+        when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+        doNothing().when(productCollectionService).validateCollectionExists(anyLong());
+
+        feedService.createFeed(feedEntity);
+
+        verify(feedHistoryRepository).save(any(FeedHistory.class));
+        verify(productCollectionService, never()).validateCollectionExists(anyLong());
+    }
+
     private FeedEntity createFeedEntity() {
         PartnerEntity partner = PartnerEntity.builder()
                 .slug("teste123")
-            .build();
+                .build();
         TemplateEntity templateEntity = TemplateEntity.builder()
                 .slug("template")
-            .build();
-        PartnerTaxonomyEntity partnerTaxonomy = PartnerTaxonomyEntity.builder()
+                .build();PartnerTaxonomyEntity partnerTaxonomy = PartnerTaxonomyEntity.builder()
                 .slug("taxonomy-123")
             .build();
         FieldsMappingEntity fieldMapping = FieldsMappingEntity.builder()
@@ -242,6 +317,7 @@ public class FeedServiceImplTest {
                 .name("Big")
                 .slug("big")
                 .active(true)
+                .collectionId(7380L)
                 .partner(partner)
                 .template(templateEntity)
                 .partnerTaxonomy(partnerTaxonomy)
@@ -263,6 +339,7 @@ public class FeedServiceImplTest {
                 .name("Big")
                 .slug("partner-teste")
                 .active(true)
+                .collectionId(7380L)
                 .partner(partner)
                 .template(templateEntity)
                 .partnerTaxonomy(PartnerTaxonomyEntity.builder()
@@ -276,4 +353,5 @@ public class FeedServiceImplTest {
                 .type(INVENTORY).build();
         return to;
     }
+
 }

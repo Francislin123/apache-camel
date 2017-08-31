@@ -30,6 +30,7 @@ ext {
     springFoxVersion = '2.4.0'
     hibernateVersion = '5.0.12.Final'
     camelVersion ='2.19.2'
+    feingVersion ='9.3.1'
 }
 
 repositories {
@@ -124,6 +125,10 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
 
 
+    compile "io.github.openfeign:feign-okhttp:${feingVersion}"
+    compile "io.github.openfeign:feign-jackson:${feingVersion}"
+    compile "io.github.openfeign:feign-slf4j:${feingVersion}"
+
     compile "org.hibernate:hibernate-java8:${hibernateVersion}"
 
     compile "io.springfox:springfox-swagger2:${springFoxVersion}"
@@ -135,10 +140,6 @@ dependencies {
     compile "commons-io:commons-io:2.5"
 
     compile "oracle:ojdbc6:11.2.0.3"
-
-    compile "org.hibernate:hibernate-java8:5.0.12.Final"
-
-    compile 'com.h2database:h2:1.3.160'
 
     testCompile "br.com.six2six:fixture-factory:3.1.0"
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
