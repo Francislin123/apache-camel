@@ -1,14 +1,13 @@
 package com.walmart.feeds.api.core.service.fields;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.walmart.feeds.api.core.exceptions.*;
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
+import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingHistory;
-import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.persistence.ElasticSearchComponent;
