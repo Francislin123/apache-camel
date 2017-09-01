@@ -1,12 +1,14 @@
 package com.walmart.feeds.api.core.repository.blacklist.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.walmart.feeds.api.resources.feed.validator.annotation.ValidTaxonomyOwner;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

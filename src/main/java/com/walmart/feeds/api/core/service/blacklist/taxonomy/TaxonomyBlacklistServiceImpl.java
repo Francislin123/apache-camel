@@ -56,7 +56,7 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
         }
 
         validateBlacklist(taxonomyBlacklistEntity);
-        
+
         TaxonomyBlacklistEntity persistedEntity = find(taxonomyBlacklistEntity.getSlug());
 
         TaxonomyBlacklistEntity toHistoryEntity = taxonomyBlacklistRepository.saveAndFlush(TaxonomyBlacklistEntity.builder()

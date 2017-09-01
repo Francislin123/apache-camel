@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public enum TaxonomyOwner {
 
-    WALMART("Walmart"), PARTNER("Partner");
+    WALMART("walmart"), PARTNER("partner");
 
     private String name;
 
@@ -21,7 +21,7 @@ public enum TaxonomyOwner {
         return name;
     }
 
-    public TaxonomyOwner getFromName(String name) {
+    public static TaxonomyOwner getFromName(String name) {
         return Arrays.stream(TaxonomyOwner.values()).filter(f -> f.name.equals(name))
                 .findFirst()
                 .orElseThrow(() -> new SystemException("TaxonomyOwner not found for type=" + name));

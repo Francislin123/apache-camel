@@ -2,6 +2,7 @@ package com.walmart.feeds.api.resources.blacklist.response;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMapping;
+import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistMappingRequest;
 import com.walmart.feeds.api.resources.serializers.LocalDateTimeSerializer;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class TaxonomyBlacklistResponse {
 
     private String slug;
 
-    private Set<TaxonomyBlacklistMapping> list;
+    private Set<TaxonomyBlacklistMappingRequest> list;
 
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime creationDate;
