@@ -2,8 +2,11 @@ package com.walmart.feeds.api.resources.blacklist;
 
 
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMapping;
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
+import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistMappingRequest;
 import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistRequest;
 import com.walmart.feeds.api.resources.blacklist.response.TaxonomyBlacklistResponse;
 import com.walmart.feeds.api.resources.feed.CollectionResponse;
@@ -77,7 +80,11 @@ public class TaxonomyBlackListController {
         TaxonomyBlacklistResponse response = TaxonomyBlacklistResponse.builder()
                 .name(taxonomyBlacklist.getName())
                 .slug(taxonomyBlacklist.getSlug())
-                .list(taxonomyBlacklist.getList())
+                .list(taxonomyBlacklist.getList().stream().map(mapping ->
+                        TaxonomyBlacklistMappingRequest.builder()
+                        .owner(mapping.getOwner().getName())
+                        .taxonomy(mapping.getTaxonomy())
+                        .build()).collect(Collectors.toSet()))
                 .creationDate(taxonomyBlacklist.getCreationDate())
                 .updateDate(taxonomyBlacklist.getUpdateDate())
                 .build();
@@ -99,7 +106,11 @@ public class TaxonomyBlackListController {
         List returnList = taxonomyBlacklist.stream().map(i -> TaxonomyBlacklistResponse.builder()
                 .name(i.getName())
                 .slug(i.getSlug())
-                .list(i.getList())
+                .list(i.getList().stream().map(mapping ->
+                        TaxonomyBlacklistMappingRequest.builder()
+                                .owner(mapping.getOwner().getName())
+                                .taxonomy(mapping.getTaxonomy())
+                                .build()).collect(Collectors.toSet()))
                 .creationDate(i.getCreationDate())
                 .updateDate(i.getUpdateDate())
                 .build()).collect(Collectors.toList());
@@ -123,7 +134,10 @@ public class TaxonomyBlackListController {
         return TaxonomyBlacklistEntity.builder()
                 .name(taxonomyBlacklistRequest.getName())
                 .slug(slug)
-                .list(taxonomyBlacklistRequest.getList())
+                .list(taxonomyBlacklistRequest.getList().stream().map(mappingReq -> TaxonomyBlacklistMapping.builder()
+                    .taxonomy(mappingReq.getTaxonomy())
+                    .owner(TaxonomyOwner.getFromName(mappingReq.getOwner()))
+                    .build()).collect(Collectors.toSet()))
                 .build();
     }
 }
