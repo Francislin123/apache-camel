@@ -209,7 +209,6 @@ public class FeedServiceImplTest {
         verify(feedRepository).findBySlug(anyString());
         verify(feedRepository).saveAndFlush(Mockito.any(FeedEntity.class));
         verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
-        verify(productCollectionService, times(1)).validateCollectionExists(feedEntity.getCollectionId());
     }
 
     @Test

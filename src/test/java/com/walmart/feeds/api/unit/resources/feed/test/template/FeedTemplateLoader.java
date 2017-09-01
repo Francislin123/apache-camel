@@ -44,7 +44,7 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("utms", utms);
             add("active", true);
             add("template", "template-buscape");
-            add("taxonomyBlackliskSlug", "blacklist-taxonomia-buscape");
+            add("taxonomyBlacklist", "blacklist-taxonomia-buscape");
         }});
 
         Fixture.of(FeedRequest.class).addTemplate("feed-full-api-valid").inherits("feed-request-generic-valid", new Rule() {{
