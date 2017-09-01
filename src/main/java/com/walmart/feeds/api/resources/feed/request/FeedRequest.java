@@ -49,7 +49,6 @@ public class FeedRequest {
     @NotBlank
     private String fieldMapping;
 
-    @NotBlank
     private String taxonomy;
 
 }

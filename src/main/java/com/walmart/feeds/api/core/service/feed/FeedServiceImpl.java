@@ -79,13 +79,13 @@ public class FeedServiceImpl implements FeedService {
 
         TemplateEntity template = getTemplate(feedEntity) ;
 
-        TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
-
-        PartnerTaxonomyEntity partnerTaxonomyEntity = partnerTaxonomyRepository.findBySlugAndPartner(feedEntity.getPartnerTaxonomy().getSlug(), partner).orElseThrow(() ->
-                new UserException(String.format("Taxonomy not found for slug='%s' or is not from partner=%s", feedEntity.getPartnerTaxonomy().getSlug(), partner.getSlug())));
+        PartnerTaxonomyEntity partnerTaxonomyEntity = getPartnerTaxonomy(feedEntity, partner);
 
         FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
                 new UserException(String.format("Field mapping not found for slug='%s'",feedEntity.getFieldsMapping().getSlug())));
+
+
+        TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
         if (feedEntity.getCollectionId() != null) {
             productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
@@ -188,8 +188,7 @@ public class FeedServiceImpl implements FeedService {
 
         TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
-        PartnerTaxonomyEntity partnerTaxonomyEntity = partnerTaxonomyRepository.findBySlugAndPartner(feedEntity.getPartnerTaxonomy().getSlug(), partner).orElseThrow(() ->
-                new UserException(String.format("Taxonomy not found for slug='%s' or is not from partner=%s", feedEntity.getPartnerTaxonomy().getSlug(), partner.getSlug())));
+        PartnerTaxonomyEntity partnerTaxonomyEntity = getPartnerTaxonomy(feedEntity, partner);
 
         FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
                 new UserException(String.format("Field mapping not found for slug='%s'",feedEntity.getFieldsMapping().getSlug())));
@@ -243,6 +242,17 @@ public class FeedServiceImpl implements FeedService {
         }
 
         return null;
+    }
+
+    private PartnerTaxonomyEntity getPartnerTaxonomy(FeedEntity feedEntity, PartnerEntity partner) {
+        PartnerTaxonomyEntity partnerTaxonomy = feedEntity.getPartnerTaxonomy();
+
+        if (partnerTaxonomy == null || partnerTaxonomy.getSlug() == null || partnerTaxonomy.getSlug().trim().isEmpty()) {
+            return null;
+        }
+
+        return partnerTaxonomyRepository.findBySlugAndPartner(partnerTaxonomy.getSlug(), partner).orElseThrow(() ->
+                new UserException(String.format("Taxonomy not found for slug='%s' or does not belong to the partner=%s", partnerTaxonomy.getSlug(), partner.getSlug())));
     }
 
     private TaxonomyBlacklistEntity getTaxonomyBlacklist(FeedEntity feedEntity) {

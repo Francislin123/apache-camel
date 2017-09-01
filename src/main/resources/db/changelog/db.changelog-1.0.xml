@@ -516,10 +516,7 @@
         <addForeignKeyConstraint baseColumnNames="fields_mapping_id" baseTableName="feed" constraintName="feed_fields_mapping_fk" referencedColumnNames="id" referencedTableName="fields_mapping" />
 
         <rollback>
-            <dropForeignKeyConstraint baseTableName="feed" constraintName="feed_partner_fk"/>
-            <dropForeignKeyConstraint baseTableName="feed" constraintName="feed_template_fk"/>
-
-            <dropTable tableName="feed"/>
+            <dropTable tableName="feed" cascadeConstraints="true"/>
         </rollback>
 
     </changeSet>

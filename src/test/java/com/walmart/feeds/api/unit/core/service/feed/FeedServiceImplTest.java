@@ -105,6 +105,7 @@ public class FeedServiceImplTest {
         when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
         when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
+        when(taxonomyBlacklistRepository.findBySlug(feedEntity.getTaxonomyBlacklist().getSlug())).thenReturn(Optional.of(feedEntity.getTaxonomyBlacklist()));
         when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.empty());
 
         this.feedService.updateFeed(feedEntity);
@@ -118,6 +119,7 @@ public class FeedServiceImplTest {
         when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
         when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
         when(fieldsMappingRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(taxonomyBlacklistRepository.findBySlug(feedEntity.getTaxonomyBlacklist().getSlug())).thenReturn(Optional.of(feedEntity.getTaxonomyBlacklist()));
 
         this.feedService.updateFeed(feedEntity);
     }
@@ -145,7 +147,9 @@ public class FeedServiceImplTest {
                 .notificationMethod(FeedNotificationMethod.API)
                 .build();
 
-        PartnerEntity mockPartner =mock(PartnerEntity.class);doNothing().when(productCollectionService).validateCollectionExists(7380L);
+        PartnerEntity mockPartner = mock(PartnerEntity.class);
+
+        doNothing().when(productCollectionService).validateCollectionExists(7380L);
 
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
         when(partnerService.findActiveBySlug(anyString())).thenReturn(mockPartner);
@@ -169,8 +173,10 @@ public class FeedServiceImplTest {
         FeedEntity feedEntity = createFeedEntityWithoutTaxonomyBlacklist();
 
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
-        when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
+        when(partnerService.findActiveBySlug(anyString())).thenReturn(feedEntity.getPartner());
         when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
+        when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
+        when(fieldsMappingRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getFieldsMapping()));
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
 
         this.feedService.createFeed(feedEntity);
@@ -219,25 +225,15 @@ public class FeedServiceImplTest {
     @Test(expected = UserException.class)
     public void createFeedWithNonExistentTaxonomyBlacklist() {
 
-
-        FeedEntity f = FeedEntity.builder()
-                .name("Feed Teste")
-                .partner(PartnerEntity.builder()
-                        .slug("teste-123")
-                        .build())
-                .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
-                        .slug("taxonomy-nonexistent")
-                        .build())
-                .template(TemplateEntity.builder()
-                        .slug("template-123")
-                        .build())
-                .build();
+        FeedEntity f = createFeedEntity();
 
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
-        when(partnerService.findActiveBySlug(anyString())).thenReturn(mock(PartnerEntity.class));
+        when(partnerService.findActiveBySlug(anyString())).thenReturn(f.getPartner());
         when(templateRepository.findBySlug(anyString())).thenReturn(Optional.of(mock(TemplateEntity.class)));
-        when(taxonomyBlacklistRepository.findBySlug("taxonomy-nonexistent")).thenReturn(Optional.empty());
+        when(taxonomyBlacklistRepository.findBySlug(anyString())).thenReturn(Optional.empty());
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(f);
+        when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(f.getPartner()))).thenReturn(Optional.of(f.getPartnerTaxonomy()));
+        when(fieldsMappingRepository.findBySlug(anyString())).thenReturn(Optional.of(f.getFieldsMapping()));
 
         feedService.createFeed(f);
 
@@ -273,6 +269,9 @@ public class FeedServiceImplTest {
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
         when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
         when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
+        when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
+        when(fieldsMappingRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getFieldsMapping()));
+
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
 
         this.feedService.updateFeed(feedEntity);
@@ -394,6 +393,8 @@ public class FeedServiceImplTest {
                 .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
                         .slug("blacklist-test")
                         .build())
+                .partnerTaxonomy(partnerTaxonomy)
+                .fieldsMapping(fieldMapping)
                 .template(templateEntity)
                 .notificationFormat(FeedNotificationFormat.JSON)
                 .notificationMethod(FeedNotificationMethod.FILE)
@@ -407,6 +408,11 @@ public class FeedServiceImplTest {
                 .build();
         TemplateEntity templateEntity = TemplateEntity.builder()
                 .slug("template")
+                .build();PartnerTaxonomyEntity partnerTaxonomy = PartnerTaxonomyEntity.builder()
+                .slug("taxonomy-123")
+                .build();
+        FieldsMappingEntity fieldMapping = FieldsMappingEntity.builder()
+                .slug("field-mapping-123")
                 .build();
         FeedEntity to = FeedEntity.builder()
                 .name("Big")

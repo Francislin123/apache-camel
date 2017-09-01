@@ -9,6 +9,7 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEn
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.resources.blacklist.TaxonomyBlackListController;
+import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistRequest;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +54,8 @@ public class TaxonomyBlacklistControllerTest {
 
         when(taxonomyBlacklistService.create(any(TaxonomyBlacklistEntity.class))).thenReturn(entity);
         mockMvc.perform(post(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON)
-                .content(MapperUtil.getMapsAsJson(entity))).andExpect(status().isCreated());
+                .content(MapperUtil.getMapsAsJson(Fixture.from(TaxonomyBlacklistRequest.class).gimme("tax-bl-request"))))
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -62,7 +64,8 @@ public class TaxonomyBlacklistControllerTest {
 
         when(taxonomyBlacklistService.create(any(TaxonomyBlacklistEntity.class))).thenThrow(EntityAlreadyExistsException.class);
         mockMvc.perform(post(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON)
-                .content(MapperUtil.getMapsAsJson(entity))).andExpect(status().isConflict());
+                .content(MapperUtil.getMapsAsJson(Fixture.from(TaxonomyBlacklistRequest.class).gimme("tax-bl-request"))))
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -72,7 +75,8 @@ public class TaxonomyBlacklistControllerTest {
         doNothing().when(taxonomyBlacklistService).update(any(TaxonomyBlacklistEntity.class));
 
         mockMvc.perform(put(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY+"/slug").contentType(MediaType.APPLICATION_JSON)
-                .content(MapperUtil.getMapsAsJson(entity))).andExpect(status().isOk());
+                .content(MapperUtil.getMapsAsJson(Fixture.from(TaxonomyBlacklistRequest.class).gimme("tax-bl-request"))))
+                .andExpect(status().isOk());
 
     }
 
@@ -84,7 +88,8 @@ public class TaxonomyBlacklistControllerTest {
         doThrow(EntityNotFoundException.class).when(taxonomyBlacklistService).update(any(TaxonomyBlacklistEntity.class));
 
         mockMvc.perform(put(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY+ "/anySlug").contentType(MediaType.APPLICATION_JSON)
-                .content(MapperUtil.getMapsAsJson(entity))).andExpect(status().isNotFound());
+                .content(MapperUtil.getMapsAsJson(Fixture.from(TaxonomyBlacklistRequest.class).gimme("tax-bl-request"))))
+                .andExpect(status().isNotFound());
 
 
     }
