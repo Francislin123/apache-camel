@@ -69,6 +69,9 @@ public class FeedEntity extends AuditableEntity {
     @Column(name = "flag_active")
     private boolean active;
 
+    @Column(name = "collection_id")
+    private Long collectionId;
+
     @Tolerate
     public FeedEntity() {
         //default constructor for hibernate
@@ -79,7 +82,7 @@ public class FeedEntity extends AuditableEntity {
                       String name, PartnerEntity partner, FeedType type,
                       FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat,
                       String notificationUrl, TaxonomyBlacklistEntity taxonomyBlacklist, TemplateEntity template,
-                      Map<String, String> utms, boolean active) {
+                      Map<String, String> utms, boolean active, Long collectionId) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
@@ -93,6 +96,7 @@ public class FeedEntity extends AuditableEntity {
         this.template = template;
         this.utms = utms;
         this.active = active;
+        this.collectionId = collectionId;
     }
 }
 

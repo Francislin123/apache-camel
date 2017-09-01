@@ -39,4 +39,6 @@ public class FeedResponse {
 
     private boolean active;
 
+    private Long collectionId;
+
 }

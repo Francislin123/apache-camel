@@ -14,14 +14,15 @@ import java.util.Locale;
  */
 @EnableJpaAuditing
 @SpringBootApplication(scanBasePackages = "com.walmart.feeds.*")
-public class Application {
+public class FeedsAdminApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(FeedsAdminApplication.class, args);
     }
 
     /**
      * Create a locale resolver to
+     *
      * @return LocaleResolver
      */
     @Bean
@@ -30,5 +31,4 @@ public class Application {
         resolver.setDefaultLocale(Locale.ENGLISH);
         return resolver;
     }
-
 }

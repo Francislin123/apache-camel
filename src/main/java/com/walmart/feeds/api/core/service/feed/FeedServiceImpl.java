@@ -1,8 +1,8 @@
 package com.walmart.feeds.api.core.service.feed;
 
+import com.walmart.feeds.api.client.tagadmin.TagAdmimCollectionClient;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
@@ -32,6 +32,9 @@ public class FeedServiceImpl implements FeedService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FeedServiceImpl.class);
 
     @Autowired
+    private TagAdmimCollectionClient tagAdminCollectionClient;
+
+    @Autowired
     private FeedRepository feedRepository;
 
     @Autowired
@@ -46,13 +49,12 @@ public class FeedServiceImpl implements FeedService {
     @Autowired
     private TemplateRepository templateRepository;
 
+    @Autowired
+    private ProductCollectionService productCollectionService;
+
     @Override
     @Transactional
     public FeedEntity createFeed(FeedEntity feedEntity) {
-
-        if (feedEntity.getPartner() == null) {
-            throw new InconsistentEntityException("Feed must have a partner");
-        }
 
         if (feedRepository.findBySlug(feedEntity.getSlug()).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("Feed with slug='%s' already exists", feedEntity.getSlug()));
@@ -60,9 +62,13 @@ public class FeedServiceImpl implements FeedService {
 
         PartnerEntity partner = partnerService.findActiveBySlug(feedEntity.getPartner().getSlug());
 
-        TemplateEntity template = getTemplate(feedEntity);
+        TemplateEntity template = getTemplate(feedEntity) ;
 
-        TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
+        TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist( feedEntity);
+
+        if (feedEntity.getCollectionId() != null) {
+            productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
+        }
 
         FeedEntity newFeed = FeedEntity.builder()
                 .utms(feedEntity.getUtms())
@@ -74,6 +80,7 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .name(feedEntity.getName())
                 .active(feedEntity.isActive())
+                .collectionId(feedEntity.getCollectionId())
                 .creationDate(feedEntity.getCreationDate())
                 .template(template)
                 .taxonomyBlacklist(taxonomyBlacklist)
@@ -84,7 +91,6 @@ public class FeedServiceImpl implements FeedService {
         LOGGER.info("feedEntity={} message=saved_successfully", savedFeedEntity);
 
         return savedFeedEntity;
-
     }
 
     @Override
@@ -143,10 +149,6 @@ public class FeedServiceImpl implements FeedService {
     @Transactional
     public void updateFeed(FeedEntity feedEntity) {
 
-        if (feedEntity.getPartner() == null) {
-            throw new InconsistentEntityException("Feed must have a partner");
-        }
-
         String newSlug = SlugParserUtil.toSlug(feedEntity.getName());
 
         if (!feedEntity.getSlug().equals(newSlug)) {
@@ -161,6 +163,10 @@ public class FeedServiceImpl implements FeedService {
 
         TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
+        if (feedEntity.getCollectionId() != null) {
+            productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
+        }
+
         FeedEntity updatedFeed = FeedEntity.builder()
                 .id(persistedFeedEntity.getId())
                 .slug(newSlug)
@@ -172,11 +178,11 @@ public class FeedServiceImpl implements FeedService {
                 .notificationFormat(feedEntity.getNotificationFormat())
                 .utms(feedEntity.getUtms())
                 .active(feedEntity.isActive())
+                .collectionId(feedEntity.getCollectionId())
                 .template(template)
                 .taxonomyBlacklist(taxonomyBlacklist)
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
-
         saveFeedWithHistory(updatedFeed);
 
         LOGGER.info("feedEntity={} message=update_successfully", feedEntity);
@@ -188,7 +194,6 @@ public class FeedServiceImpl implements FeedService {
         if (feedRepository.findBySlug(slug).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("The feed called %s already exists", slug));
         }
-
     }
 
     private FeedEntity saveFeedWithHistory(FeedEntity feed) {
