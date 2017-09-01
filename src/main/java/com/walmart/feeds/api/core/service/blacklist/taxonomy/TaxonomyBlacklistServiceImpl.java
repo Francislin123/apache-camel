@@ -12,14 +12,21 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistHi
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.NestedQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 @Component
 public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
@@ -118,5 +125,4 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
             throw new UserException("The following walmart taxonomies aren't in walmart structure: " + expList);
         }
     }
-
 }

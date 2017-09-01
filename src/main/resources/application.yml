@@ -15,6 +15,9 @@ elastic:
   mapping:
     sku: http://napsao-qa-nix-feeds-reg-1.qa.vmcommerce.intra:8080/feeds/_mapping/sku
 
+management:
+  security:
+    enabled: false
 ---
 
 spring:
@@ -29,6 +32,10 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.Oracle10gDialect
 
+management:
+  security:
+    enabled: false
+
 ---
 
 spring:
@@ -42,3 +49,7 @@ spring:
       initial-size: 10
       max-active: 150
       test-on-borrow: true
+
+management:
+  security:
+    enabled: false

@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.resources.feed.request;
 
+import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistRequest;
 import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyMapEntry;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedNotificationUrl;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedType;
@@ -31,7 +32,7 @@ public class FeedRequest {
     @ValidFeedNotificationUrl
     private FeedNotificationData notification;
 
-    private String taxonomyBlackliskSlug;
+    private String taxonomyBlacklist;
 
     @Valid
     @NotEmptyMapEntry(allowedKeyPattern = "[\\w\\d-_]+", allowedValuePattern = "[\\w\\d\\s-_]+")
