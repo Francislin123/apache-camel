@@ -20,8 +20,8 @@ public class ValidateRouteWithErrorProcessor implements Processor {
         if (!errorList.isEmpty()) {
             throw new InvalidFileException("Invalid file content", errorList);
         }
-        exchange.getIn().getHeaders().clear();
-        exchange.getProperties().clear();
+        exchange.getIn().getHeader(ERROR_LIST, List.class).clear();
+//        exchange.getProperties().clear();
 
     }
 }

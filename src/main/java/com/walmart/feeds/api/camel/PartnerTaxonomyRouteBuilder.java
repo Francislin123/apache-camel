@@ -35,6 +35,15 @@ public class PartnerTaxonomyRouteBuilder extends RouteBuilder {
     @Autowired
     private ParseTaxonomyCsvProcessor parseTaxonomyCsvProcessor;
 
+    @Autowired
+    private RollBackTaxonomyProcessor rollbackTaxonomyProcessor;
+
+    @Autowired
+    private ValidateDeletedTaxonomiesProcessor validateDeletedTaxonomiesProcessor;
+
+    @Autowired
+    private FillPartnerTaxonomiesProcessor fillPartnerTaxonomiesProcessor;
+
     public PartnerTaxonomyRouteBuilder(CamelContext context) {
         super(context);
     }
@@ -57,7 +66,14 @@ public class PartnerTaxonomyRouteBuilder extends RouteBuilder {
                 .process(validateRouteWithErrorProcessor);
 
         from(PARSE_FILE_ROUTE)
-                .process(parseTaxonomyCsvProcessor);
+                .onException(Exception.class)
+                    .process(rollbackTaxonomyProcessor)
+                .end()
+                .setHeader(ERROR_LIST, LinkedList::new)
+                .process(parseTaxonomyCsvProcessor)
+                .process(validateDeletedTaxonomiesProcessor)
+                .process(validateRouteWithErrorProcessor)
+                .process(fillPartnerTaxonomiesProcessor);
 
         from(PERSIST_PARTNER_TAXONOMY_ROUTE)
                 .process(exchange -> partnerTaxonomyService.saveWithHistory(exchange.getIn().getBody(PartnerTaxonomyEntity.class)));

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -62,6 +63,19 @@ public class FeedsAdminAPIExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(value = BindException.class)
+    public ResponseEntity<ErrorResponse> genericExceptionHandler(BindException ex, WebRequest request) {
+        LOGGER.error(DEFAULT_ERROR_MESSAGE, ex);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.builder()
+                        .code(HttpStatus.BAD_REQUEST.toString())
+                        .description("Invalid Request")
+                        .errors(ex.getBindingResult().getAllErrors().stream().map(b ->
+                                (FieldError) b).map(f -> new FieldErrorResponse(f.getField(), f.getDefaultMessage(), f.getRejectedValue()))
+                                .collect(Collectors.toList()))
+                        .build());
+    }
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ErrorResponse> genericExceptionHandler(Exception ex, WebRequest request) {
