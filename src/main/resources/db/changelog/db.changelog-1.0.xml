@@ -355,150 +355,6 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="createFeedTable" author="renato.ibanhez">
-
-        <preConditions>
-            <tableExists tableName="feed_template"/>
-            <tableExists tableName="partner"/>
-            <tableExists tableName="taxonomy_blacklist"/>
-        </preConditions>
-
-        <comment>Creating feed table</comment>
-
-        <createTable tableName="feed">
-            <column name="id" type="${uuid_type}">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="slug" type="varchar(50)">
-                <constraints unique="true" nullable="false"/>
-            </column>
-            <column name="partner_id" type="${uuid_type}">
-                <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
-            </column>
-            <column name="template_id" type="${uuid_type}">
-                <constraints foreignKeyName="feed_template_fk"/>
-            </column>
-            <column name="name" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="type" type="varchar(10)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="notification_method" type="varchar(10)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="notification_format" type="varchar(10)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="notification_url" type="varchar(255)"/>
-            <column name="taxonomy_blacklist_id" type="${uuid_type}">
-                <constraints referencedTableName="taxonomy_blacklist" referencedColumnNames="id"
-                             foreignKeyName="fk_taxonomy_blacklist"/>
-            </column>
-            <column name="flag_active" type="boolean" defaultValueBoolean="true">
-                <constraints nullable="false"/>
-            </column>
-            <column name="collection_id" type="integer"></column>
-            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
-                <constraints nullable="false"/>
-            </column>
-            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
-            <column name="user_login" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="feed" constraintName="feed_partner_fk"
-                                 referencedColumnNames="id" referencedTableName="partner"/>
-        <addForeignKeyConstraint baseColumnNames="template_id" baseTableName="feed" constraintName="feed_template_fk"
-                                 referencedColumnNames="id" referencedTableName="feed_template"/>
-
-        <rollback>
-            <dropForeignKeyConstraint baseTableName="feed" constraintName="feed_partner_fk"/>
-            <dropForeignKeyConstraint baseTableName="feed" constraintName="feed_template_fk"/>
-
-            <dropTable tableName="feed"/>
-        </rollback>
-
-    </changeSet>
-
-    <changeSet id="createFeedHistoryTable" author="renato.ibanhez">
-
-        <preConditions onError="WARN">
-            <tableExists tableName="feed"/>
-        </preConditions>
-
-        <comment>Creating feed_history table</comment>
-        <createTable tableName="feed_history">
-            <column name="history_id" type="${uuid_type}">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="slug" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="partner_id" type="${uuid_type}">
-                <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="type" type="varchar(10)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="notification_method" type="varchar(10)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="notification_format" type="varchar(10)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="notification_url" type="varchar(255)"/>
-            <column name="flag_active" type="boolean" defaultValueBoolean="true">
-                <constraints nullable="false"/>
-            </column>
-            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
-                <constraints nullable="false"/>
-            </column>
-            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
-            <column name="user_login" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <rollback>
-            <dropTable tableName="feed_history"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="createFeedUtmTable" author="renato.ibanhez">
-
-        <preConditions onError="HALT">
-            <tableExists tableName="feed"/>
-        </preConditions>
-
-        <comment>Creating feed_utms table</comment>
-
-        <createTable tableName="feed_utms">
-            <column name="feed_id" type="${uuid_type}">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="utm_type" type="varchar(20)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="utm_value" type="varchar(20)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addForeignKeyConstraint baseTableName="feed_utms" baseColumnNames="feed_id" constraintName="fk_feed_utm"
-                                 referencedTableName="feed"
-                                 referencedColumnNames="id"/>
-
-        <rollback>
-            <dropForeignKeyConstraint baseTableName="feed_utms" constraintName="fk_feed_utm"/>
-            <dropTable tableName="feed_utms"/>
-        </rollback>
-    </changeSet>
-
     <changeSet id="createFieldsMappingTable" author="adisson.gomes">
 
         <comment>Creating fields mapping table</comment>
@@ -588,6 +444,169 @@
 
         <rollback>
             <dropTable tableName="fields_mapping_history"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="createFeedTable" author="renato.ibanhez">
+
+        <preConditions>
+            <tableExists tableName="feed_template"/>
+            <tableExists tableName="partner"/>
+            <tableExists tableName="partner_taxonomy"/>
+            <tableExists tableName="fields_mapping"/>
+            <tableExists tableName="taxonomy_blacklist"/>
+        </preConditions>
+
+        <comment>Creating feed table</comment>
+
+        <createTable tableName="feed">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
+            </column>
+            <column name="template_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_template_fk"/>
+            </column>
+            <column name="partner_taxonomy_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_taxonomy_fk" />
+            </column>
+            <column name="fields_mapping_id" type="${uuid_type}">
+                <constraints nullable="false" foreignKeyName="feed_fields_mapping_fk" />
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_method" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_format" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_url" type="varchar(255)"/>
+            <column name="taxonomy_blacklist_id" type="${uuid_type}">
+                <constraints referencedTableName="taxonomy_blacklist" referencedColumnNames="id"
+                             foreignKeyName="fk_taxonomy_blacklist"/>
+            </column>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="collection_id" type="integer"></column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="feed" constraintName="feed_partner_fk"
+                                 referencedColumnNames="id" referencedTableName="partner"/>
+        <addForeignKeyConstraint baseColumnNames="template_id" baseTableName="feed" constraintName="feed_template_fk"
+                                 referencedColumnNames="id" referencedTableName="feed_template"/>
+        <addForeignKeyConstraint baseColumnNames="partner_taxonomy_id" baseTableName="feed" constraintName="feed_taxonomy_fk" referencedColumnNames="id" referencedTableName="partner_taxonomy" />
+        <addForeignKeyConstraint baseColumnNames="fields_mapping_id" baseTableName="feed" constraintName="feed_fields_mapping_fk" referencedColumnNames="id" referencedTableName="fields_mapping" />
+
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="feed" constraintName="feed_partner_fk"/>
+            <dropForeignKeyConstraint baseTableName="feed" constraintName="feed_template_fk"/>
+
+            <dropTable tableName="feed"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createFeedHistoryTable" author="renato.ibanhez">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="feed"/>
+        </preConditions>
+
+        <comment>Creating feed_history table</comment>
+        <createTable tableName="feed_history">
+            <column name="history_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
+            </column>
+            <column name="template_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_template_fk" />
+            </column>
+            <column name="partner_taxonomy_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_taxonomy_fk" />
+            </column>
+            <column name="fields_mapping_id" type="${uuid_type}">
+                <constraints nullable="false" foreignKeyName="feed_fields_mapping_fk" />
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_method" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_format" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_url" type="varchar(255)"/>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="feed_history"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="createFeedUtmTable" author="renato.ibanhez">
+
+        <preConditions onError="HALT">
+            <tableExists tableName="feed"/>
+        </preConditions>
+
+        <comment>Creating feed_utms table</comment>
+
+        <createTable tableName="feed_utms">
+            <column name="feed_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="utm_type" type="varchar(20)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="utm_value" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="feed_utms" baseColumnNames="feed_id" constraintName="fk_feed_utm"
+                                 referencedTableName="feed"
+                                 referencedColumnNames="id"/>
+
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="feed_utms" constraintName="fk_feed_utm"/>
+            <dropTable tableName="feed_utms"/>
         </rollback>
     </changeSet>
 
