@@ -4,7 +4,9 @@ import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
+import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.feed.FeedService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
@@ -54,6 +56,12 @@ public class FeedsController {
                 .notificationUrl(request.getNotification().getUrl())
                 .active(request.getActive())
                 .collectionId(request.getCollectionId())
+                .partnerTaxonomy(PartnerTaxonomyEntity.builder()
+                        .slug(request.getTaxonomy())
+                        .build())
+                .fieldsMapping(FieldsMappingEntity.builder()
+                        .slug(request.getFieldMapping())
+                        .build())
                 .partner(PartnerEntity.builder()
                         .slug(partnerSlug)
                         .build())
@@ -85,6 +93,8 @@ public class FeedsController {
         return ResponseEntity.ok().body(FeedResponse.builder()
                 .name(feedEntity.getName())
                 .template(feedEntity.getTemplate().getSlug())
+                .fieldMapping(feedEntity.getPartner().getSlug())
+                .taxonomy(feedEntity.getPartner().getSlug())
                 .slug(feedEntity.getSlug())
                 .notification(FeedNotificationData.builder()
                         .format(feedEntity.getNotificationFormat().getType())
@@ -123,6 +133,8 @@ public class FeedsController {
                         .name(f.getName())
                         .slug(f.getSlug())
                         .template(f.getTemplate().getSlug())
+                        .taxonomy(f.getPartnerTaxonomy().getSlug())
+                        .fieldMapping(f.getFieldsMapping().getSlug())
                         .notification(FeedNotificationData.builder()
                                 .format(f.getNotificationFormat().getType())
                                 .method(f.getNotificationMethod().getType())
@@ -177,6 +189,12 @@ public class FeedsController {
                 .notificationUrl(request.getNotification().getUrl())
                 .template(TemplateEntity.builder()
                         .slug(request.getTemplate())
+                        .build())
+                .partnerTaxonomy(PartnerTaxonomyEntity.builder()
+                        .slug(request.getTaxonomy())
+                        .build())
+                .fieldsMapping(FieldsMappingEntity.builder()
+                        .slug(request.getFieldMapping())
                         .build())
                 .active(request.getActive())
                 .collectionId(request.getCollectionId())
