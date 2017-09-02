@@ -16,20 +16,21 @@ public class TaxonomyBlacklistPartnerValidator {
      * @param blacklist
      * @return list containing non matched taxonomies
      */
-    public static List<String> validatePartnerTaxonomiesOnBlacklist(TaxonomyBlacklistEntity blacklist, PartnerTaxonomyEntity taxonomyEntity) {
+    public static void validatePartnerTaxonomiesOnBlacklist(TaxonomyBlacklistEntity blacklist, PartnerTaxonomyEntity taxonomyEntity) {
+
+        List<String> nonMachedTaxonomies = new ArrayList<>();
 
         if (blacklist == null || taxonomyEntity == null) {
-            throw new UserException("Both blacklist and taxonomy cannot be null");
+            return;
         }
 
         List<String> partnerTaxonomies = filterPartnerTaxonomies(blacklist);
 
-        List<String> nonMachedTaxonomies = new ArrayList<>();
 
         // when not exists partner taxonomies to validate, then the result is true because there is no case of failure
         // the if statement avoid more processing, e.g. collections manipulation
         if (partnerTaxonomies.isEmpty()) {
-            return nonMachedTaxonomies;
+            return;
         }
 
         final List<String> partnerMappings = taxonomyEntity.getTaxonomyMappings().stream()
@@ -41,7 +42,9 @@ public class TaxonomyBlacklistPartnerValidator {
                 .collect(Collectors.toList());
 
 
-        return nonMachedTaxonomies;
+        if (!nonMachedTaxonomies.isEmpty()) {
+            throw new UserException("The partner taxonomies on blacklist were not recognized with the taxonomies saved previously from CSV file: " + nonMachedTaxonomies);
+        }
 
     }
 

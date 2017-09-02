@@ -17,9 +17,11 @@ import java.util.*;
 
 public class TaxonomyBlacklistTemplateLoader implements TemplateLoader{
 
-    public static final String TAXONOMY = "cs-input-ok";
+    public static final String TAXONOMY = "taxonomy";
+    public static final String TAXONOMY_BLACKLIST_REQUEST = "tax-bl-request";
     public static final String TAXONOMY_BLACKLIST = "taxonomy-blacklist-entity";
     public static final String TAXONOMY_BLACKLIST_WITHOUT_PARTNER_MAPPING = "taxonomy-blacklist-without-partner-mapping";
+    public static final String TB_INVALID_WALMART_TAXONOMY = "tb-invalid-walmart-taxonomy";
     public static final String TB_INVALID_PARTNER_TAXONOMY = "tb-invalid-partner-taxonomy";
 
     @Override
@@ -55,16 +57,23 @@ public class TaxonomyBlacklistTemplateLoader implements TemplateLoader{
             add("list", blacklistMappings);
         }});
 
-        Fixture.of(TaxonomyBlacklistEntity.class).addTemplate(TAXONOMY_BLACKLIST_WITHOUT_PARTNER_MAPPING, new Rule() {{
-            add("id", UUID.randomUUID());
-            add("name", "any name");
-            add("slug", "any-name");
-
-
+        Fixture.of(TaxonomyBlacklistEntity.class).addTemplate(TAXONOMY_BLACKLIST_WITHOUT_PARTNER_MAPPING).inherits(TAXONOMY_BLACKLIST, new Rule() {{
             Set<TaxonomyBlacklistMapping> blacklistMappings = new HashSet(Arrays.asList(
                     TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.WALMART).taxonomy("Eletrônicos > TVs").build(),
                     TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.WALMART).taxonomy("Informática").build(),
                     TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.WALMART).taxonomy("Informática > Computadores").build()
+            ));
+
+            add("list", blacklistMappings);
+        }});
+
+        Fixture.of(TaxonomyBlacklistEntity.class).addTemplate(TB_INVALID_WALMART_TAXONOMY).inherits(TAXONOMY_BLACKLIST, new Rule() {{
+            Set<TaxonomyBlacklistMapping> blacklistMappings = new HashSet(Arrays.asList(
+                    // this is invalid for the tests
+                    TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.WALMART).taxonomy("Eletrônicos").build(),
+                    TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.WALMART).taxonomy("Eletrônicos > TVs").build(),
+                    TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.PARTNER).taxonomy("Informática > Computadores").build(),
+                    TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.PARTNER).taxonomy("Eletrônicos > Vídeo").build()
             ));
 
             add("list", blacklistMappings);
@@ -90,11 +99,19 @@ public class TaxonomyBlacklistTemplateLoader implements TemplateLoader{
             add("owner", TaxonomyOwner.PARTNER.toString());
         }});
 
-        listRequest.add(Fixture.from(TaxonomyBlacklistMappingRequest.class).gimme("tax-bl-mapping-request"));
-
-        Fixture.of(TaxonomyBlacklistRequest.class).addTemplate("tax-bl-request", new Rule() {{
+        Fixture.of(TaxonomyBlacklistRequest.class).addTemplate(TAXONOMY_BLACKLIST_REQUEST, new Rule() {{
             add("name", "any name");
-            add("list", listRequest);
+
+            Set<TaxonomyBlacklistMappingRequest> blacklistMappingsRequest = new HashSet(Arrays.asList(
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.WALMART.getName()).taxonomy("Eletrônicos > TVs").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.getName()).taxonomy("Informática").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.getName()).taxonomy("Informática > Computadores").build(),
+                    // this is invalid because it is not mapped on PartnerTaxonomy above
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.getName()).taxonomy("Eletrônicos").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.getName()).taxonomy("Eletrônicos > Vídeo").build()
+            ));
+
+            add("list", blacklistMappingsRequest);
         }});
 
     }

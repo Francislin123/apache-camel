@@ -9,23 +9,21 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.validation.TaxonomyBlacklistPartnerValidator;
-import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklistTemplate;
+import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklistTemplateLoader;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class TaxonomyBlacklistPartnerValidatorTest {
 
@@ -41,18 +39,20 @@ public class TaxonomyBlacklistPartnerValidatorTest {
 
         PartnerTaxonomyEntity partnerTaxonomy = Fixture
                 .from(PartnerTaxonomyEntity.class)
-                .gimme(TaxonomyBlacklistTemplate.TAXONOMY);
+                .gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY);
+        partnerTaxonomy = getSpy(partnerTaxonomy);
 
         TaxonomyBlacklistEntity blacklist = Fixture
                 .from(TaxonomyBlacklistEntity.class)
-                .gimme(TaxonomyBlacklistTemplate.TAXONOMY_BLACKLIST);
+                .gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
+        blacklist = getSpy(blacklist);
 
-        List<String> nonMatched = TaxonomyBlacklistPartnerValidator
+        TaxonomyBlacklistPartnerValidator
                 .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
 
-        System.out.println(nonMatched);
+        verify(blacklist).getList();
+        verify(partnerTaxonomy).getTaxonomyMappings();
 
-        assertTrue(nonMatched.isEmpty());
     }
 
     @Test
@@ -60,18 +60,21 @@ public class TaxonomyBlacklistPartnerValidatorTest {
 
         PartnerTaxonomyEntity partnerTaxonomy = Fixture
                 .from(PartnerTaxonomyEntity.class)
-                .gimme(TaxonomyBlacklistTemplate.TAXONOMY);
+                .gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY);
+        partnerTaxonomy = getSpy(partnerTaxonomy);
 
         TaxonomyBlacklistEntity blacklist = Fixture
                 .from(TaxonomyBlacklistEntity.class)
-                .gimme(TaxonomyBlacklistTemplate.TAXONOMY_BLACKLIST_WITHOUT_PARTNER_MAPPING);
+                .gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST_WITHOUT_PARTNER_MAPPING);
+        blacklist = getSpy(blacklist);
 
-        List<String> nonMatched = TaxonomyBlacklistPartnerValidator
+
+        TaxonomyBlacklistPartnerValidator
                 .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
 
-        System.out.println(nonMatched);
+        verify(blacklist).getList();
+        verify(partnerTaxonomy, never()).getTaxonomyMappings();
 
-        assertTrue(nonMatched.isEmpty());
     }
 
     @Test
@@ -79,47 +82,62 @@ public class TaxonomyBlacklistPartnerValidatorTest {
 
         PartnerTaxonomyEntity partnerTaxonomy = Fixture
                 .from(PartnerTaxonomyEntity.class)
-                .gimme(TaxonomyBlacklistTemplate.TAXONOMY);
+                .gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY);
+        partnerTaxonomy = getSpy(partnerTaxonomy);
 
         TaxonomyBlacklistEntity blacklist = Fixture
                 .from(TaxonomyBlacklistEntity.class)
-                .gimme(TaxonomyBlacklistTemplate.TB_INVALID_PARTNER_TAXONOMY);
+                .gimme(TaxonomyBlacklistTemplateLoader.TB_INVALID_PARTNER_TAXONOMY);
+        blacklist = getSpy(blacklist);
 
-        List<String> nonMatched = TaxonomyBlacklistPartnerValidator
-                .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
 
-        System.out.println(nonMatched);
+        try {
+            TaxonomyBlacklistPartnerValidator
+                    .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
+            fail("UserExcetion was expected!");
+        } catch (UserException e) {
+            assertTrue(e.getMessage().contains("[Eletrônicos]"));
+        }
 
-        assertEquals(1, nonMatched.size());
-        assertEquals("Eletrônicos", nonMatched.get(0));
     }
 
-    @Test(expected = UserException.class)
+    @Test
     public void testValidatePartnerTaxonomyWhenPartnerTaxonomyIsNull() throws Exception {
 
         PartnerTaxonomyEntity partnerTaxonomy = Fixture
                 .from(PartnerTaxonomyEntity.class)
-                .gimme(TaxonomyBlacklistTemplate.TAXONOMY);
+                .gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY);
+        partnerTaxonomy = getSpy(partnerTaxonomy);
 
         TaxonomyBlacklistEntity blacklist = null;
 
-        List<String> nonMatched = TaxonomyBlacklistPartnerValidator
-                .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
+        TaxonomyBlacklistPartnerValidator
+            .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
+
+        verify(partnerTaxonomy, never()).getTaxonomyMappings();
 
     }
 
-    @Test(expected = UserException.class)
+    @Test
     public void testValidatePartnerTaxonomyWhenBlacklistIsNull() throws Exception {
 
         PartnerTaxonomyEntity partnerTaxonomy = null;
 
         TaxonomyBlacklistEntity blacklist = Fixture
                 .from(TaxonomyBlacklistEntity.class)
-                .gimme(TaxonomyBlacklistTemplate.TB_INVALID_PARTNER_TAXONOMY);
+                .gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
+        blacklist = getSpy(blacklist);
 
-        List<String> nonMatched = TaxonomyBlacklistPartnerValidator
-                .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
 
+        TaxonomyBlacklistPartnerValidator
+            .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
+
+        verify(blacklist, never()).getList();
+
+    }
+
+    public <T> T getSpy(T object) {
+        return spy(object);
     }
 
 }

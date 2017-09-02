@@ -14,6 +14,7 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMa
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistServiceImpl;
+import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklistTemplateLoader;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,8 +29,10 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.util.AssertionErrors.fail;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaxonomyBlacklistServiceTest {
@@ -50,12 +53,15 @@ public class TaxonomyBlacklistServiceTest {
     public void init() {
 
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.blacklist.taxonomy");
+
+        when(elasticSearchService.validateWalmartTaxonomy("Eletrônicos > TVs")).thenReturn(true);
+
     }
 
     @Test
     public void createTaxonomyBlacklistTest(){
 
-        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity");
+        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
         when(taxonomyBlacklistRepository.saveAndFlush(entity)).thenReturn(entity);
 
@@ -66,10 +72,28 @@ public class TaxonomyBlacklistServiceTest {
         assertEquals(entity.getSlug(), entitySaved.getSlug());
     }
 
+    @Test
+    public void createTaxonomyBlacklistTestWithInvalidWalmartTaxonomy(){
+
+        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TB_INVALID_WALMART_TAXONOMY);
+
+        when(taxonomyBlacklistRepository.saveAndFlush(entity)).thenReturn(entity);
+
+        when(taxonomyBlacklistHistoryRepository.save(any(TaxonomyBlacklistHistory.class))).thenReturn(any(TaxonomyBlacklistHistory.class));
+
+        try {
+            TaxonomyBlacklistEntity entitySaved = this.taxonomyBlacklistService.create(entity);
+            fail("A UserException was expected!");
+        } catch (UserException e) {
+            assertTrue(e.getMessage().contains("The following walmart taxonomies aren't in walmart structure"));
+        }
+
+    }
+
     @Test(expected = EntityAlreadyExistsException.class)
     public void duplicatedEntityTest(){
 
-        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity");
+        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
         when(taxonomyBlacklistRepository.saveAndFlush(entity)).thenThrow(EntityAlreadyExistsException.class);
 
@@ -79,7 +103,7 @@ public class TaxonomyBlacklistServiceTest {
 
     @Test
     public void updateBlackList(){
-        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity");
+        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
         when(taxonomyBlacklistRepository.findBySlug(entity.getSlug())).thenReturn(Optional.of(entity));
 
@@ -96,7 +120,7 @@ public class TaxonomyBlacklistServiceTest {
     @Test
     public void testFind() {
 
-        when(taxonomyBlacklistRepository.findBySlug("any-name")).thenReturn(Optional.of(Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity")));
+        when(taxonomyBlacklistRepository.findBySlug("any-name")).thenReturn(Optional.of(Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST)));
 
         TaxonomyBlacklistEntity entity = taxonomyBlacklistService.find("any-name");
 
@@ -116,7 +140,7 @@ public class TaxonomyBlacklistServiceTest {
     @Test
     public void testFindAll() {
 
-        when(taxonomyBlacklistRepository.findAll()).thenReturn(Fixture.from(TaxonomyBlacklistEntity.class).gimme(2,"tax-bl-entity"));
+        when(taxonomyBlacklistRepository.findAll()).thenReturn(Fixture.from(TaxonomyBlacklistEntity.class).gimme(2,TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST));
 
         List<TaxonomyBlacklistEntity> taxonomyBlacklists = taxonomyBlacklistService.findAll();
 
@@ -128,7 +152,7 @@ public class TaxonomyBlacklistServiceTest {
     @Test
     public void testDelete(){
 
-        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity");
+        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
         when(taxonomyBlacklistRepository.findBySlug("any-name")).thenReturn(Optional.of(entity));
         doNothing().when(taxonomyBlacklistRepository).delete(entity);
