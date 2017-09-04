@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.feeds.api.core.exceptions.SystemException;
 
-import java.util.List;
-
 public class MapperUtil {
 
 
