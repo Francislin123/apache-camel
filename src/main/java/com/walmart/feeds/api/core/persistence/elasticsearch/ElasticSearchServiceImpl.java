@@ -9,6 +9,10 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilde
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 @Service
@@ -31,6 +35,45 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
             }
             return valid;
         }
+    }
+
+    @Override
+    public List<String> getSkuFieldsMapping() {
+
+        Map<String, Map> mapping = elasticsearchTemplate.getMapping("skus", "sku");
+
+        List<String> listFields = new ArrayList<>();
+        processMap(mapping.get("properties"), "", listFields);
+
+        return listFields;
+
+    }
+
+    private void processMap(Map<String, Map> mapping, String parent, List<String> listFields) {
+
+        parent = (parent != null && !parent.trim().isEmpty()) ?
+                parent + "." : "";
+
+        for(String key: mapping.keySet()) {
+
+            String hierarchicalFieldName = parent + key;
+
+            if(key.equals("properties")) {
+
+                processMap(mapping.get("properties"), hierarchicalFieldName, listFields);
+
+            } else if (mapping.get(key).containsKey("properties")) {
+
+                processMap((Map) mapping.get(key).get("properties"), hierarchicalFieldName, listFields);
+
+            } else if (!key.equals("type")) {
+
+                listFields.add(hierarchicalFieldName);
+
+            }
+
+        }
+
     }
 
     private boolean validateWalmartTaxonomy(String categoryName, Integer depth) {

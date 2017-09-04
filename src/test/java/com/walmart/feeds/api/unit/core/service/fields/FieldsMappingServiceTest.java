@@ -3,6 +3,7 @@ package com.walmart.feeds.api.unit.core.service.fields;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.UserException;
+import com.walmart.feeds.api.core.persistence.elasticsearch.ElasticSearchService;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
@@ -10,7 +11,6 @@ import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingHistory;
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingService;
 import com.walmart.feeds.api.core.service.fields.FieldsMappingServiceImpl;
-import com.walmart.feeds.api.persistence.ElasticSearchComponent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class FieldsMappingServiceTest {
     private FieldsMappingHistoryRepository historyRepository;
 
     @Mock
-    private ElasticSearchComponent elasticSearchComponent;
+    private ElasticSearchService elasticSearchService;
 
     @InjectMocks
     private FieldsMappingService mappingService = new FieldsMappingServiceImpl();
@@ -85,7 +85,7 @@ public class FieldsMappingServiceTest {
     @Before
     public void init() {
 
-        Mockito.when(elasticSearchComponent.getWalmartFields())
+        Mockito.when(elasticSearchService.getSkuFieldsMapping())
                 .thenReturn(WM_FIELDS);
 
     }
