@@ -115,12 +115,12 @@ public class TaxonomyBlacklistTemplateLoader implements TemplateLoader{
             add("name", "any name");
 
             Set<TaxonomyBlacklistMappingRequest> blacklistMappingsRequest = new HashSet(Arrays.asList(
-                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.WALMART.getName()).taxonomy("Eletrônicos > TVs").build(),
-                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.getName()).taxonomy("Informática").build(),
-                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.getName()).taxonomy("Informática > Computadores").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.WALMART.name()).taxonomy("Eletrônicos > TVs").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.name()).taxonomy("Informática").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.name()).taxonomy("Informática > Computadores").build(),
                     // this is invalid because it is not mapped on PartnerTaxonomy above
-                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.getName()).taxonomy("Eletrônicos").build(),
-                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.getName()).taxonomy("Eletrônicos > Vídeo").build()
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.name()).taxonomy("Eletrônicos").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.name()).taxonomy("Eletrônicos > Vídeo").build()
             ));
 
             add("list", blacklistMappingsRequest);
