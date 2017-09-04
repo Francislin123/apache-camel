@@ -197,6 +197,8 @@ public class FeedServiceImpl implements FeedService {
         FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
                 new UserException(String.format("Field mapping not found for slug='%s'",feedEntity.getFieldsMapping().getSlug())));
 
+        TaxonomyBlacklistPartnerValidator.validatePartnerTaxonomiesOnBlacklist(taxonomyBlacklist, partnerTaxonomyEntity);
+
         if (feedEntity.getCollectionId() != null) {
             productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
         }

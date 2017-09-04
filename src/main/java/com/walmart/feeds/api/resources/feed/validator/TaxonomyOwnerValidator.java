@@ -17,6 +17,6 @@ public class TaxonomyOwnerValidator implements ConstraintValidator<ValidTaxonomy
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
         ((ConstraintValidatorContextImpl) constraintValidatorContext).addExpressionVariable("taxonomyOwnerPossibleValues", Arrays.asList(TaxonomyOwner.values()));
-        return Arrays.asList(TaxonomyOwner.values()).stream().anyMatch(f -> f.getName().equals(value));
+        return Arrays.asList(TaxonomyOwner.values()).stream().anyMatch(f -> f.name().equalsIgnoreCase(value));
     }
 }

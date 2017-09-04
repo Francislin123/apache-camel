@@ -82,7 +82,7 @@ public class TaxonomyBlackListController {
                 .slug(taxonomyBlacklist.getSlug())
                 .list(taxonomyBlacklist.getList().stream().map(mapping ->
                         TaxonomyBlacklistMappingRequest.builder()
-                        .owner(mapping.getOwner().getName())
+                        .owner(mapping.getOwner().name().toLowerCase())
                         .taxonomy(mapping.getTaxonomy())
                         .build()).collect(Collectors.toSet()))
                 .creationDate(taxonomyBlacklist.getCreationDate())
@@ -108,7 +108,7 @@ public class TaxonomyBlackListController {
                 .slug(i.getSlug())
                 .list(i.getList().stream().map(mapping ->
                         TaxonomyBlacklistMappingRequest.builder()
-                                .owner(mapping.getOwner().getName())
+                                .owner(mapping.getOwner().name().toLowerCase())
                                 .taxonomy(mapping.getTaxonomy())
                                 .build()).collect(Collectors.toSet()))
                 .creationDate(i.getCreationDate())
