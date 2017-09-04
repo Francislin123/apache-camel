@@ -1,8 +1,5 @@
 package com.walmart.feeds.api.unit.core.utils;
 
-import com.walmart.feeds.api.core.exceptions.SystemException;
-import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMapping;
-import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistMappingRequest;
 import org.junit.Test;
