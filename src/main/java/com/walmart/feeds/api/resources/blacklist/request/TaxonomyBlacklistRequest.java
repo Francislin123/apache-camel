@@ -1,7 +1,9 @@
 package com.walmart.feeds.api.resources.blacklist.request;
 
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMapping;
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyElements;
+import com.walmart.feeds.api.resources.feed.validator.annotation.ValidTaxonomyOwner;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +22,6 @@ public class TaxonomyBlacklistRequest {
 
     @Valid
     @NotEmptyElements
-    private Set<TaxonomyBlacklistMapping> list;
+    private Set<TaxonomyBlacklistMappingRequest> list;
 
 }

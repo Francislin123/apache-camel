@@ -186,7 +186,7 @@ public class FieldsMappingControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isInternalServerError());
     }
 
-    //---------------------------------- Test delete Fields Mapping begin -------------------------------------------//
+    //---------------------------------- Test delete Fields Mapping end -------------------------------------------//
 
     @Test
     public void testUpdateFieldsMapping() throws Exception {

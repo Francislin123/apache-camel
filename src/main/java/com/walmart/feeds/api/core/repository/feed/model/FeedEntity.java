@@ -2,7 +2,9 @@ package com.walmart.feeds.api.core.repository.feed.model;
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
+import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
+import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +12,7 @@ import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -37,6 +40,13 @@ public class FeedEntity extends AuditableEntity {
 
     @ManyToOne
     private PartnerEntity partner;
+
+    @ManyToOne
+    private PartnerTaxonomyEntity partnerTaxonomy;
+
+    @ManyToOne
+    @NotNull
+    private FieldsMappingEntity fieldsMapping;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
@@ -69,6 +79,9 @@ public class FeedEntity extends AuditableEntity {
     @Column(name = "flag_active")
     private boolean active;
 
+    @Column(name = "collection_id")
+    private Long collectionId;
+
     @Tolerate
     public FeedEntity() {
         //default constructor for hibernate
@@ -76,15 +89,17 @@ public class FeedEntity extends AuditableEntity {
 
     @Builder
     public FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug,
-                      String name, PartnerEntity partner, FeedType type,
+                      String name, PartnerEntity partner, PartnerTaxonomyEntity partnerTaxonomy, FieldsMappingEntity fieldsMapping, FeedType type,
                       FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat,
                       String notificationUrl, TaxonomyBlacklistEntity taxonomyBlacklist, TemplateEntity template,
-                      Map<String, String> utms, boolean active) {
+                      Map<String, String> utms, boolean active, Long collectionId) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
         this.name = name;
         this.partner = partner;
+        this.partnerTaxonomy = partnerTaxonomy;
+        this.fieldsMapping = fieldsMapping;
         this.type = type;
         this.notificationMethod = notificationMethod;
         this.notificationFormat = notificationFormat;
@@ -93,6 +108,7 @@ public class FeedEntity extends AuditableEntity {
         this.template = template;
         this.utms = utms;
         this.active = active;
+        this.collectionId = collectionId;
     }
 }
 

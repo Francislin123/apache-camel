@@ -25,7 +25,13 @@ public class FeedResponse {
 
     private String template;
 
+    private String taxonomyBlacklist;
+
     private FeedNotificationData notification;
+
+    private String taxonomy;
+
+    private String fieldMapping;
 
     private Map<String, String> utms;
 
@@ -36,5 +42,7 @@ public class FeedResponse {
     private LocalDateTime updateDate;
 
     private boolean active;
+
+    private Long collectionId;
 
 }

@@ -10,6 +10,9 @@ import com.walmart.feeds.api.resources.partner.request.PartnerUpdateRequest;
 import java.util.Arrays;
 
 public class PartnerTemplateLoader implements TemplateLoader {
+
+    public static final String PARTNER_ENTITY = "partner_entity";
+
     @Override
     public void load() {
         Fixture.of(PartnerRequest.class).addTemplate("valid_partner_request", new Rule() {{
@@ -34,7 +37,7 @@ public class PartnerTemplateLoader implements TemplateLoader {
             add("description", "Texto descritivo");
         }});
 
-        Fixture.of(PartnerEntity.class).addTemplate("partner_entity", new Rule() {{
+        Fixture.of(PartnerEntity.class).addTemplate(PARTNER_ENTITY, new Rule() {{
             add("name", "Buscape");
             add("slug", "buscape");
             add("description", "Texto descritivo");

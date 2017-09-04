@@ -9,26 +9,12 @@ import java.util.Arrays;
  */
 public enum TaxonomyOwner {
 
-    WALMART("Walmart"), PARTNER("Partner");
+    WALMART, PARTNER;
 
-    private String name;
-
-    TaxonomyOwner(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public TaxonomyOwner getFromName(String name) {
-        return Arrays.stream(TaxonomyOwner.values()).filter(f -> f.name.equals(name))
+    public static TaxonomyOwner getFromName(String name) {
+        return Arrays.stream(TaxonomyOwner.values()).filter(f -> f.name().equalsIgnoreCase(name))
                 .findFirst()
                 .orElseThrow(() -> new SystemException("TaxonomyOwner not found for type=" + name));
     }
 
-    @Override
-    public String toString() {
-        return this.name;
-    }
 }

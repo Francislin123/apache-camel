@@ -44,11 +44,21 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("utms", utms);
             add("active", true);
             add("template", "template-buscape");
-            add("taxonomyBlackliskSlug", "blacklist-taxonomia-buscape");
+            add("taxonomyBlacklist", "blacklist-taxonomia-buscape");
+            add("fieldMapping", "google-fields");
+            add("taxonomy", "google-taxonomy");
         }});
 
         Fixture.of(FeedRequest.class).addTemplate("feed-full-api-valid").inherits("feed-request-generic-valid", new Rule() {{
             add("type", FeedType.FULL.getType());
+            add("collectionId", 7380L);
+            FeedNotificationData notification = Fixture.from(FeedNotificationData.class).gimme("notification-api-valid");
+            add("notification", notification);
+        }});
+
+        Fixture.of(FeedRequest.class).addTemplate("feed-full-api-invalid-collection-id").inherits("feed-request-generic-valid", new Rule() {{
+            add("type", FeedType.FULL.getType());
+            add("collectionId", 4447L);
             FeedNotificationData notification = Fixture.from(FeedNotificationData.class).gimme("notification-api-valid");
             add("notification", notification);
         }});

@@ -9,6 +9,7 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEn
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.resources.blacklist.TaxonomyBlackListController;
+import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistRequest;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,42 +50,46 @@ public class TaxonomyBlacklistControllerTest {
     @Test
     public void testTaxonomyBlacklistCreation() throws Exception {
 
-        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity");
+        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
         when(taxonomyBlacklistService.create(any(TaxonomyBlacklistEntity.class))).thenReturn(entity);
         mockMvc.perform(post(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON)
-                .content(MapperUtil.getMapsAsJson(entity))).andExpect(status().isCreated());
+                .content(MapperUtil.getMapsAsJson(Fixture.from(TaxonomyBlacklistRequest.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST_REQUEST))))
+                .andExpect(status().isCreated());
     }
 
     @Test
     public void testTaxonomyBlacklistExceptionCreation() throws Exception {
-        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity");
+        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
         when(taxonomyBlacklistService.create(any(TaxonomyBlacklistEntity.class))).thenThrow(EntityAlreadyExistsException.class);
         mockMvc.perform(post(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON)
-                .content(MapperUtil.getMapsAsJson(entity))).andExpect(status().isConflict());
+                .content(MapperUtil.getMapsAsJson(Fixture.from(TaxonomyBlacklistRequest.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST_REQUEST))))
+                .andExpect(status().isConflict());
     }
 
     @Test
     public void testUpdateBlacklist() throws Exception {
-        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity");
+        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
         doNothing().when(taxonomyBlacklistService).update(any(TaxonomyBlacklistEntity.class));
 
         mockMvc.perform(put(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY+"/slug").contentType(MediaType.APPLICATION_JSON)
-                .content(MapperUtil.getMapsAsJson(entity))).andExpect(status().isOk());
+                .content(MapperUtil.getMapsAsJson(Fixture.from(TaxonomyBlacklistRequest.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST_REQUEST))))
+                .andExpect(status().isOk());
 
     }
 
     @Test
     public void testUpdateInvalidBlackList() throws Exception {
 
-        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity");
+        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
         doThrow(EntityNotFoundException.class).when(taxonomyBlacklistService).update(any(TaxonomyBlacklistEntity.class));
 
         mockMvc.perform(put(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY+ "/anySlug").contentType(MediaType.APPLICATION_JSON)
-                .content(MapperUtil.getMapsAsJson(entity))).andExpect(status().isNotFound());
+                .content(MapperUtil.getMapsAsJson(Fixture.from(TaxonomyBlacklistRequest.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST_REQUEST))))
+                .andExpect(status().isNotFound());
 
 
     }
@@ -93,7 +98,7 @@ public class TaxonomyBlacklistControllerTest {
     public void testFetchTaxonomyBlackListBySlug() throws Exception {
 
         String slug = "any-name";
-        when(taxonomyBlacklistService.find(slug)).thenReturn(Fixture.from(TaxonomyBlacklistEntity.class).gimme("tax-bl-entity"));
+        when(taxonomyBlacklistService.find(slug)).thenReturn(Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST));
 
         mockMvc.perform(get(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY + "/" + slug)
                     .contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -119,7 +124,7 @@ public class TaxonomyBlacklistControllerTest {
     public void testFetchAll() throws Exception {
 
         when(taxonomyBlacklistService.findAll())
-                .thenReturn(Fixture.from(TaxonomyBlacklistEntity.class).gimme(2, "tax-bl-entity"));
+                .thenReturn(Fixture.from(TaxonomyBlacklistEntity.class).gimme(2, TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST));
 
         mockMvc.perform(get(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isOk())

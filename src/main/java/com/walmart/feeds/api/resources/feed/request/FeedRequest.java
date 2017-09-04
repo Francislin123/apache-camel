@@ -32,7 +32,7 @@ public class FeedRequest {
     @ValidFeedNotificationUrl
     private FeedNotificationData notification;
 
-    private String taxonomyBlackliskSlug;
+    private String taxonomyBlacklist;
 
     @Valid
     @NotEmptyMapEntry(allowedKeyPattern = "[\\w\\d-_]+", allowedValuePattern = "[\\w\\d\\s-_]+")
@@ -43,5 +43,12 @@ public class FeedRequest {
 
     @NotBlank
     private String template;
+
+    private Long collectionId;
+
+    @NotBlank
+    private String fieldMapping;
+
+    private String taxonomy;
 
 }
