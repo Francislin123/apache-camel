@@ -72,24 +72,6 @@ public class TaxonomyBlacklistServiceTest {
         assertEquals(entity.getSlug(), entitySaved.getSlug());
     }
 
-    @Test
-    public void createTaxonomyBlacklistTestWithInvalidWalmartTaxonomy(){
-
-        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TB_INVALID_WALMART_TAXONOMY);
-
-        when(taxonomyBlacklistRepository.saveAndFlush(entity)).thenReturn(entity);
-
-        when(taxonomyBlacklistHistoryRepository.save(any(TaxonomyBlacklistHistory.class))).thenReturn(any(TaxonomyBlacklistHistory.class));
-
-        try {
-            TaxonomyBlacklistEntity entitySaved = this.taxonomyBlacklistService.create(entity);
-            fail("A UserException was expected!");
-        } catch (UserException e) {
-            assertTrue(e.getMessage().contains("The following walmart taxonomies aren't in walmart structure"));
-        }
-
-    }
-
     @Test(expected = EntityAlreadyExistsException.class)
     public void duplicatedEntityTest(){
 

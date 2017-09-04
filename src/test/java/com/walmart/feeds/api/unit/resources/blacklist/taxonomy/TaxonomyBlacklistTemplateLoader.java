@@ -7,7 +7,6 @@ import br.com.six2six.fixturefactory.loader.TemplateLoader;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMapping;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
-import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
 import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistMappingRequest;
@@ -23,6 +22,7 @@ public class TaxonomyBlacklistTemplateLoader implements TemplateLoader{
     public static final String TAXONOMY_BLACKLIST_WITHOUT_PARTNER_MAPPING = "taxonomy-blacklist-without-partner-mapping";
     public static final String TB_INVALID_WALMART_TAXONOMY = "tb-invalid-walmart-taxonomy";
     public static final String TB_INVALID_PARTNER_TAXONOMY = "tb-invalid-partner-taxonomy";
+    public static final String TB_INVALID_PARTNER_TAXONOMY_NULL_ELEMENT = "tb-invalid-partner-null-taxonomy";
 
     @Override
     public void load() {
@@ -86,6 +86,18 @@ public class TaxonomyBlacklistTemplateLoader implements TemplateLoader{
                     TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.PARTNER).taxonomy("Informática > Computadores").build(),
                     // this is invalid because it is not mapped on PartnerTaxonomy above
                     TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.PARTNER).taxonomy("Eletrônicos").build(),
+                    TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.PARTNER).taxonomy("Eletrônicos > Vídeo").build()
+            ));
+
+            add("list", blacklistMappings);
+        }});
+
+        Fixture.of(TaxonomyBlacklistEntity.class).addTemplate(TB_INVALID_PARTNER_TAXONOMY_NULL_ELEMENT).inherits(TAXONOMY_BLACKLIST, new Rule() {{
+            Set<TaxonomyBlacklistMapping> blacklistMappings = new HashSet(Arrays.asList(
+                    TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.WALMART).taxonomy("Eletrônicos > TVs").build(),
+                    TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.PARTNER).taxonomy("Informática").build(),
+                    null,
+                    // this is invalid because it is not mapped on PartnerTaxonomy above
                     TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.PARTNER).taxonomy("Eletrônicos > Vídeo").build()
             ));
 

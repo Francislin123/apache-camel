@@ -4,6 +4,7 @@ import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistPartnerException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class TaxonomyBlacklistPartnerValidator {
 
 
         if (!nonMachedTaxonomies.isEmpty()) {
-            throw new UserException("The partner taxonomies on blacklist were not recognized with the taxonomies saved previously from CSV file: " + nonMachedTaxonomies);
+            throw new TaxonomyBlacklistPartnerException("The partner taxonomies on blacklist were not recognized with the taxonomies saved previously from CSV file: " + nonMachedTaxonomies);
         }
 
     }
@@ -52,7 +53,7 @@ public class TaxonomyBlacklistPartnerValidator {
         List<String> partnerTaxonomies = new ArrayList<>();
 
         blacklist.getList().forEach(m -> {
-            if (m.getOwner() == TaxonomyOwner.PARTNER) {
+            if (m != null && m.getOwner() == TaxonomyOwner.PARTNER) {
                 partnerTaxonomies.add(m.getTaxonomy());
             }
         });

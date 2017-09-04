@@ -21,6 +21,8 @@ import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistNotFoundException;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistPartnerException;
 import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.core.service.feed.ProductCollectionService;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
@@ -201,7 +203,28 @@ public class FeedServiceImplTest {
 
     }
 
-    @Test(expected = UserException.class)
+    @Test(expected = TaxonomyBlacklistNotFoundException.class)
+    public void testCreateFeedFailureWhenTaxonomyBlacklistNotExists() {
+
+        FeedEntity f = Fixture.from(FeedEntity.class).gimme(FeedEntityTemplateLoader.FEED_ENTITY);
+
+        doNothing().when(productCollectionService).validateCollectionExists(7380L);
+
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(partnerService.findActiveBySlug(anyString())).thenReturn(f.getPartner());
+        when(templateRepository.findBySlug(anyString())).thenReturn(Optional.of(f.getTemplate()));
+        when(partnerTaxonomyRepository.findBySlugAndPartner(f.getPartnerTaxonomy().getSlug(), f.getPartner())).thenReturn(Optional.of(f.getPartnerTaxonomy()));
+        when(fieldsMappingRepository.findBySlug(anyString())).thenReturn(Optional.of(f.getFieldsMapping()));
+        when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(f);
+        when(feedHistoryRepository.save(any(FeedHistory.class))).thenReturn(mock(FeedHistory.class));
+        when(taxonomyBlacklistRepository.findBySlug(f.getTaxonomyBlacklist().getSlug()))
+                .thenReturn(Optional.empty());
+
+        feedService.createFeed(f);
+
+    }
+
+    @Test(expected = TaxonomyBlacklistPartnerException.class)
     public void testCreateFeedFailureWhenBlacklistPartnerTaxonomyNotExists() {
 
         FeedEntity f = Fixture.from(FeedEntity.class).gimme(FeedEntityTemplateLoader.FEED_ENTITY_WITH_INVALID_PARTNER_TAXONOMY_BLACKLIST);

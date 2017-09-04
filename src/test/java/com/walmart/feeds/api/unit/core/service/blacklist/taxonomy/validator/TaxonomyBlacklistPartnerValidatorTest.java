@@ -102,7 +102,28 @@ public class TaxonomyBlacklistPartnerValidatorTest {
     }
 
     @Test
-    public void testValidatePartnerTaxonomyWhenPartnerTaxonomyIsNull() throws Exception {
+    public void testValidatePartnerTaxonomyWhenBlacklistContainsNullElements() {
+
+        PartnerTaxonomyEntity partnerTaxonomy = Fixture
+                .from(PartnerTaxonomyEntity.class)
+                .gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY);
+        partnerTaxonomy = getSpy(partnerTaxonomy);
+
+        TaxonomyBlacklistEntity blacklist = Fixture
+                .from(TaxonomyBlacklistEntity.class)
+                .gimme(TaxonomyBlacklistTemplateLoader.TB_INVALID_PARTNER_TAXONOMY_NULL_ELEMENT);
+        blacklist = getSpy(blacklist);
+
+        TaxonomyBlacklistPartnerValidator
+                .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
+
+        verify(blacklist).getList();
+        verify(partnerTaxonomy).getTaxonomyMappings();
+
+    }
+
+    @Test
+    public void testValidatePartnerTaxonomyWhenBlacklistIsNull() throws Exception {
 
         PartnerTaxonomyEntity partnerTaxonomy = Fixture
                 .from(PartnerTaxonomyEntity.class)
@@ -119,7 +140,7 @@ public class TaxonomyBlacklistPartnerValidatorTest {
     }
 
     @Test
-    public void testValidatePartnerTaxonomyWhenBlacklistIsNull() throws Exception {
+    public void testValidatePartnerTaxonomyWhenPartnerTaxonomyIsNull() throws Exception {
 
         PartnerTaxonomyEntity partnerTaxonomy = null;
 
