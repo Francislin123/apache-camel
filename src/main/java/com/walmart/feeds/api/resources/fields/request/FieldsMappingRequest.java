@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.resources.fields.request;
 
 import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
+import com.walmart.feeds.api.core.utils.Constants;
 import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyElements;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +20,7 @@ import java.util.List;
 public class FieldsMappingRequest {
 
     @NotBlank
-    @Pattern(regexp = "^[\\S].*\\S", message = "The name cannot start or ends with whitespace")
+    @Pattern(regexp = Constants.NO_SPACES_START_END, message = "The name cannot start or ends with whitespace")
     private String name;
 
     @Valid
