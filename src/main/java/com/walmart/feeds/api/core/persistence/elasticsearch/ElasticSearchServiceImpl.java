@@ -17,18 +17,6 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
     @Autowired
     private ElasticsearchTemplate elasticsearchTemplate;
 
-    private boolean validateWalmartTaxonomy(String categoryName, Integer depth) {
-        BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
-        queryBuilder.must(matchQuery("categories.name", categoryName));
-        queryBuilder.must(matchQuery("categories.depth", depth));
-        NestedQueryBuilder nestedQueryBuilder = QueryBuilders.nestedQuery("categories", queryBuilder);
-
-        return elasticsearchTemplate.count(new NativeSearchQueryBuilder()
-                .withIndices("skus")
-                .withTypes("sku")
-                .withQuery(nestedQueryBuilder)
-                .build()) > 0;
-    }
     @Override
     public boolean validateWalmartTaxonomy(String taxonomy){
         if(StringUtils.isEmpty(taxonomy)){
@@ -43,5 +31,18 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
             }
             return valid;
         }
+    }
+
+    private boolean validateWalmartTaxonomy(String categoryName, Integer depth) {
+        BoolQueryBuilder queryBuilder = new BoolQueryBuilder();
+        queryBuilder.must(matchQuery("categories.name", categoryName));
+        queryBuilder.must(matchQuery("categories.depth", depth));
+        NestedQueryBuilder nestedQueryBuilder = QueryBuilders.nestedQuery("categories", queryBuilder);
+
+        return elasticsearchTemplate.count(new NativeSearchQueryBuilder()
+                .withIndices("skus")
+                .withTypes("sku")
+                .withQuery(nestedQueryBuilder)
+                .build()) > 0;
     }
 }
