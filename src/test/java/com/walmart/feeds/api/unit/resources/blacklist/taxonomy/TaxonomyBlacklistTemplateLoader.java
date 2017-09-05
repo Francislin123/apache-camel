@@ -18,6 +18,7 @@ public class TaxonomyBlacklistTemplateLoader implements TemplateLoader{
 
     public static final String TAXONOMY = "taxonomy";
     public static final String TAXONOMY_BLACKLIST_REQUEST = "tax-bl-request";
+    public static final String TAXONOMY_BLACKLIST_REQUEST_DUPLICATED_TAXONOMIES = "tax-bl-request-duplicated-taxonomies";
     public static final String TAXONOMY_BLACKLIST = "taxonomy-blacklist-entity";
     public static final String TAXONOMY_BLACKLIST_WITHOUT_PARTNER_MAPPING = "taxonomy-blacklist-without-partner-mapping";
     public static final String TB_INVALID_WALMART_TAXONOMY = "tb-invalid-walmart-taxonomy";
@@ -116,6 +117,23 @@ public class TaxonomyBlacklistTemplateLoader implements TemplateLoader{
 
             Set<TaxonomyBlacklistMappingRequest> blacklistMappingsRequest = new HashSet(Arrays.asList(
                     TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.WALMART.name()).taxonomy("Eletrônicos > TVs").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.name()).taxonomy("Informática").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.name()).taxonomy("Informática > Computadores").build(),
+                    // this is invalid because it is not mapped on PartnerTaxonomy above
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.name()).taxonomy("Eletrônicos").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.name()).taxonomy("Eletrônicos > Vídeo").build()
+            ));
+
+            add("list", blacklistMappingsRequest);
+        }});
+
+        Fixture.of(TaxonomyBlacklistRequest.class).addTemplate(TAXONOMY_BLACKLIST_REQUEST_DUPLICATED_TAXONOMIES, new Rule() {{
+            add("name", "any name");
+
+            Set<TaxonomyBlacklistMappingRequest> blacklistMappingsRequest = new HashSet(Arrays.asList(
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.WALMART.name()).taxonomy("Eletrônicos > TVs").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.WALMART.name()).taxonomy("Eletrônicos > TVs").build(),
+                    TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.name()).taxonomy("Informática").build(),
                     TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.name()).taxonomy("Informática").build(),
                     TaxonomyBlacklistMappingRequest.builder().owner(TaxonomyOwner.PARTNER.name()).taxonomy("Informática > Computadores").build(),
                     // this is invalid because it is not mapped on PartnerTaxonomy above

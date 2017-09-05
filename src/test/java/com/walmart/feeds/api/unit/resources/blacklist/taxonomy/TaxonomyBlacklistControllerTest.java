@@ -11,16 +11,20 @@ import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.resources.blacklist.TaxonomyBlackListController;
 import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistRequest;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -66,6 +70,27 @@ public class TaxonomyBlacklistControllerTest {
         mockMvc.perform(post(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON)
                 .content(MapperUtil.getMapsAsJson(Fixture.from(TaxonomyBlacklistRequest.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST_REQUEST))))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void testCreateWithDuplicatedTaxonomy() throws Exception {
+
+        TaxonomyBlacklistEntity taxonomyBlacklist = Fixture.from(TaxonomyBlacklistEntity.class)
+                .gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
+
+        when(taxonomyBlacklistService.create(any(TaxonomyBlacklistEntity.class))).thenReturn(taxonomyBlacklist);
+        mockMvc.perform(post(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY).contentType(MediaType.APPLICATION_JSON)
+                .content(MapperUtil.getMapsAsJson(Fixture.from(TaxonomyBlacklistRequest.class)
+                        .gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST_REQUEST_DUPLICATED_TAXONOMIES))))
+                .andExpect(status().isCreated());
+
+        ArgumentCaptor<TaxonomyBlacklistEntity> argumentCaptor = ArgumentCaptor.forClass(TaxonomyBlacklistEntity.class);
+        verify(taxonomyBlacklistService).create(argumentCaptor.capture());
+
+        TaxonomyBlacklistEntity blacklist = argumentCaptor.getValue();
+        blacklist.getList().forEach(t -> System.out.println(t.getTaxonomy()));
+        assertEquals(5, blacklist.getList().size());
+
     }
 
     @Test

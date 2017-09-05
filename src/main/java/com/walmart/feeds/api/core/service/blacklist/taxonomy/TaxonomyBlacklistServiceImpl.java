@@ -9,6 +9,7 @@ import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistHistoryR
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistHistory;
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMapping;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
@@ -38,6 +39,8 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
     @Override
     @Transactional
     public TaxonomyBlacklistEntity create(TaxonomyBlacklistEntity taxonomyBlacklistEntity) {
+
+        hasConflict(taxonomyBlacklistEntity.getSlug());
 
         validateBlacklist(taxonomyBlacklistEntity);
 
@@ -112,10 +115,10 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
                 .filter(mapping ->
                         mapping.getOwner() == TaxonomyOwner.WALMART && !elasticSearchService.validateWalmartTaxonomy(mapping.getTaxonomy())
                 )
-                .map(mapping -> mapping.getTaxonomy())
+                .map(TaxonomyBlacklistMapping::getTaxonomy)
                 .collect(Collectors.toList());
         if(!expList.isEmpty()){
-            throw new UserException("The following walmart taxonomies aren't in walmart structure: " + expList);
+            throw new UserException("The following walmart taxonomies aren't in walmart structure: ", expList);
         }
     }
 }

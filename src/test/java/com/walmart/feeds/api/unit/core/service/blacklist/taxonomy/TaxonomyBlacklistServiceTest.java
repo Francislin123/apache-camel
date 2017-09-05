@@ -73,13 +73,13 @@ public class TaxonomyBlacklistServiceTest {
     }
 
     @Test(expected = EntityAlreadyExistsException.class)
-    public void duplicatedEntityTest(){
+    public void testSaveWhenBlacklistAlreadyExists(){
 
-        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
+        TaxonomyBlacklistEntity blacklist = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
-        when(taxonomyBlacklistRepository.saveAndFlush(entity)).thenThrow(EntityAlreadyExistsException.class);
+        when(taxonomyBlacklistRepository.findBySlug(blacklist.getSlug())).thenReturn(Optional.of(blacklist));
 
-        this.taxonomyBlacklistService.create(entity);
+        this.taxonomyBlacklistService.create(blacklist);
 
     }
 
