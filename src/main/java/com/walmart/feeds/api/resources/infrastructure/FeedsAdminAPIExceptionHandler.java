@@ -21,6 +21,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import javax.servlet.ServletException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -109,6 +110,7 @@ public class FeedsAdminAPIExceptionHandler {
                 .body(ErrorResponse.builder()
                         .code(ex.getErrorCode().toString())
                         .description(ex.getMessage())
+                        .invalidList(ex.getExceptionList())
                         .build());
     }
 

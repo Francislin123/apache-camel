@@ -25,6 +25,8 @@ public class FeedResponse {
 
     private String template;
 
+    private String taxonomyBlacklist;
+
     private FeedNotificationData notification;
 
     private String taxonomy;

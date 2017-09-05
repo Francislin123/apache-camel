@@ -30,6 +30,7 @@ ext {
     springFoxVersion = '2.4.0'
     hibernateVersion = '5.0.12.Final'
     camelVersion ='2.19.2'
+    elasticSearchVersion ='5.5.2'
     feingVersion ='9.3.1'
 }
 
@@ -118,9 +119,11 @@ task printProjectVersion() {
 }
 
 dependencies {
+
     compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-data-elasticsearch:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
 
@@ -130,6 +133,7 @@ dependencies {
     compile "io.github.openfeign:feign-slf4j:${feingVersion}"
 
     compile "org.hibernate:hibernate-java8:${hibernateVersion}"
+    compile "oracle:ojdbc6:11.2.0.3"
 
     compile "io.springfox:springfox-swagger2:${springFoxVersion}"
     compile "io.springfox:springfox-swagger-ui:${springFoxVersion}"
@@ -138,8 +142,6 @@ dependencies {
     compile "org.apache.camel:camel-csv:${camelVersion}"
     compile "org.apache.camel:camel-bindy:${camelVersion}"
     compile "commons-io:commons-io:2.5"
-
-    compile "oracle:ojdbc6:11.2.0.3"
 
     testCompile "br.com.six2six:fixture-factory:3.1.0"
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"

@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.resources.feed;
 
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
@@ -65,6 +66,9 @@ public class FeedsController {
                 .partner(PartnerEntity.builder()
                         .slug(partnerSlug)
                         .build())
+                .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
+                        .slug(request.getTaxonomyBlacklist())
+                        .build())
                 .type(FeedType.getFromCode(request.getType()))
                 .template(TemplateEntity.builder()
                         .slug(request.getTemplate())
@@ -95,6 +99,7 @@ public class FeedsController {
                 .template(feedEntity.getTemplate().getSlug())
                 .fieldMapping(feedEntity.getPartner().getSlug())
                 .taxonomy(feedEntity.getPartner().getSlug())
+                .taxonomyBlacklist(getTaxonomyBlacklistSlug(feedEntity))
                 .slug(feedEntity.getSlug())
                 .notification(FeedNotificationData.builder()
                         .format(feedEntity.getNotificationFormat().getType())
@@ -135,6 +140,7 @@ public class FeedsController {
                         .template(f.getTemplate().getSlug())
                         .taxonomy(f.getPartnerTaxonomy().getSlug())
                         .fieldMapping(f.getFieldsMapping().getSlug())
+                        .taxonomyBlacklist(getTaxonomyBlacklistSlug(f))
                         .notification(FeedNotificationData.builder()
                                 .format(f.getNotificationFormat().getType())
                                 .method(f.getNotificationMethod().getType())
@@ -179,7 +185,7 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "FeedEntity removed with success", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Invalid feed reference")})
     @RequestMapping(value = "{feedSlug}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateFeed(@Valid @RequestBody FeedRequest request, @PathVariable("feedSlug") String feedSlug, @PathVariable("partnerSlug") String partnerSlug, UriComponentsBuilder builder) {
+    public ResponseEntity updateFeed(@Valid @RequestBody FeedRequest request, @PathVariable("feedSlug") String feedSlug, @PathVariable("partnerSlug") String partnerSlug) {
 
         FeedEntity feedEntity = FeedEntity.builder()
                 .slug(feedSlug)
@@ -201,15 +207,23 @@ public class FeedsController {
                 .partner(PartnerEntity.builder()
                         .slug(partnerSlug)
                         .build())
+                .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
+                        .slug(request.getTaxonomyBlacklist())
+                        .build())
                 .type(FeedType.getFromCode(request.getType()))
                 .utms(request.getUtms())
                 .build();
 
         feedService.updateFeed(feedEntity);
 
-        UriComponents uriComponents =
-                builder.path(V1_FEEDS.concat("/{slug}")).buildAndExpand(partnerSlug, feedEntity.getSlug());
-
         return ResponseEntity.ok().build();
     }
+
+    private String getTaxonomyBlacklistSlug(FeedEntity feedEntity) {
+        if(feedEntity.getTaxonomyBlacklist() == null) {
+            return null;
+        }
+        return feedEntity.getTaxonomyBlacklist().getSlug();
+    }
+
 }
