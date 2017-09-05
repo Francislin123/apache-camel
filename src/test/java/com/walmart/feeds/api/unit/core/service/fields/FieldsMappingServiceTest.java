@@ -25,6 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 
@@ -123,7 +126,9 @@ public class FieldsMappingServiceTest {
 
         } catch (UserException e) {
 
-            Assert.assertEquals("These walmart fields does not exists: [price]", e.getMessage());
+            assertNotNull(e.getExceptionList());
+            assertFalse(e.getExceptionList().isEmpty());
+            assertTrue(e.getExceptionList().contains("price"));
             Mockito.verify(fmRepository).findBySlug(anyString());
             Mockito.verify(fmRepository, Mockito.times(0)).saveAndFlush(any(FieldsMappingEntity.class));
             Mockito.verify(historyRepository, Mockito.times(0)).saveAndFlush(any(FieldsMappingHistory.class));

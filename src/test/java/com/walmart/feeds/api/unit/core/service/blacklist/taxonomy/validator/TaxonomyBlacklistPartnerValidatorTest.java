@@ -97,8 +97,9 @@ public class TaxonomyBlacklistPartnerValidatorTest {
                     .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
             fail("TaxonomyBlacklistPartnerException was expected!");
         } catch (TaxonomyBlacklistPartnerException e) {
-            e.printStackTrace();
-            assertTrue(e.getMessage().contains("Eletrônicos"));
+            assertNotNull(e.getExceptionList());
+            assertFalse(e.getExceptionList().isEmpty());
+            assertTrue(e.getExceptionList().contains("Eletrônicos"));
         }
 
     }
