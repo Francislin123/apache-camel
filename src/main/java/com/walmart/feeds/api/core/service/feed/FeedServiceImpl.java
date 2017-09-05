@@ -69,10 +69,6 @@ public class FeedServiceImpl implements FeedService {
     @Transactional
     public FeedEntity createFeed(FeedEntity feedEntity) {
 
-        if (feedEntity.getPartner() == null) {
-            throw new InconsistentEntityException("Feed must have a partner");
-        }
-
         if (feedRepository.findBySlug(feedEntity.getSlug()).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("Feed with slug='%s' already exists", feedEntity.getSlug()));
         }
