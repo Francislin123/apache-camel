@@ -174,7 +174,7 @@ public class PartnerServiceImpl implements PartnerService {
 
     private PartnerEntity findPartnerByReference(String slug) {
         return partnerRepository.findBySlug(slug)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Partner '%s' not found", slug)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Partner not found for slug='%s'", slug)));
     }
 
 }

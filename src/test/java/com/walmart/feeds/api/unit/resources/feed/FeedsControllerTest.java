@@ -9,6 +9,7 @@ import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistNotFoundException;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistPartnerException;
 import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.resources.feed.FeedsController;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
@@ -24,6 +25,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Arrays;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -103,12 +106,12 @@ public class FeedsControllerTest {
 
     @Test
     public void testCreateFeedWhenTaxonomyBlacklistContainsInvalidPartnerTaxonomy() throws Exception {
-        doThrow(EntityNotFoundException.class).when(feedService).createFeed(any(FeedEntity.class));
+        doThrow(TaxonomyBlacklistPartnerException.class).when(feedService).createFeed(any(FeedEntity.class));
 
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest")
                         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
-        ).andExpect(status().isNotFound());
+        ).andExpect(status().isBadRequest());
 
         verify(feedService, times(1)).createFeed(any(FeedEntity.class));
 

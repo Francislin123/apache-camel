@@ -44,7 +44,7 @@ public class TaxonomyBlacklistPartnerValidator {
 
 
         if (!nonMachedTaxonomies.isEmpty()) {
-            throw new TaxonomyBlacklistPartnerException("The partner taxonomies on blacklist were not recognized with the taxonomies saved previously from CSV file: " + nonMachedTaxonomies);
+            throw new TaxonomyBlacklistPartnerException("The partner taxonomies on blacklist were not recognized with the taxonomies saved previously from CSV file.", nonMachedTaxonomies);
         }
 
     }

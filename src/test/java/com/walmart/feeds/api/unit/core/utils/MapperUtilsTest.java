@@ -1,9 +1,7 @@
 package com.walmart.feeds.api.unit.core.utils;
 
-import com.walmart.feeds.api.core.exceptions.SystemException;
-import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMapping;
-import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.utils.MapperUtil;
+import com.walmart.feeds.api.resources.blacklist.request.TaxonomyBlacklistMappingRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -18,13 +16,13 @@ public class MapperUtilsTest {
 
     @Test
     public void testMappingObjToJson(){
-        TaxonomyBlacklistMapping mapping = TaxonomyBlacklistMapping.builder().taxonomy("any > taxonomy")
-                .owner(TaxonomyOwner.PARTNER)
+        TaxonomyBlacklistMappingRequest mapping = TaxonomyBlacklistMappingRequest.builder().taxonomy("any > taxonomy")
+                .owner("partner")
                 .build();
-        List<TaxonomyBlacklistMapping> list = new ArrayList<>();
+        List<TaxonomyBlacklistMappingRequest> list = new ArrayList<>();
         list.add(mapping);
 
-        String json = "[{\"taxonomy\":\"any > taxonomy\",\"owner\":\"PARTNER\"}]";
+        String json = "[{\"taxonomy\":\"any > taxonomy\",\"owner\":\"partner\"}]";
         assertEquals(json, MapperUtil.getMapsAsJson(list));
     }
 }

@@ -8,6 +8,7 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMa
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistPartnerException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.validation.TaxonomyBlacklistPartnerValidator;
 import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklistTemplateLoader;
 import org.junit.Before;
@@ -94,9 +95,11 @@ public class TaxonomyBlacklistPartnerValidatorTest {
         try {
             TaxonomyBlacklistPartnerValidator
                     .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
-            fail("UserExcetion was expected!");
-        } catch (UserException e) {
-            assertTrue(e.getMessage().contains("[Eletrônicos]"));
+            fail("TaxonomyBlacklistPartnerException was expected!");
+        } catch (TaxonomyBlacklistPartnerException e) {
+            assertNotNull(e.getExceptionList());
+            assertFalse(e.getExceptionList().isEmpty());
+            assertTrue(e.getExceptionList().contains("Eletrônicos"));
         }
 
     }

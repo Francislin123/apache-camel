@@ -132,6 +132,7 @@ public class FeedsAdminAPIExceptionHandler {
                 .body(ErrorResponse.builder()
                         .code(ex.getErrorCode().toString())
                         .description(ex.getMessage())
+                        .invalidList(ex.getExceptionList())
                         .build());
     }
 
