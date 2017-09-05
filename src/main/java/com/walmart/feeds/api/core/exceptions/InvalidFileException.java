@@ -1,10 +1,10 @@
 package com.walmart.feeds.api.core.exceptions;
 
+import com.walmart.feeds.api.resources.common.response.FileError;
+
 import java.util.List;
 
 public class InvalidFileException extends UserException {
-
-    private List<FileError> errors;
 
     public InvalidFileException(String message) {
         super(message);
@@ -19,7 +19,4 @@ public class InvalidFileException extends UserException {
         this.errors = errors;
     }
 
-    public List<FileError> getErrors() {
-        return errors;
-    }
 }

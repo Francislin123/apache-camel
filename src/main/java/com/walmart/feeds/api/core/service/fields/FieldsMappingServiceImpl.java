@@ -12,6 +12,7 @@ import com.walmart.feeds.api.core.repository.fields.model.MappedFieldEntity;
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.persistence.ElasticSearchComponent;
+import com.walmart.feeds.api.resources.common.response.SimpleError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,9 +115,11 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
         List<String> walmartFields = elasticSearchComponent.getWalmartFields();
 
-        List<String> invalidWalmartFields = fieldsMapping.getMappedFields().stream()
+        List<SimpleError> invalidWalmartFields = fieldsMapping.getMappedFields().stream()
                 .filter(field -> !walmartFields.contains(field.getWmField()))
-                .map(field -> field.getWmField())
+                .map(field -> SimpleError.builder()
+                        .message(field.getWmField())
+                        .build())
                 .collect(Collectors.toList());
 
         if (!invalidWalmartFields.isEmpty()) {

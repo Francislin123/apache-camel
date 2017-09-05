@@ -1,9 +1,8 @@
 package com.walmart.feeds.api.camel;
 
-import com.walmart.feeds.api.core.exceptions.FileError;
+import com.walmart.feeds.api.resources.common.response.FileError;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

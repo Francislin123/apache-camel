@@ -1,10 +1,10 @@
 package com.walmart.feeds.api.camel;
 
-import com.walmart.feeds.api.core.exceptions.FileError;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
+import com.walmart.feeds.api.resources.common.response.FileError;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;

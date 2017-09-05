@@ -2,7 +2,7 @@ package com.walmart.feeds.api.resources.infrastructure;
 
 import com.walmart.feeds.api.core.exceptions.*;
 import com.walmart.feeds.api.resources.common.response.ErrorResponse;
-import com.walmart.feeds.api.resources.common.response.FieldErrorResponse;
+import com.walmart.feeds.api.resources.common.response.FieldError;
 import org.apache.camel.CamelExecutionException;
 import org.apache.camel.Exchange;
 import org.slf4j.Logger;
@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -35,7 +34,7 @@ public class FeedsAdminAPIExceptionHandler {
                         .code(HttpStatus.BAD_REQUEST.toString())
                         .description("Invalid Request")
                         .errors(ex.getBindingResult().getAllErrors().stream().map(b ->
-                                (FieldError) b).map(f -> new FieldErrorResponse(f.getField(), f.getDefaultMessage(), f.getRejectedValue()))
+                                (org.springframework.validation.FieldError) b).map(f -> new FieldError(f.getField(), f.getDefaultMessage(), f.getRejectedValue()))
                                 .collect(Collectors.toList()))
                         .build());
 
@@ -72,7 +71,7 @@ public class FeedsAdminAPIExceptionHandler {
                         .code(HttpStatus.BAD_REQUEST.toString())
                         .description("Invalid Request")
                         .errors(ex.getBindingResult().getAllErrors().stream().map(b ->
-                                (FieldError) b).map(f -> new FieldErrorResponse(f.getField(), f.getDefaultMessage(), f.getRejectedValue()))
+                                (org.springframework.validation.FieldError) b).map(f -> new FieldError(f.getField(), f.getDefaultMessage(), f.getRejectedValue()))
                                 .collect(Collectors.toList()))
                         .build());
     }
@@ -132,7 +131,7 @@ public class FeedsAdminAPIExceptionHandler {
                 .body(ErrorResponse.builder()
                         .code(ex.getErrorCode().toString())
                         .description(ex.getMessage())
-                        .invalidList(ex.getExceptionList())
+                        .errors(ex.getErrors())
                         .build());
     }
 

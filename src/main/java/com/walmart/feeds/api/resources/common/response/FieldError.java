@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class FieldErrorResponse implements ErrorElementResponse {
+public class FieldError implements ErrorElementResponse {
 
     private String name;
-    private String validationMessage;
+    private String message;
     private Object rejectedValue;
 
 }
