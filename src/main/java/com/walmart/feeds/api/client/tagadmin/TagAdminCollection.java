@@ -21,7 +21,9 @@ public class TagAdminCollection {
     private Date expiresAt;
 
     @Tolerate
-    public TagAdminCollection() {}
+    public TagAdminCollection() {
+        // do nothing
+    }
 
     @Builder
     private TagAdminCollection(Integer id, Integer version, String name, String domain, String status, Date expiresAt) {

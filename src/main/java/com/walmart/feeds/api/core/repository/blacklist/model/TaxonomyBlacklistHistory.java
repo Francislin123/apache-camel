@@ -1,8 +1,6 @@
 package com.walmart.feeds.api.core.repository.blacklist.model;
 
-import com.walmart.feeds.api.core.repository.AuditableEntity;
 import com.walmart.feeds.api.core.repository.AuditableHistoryEntity;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
@@ -10,7 +8,6 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -47,5 +44,6 @@ public class TaxonomyBlacklistHistory extends AuditableHistoryEntity {
 
     @Tolerate
     public TaxonomyBlacklistHistory() {
+        // do nothing
     }
 }

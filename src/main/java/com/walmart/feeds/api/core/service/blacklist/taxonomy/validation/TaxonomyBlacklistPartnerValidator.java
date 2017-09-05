@@ -1,15 +1,19 @@
 package com.walmart.feeds.api.core.service.blacklist.taxonomy.validation;
 
-import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistPartnerException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class TaxonomyBlacklistPartnerValidator {
+
+    public TaxonomyBlacklistPartnerValidator() {
+        // do nothing
+    }
 
     /**
      *

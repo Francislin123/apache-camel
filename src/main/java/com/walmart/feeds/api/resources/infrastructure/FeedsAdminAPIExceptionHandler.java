@@ -21,7 +21,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import javax.servlet.ServletException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
