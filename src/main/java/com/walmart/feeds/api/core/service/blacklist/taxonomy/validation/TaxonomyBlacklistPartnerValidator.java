@@ -11,6 +11,10 @@ import java.util.stream.Collectors;
 
 public class TaxonomyBlacklistPartnerValidator {
 
+    public TaxonomyBlacklistPartnerValidator() {
+        // do nothing
+    }
+
     /**
      *
      * @param taxonomyEntity

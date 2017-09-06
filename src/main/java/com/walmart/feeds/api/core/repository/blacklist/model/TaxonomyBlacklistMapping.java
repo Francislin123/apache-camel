@@ -31,6 +31,7 @@ public class TaxonomyBlacklistMapping {
 
     @Tolerate
     public TaxonomyBlacklistMapping() {
+        // do nothing
     }
 
     @Builder

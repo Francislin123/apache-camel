@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.*;
 
 @Service
-//TODO: Realizar testes unitarios para essa classe
 public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PartnerTaxonomyServiceImpl.class);

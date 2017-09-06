@@ -8,6 +8,9 @@ import com.walmart.feeds.api.core.exceptions.SystemException;
 
 public class MapperUtil {
 
+    public MapperUtil() {
+        // do nothing
+    }
 
     public static <T> String getMapsAsJson(T list){
 

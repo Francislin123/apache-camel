@@ -15,14 +15,15 @@ import java.util.List;
 @Component
 public class ElasticSearchComponent {
 
-    private Logger logger = LoggerFactory.getLogger(ElasticSearchComponent.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticSearchComponent.class);
+    public static final String PROPERTIES = "properties";
 
     @Value("${elastic.mapping.sku}")
     public String urlMapping;
 
     public List<String> getWalmartFields() {
 
-        logger.info("Retrieve walmart fields from Elasticsearch");
+        LOGGER.info("Retrieve walmart fields from Elasticsearch");
 
         RestTemplate template = new RestTemplate();
         String response = template.getForEntity(urlMapping, String.class).getBody();
@@ -36,47 +37,39 @@ public class ElasticSearchComponent {
             JSONObject skuProperties = esMapping.getJSONObject("walmart")
                     .getJSONObject("mappings")
                     .getJSONObject("skus")
-                    .getJSONObject("properties");
+                    .getJSONObject(PROPERTIES);
 
             getInternalFields(skuProperties, "", listFields);
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            LOGGER.error("Json mapper error", e);
         }
-
-        System.out.println(listFields);
-
         return listFields;
-
     }
 
     private void getInternalFields(JSONObject properties, String parent, List<String> listFields) throws JSONException {
 
         JSONArray fields = properties.names();
 
-        parent = (parent != null && !parent.trim().isEmpty()) ?
+        String parentFormat = (parent != null && !parent.trim().isEmpty()) ?
                 parent + "." : "";
 
         for (int i = 0; i < fields.length(); i++) {
 
             String fieldName = fields.getString(i);
-            String hierarchicalFieldName = parent + fieldName;
+            String hierarchicalFieldName = parentFormat + fieldName;
 
             JSONObject field = properties.getJSONObject(fieldName);
 
-            if (field.has("properties")) {
+            if (field.has(PROPERTIES)) {
 
-                JSONObject internalFields = field.getJSONObject("properties");
+                JSONObject internalFields = field.getJSONObject(PROPERTIES);
                 getInternalFields(internalFields, hierarchicalFieldName, listFields);
 
             } else {
-
                 listFields.add(hierarchicalFieldName);
 
             }
-
         }
-
     }
-
 }
