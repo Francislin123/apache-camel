@@ -4,6 +4,7 @@ package com.walmart.feeds.api.unit.resources.blacklist.taxonomy;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityInUseException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
@@ -88,7 +89,6 @@ public class TaxonomyBlacklistControllerTest {
         verify(taxonomyBlacklistService).create(argumentCaptor.capture());
 
         TaxonomyBlacklistEntity blacklist = argumentCaptor.getValue();
-        blacklist.getList().forEach(t -> System.out.println(t.getTaxonomy()));
         assertEquals(5, blacklist.getList().size());
 
     }
@@ -174,6 +174,14 @@ public class TaxonomyBlacklistControllerTest {
         doNothing().when(taxonomyBlacklistService).deleteBySlug("anySlug");
 
         mockMvc.perform(delete(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY+ "/anySlug")).andExpect(status().isNoContent());
+    }
+
+    @Test
+    public void deleteTaxonomyBlacklistWhenIsInUserByFeed() throws Exception {
+
+        doThrow(EntityInUseException.class).when(taxonomyBlacklistService).deleteBySlug("anySlug");
+
+        mockMvc.perform(delete(TaxonomyBlackListController.V1_BLACKLIST_TAXONOMY+ "/anySlug")).andExpect(status().isBadRequest());
     }
 
     @Test

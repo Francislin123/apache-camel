@@ -150,7 +150,6 @@ public class FieldsMappingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(FieldsMappingRequest.class)
                         .gimme(FIELDS_MAPPING_REQUEST))))
-                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
                 .andExpect(MockMvcResultMatchers.status().isConflict());
     }
 

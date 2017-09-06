@@ -2,6 +2,7 @@ package com.walmart.feeds.api.core.service.blacklist.taxonomy;
 
 
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityInUseException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.persistence.elasticsearch.ElasticSearchService;
@@ -11,6 +12,8 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEn
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistHistory;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMapping;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
+import com.walmart.feeds.api.core.repository.feed.FeedRepository;
+import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.slf4j.Logger;
@@ -35,6 +38,9 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
 
     @Autowired
     private ElasticSearchService elasticSearchService;
+
+    @Autowired
+    private FeedRepository feedRepository;
 
     @Override
     @Transactional
@@ -98,7 +104,6 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
     @Override
     public void hasConflict(String slug) {
         if (taxonomyBlacklistRepository.findBySlug(slug).isPresent()) {
-            LOGGER.info("taxonomyBlacklist={} error=already_exists", slug);
             throw new EntityAlreadyExistsException(String.format("The Taxonomy Blacklist called %s already exists", slug));
         }
     }
@@ -106,6 +111,13 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
     @Override
     public void deleteBySlug(String slug) {
         TaxonomyBlacklistEntity toDelete = find(slug);
+
+        List<FeedEntity> feeds = feedRepository.findByTaxonomyBlacklist(toDelete);
+        if(!feeds.isEmpty()) {
+            List<String> feedsSlugs = feeds.stream().map(FeedEntity::getSlug).collect(Collectors.toList());
+            throw new EntityInUseException(String.format("Taxonomy blacklist '%s' is being used by one or more feeds", slug), feedsSlugs);
+        }
+
         taxonomyBlacklistRepository.delete(toDelete);
         LOGGER.info("taxonomyBlacklist={} message=deleted", toDelete);
     }

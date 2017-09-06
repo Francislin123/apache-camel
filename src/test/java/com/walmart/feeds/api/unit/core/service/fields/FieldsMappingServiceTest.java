@@ -193,8 +193,6 @@ public class FieldsMappingServiceTest {
 
         } catch (EntityNotFoundException e) {
 
-            System.err.println(e.getMessage());
-
             Mockito.verify(fmRepository).findBySlug(anyString());
             Mockito.verify(fmRepository, Mockito.times(0))
                     .saveAndFlush(any(FieldsMappingEntity.class));

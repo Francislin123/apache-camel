@@ -3,6 +3,7 @@ package com.walmart.feeds.api.unit.core.service.blacklist.taxonomy;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityInUseException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.persistence.elasticsearch.ElasticSearchService;
@@ -12,8 +13,11 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEn
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistHistory;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistMapping;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
+import com.walmart.feeds.api.core.repository.feed.FeedRepository;
+import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistServiceImpl;
+import com.walmart.feeds.api.unit.core.service.feed.FeedEntityTemplateLoader;
 import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklistTemplateLoader;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,10 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -47,12 +48,16 @@ public class TaxonomyBlacklistServiceTest {
     private TaxonomyBlacklistHistoryRepository taxonomyBlacklistHistoryRepository;
 
     @Mock
+    private FeedRepository feedRepository;
+
+    @Mock
     private ElasticSearchService elasticSearchService;
 
     @Before
     public void init() {
 
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.blacklist.taxonomy");
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.core.service.feed");
 
         when(elasticSearchService.validateWalmartTaxonomy("Eletrônicos > TVs")).thenReturn(true);
 
@@ -62,6 +67,8 @@ public class TaxonomyBlacklistServiceTest {
     public void createTaxonomyBlacklistTest(){
 
         TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
+
+        when(taxonomyBlacklistRepository.findBySlug(entity.getSlug())).thenReturn(Optional.empty());
 
         when(taxonomyBlacklistRepository.saveAndFlush(entity)).thenReturn(entity);
 
@@ -135,9 +142,9 @@ public class TaxonomyBlacklistServiceTest {
     public void testDelete(){
 
         TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
-
         when(taxonomyBlacklistRepository.findBySlug("any-name")).thenReturn(Optional.of(entity));
-        doNothing().when(taxonomyBlacklistRepository).delete(entity);
+
+        when(feedRepository.findByTaxonomyBlacklist(any(TaxonomyBlacklistEntity.class))).thenReturn(new ArrayList<>());
 
         this.taxonomyBlacklistService.deleteBySlug("any-name");
 
@@ -151,6 +158,19 @@ public class TaxonomyBlacklistServiceTest {
         doThrow(EntityNotFoundException.class).when(taxonomyBlacklistRepository).findBySlug("invalidSlug");
 
         this.taxonomyBlacklistService.deleteBySlug("invalidSlug");
+    }
+
+    @Test(expected = EntityInUseException.class)
+    public void testDeleteWhenBlacklistIsInUseByFeed(){
+
+        TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
+        when(taxonomyBlacklistRepository.findBySlug(anyString())).thenReturn(Optional.of(entity));
+
+        FeedEntity feed = Fixture.from(FeedEntity.class).gimme(FeedEntityTemplateLoader.FEED_ENTITY);
+        when(feedRepository.findByTaxonomyBlacklist(any(TaxonomyBlacklistEntity.class))).thenReturn(Arrays.asList(feed));
+
+        this.taxonomyBlacklistService.deleteBySlug(entity.getSlug());
+
     }
 
     @Test(expected = EntityAlreadyExistsException.class)
@@ -171,8 +191,9 @@ public class TaxonomyBlacklistServiceTest {
         Set<TaxonomyBlacklistMapping> set = new HashSet<>();
         set.add(taxMap);
 
-        TaxonomyBlacklistEntity entity = TaxonomyBlacklistEntity.builder().list(set).build();
+        TaxonomyBlacklistEntity entity = TaxonomyBlacklistEntity.builder().slug("test").list(set).build();
 
+        when(taxonomyBlacklistRepository.findBySlug("test")).thenReturn(Optional.empty());
         when(elasticSearchService.validateWalmartTaxonomy("Invalid Taxonomy")).thenReturn(false);
 
         this.taxonomyBlacklistService.create(entity);
