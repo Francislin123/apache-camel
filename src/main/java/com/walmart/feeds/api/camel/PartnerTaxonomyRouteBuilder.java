@@ -59,17 +59,16 @@ public class PartnerTaxonomyRouteBuilder extends RouteBuilder {
                 .endDoTry()
                 .doCatch(IllegalArgumentException.class)
                     .throwException(new UserException("Invalid file content"))
-                .end()
-                .split(body(), new LinkedListAggregationStrategy())
-                    .process(validateTaxonomyBindyProcessor)
-                .end()
-                .process(validateRouteWithErrorProcessor);
+                .end();
 
         from(PARSE_FILE_ROUTE)
                 .onException(Exception.class)
                     .process(rollbackTaxonomyProcessor)
                 .end()
                 .setHeader(ERROR_LIST, LinkedList::new)
+                .split(body(), new LinkedListAggregationStrategy())
+                    .process(validateTaxonomyBindyProcessor)
+                .end()
                 .process(parseTaxonomyCsvProcessor)
                 .process(validateDeletedTaxonomiesProcessor)
                 .process(validateRouteWithErrorProcessor)

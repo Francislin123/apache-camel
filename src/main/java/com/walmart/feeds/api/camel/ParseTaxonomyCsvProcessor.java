@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.camel;
 
+import com.walmart.feeds.api.core.exceptions.SystemException;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
 import org.apache.camel.Exchange;
@@ -20,6 +21,10 @@ public class ParseTaxonomyCsvProcessor implements Processor {
         List<TaxonomyMappingBindy> taxonomyMappingBindyList = (List<TaxonomyMappingBindy>) exchange.getIn().getBody(List.class);
 
         final PartnerTaxonomyEntity partnerTaxonomy = exchange.getIn().getHeader(PERSISTED_PARTNER_TAXONOMY, PartnerTaxonomyEntity.class);
+
+        if (partnerTaxonomy == null) {
+            throw new SystemException("PartnerTaxonomy must exists in route");
+        }
 
         List<TaxonomyMappingEntity> associationsList = taxonomyMappingBindyList.stream().map(b ->
                 TaxonomyMappingEntity.builder()

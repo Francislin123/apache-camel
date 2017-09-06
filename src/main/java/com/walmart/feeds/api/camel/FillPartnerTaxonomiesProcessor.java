@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.camel;
 
+import com.walmart.feeds.api.core.exceptions.SystemException;
 import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
@@ -18,11 +19,16 @@ public class FillPartnerTaxonomiesProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
         final PartnerTaxonomyEntity partnerTaxonomy = exchange.getIn().getHeader(PERSISTED_PARTNER_TAXONOMY, PartnerTaxonomyEntity.class);
+
+        if (partnerTaxonomy == null) {
+            throw new SystemException("PartnerTaxonomy must exists in route");
+        }
+
         List<TaxonomyMappingEntity> associationsList = exchange.getIn().getBody(List.class);
 
         List<TaxonomyMappingEntity> taxonomiesToPersist = null;
 
-        if (partnerTaxonomy.getTaxonomyMappings() != null) {
+        if (partnerTaxonomy.getTaxonomyMappings() != null && !partnerTaxonomy.getTaxonomyMappings().isEmpty()) {
 
             taxonomiesToPersist = new ArrayList<>(partnerTaxonomy.getTaxonomyMappings());
 

@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.camel;
 
+import com.walmart.feeds.api.core.exceptions.SystemException;
 import com.walmart.feeds.api.resources.common.response.FileError;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -19,6 +20,10 @@ public class ValidateTaxonomyBindyProcessor implements Processor {
         TaxonomyMappingBindy mappingBindy = exchange.getIn().getBody(TaxonomyMappingBindy.class);
 
         List<FileError> errors = exchange.getIn().getHeader(ERROR_LIST, List.class);
+
+        if (errors == null) {
+            throw new SystemException("The route must contain an errorList");
+        }
 
         if (mappingBindy.getWalmartTaxonomy() == null || mappingBindy.getPartnerTaxonomy() == null || mappingBindy.getStructurePartnerId() == null) {
             errors.add(FileError.builder()

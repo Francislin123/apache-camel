@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.camel;
 
+import com.walmart.feeds.api.core.exceptions.SystemException;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
@@ -31,6 +32,10 @@ public class ValidateDeletedTaxonomiesProcessor implements Processor {
 
         final PartnerTaxonomyEntity partnerTaxonomy = exchange.getIn().getHeader(PERSISTED_PARTNER_TAXONOMY, PartnerTaxonomyEntity.class);
 
+        if (partnerTaxonomy == null) {
+            throw new SystemException("PartnerTaxonomy must exists in route");
+        }
+
         if (partnerTaxonomy.getTaxonomyMappings() != null) {
 
             List<TaxonomyMappingEntity> removedTaxonomies = new LinkedList<>(partnerTaxonomy.getTaxonomyMappings());
@@ -48,7 +53,7 @@ public class ValidateDeletedTaxonomiesProcessor implements Processor {
                 TaxonomyBlacklistEntity taxonomyBlacklistEntity = taxonomyBlacklistService.findBlackList(t);
                 if (taxonomyBlacklistEntity != null) {
                     errorsList.add(FileError.builder()
-                            .message(String.format("Cannot remove taxonomy=%s because it is associated in a blacklist slug=%s", t, taxonomyBlacklistEntity.getSlug()))
+                            .message(String.format("Cannot remove taxonomy=\"%s\" because it is associated in a blacklist slug=%s", t, taxonomyBlacklistEntity.getSlug()))
                             .build());
                 }
             });

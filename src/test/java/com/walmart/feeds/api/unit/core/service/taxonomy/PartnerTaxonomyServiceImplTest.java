@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.unit.resources.taxonomy;
+package com.walmart.feeds.api.unit.core.service.taxonomy;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
@@ -36,7 +36,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PartnerTaxonomyServiceTest {
+public class PartnerTaxonomyServiceImplTest {
 
     @InjectMocks
     private PartnerTaxonomyService partnerTaxonomyService = new PartnerTaxonomyServiceImpl();

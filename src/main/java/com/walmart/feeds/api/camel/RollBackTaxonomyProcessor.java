@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.camel;
 
+import com.walmart.feeds.api.core.exceptions.SystemException;
 import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
@@ -20,6 +21,10 @@ public class RollBackTaxonomyProcessor implements Processor {
     public void process(Exchange exchange) throws Exception {
 
         PartnerTaxonomyEntity partnerTaxonomy = exchange.getIn().getHeader(PERSISTED_PARTNER_TAXONOMY, PartnerTaxonomyEntity.class);
+
+        if (partnerTaxonomy == null) {
+            throw new SystemException("PartnerTaxonomy must exists in route");
+        }
 
         partnerTaxonomyService.saveWithHistory(PartnerTaxonomyEntity.builder()
                 .id(partnerTaxonomy.getId())
