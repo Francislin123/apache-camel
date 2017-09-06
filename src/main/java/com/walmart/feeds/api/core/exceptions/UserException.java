@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.exceptions;
 
+import com.walmart.feeds.api.resources.common.response.ErrorElementResponse;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
@@ -7,15 +8,15 @@ import java.util.List;
 
 public class UserException extends InternalArchitectureException {
 
-    private final List<String> exceptionList = new ArrayList<>();
+    protected List<? extends ErrorElementResponse> errors;
 
     public UserException(String message) {
         super(message);
     }
 
-    public UserException(String message, List<String> exceptionList) {
+    public UserException(String message, List<? extends ErrorElementResponse> exceptionList) {
         super(message);
-        this.exceptionList.addAll(exceptionList);
+        this.errors = exceptionList;
     }
 
     public UserException(String message, Throwable cause) {
@@ -27,8 +28,8 @@ public class UserException extends InternalArchitectureException {
         return HttpStatus.BAD_REQUEST;
     }
 
-    public List<String> getExceptionList() {
-        return exceptionList;
+    public List<? extends ErrorElementResponse> getErrors() {
+        return errors;
     }
 
 }

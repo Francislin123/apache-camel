@@ -42,7 +42,6 @@ public class PartnerTaxonomyControllerTest {
 
     private static MockMvc mockMvc;
 
-
     @Mock
     private ProducerTemplate producerTemplate;
 
@@ -52,6 +51,19 @@ public class PartnerTaxonomyControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(partnerTaxonomyController)
                 .setControllerAdvice(new FeedsAdminAPIExceptionHandler())
                 .build();
+    }
+
+    @Test
+    public void testUploadFileWhenInvalidRequest() throws Exception {
+        MockMultipartFile taxonomyMappingFile = new MockMultipartFile("file", "id ".getBytes());
+
+        doNothing().when(partnerTaxonomyService).processFile(mock(UploadTaxonomyMappingTO.class));
+
+        mockMvc.perform(fileUpload(PartnerTaxonomyController.V1_PARTNER_TAXONOMY, "anyExistentPartnerSlug", "anyExistentFeedSlug")
+                .file(taxonomyMappingFile)
+                .param("name", " Taxonomy 123")
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -66,6 +78,7 @@ public class PartnerTaxonomyControllerTest {
                 .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isAccepted());
     }
+
     @Test
     public void sendAEmptyFileAndReturnAndHandleException() throws Exception {
         MockMultipartFile taxonomyMappingFile = new MockMultipartFile("file", "id ".getBytes());
@@ -78,6 +91,7 @@ public class PartnerTaxonomyControllerTest {
                 .contentType(MediaType.MULTIPART_FORM_DATA)).andExpect(status().isNotFound());
 
     }
+
     @Test
     public void deleteTaxonomyMapping() throws Exception {
         doNothing().when(partnerTaxonomyService).removeEntityBySlug("existent", "existentSlug");

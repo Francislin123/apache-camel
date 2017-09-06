@@ -126,9 +126,9 @@ public class FieldsMappingServiceTest {
 
         } catch (UserException e) {
 
-            assertNotNull(e.getExceptionList());
-            assertFalse(e.getExceptionList().isEmpty());
-            assertTrue(e.getExceptionList().contains("price"));
+            assertNotNull(e.getErrors());
+            assertFalse(e.getErrors().isEmpty());
+            assertTrue(e.getErrors().stream().anyMatch(error -> "price".equals(error.getMessage())));
             Mockito.verify(fmRepository).findBySlug(anyString());
             Mockito.verify(fmRepository, Mockito.times(0)).saveAndFlush(any(FieldsMappingEntity.class));
             Mockito.verify(historyRepository, Mockito.times(0)).saveAndFlush(any(FieldsMappingHistory.class));

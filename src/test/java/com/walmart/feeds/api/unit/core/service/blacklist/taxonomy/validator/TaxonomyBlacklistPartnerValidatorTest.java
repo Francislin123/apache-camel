@@ -10,6 +10,7 @@ import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistPartnerException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.validation.TaxonomyBlacklistPartnerValidator;
+import com.walmart.feeds.api.resources.common.response.SimpleError;
 import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklistTemplateLoader;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -21,6 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -97,9 +99,9 @@ public class TaxonomyBlacklistPartnerValidatorTest {
                     .validatePartnerTaxonomiesOnBlacklist(blacklist, partnerTaxonomy);
             fail("TaxonomyBlacklistPartnerException was expected!");
         } catch (TaxonomyBlacklistPartnerException e) {
-            assertNotNull(e.getExceptionList());
-            assertFalse(e.getExceptionList().isEmpty());
-            assertTrue(e.getExceptionList().contains("Eletrônicos"));
+            assertNotNull(e.getErrors());
+            assertFalse(e.getErrors().isEmpty());
+            assertTrue(e.getErrors().stream().anyMatch(error -> "Eletrônicos".equals(error.getMessage())));
         }
 
     }

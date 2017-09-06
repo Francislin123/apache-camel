@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
+public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TaxonomyBlacklistServiceImpl.class);
 
@@ -84,6 +84,11 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService{
     public TaxonomyBlacklistEntity find(String slug) {
         return taxonomyBlacklistRepository.findBySlug(slug)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Taxonomy Blacklist '%s' not found", slug)));
+    }
+
+    @Override
+    public TaxonomyBlacklistEntity findBlackList(String taxonomyPath) {
+        return taxonomyBlacklistRepository.findByTaxonomyPath(taxonomyPath);
     }
 
     @Override
