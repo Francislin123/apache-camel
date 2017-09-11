@@ -4,13 +4,13 @@ import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.exceptions.UserException;
+import com.walmart.feeds.api.core.persistence.elasticsearch.ElasticSearchService;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingHistoryRepository;
 import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingHistory;
 import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
-import com.walmart.feeds.api.persistence.ElasticSearchComponent;
 import com.walmart.feeds.api.resources.common.response.SimpleError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     private FieldsMappingHistoryRepository historyRepository;
 
     @Autowired
-    private ElasticSearchComponent elasticSearchComponent;
+    private ElasticSearchService elasticSearchService;
 
     @Override
     @Transactional
@@ -112,7 +112,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     private void persistFieldsMapping(FieldsMappingEntity fieldsMapping) {
 
-        List<String> walmartFields = elasticSearchComponent.getWalmartFields();
+        List<String> walmartFields = elasticSearchService.getSkuFieldsMapping();
 
         List<SimpleError> invalidWalmartFields = fieldsMapping.getMappedFields().stream()
                 .filter(field -> !walmartFields.contains(field.getWmField()))

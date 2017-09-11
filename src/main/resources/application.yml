@@ -12,11 +12,10 @@ spring:
     elasticsearch:
       cluster-name: elasticsearch
       cluster-nodes: napsao-qa-nix-feeds-elastic-1.qa.vmcommerce.intra:9300
-
-
-elastic:
-  mapping:
-    sku: http://napsao-qa-nix-feeds-reg-1.qa.vmcommerce.intra:8080/feeds/_mapping/sku
+      indexes:
+        skus:
+          name: skus
+          type: sku
 
 tagadmin:
     username: admin
