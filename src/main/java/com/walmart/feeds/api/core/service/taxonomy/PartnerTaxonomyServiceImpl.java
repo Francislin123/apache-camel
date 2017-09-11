@@ -63,9 +63,14 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
         PartnerTaxonomyEntity persistedTaxonomy = partnerTaxonomyRepository.findBySlug(uploadTaxonomyMappingTO.getSlug()).orElse(null);
 
-        if (persistedTaxonomy != null &&
-                (ImportStatus.INITIAL.equals(persistedTaxonomy.getStatus()) || ImportStatus.PENDING.equals(persistedTaxonomy.getStatus()))) {
-            throw new EntityAlreadyExistsException("Partner Taxonomy still in processing status.");
+        if (persistedTaxonomy != null) {
+            if (ImportStatus.INITIAL.equals(persistedTaxonomy.getStatus()) || ImportStatus.PENDING.equals(persistedTaxonomy.getStatus())) {
+                throw new EntityAlreadyExistsException("Partner Taxonomy still in processing status.");
+            }
+
+            if (!partner.equals(persistedTaxonomy.getPartner())) {
+                throw new EntityAlreadyExistsException(String.format("Taxonomy slug=%s already exists for another partner", persistedTaxonomy.getSlug()));
+            }
         }
 
         List<TaxonomyMappingBindy> taxonomyMappingBindy = producerTemplate.requestBody(VALIDATE_FILE_ROUTE, importedFile.getInputStream(), List.class);
