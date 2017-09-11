@@ -5,9 +5,10 @@ import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
+import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
 import com.walmart.feeds.api.resources.taxonomy.PartnerTaxonomyController;
-import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
+import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import org.apache.camel.ProducerTemplate;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +43,6 @@ public class PartnerTaxonomyControllerTest {
 
     private static MockMvc mockMvc;
 
-
     @Mock
     private ProducerTemplate producerTemplate;
 
@@ -55,10 +55,23 @@ public class PartnerTaxonomyControllerTest {
     }
 
     @Test
+    public void testUploadFileWhenInvalidRequest() throws Exception {
+        MockMultipartFile taxonomyMappingFile = new MockMultipartFile("file", "id ".getBytes());
+
+        when(partnerTaxonomyService.processFile(any(UploadTaxonomyMappingTO.class))).thenReturn(mock(TaxonomyUploadReportTO.class));
+
+        mockMvc.perform(fileUpload(PartnerTaxonomyController.V1_PARTNER_TAXONOMY, "anyExistentPartnerSlug", "anyExistentFeedSlug")
+                .file(taxonomyMappingFile)
+                .param("name", " Taxonomy 123")
+                .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     public void testUploadFile() throws Exception {
         MockMultipartFile taxonomyMappingFile = new MockMultipartFile("file", "id ".getBytes());
 
-        doNothing().when(partnerTaxonomyService).processFile(mock(UploadTaxonomyMappingTO.class));
+        when(partnerTaxonomyService.processFile(any(UploadTaxonomyMappingTO.class))).thenReturn(mock(TaxonomyUploadReportTO.class));
 
         mockMvc.perform(fileUpload(PartnerTaxonomyController.V1_PARTNER_TAXONOMY, "anyExistentPartnerSlug", "anyExistentFeedSlug")
                 .file(taxonomyMappingFile)
@@ -66,11 +79,12 @@ public class PartnerTaxonomyControllerTest {
                 .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isAccepted());
     }
+
     @Test
     public void sendAEmptyFileAndReturnAndHandleException() throws Exception {
         MockMultipartFile taxonomyMappingFile = new MockMultipartFile("file", "id ".getBytes());
 
-        doThrow(EntityNotFoundException.class).when(partnerTaxonomyService).processFile(any(UploadTaxonomyMappingTO.class));
+        when(partnerTaxonomyService.processFile(any(UploadTaxonomyMappingTO.class))).thenThrow(EntityNotFoundException.class);
 
         mockMvc.perform(fileUpload(PartnerTaxonomyController.V1_PARTNER_TAXONOMY, "anyExistentPartnerSlug", "anyExistentFeedSlug")
                 .file(taxonomyMappingFile)
@@ -78,6 +92,7 @@ public class PartnerTaxonomyControllerTest {
                 .contentType(MediaType.MULTIPART_FORM_DATA)).andExpect(status().isNotFound());
 
     }
+
     @Test
     public void deleteTaxonomyMapping() throws Exception {
         doNothing().when(partnerTaxonomyService).removeEntityBySlug("existent", "existentSlug");

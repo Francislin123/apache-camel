@@ -1,18 +1,15 @@
 package com.walmart.feeds.api.resources.infrastructure;
 
-import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
-import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.exceptions.SystemException;
-import com.walmart.feeds.api.core.exceptions.UserException;
-import com.walmart.feeds.api.resources.feed.response.ErrorResponse;
-import com.walmart.feeds.api.resources.feed.response.FieldValidation;
+import com.walmart.feeds.api.core.exceptions.*;
+import com.walmart.feeds.api.resources.common.response.ErrorResponse;
+import com.walmart.feeds.api.resources.common.response.FieldError;
 import org.apache.camel.CamelExecutionException;
 import org.apache.camel.Exchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,8 +33,8 @@ public class FeedsAdminAPIExceptionHandler {
                 .body(ErrorResponse.builder()
                         .code(HttpStatus.BAD_REQUEST.toString())
                         .description("Invalid Request")
-                        .validations(ex.getBindingResult().getAllErrors().stream().map(b ->
-                                (FieldError) b).map(f -> new FieldValidation(f.getField(), f.getDefaultMessage(), f.getRejectedValue()))
+                        .errors(ex.getBindingResult().getAllErrors().stream().map(b ->
+                                (org.springframework.validation.FieldError) b).map(f -> new FieldError(f.getField(), f.getDefaultMessage(), f.getRejectedValue()))
                                 .collect(Collectors.toList()))
                         .build());
 
@@ -65,6 +62,19 @@ public class FeedsAdminAPIExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(value = BindException.class)
+    public ResponseEntity<ErrorResponse> genericExceptionHandler(BindException ex, WebRequest request) {
+        LOGGER.error(DEFAULT_ERROR_MESSAGE, ex);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.builder()
+                        .code(HttpStatus.BAD_REQUEST.toString())
+                        .description("Invalid Request")
+                        .errors(ex.getBindingResult().getAllErrors().stream().map(b ->
+                                (org.springframework.validation.FieldError) b).map(f -> new FieldError(f.getField(), f.getDefaultMessage(), f.getRejectedValue()))
+                                .collect(Collectors.toList()))
+                        .build());
+    }
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ErrorResponse> genericExceptionHandler(Exception ex, WebRequest request) {
@@ -105,11 +115,35 @@ public class FeedsAdminAPIExceptionHandler {
     public ResponseEntity<ErrorResponse> userExceptionHandler(UserException ex, WebRequest request) {
         LOGGER.error("An user error occurred", ex);
 
+        if (ex instanceof InvalidFileException) {
+
+            InvalidFileException invalidFileException = (InvalidFileException) ex;
+
+            return ResponseEntity.status(ex.getErrorCode())
+                    .body(ErrorResponse.builder()
+                            .code(ex.getErrorCode().toString())
+                            .description(ex.getMessage())
+                            .errors(invalidFileException.getErrors())
+                            .build());
+        }
+
         return ResponseEntity.status(ex.getErrorCode())
                 .body(ErrorResponse.builder()
                         .code(ex.getErrorCode().toString())
                         .description(ex.getMessage())
-                        .invalidList(ex.getExceptionList())
+                        .errors(ex.getErrors())
+                        .build());
+    }
+
+    @ExceptionHandler(value = InvalidFileException.class)
+    public ResponseEntity<ErrorResponse> invalidFileExceptionHandler(InvalidFileException ex, WebRequest request) {
+        LOGGER.error("An user error occurred", ex);
+
+        return ResponseEntity.status(ex.getErrorCode())
+                .body(ErrorResponse.builder()
+                        .code(ex.getErrorCode().toString())
+                        .description(ex.getMessage())
+                        .errors(ex.getErrors())
                         .build());
     }
 

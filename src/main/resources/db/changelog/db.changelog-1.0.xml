@@ -175,7 +175,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="partner_taxonomy_id" type="${uuid_type}"/>
-            <column name="partner_path_id" type="${uuid_type}">
+            <column name="partner_path_id" type="varchar(50)">
             </column>
             <column name="walmart_path" type="varchar(255)">
                 <constraints nullable="false"/>

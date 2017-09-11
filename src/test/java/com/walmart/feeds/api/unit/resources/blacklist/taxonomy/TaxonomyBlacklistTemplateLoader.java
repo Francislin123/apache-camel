@@ -34,9 +34,9 @@ public class TaxonomyBlacklistTemplateLoader implements TemplateLoader{
             add("slug", "any-slug");
 
             List<TaxonomyMappingEntity> mappings = Arrays.asList(
-                TaxonomyMappingEntity.builder().walmartPath("Informática").partnerPath("Informática").build(),
-                TaxonomyMappingEntity.builder().walmartPath("Informática > Computadores").partnerPath("Informática > Computadores").build(),
-                TaxonomyMappingEntity.builder().walmartPath("Eletrônicos > TVs").partnerPath("Eletrônicos > Vídeo").build()
+                TaxonomyMappingEntity.builder().walmartPath("Informática").partnerPath("Informática").partnerPathId("1").build(),
+                TaxonomyMappingEntity.builder().walmartPath("Informática > Computadores").partnerPath("Informática > Computadores").partnerPathId("2").build(),
+                TaxonomyMappingEntity.builder().walmartPath("Eletrônicos > TVs").partnerPath("Eletrônicos > Vídeo").partnerPathId("3").build()
             );
             add("taxonomyMappings", mappings);
 
