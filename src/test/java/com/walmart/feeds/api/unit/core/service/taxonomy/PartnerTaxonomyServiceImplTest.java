@@ -115,8 +115,11 @@ public class PartnerTaxonomyServiceImplTest {
 
         UploadTaxonomyMappingTO to = Fixture.from(UploadTaxonomyMappingTO.class).gimme("to-mapping");
 
+        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme("partner_entity");
+
         PartnerTaxonomyEntity pendingPartnerEntity = PartnerTaxonomyEntity.builder()
                 .status(ImportStatus.PROCESSED)
+                .partner(partnerEntity)
                 .build();
 
         List<TaxonomyMappingBindy> bindyList = new ArrayList<>();
@@ -124,7 +127,7 @@ public class PartnerTaxonomyServiceImplTest {
 
         PartnerTaxonomyHistory history = Fixture.from(PartnerTaxonomyHistory.class).gimme("cs-history-input-ok");
 
-        when(partnerService.findBySlug(to.getPartnerSlug())).thenReturn(Fixture.from(PartnerEntity.class).gimme("partner_entity"));
+        when(partnerService.findBySlug(to.getPartnerSlug())).thenReturn(partnerEntity);
         when(partnerTaxonomyRepository.findBySlug(to.getSlug())).thenReturn(Optional.of(pendingPartnerEntity));
         when(producerTemplate.requestBody(VALIDATE_FILE_ROUTE, to.getTaxonomyMapping().getInputStream(), List.class)).thenReturn(bindyList);
         when(producerTemplate.requestBodyAndHeaders(eq(PARSE_FILE_ROUTE), any(TaxonomyMappingBindy.class), anyMapOf(String.class, Object.class), eq(TaxonomyUploadReportTO.class))).thenReturn(mock(TaxonomyUploadReportTO.class));
@@ -145,8 +148,11 @@ public class PartnerTaxonomyServiceImplTest {
 
         UploadTaxonomyMappingTO to = Fixture.from(UploadTaxonomyMappingTO.class).gimme("to-mapping");
 
+        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme("partner_entity");
+
         PartnerTaxonomyEntity pendingPartnerEntity = PartnerTaxonomyEntity.builder()
                 .status(ImportStatus.ERROR)
+                .partner(partnerEntity)
                 .build();
 
         List<TaxonomyMappingBindy> bindyList = new ArrayList<>();
@@ -154,7 +160,7 @@ public class PartnerTaxonomyServiceImplTest {
 
         PartnerTaxonomyHistory history = Fixture.from(PartnerTaxonomyHistory.class).gimme("cs-history-input-ok");
 
-        when(partnerService.findBySlug(to.getPartnerSlug())).thenReturn(Fixture.from(PartnerEntity.class).gimme("partner_entity"));
+        when(partnerService.findBySlug(to.getPartnerSlug())).thenReturn(partnerEntity);
         when(partnerTaxonomyRepository.findBySlug(to.getSlug())).thenReturn(Optional.of(pendingPartnerEntity));
         when(producerTemplate.requestBody(VALIDATE_FILE_ROUTE, to.getTaxonomyMapping().getInputStream(), List.class)).thenReturn(bindyList);
         when(producerTemplate.requestBodyAndHeaders(eq(PARSE_FILE_ROUTE), any(TaxonomyMappingBindy.class), anyMapOf(String.class, Object.class), eq(TaxonomyUploadReportTO.class))).thenReturn(mock(TaxonomyUploadReportTO.class));
