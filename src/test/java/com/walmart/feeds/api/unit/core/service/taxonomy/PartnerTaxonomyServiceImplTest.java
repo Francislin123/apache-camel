@@ -62,6 +62,23 @@ public class PartnerTaxonomyServiceImplTest {
     }
 
     @Test(expected = EntityAlreadyExistsException.class)
+    public void testWhenImportTaxonomyForDifferentPartners() throws IOException {
+
+        UploadTaxonomyMappingTO to = Fixture.from(UploadTaxonomyMappingTO.class).gimme("to-mapping");
+
+        PartnerTaxonomyEntity pendingPartnerEntity = PartnerTaxonomyEntity.builder()
+                .status(ImportStatus.PROCESSED)
+                .partner(mock(PartnerEntity.class))
+                .build();
+
+        when(partnerService.findBySlug(to.getPartnerSlug())).thenReturn(Fixture.from(PartnerEntity.class).gimme("partner_entity"));
+        when(partnerTaxonomyRepository.findBySlug(to.getSlug())).thenReturn(Optional.of(pendingPartnerEntity));
+
+        partnerTaxonomyService.processFile(to);
+
+    }
+
+    @Test(expected = EntityAlreadyExistsException.class)
     public void testWhenPartnerTaxonomyIsPending() throws IOException {
 
         UploadTaxonomyMappingTO to = Fixture.from(UploadTaxonomyMappingTO.class).gimme("to-mapping");
