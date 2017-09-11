@@ -4,6 +4,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,12 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
 
     @Autowired
     private ElasticsearchTemplate elasticsearchTemplate;
+
+    @Value("${spring.data.elasticsearch.indexes.skus.name}")
+    private String index;
+
+    @Value("${spring.data.elasticsearch.indexes.skus.type}")
+    private String type;
 
     @Override
     public boolean validateWalmartTaxonomy(String taxonomy){
@@ -40,7 +47,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
     @Override
     public List<String> getSkuFieldsMapping() {
 
-        Map<String, Map> mapping = elasticsearchTemplate.getMapping("skus", "sku");
+        Map<String, Map> mapping = elasticsearchTemplate.getMapping(index, type);
 
         List<String> listFields = new ArrayList<>();
         processMap(mapping.get("properties"), "", listFields);
