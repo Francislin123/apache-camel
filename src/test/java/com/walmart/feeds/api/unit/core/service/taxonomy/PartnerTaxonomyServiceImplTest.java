@@ -14,7 +14,8 @@ import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHisto
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyServiceImpl;
-import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
+import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
+import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import org.apache.camel.ProducerTemplate;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,8 +29,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.PARSE_FILE_ROUTE;
 import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.VALIDATE_FILE_ROUTE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -107,6 +110,7 @@ public class PartnerTaxonomyServiceImplTest {
         when(partnerService.findBySlug(to.getPartnerSlug())).thenReturn(Fixture.from(PartnerEntity.class).gimme("partner_entity"));
         when(partnerTaxonomyRepository.findBySlug(to.getSlug())).thenReturn(Optional.of(pendingPartnerEntity));
         when(producerTemplate.requestBody(VALIDATE_FILE_ROUTE, to.getTaxonomyMapping().getInputStream(), List.class)).thenReturn(bindyList);
+        when(producerTemplate.requestBodyAndHeaders(eq(PARSE_FILE_ROUTE), any(TaxonomyMappingBindy.class), anyMapOf(String.class, Object.class), eq(TaxonomyUploadReportTO.class))).thenReturn(mock(TaxonomyUploadReportTO.class));
 
         when(partnerTaxonomyRepository.saveAndFlush(any(PartnerTaxonomyEntity.class))).thenReturn(pendingPartnerEntity);
         when(partnerTaxonomyHistoryRepository.saveAndFlush(history)).thenReturn(history);
@@ -136,6 +140,7 @@ public class PartnerTaxonomyServiceImplTest {
         when(partnerService.findBySlug(to.getPartnerSlug())).thenReturn(Fixture.from(PartnerEntity.class).gimme("partner_entity"));
         when(partnerTaxonomyRepository.findBySlug(to.getSlug())).thenReturn(Optional.of(pendingPartnerEntity));
         when(producerTemplate.requestBody(VALIDATE_FILE_ROUTE, to.getTaxonomyMapping().getInputStream(), List.class)).thenReturn(bindyList);
+        when(producerTemplate.requestBodyAndHeaders(eq(PARSE_FILE_ROUTE), any(TaxonomyMappingBindy.class), anyMapOf(String.class, Object.class), eq(TaxonomyUploadReportTO.class))).thenReturn(mock(TaxonomyUploadReportTO.class));
 
         when(partnerTaxonomyRepository.saveAndFlush(any(PartnerTaxonomyEntity.class))).thenReturn(pendingPartnerEntity);
         when(partnerTaxonomyHistoryRepository.saveAndFlush(history)).thenReturn(history);
@@ -164,6 +169,7 @@ public class PartnerTaxonomyServiceImplTest {
         when(partnerService.findBySlug(to.getPartnerSlug())).thenReturn(Fixture.from(PartnerEntity.class).gimme("partner_entity"));
         when(partnerTaxonomyRepository.findBySlug(to.getSlug())).thenReturn(Optional.empty());
         when(producerTemplate.requestBody(VALIDATE_FILE_ROUTE, to.getTaxonomyMapping().getInputStream(), List.class)).thenReturn(bindyList);
+        when(producerTemplate.requestBodyAndHeaders(eq(PARSE_FILE_ROUTE), any(TaxonomyMappingBindy.class), anyMapOf(String.class, Object.class), eq(TaxonomyUploadReportTO.class))).thenReturn(mock(TaxonomyUploadReportTO.class));
         when(partnerTaxonomyRepository.saveAndFlush(any(PartnerTaxonomyEntity.class))).thenReturn(partnerTaxonomyEntity);
 
         when(partnerTaxonomyHistoryRepository.saveAndFlush(history)).thenReturn(history);

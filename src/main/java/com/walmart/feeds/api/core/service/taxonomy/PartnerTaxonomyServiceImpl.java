@@ -11,7 +11,8 @@ import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntit
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHistory;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
-import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
+import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
+import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -52,7 +53,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
     private ProducerTemplate producerTemplate;
 
     @Override
-    public void processFile(UploadTaxonomyMappingTO uploadTaxonomyMappingTO) throws IOException {
+    public TaxonomyUploadReportTO processFile(UploadTaxonomyMappingTO uploadTaxonomyMappingTO) throws IOException {
 
         PartnerEntity partner = partnerService.findBySlug(uploadTaxonomyMappingTO.getPartnerSlug());
 
@@ -83,9 +84,11 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
         Map<String, Object> map = new HashMap<>();
         map.put(PERSISTED_PARTNER_TAXONOMY, partnerTaxonomy);
 
-        PartnerTaxonomyEntity entityToSave = producerTemplate.requestBodyAndHeaders(PARSE_FILE_ROUTE, taxonomyMappingBindy, map, PartnerTaxonomyEntity.class);
+        TaxonomyUploadReportTO reportTO = producerTemplate.requestBodyAndHeaders(PARSE_FILE_ROUTE, taxonomyMappingBindy, map, TaxonomyUploadReportTO.class);
 
-        producerTemplate.asyncCallbackSendBody(PERSIST_PARTNER_TAXONOMY_ROUTE, entityToSave, persistPartnerTaxonomyCallBack);
+        producerTemplate.asyncCallbackSendBody(PERSIST_PARTNER_TAXONOMY_ROUTE, reportTO.getEntityToSave(), persistPartnerTaxonomyCallBack);
+
+        return reportTO;
 
     }
 

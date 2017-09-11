@@ -7,10 +7,10 @@ import com.walmart.feeds.api.core.exceptions.SystemException;
 import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
+import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -24,7 +24,6 @@ import java.util.List;
 import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.PERSISTED_PARTNER_TAXONOMY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -35,13 +34,11 @@ public class FillPartnerTaxonomiesProcessorTest {
 
     private Exchange exchangeMock;
 
-    @BeforeClass
-    public static void setUp() {
-        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.taxonomy.test.template");
-    }
-
     @Before
     public void init() {
+
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.taxonomy.test.template");
+
         exchangeMock = mock(Exchange.class);
 
         Message message = mock(Message.class);
@@ -63,28 +60,60 @@ public class FillPartnerTaxonomiesProcessorTest {
     }
 
     @Test
-    public void testWhenPartnerTaxonomyDoNoHaveMappings() throws Exception {
+    public void testWhenPartnerTaxonomyDoNotHaveMappingsAndNeitherInFile() throws Exception {
 
         PartnerTaxonomyEntity partnerTaxonomyEntity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-mapping-null");
 
         when(exchangeMock.getIn().getHeader(PERSISTED_PARTNER_TAXONOMY, PartnerTaxonomyEntity.class)).thenReturn(partnerTaxonomyEntity);
+        when(exchangeMock.getIn().getBody(List.class)).thenReturn(Collections.emptyList());
         when(exchangeMock.getOut()).thenReturn(mock(Message.class));
 
-        ArgumentCaptor<PartnerTaxonomyEntity> argumentCaptor = ArgumentCaptor.forClass(PartnerTaxonomyEntity.class);
+        ArgumentCaptor<TaxonomyUploadReportTO> argumentCaptor = ArgumentCaptor.forClass(TaxonomyUploadReportTO.class);
 
         processor.process(exchangeMock);
 
         verify(exchangeMock.getOut()).setBody(argumentCaptor.capture());
 
-        assertNotNull("Id must be set", argumentCaptor.getValue().getId());
-        assertNotNull("FileName must be set", argumentCaptor.getValue().getFileName());
-        assertNotNull("Name must be set", argumentCaptor.getValue().getName());
-        assertNotNull("Partner must be set", argumentCaptor.getValue().getPartner());
-        assertNotNull("Slug must be set", argumentCaptor.getValue().getSlug());
-        assertNotNull("Status must be set", argumentCaptor.getValue().getStatus());
-        assertNull(argumentCaptor.getValue().getTaxonomyMappings());
-        assertEquals(ImportStatus.PENDING, argumentCaptor.getValue().getStatus());
-        assertEquals(partnerTaxonomyEntity.getTaxonomyMappings(), argumentCaptor.getValue().getTaxonomyMappings());
+        assertNotNull("Id must be set", argumentCaptor.getValue().getEntityToSave().getId());
+        assertNotNull("FileName must be set", argumentCaptor.getValue().getEntityToSave().getFileName());
+        assertNotNull("Name must be set", argumentCaptor.getValue().getEntityToSave().getName());
+        assertNotNull("Partner must be set", argumentCaptor.getValue().getEntityToSave().getPartner());
+        assertNotNull("Slug must be set", argumentCaptor.getValue().getEntityToSave().getSlug());
+        assertNotNull("Status must be set", argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertNotNull(argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings());
+        assertEquals(ImportStatus.PENDING, argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertEquals(Collections.emptyList(), argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings());
+
+    }
+
+    @Test
+    public void testWhenPartnerTaxonomyDoNotHaveMappingsButFileDoes() throws Exception {
+
+        PartnerTaxonomyEntity partnerTaxonomyEntity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-mapping-null");
+
+        List<TaxonomyMappingEntity> mappingFromFile = new LinkedList<>();
+        mappingFromFile.add(mock(TaxonomyMappingEntity.class));
+
+        when(exchangeMock.getIn().getHeader(PERSISTED_PARTNER_TAXONOMY, PartnerTaxonomyEntity.class)).thenReturn(partnerTaxonomyEntity);
+        when(exchangeMock.getIn().getBody(List.class)).thenReturn(mappingFromFile);
+        when(exchangeMock.getOut()).thenReturn(mock(Message.class));
+
+        ArgumentCaptor<TaxonomyUploadReportTO> argumentCaptor = ArgumentCaptor.forClass(TaxonomyUploadReportTO.class);
+
+        processor.process(exchangeMock);
+
+        verify(exchangeMock.getOut()).setBody(argumentCaptor.capture());
+
+        assertNotNull("Id must be set", argumentCaptor.getValue().getEntityToSave().getId());
+        assertNotNull("FileName must be set", argumentCaptor.getValue().getEntityToSave().getFileName());
+        assertNotNull("Name must be set", argumentCaptor.getValue().getEntityToSave().getName());
+        assertNotNull("Partner must be set", argumentCaptor.getValue().getEntityToSave().getPartner());
+        assertNotNull("Slug must be set", argumentCaptor.getValue().getEntityToSave().getSlug());
+        assertNotNull("Status must be set", argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertNotNull(argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings());
+        assertEquals(ImportStatus.PENDING, argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertEquals(1, argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings().size());
+        assertEquals(mappingFromFile, argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings());
 
     }
 
@@ -97,21 +126,21 @@ public class FillPartnerTaxonomiesProcessorTest {
         when(exchangeMock.getIn().getBody(List.class)).thenReturn(Collections.emptyList());
         when(exchangeMock.getOut()).thenReturn(mock(Message.class));
 
-        ArgumentCaptor<PartnerTaxonomyEntity> argumentCaptor = ArgumentCaptor.forClass(PartnerTaxonomyEntity.class);
+        ArgumentCaptor<TaxonomyUploadReportTO> argumentCaptor = ArgumentCaptor.forClass(TaxonomyUploadReportTO.class);
 
         processor.process(exchangeMock);
 
         verify(exchangeMock.getOut()).setBody(argumentCaptor.capture());
 
-        assertNotNull("Id must be set", argumentCaptor.getValue().getId());
-        assertNotNull("FileName must be set", argumentCaptor.getValue().getFileName());
-        assertNotNull("Name must be set", argumentCaptor.getValue().getName());
-        assertNotNull("TaxonomyMappings must be set", argumentCaptor.getValue().getTaxonomyMappings());
-        assertNotNull("Partner must be set", argumentCaptor.getValue().getPartner());
-        assertNotNull("Slug must be set", argumentCaptor.getValue().getSlug());
-        assertNotNull("Status must be set", argumentCaptor.getValue().getStatus());
-        assertEquals(ImportStatus.PENDING, argumentCaptor.getValue().getStatus());
-        assertEquals(partnerTaxonomyEntity.getTaxonomyMappings(), argumentCaptor.getValue().getTaxonomyMappings());
+        assertNotNull("Id must be set", argumentCaptor.getValue().getEntityToSave().getId());
+        assertNotNull("FileName must be set", argumentCaptor.getValue().getEntityToSave().getFileName());
+        assertNotNull("Name must be set", argumentCaptor.getValue().getEntityToSave().getName());
+        assertNotNull("TaxonomyMappings must be set", argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings());
+        assertNotNull("Partner must be set", argumentCaptor.getValue().getEntityToSave().getPartner());
+        assertNotNull("Slug must be set", argumentCaptor.getValue().getEntityToSave().getSlug());
+        assertNotNull("Status must be set", argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertEquals(ImportStatus.PENDING, argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertEquals(partnerTaxonomyEntity.getTaxonomyMappings(), argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings());
 
     }
 
@@ -127,21 +156,21 @@ public class FillPartnerTaxonomiesProcessorTest {
         when(exchangeMock.getIn().getBody(List.class)).thenReturn(newMappingsList);
         when(exchangeMock.getOut()).thenReturn(mock(Message.class));
 
-        ArgumentCaptor<PartnerTaxonomyEntity> argumentCaptor = ArgumentCaptor.forClass(PartnerTaxonomyEntity.class);
+        ArgumentCaptor<TaxonomyUploadReportTO> argumentCaptor = ArgumentCaptor.forClass(TaxonomyUploadReportTO.class);
 
         processor.process(exchangeMock);
 
         verify(exchangeMock.getOut()).setBody(argumentCaptor.capture());
 
-        assertNotNull("Id must be set", argumentCaptor.getValue().getId());
-        assertNotNull("FileName must be set", argumentCaptor.getValue().getFileName());
-        assertNotNull("Name must be set", argumentCaptor.getValue().getName());
-        assertNotNull("TaxonomyMappings must be set", argumentCaptor.getValue().getTaxonomyMappings());
-        assertNotNull("Partner must be set", argumentCaptor.getValue().getPartner());
-        assertNotNull("Slug must be set", argumentCaptor.getValue().getSlug());
-        assertNotNull("Status must be set", argumentCaptor.getValue().getStatus());
-        assertEquals(ImportStatus.PENDING, argumentCaptor.getValue().getStatus());
-        assertEquals(2, argumentCaptor.getValue().getTaxonomyMappings().size());
+        assertNotNull("Id must be set", argumentCaptor.getValue().getEntityToSave().getId());
+        assertNotNull("FileName must be set", argumentCaptor.getValue().getEntityToSave().getFileName());
+        assertNotNull("Name must be set", argumentCaptor.getValue().getEntityToSave().getName());
+        assertNotNull("TaxonomyMappings must be set", argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings());
+        assertNotNull("Partner must be set", argumentCaptor.getValue().getEntityToSave().getPartner());
+        assertNotNull("Slug must be set", argumentCaptor.getValue().getEntityToSave().getSlug());
+        assertNotNull("Status must be set", argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertEquals(ImportStatus.PENDING, argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertEquals(2, argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings().size());
 
     }
 
@@ -157,21 +186,21 @@ public class FillPartnerTaxonomiesProcessorTest {
         when(exchangeMock.getIn().getBody(List.class)).thenReturn(newMappingsList);
         when(exchangeMock.getOut()).thenReturn(mock(Message.class));
 
-        ArgumentCaptor<PartnerTaxonomyEntity> argumentCaptor = ArgumentCaptor.forClass(PartnerTaxonomyEntity.class);
+        ArgumentCaptor<TaxonomyUploadReportTO> argumentCaptor = ArgumentCaptor.forClass(TaxonomyUploadReportTO.class);
 
         processor.process(exchangeMock);
 
         verify(exchangeMock.getOut()).setBody(argumentCaptor.capture());
 
-        assertNotNull("Id must be set", argumentCaptor.getValue().getId());
-        assertNotNull("FileName must be set", argumentCaptor.getValue().getFileName());
-        assertNotNull("Name must be set", argumentCaptor.getValue().getName());
-        assertNotNull("TaxonomyMappings must be set", argumentCaptor.getValue().getTaxonomyMappings());
-        assertNotNull("Partner must be set", argumentCaptor.getValue().getPartner());
-        assertNotNull("Slug must be set", argumentCaptor.getValue().getSlug());
-        assertNotNull("Status must be set", argumentCaptor.getValue().getStatus());
-        assertEquals(ImportStatus.PENDING, argumentCaptor.getValue().getStatus());
-        assertEquals(1, argumentCaptor.getValue().getTaxonomyMappings().size());
+        assertNotNull("Id must be set", argumentCaptor.getValue().getEntityToSave().getId());
+        assertNotNull("FileName must be set", argumentCaptor.getValue().getEntityToSave().getFileName());
+        assertNotNull("Name must be set", argumentCaptor.getValue().getEntityToSave().getName());
+        assertNotNull("TaxonomyMappings must be set", argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings());
+        assertNotNull("Partner must be set", argumentCaptor.getValue().getEntityToSave().getPartner());
+        assertNotNull("Slug must be set", argumentCaptor.getValue().getEntityToSave().getSlug());
+        assertNotNull("Status must be set", argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertEquals(ImportStatus.PENDING, argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertEquals(1, argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings().size());
 
     }
 
@@ -186,21 +215,21 @@ public class FillPartnerTaxonomiesProcessorTest {
         when(exchangeMock.getIn().getBody(List.class)).thenReturn(newMappingsList);
         when(exchangeMock.getOut()).thenReturn(mock(Message.class));
 
-        ArgumentCaptor<PartnerTaxonomyEntity> argumentCaptor = ArgumentCaptor.forClass(PartnerTaxonomyEntity.class);
+        ArgumentCaptor<TaxonomyUploadReportTO> argumentCaptor = ArgumentCaptor.forClass(TaxonomyUploadReportTO.class);
 
         processor.process(exchangeMock);
 
         verify(exchangeMock.getOut()).setBody(argumentCaptor.capture());
 
-        assertNotNull("Id must be set", argumentCaptor.getValue().getId());
-        assertNotNull("FileName must be set", argumentCaptor.getValue().getFileName());
-        assertNotNull("Name must be set", argumentCaptor.getValue().getName());
-        assertNotNull("TaxonomyMappings must be set", argumentCaptor.getValue().getTaxonomyMappings());
-        assertNotNull("Partner must be set", argumentCaptor.getValue().getPartner());
-        assertNotNull("Slug must be set", argumentCaptor.getValue().getSlug());
-        assertNotNull("Status must be set", argumentCaptor.getValue().getStatus());
-        assertEquals(ImportStatus.PENDING, argumentCaptor.getValue().getStatus());
-        assertEquals(0, argumentCaptor.getValue().getTaxonomyMappings().size());
+        assertNotNull("Id must be set", argumentCaptor.getValue().getEntityToSave().getId());
+        assertNotNull("FileName must be set", argumentCaptor.getValue().getEntityToSave().getFileName());
+        assertNotNull("Name must be set", argumentCaptor.getValue().getEntityToSave().getName());
+        assertNotNull("TaxonomyMappings must be set", argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings());
+        assertNotNull("Partner must be set", argumentCaptor.getValue().getEntityToSave().getPartner());
+        assertNotNull("Slug must be set", argumentCaptor.getValue().getEntityToSave().getSlug());
+        assertNotNull("Status must be set", argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertEquals(ImportStatus.PENDING, argumentCaptor.getValue().getEntityToSave().getStatus());
+        assertEquals(0, argumentCaptor.getValue().getEntityToSave().getTaxonomyMappings().size());
 
     }
 

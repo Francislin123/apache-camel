@@ -112,10 +112,16 @@ public class ValidateDeletedTaxonomiesProcessorTest {
 
         LinkedList errorList = mock(LinkedList.class);
 
+        List<TaxonomyBlacklistEntity> blacklistEntities = new LinkedList<>();
+        blacklistEntities.add(TaxonomyBlacklistEntity.builder()
+                .slug("teste123")
+                .build());
+
+
         when(exchangeMock.getIn().getBody(List.class)).thenReturn(Mockito.mock(List.class));
         when(exchangeMock.getIn().getHeader(PERSISTED_PARTNER_TAXONOMY, PartnerTaxonomyEntity.class)).thenReturn(partnertTaxonomyEntity);
         when(exchangeMock.getIn().getHeader(ERROR_LIST, List.class)).thenReturn(errorList);
-        when(taxonomyBlacklistService.findBlackList(anyString())).thenReturn(mock(TaxonomyBlacklistEntity.class));
+        when(taxonomyBlacklistService.findBlackList(anyString())).thenReturn(blacklistEntities);
 
         processor.process(exchangeMock);
 

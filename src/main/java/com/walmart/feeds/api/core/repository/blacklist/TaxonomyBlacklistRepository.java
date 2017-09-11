@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,8 +14,8 @@ public interface TaxonomyBlacklistRepository extends JpaRepository<TaxonomyBlack
 
     Optional<TaxonomyBlacklistEntity> findBySlug(String slug);
 
-    @Query("FROM TaxonomyBlacklistEntity t " +
+    @Query("SELECT t FROM TaxonomyBlacklistEntity t " +
             "join t.list m " +
             "where m.taxonomy = ?1")
-    TaxonomyBlacklistEntity findByTaxonomyPath(String taxonomyPath);
+    List<TaxonomyBlacklistEntity> findByTaxonomyPath(String taxonomyPath);
 }

@@ -1,12 +1,17 @@
 package com.walmart.feeds.api.resources.taxonomy;
 
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
+import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
+import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.core.utils.TaxonomyMappingCSVHandler;
-import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyMappingTO;
+import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyRequest;
 import com.walmart.feeds.api.resources.taxonomy.response.PartnerTaxonomyResponse;
+import com.walmart.feeds.api.resources.taxonomy.response.TaxonomyMappingResponse;
+import com.walmart.feeds.api.resources.taxonomy.response.TaxonomyReportResponse;
+import com.walmart.feeds.api.resources.taxonomy.response.UploadTaxonomyResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -47,16 +52,37 @@ public class PartnerTaxonomyController {
 
         String taxonomySlug = SlugParserUtil.toSlug(uploadTaxonomyRequest.getName());
 
-        partnerTaxonomyService.processFile(UploadTaxonomyMappingTO.builder()
+        TaxonomyUploadReportTO reportTO = partnerTaxonomyService.processFile(UploadTaxonomyMappingTO.builder()
                 .slug(taxonomySlug)
                 .name(uploadTaxonomyRequest.getName())
                 .partnerSlug(partnerSlug)
                 .taxonomyMapping(uploadTaxonomyRequest.getFile())
-            .build());
+                .build());
 
         UriComponents uriComponents = builder.path(V1_PARTNER_TAXONOMY.concat("/{slug}")).buildAndExpand(partnerSlug, taxonomySlug);
 
-        return ResponseEntity.accepted().header(HttpHeaders.LOCATION, uriComponents.toUriString()).build();
+        return ResponseEntity.accepted()
+                    .header(HttpHeaders.LOCATION, uriComponents.toUriString())
+                    .body(UploadTaxonomyResponse.builder()
+                            .report(TaxonomyReportResponse.builder()
+                                    .totalItemsImported(reportTO.getItemsImported())
+                                    .added(reportTO.getTaxonomiesToInsert().stream().map(t ->
+                                            TaxonomyMappingResponse.builder()
+                                                    .partnerPath(t.getPartnerPath())
+                                                    .partnerPathId(t.getPartnerPathId())
+                                                    .walmartPath(t.getWalmartPath())
+                                                    .build()
+                                    ).collect(Collectors.toList()))
+                                    .removed(reportTO.getTaxonomiesToRemove() == null ? null : reportTO.getTaxonomiesToRemove().stream().map(t ->
+                                            TaxonomyMappingResponse.builder()
+                                                    .partnerPath(t.getPartnerPath())
+                                                    .partnerPathId(t.getPartnerPathId())
+                                                    .walmartPath(t.getWalmartPath())
+                                                    .build()
+                                    ).collect(Collectors.toList()))
+                                .build())
+                            .status(reportTO.getStatus())
+                        .build());
     }
 
 

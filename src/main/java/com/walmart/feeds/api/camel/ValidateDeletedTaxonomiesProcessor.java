@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.ERROR_LIST;
 import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.PERSISTED_PARTNER_TAXONOMY;
@@ -50,10 +51,11 @@ public class ValidateDeletedTaxonomiesProcessor implements Processor {
             });
 
             taxonomies.forEach(t -> {
-                TaxonomyBlacklistEntity taxonomyBlacklistEntity = taxonomyBlacklistService.findBlackList(t);
-                if (taxonomyBlacklistEntity != null) {
+                List<TaxonomyBlacklistEntity> taxonomyBlacklistEntity = taxonomyBlacklistService.findBlackList(t);
+                if (taxonomyBlacklistEntity != null && !taxonomyBlacklistEntity.isEmpty()) {
+                    List<String> taxonomiesSlug = taxonomyBlacklistEntity.stream().map(TaxonomyBlacklistEntity::getSlug).collect(Collectors.toList());
                     errorsList.add(FileError.builder()
-                            .message(String.format("Cannot remove taxonomy=\"%s\" because it is associated in a blacklist slug=%s", t, taxonomyBlacklistEntity.getSlug()))
+                            .message(String.format("Cannot remove taxonomy=\"%s\" because it is associated to the following blacklists slug=%s", t, taxonomiesSlug))
                             .build());
                 }
             });

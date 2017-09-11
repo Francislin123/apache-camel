@@ -87,7 +87,7 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService {
     }
 
     @Override
-    public TaxonomyBlacklistEntity findBlackList(String taxonomyPath) {
+    public List<TaxonomyBlacklistEntity> findBlackList(String taxonomyPath) {
         return taxonomyBlacklistRepository.findByTaxonomyPath(taxonomyPath);
     }
 

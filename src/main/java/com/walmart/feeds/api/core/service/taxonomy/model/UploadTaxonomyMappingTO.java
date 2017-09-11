@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.resources.taxonomy.request;
+package com.walmart.feeds.api.core.service.taxonomy.model;
 
 import lombok.Builder;
 import lombok.Getter;
