@@ -7,6 +7,10 @@
         <insert tableName="feed_template" >
             <column name="id" valueComputed="${uuid_function}"/>
             <column name="slug" value="default_template"/>
+            <column name="name" value="default_template"/>
+            <column name="template" value="default_template"/>
+            <column name="separator" value=">"/>
+            <column name="format" value="default_template"/>
         </insert>
     </changeSet>
 
