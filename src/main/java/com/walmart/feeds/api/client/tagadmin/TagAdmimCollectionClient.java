@@ -11,5 +11,5 @@ public interface TagAdmimCollectionClient {
 
     @RequestLine("GET /tags/{id}")
     @Headers("Content-Type: application/json")
-    TagAdminCollection findById(@Param("id") Long id);
+    TagAdminCollection findById(@Param("id")  Long id);
 }
