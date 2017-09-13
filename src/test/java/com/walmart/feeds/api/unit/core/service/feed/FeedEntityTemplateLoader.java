@@ -20,6 +20,7 @@ import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklist
 import com.walmart.feeds.api.unit.resources.partner.test.template.PartnerTemplateLoader;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 import static com.walmart.feeds.api.core.repository.feed.model.FeedType.INVENTORY;
 
@@ -44,7 +45,7 @@ public class FeedEntityTemplateLoader implements TemplateLoader {
 
         Fixture.of(FeedEntity.class).addTemplate(FEED_ENTITY, new Rule(){{
 
-            TemplateEntity template = TemplateEntity.builder().slug("template").build();
+            TemplateEntity template = TemplateEntity.builder().slug("template").name("default").separator(">").template("default").format("xml").build();
             PartnerEntity partner = Fixture.from(PartnerEntity.class).gimme(PartnerTemplateLoader.PARTNER_ENTITY);
             TaxonomyBlacklistEntity blacklistEntity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
             PartnerTaxonomyEntity partnerTaxonomy = Fixture.from(PartnerTaxonomyEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY);
