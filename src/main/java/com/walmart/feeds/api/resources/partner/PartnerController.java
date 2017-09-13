@@ -123,12 +123,12 @@ public class PartnerController {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation(value = "PartnerEntity Listing Method",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "PartnerEntity Listing Method")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of all partners", response = CollectionResponse.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Partner not change"),
             @ApiResponse(code = 500, message = "Unhandled exception")})
-    @RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CollectionResponse<PartnerResponse>> fetchAllPartners(@RequestParam(value = "active", required = false) Boolean active) {
 
         List<PartnerEntity> allPartners = service.findByStatus(active);

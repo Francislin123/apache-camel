@@ -45,5 +45,13 @@ public class PartnerTemplateLoader implements TemplateLoader {
             add("active", true);
         }});
 
+        Fixture.of(PartnerEntity.class).addTemplate("inactive-partner", new Rule() {{
+            add("name", "Buscape");
+            add("slug", "buscape");
+            add("description", "Texto descritivo");
+            add("partnerships", "comparadores;big");
+            add("active", false);
+        }});
+
     }
 }

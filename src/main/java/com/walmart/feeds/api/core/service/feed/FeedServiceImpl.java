@@ -3,6 +3,7 @@ package com.walmart.feeds.api.core.service.feed;
 import com.walmart.feeds.api.client.tagadmin.TagAdmimCollectionClient;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.InvalidFeedException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
@@ -229,6 +230,25 @@ public class FeedServiceImpl implements FeedService {
         }
     }
 
+    @Override
+    public void validateFeed(String partnerSlug, String feedSlug) {
+        StringBuilder sb = new StringBuilder();
+
+        FeedEntity feedEntity = feedRepository.findBySlug(feedSlug).get();
+
+        validateFeedActivePartner(partnerSlug, sb);
+
+        if(feedEntity.getCollectionId() != null){
+            validateCollection(feedEntity.getCollectionId(), sb);
+        }
+
+
+
+        if(sb.length() > 0){
+            throw new InvalidFeedException(sb.toString());
+        }
+    }
+
     private FeedEntity saveFeedWithHistory(FeedEntity feed) {
         FeedEntity savedFeed = feedRepository.saveAndFlush(feed);
         FeedHistory feedHistory = buildPartnerHistory(savedFeed);
@@ -289,5 +309,20 @@ public class FeedServiceImpl implements FeedService {
                 .build();
 
         return feedHistory;
+    }
+
+    private void validateFeedActivePartner(String partnerSlug, StringBuilder sb){
+        PartnerEntity partner = partnerService.findBySlug(partnerSlug);
+        if(!partner.isActive()){
+            sb.append("Partner is not active" + System.lineSeparator());
+        }
+    }
+
+    private void validateCollection(Long collectionId, StringBuilder sb) {
+        try{
+            productCollectionService.validateCollectionExists(collectionId);
+        }catch (UserException ex){
+            sb.append(ex.getMessage() + System.lineSeparator());
+        }
     }
 }
