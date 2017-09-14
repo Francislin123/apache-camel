@@ -20,7 +20,7 @@ public class ProductCollectionServiceImpl implements ProductCollectionService {
 
         TagAdminCollection tagAdminCollection = tagAdminCollectionClient.findById(collectionId);
 
-        if (tagAdminCollection == null || !"ACTIVE".equals(tagAdminCollection.getStatus())) {
+        if (!"ACTIVE".equals(tagAdminCollection.getStatus())) {
             throw new UserException(String.format("TagAdmin collection '%d' not found or not active!", collectionId));
         }
     }

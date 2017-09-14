@@ -1,6 +1,7 @@
 package com.walmart.feeds.api;
 
 import com.walmart.feeds.api.client.tagadmin.TagAdmimCollectionClient;
+import com.walmart.feeds.api.core.service.feed.TagAdminErrorDecoder;
 import feign.Feign;
 import feign.Logger;
 import feign.auth.BasicAuthRequestInterceptor;
@@ -28,6 +29,7 @@ public class TagAdminConfiguration {
 		return Feign.builder()
 				.client(new OkHttpClient())
 				.decoder(new JacksonDecoder())
+				.errorDecoder(new TagAdminErrorDecoder())
 				.logger(new Slf4jLogger(TagAdmimCollectionClient.class))
 				.logLevel(Logger.Level.FULL)
 				.requestInterceptor(new BasicAuthRequestInterceptor(tagAdminUser, tagAdminPassword))

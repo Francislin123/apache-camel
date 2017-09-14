@@ -101,6 +101,7 @@ public class FeedsController {
                 .taxonomy(feedEntity.getPartnerTaxonomy() != null ? feedEntity.getPartnerTaxonomy().getSlug() : null)
                 .taxonomyBlacklist(getTaxonomyBlacklistSlug(feedEntity))
                 .slug(feedEntity.getSlug())
+                .collectionId(feedEntity.getCollectionId())
                 .notification(FeedNotificationData.builder()
                         .format(feedEntity.getNotificationFormat().getType())
                         .method(feedEntity.getNotificationMethod().getType())
