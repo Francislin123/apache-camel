@@ -126,6 +126,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-data-elasticsearch:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-mail:${springBootVersion}"
 
 
     compile "io.github.openfeign:feign-okhttp:${feingVersion}"

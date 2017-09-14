@@ -127,7 +127,8 @@ public class TaxonomyBlacklistServiceImpl implements TaxonomyBlacklistService {
         LOGGER.info("taxonomyBlacklist={} message=deleted", toDelete);
     }
 
-    private void validateBlacklist(TaxonomyBlacklistEntity taxonomyBlacklistEntity) {
+    @Override
+    public void validateBlacklist(TaxonomyBlacklistEntity taxonomyBlacklistEntity) {
         List<SimpleError> expList = taxonomyBlacklistEntity.getList().stream()
                 .filter(mapping ->
                         mapping.getOwner() == TaxonomyOwner.WALMART && !elasticSearchService.validateWalmartTaxonomy(mapping.getTaxonomy())

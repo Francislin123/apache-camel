@@ -11,11 +11,21 @@ spring:
   data:
     elasticsearch:
       cluster-name: elasticsearch
-      cluster-nodes: napsao-qa-nix-feeds-elastic-1.qa.vmcommerce.intra:9300
+      cluster-nodes: napsao-qa-nix-feeds-elasticsearch-1.qa.vmcommerce.intra:9300
       indexes:
         skus:
           name: skus
           type: sku
+  mail:
+    host: smtp.qa.vmcommerce.intra:25
+#    username:
+#    password:
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
 
 tagadmin:
     username: admin
@@ -57,6 +67,14 @@ spring:
       initial-size: 10
       max-active: 150
       test-on-borrow: true
+  data:
+      elasticsearch:
+        cluster-name: elasticsearch
+        cluster-nodes: napsao-qa-nix-feeds-elasticsearch-1.qa.vmcommerce.intra:9300
+        indexes:
+          skus:
+            name: skus
+            type: sku
 
 management:
   security:
