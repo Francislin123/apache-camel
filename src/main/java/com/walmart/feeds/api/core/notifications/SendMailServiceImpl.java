@@ -24,13 +24,13 @@ public class SendMailServiceImpl implements SendMailService {
     private static final String DEFAULT_CONF_SLUG = "default_slug";
 
     @Override
-    public void sendMail(FeedErrorNotification feedErrorNotification) {
+    public void sendMail(String feedSlug, String partnerSlug, String message) {
 
         SimpleMailMessage mail = new SimpleMailMessage();
 
         MailConfEntity mailConf = mailConfService.fetchBySlug(DEFAULT_CONF_SLUG);
 
-        MailLogEntity mailLog = createLogEntity(feedErrorNotification,  mailConf);
+        MailLogEntity mailLog = createLogEntity(feedSlug, partnerSlug, message,  mailConf);
 
         mail.setFrom(mailConf.getFrom());
         mail.setTo(mailLog.getSentTo());
@@ -46,19 +46,19 @@ public class SendMailServiceImpl implements SendMailService {
 
     }
 
-    private MailLogEntity createLogEntity(FeedErrorNotification feedErrorNotification, MailConfEntity mailConfEntity){
+    private MailLogEntity createLogEntity(String feedSlug, String partnerSlug, String message, MailConfEntity mailConfEntity){
 
         StringBuilder bodyMsg = new StringBuilder();
 
-        bodyMsg.append("Error on generate feed : " + feedErrorNotification.getFeedSlug());
-        bodyMsg.append(" for partner : " + feedErrorNotification.getPartnerSlug());
-        bodyMsg.append("; \n Error(s): \n " + feedErrorNotification.getMessage());
+        bodyMsg.append("Error on generate feed : " + feedSlug);
+        bodyMsg.append(" for partner : " + partnerSlug);
+        bodyMsg.append("; \n Error(s): \n " + message);
 
         MailLogEntity mailLog = MailLogEntity.builder()
                 .bodyMessage(bodyMsg.toString())
                 .sentTo(mailConfEntity.getTo())
                 .subject(String.format(mailConfEntity.getSubject(),
-                        feedErrorNotification.getFeedSlug()))
+                        feedSlug))
                 .build();
 
         return mailLog;
