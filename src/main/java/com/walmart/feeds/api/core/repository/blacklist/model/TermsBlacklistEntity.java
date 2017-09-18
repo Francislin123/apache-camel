@@ -27,11 +27,11 @@ public class TermsBlacklistEntity {
     private String slug;
 
     @Column(nullable = false)
-    private Map<String , String> list;
+    private Map<String, String> list;
 
     @Tolerate
     public TermsBlacklistEntity() {
-        //do nothing
+        // Do nothing
     }
 
     @Builder

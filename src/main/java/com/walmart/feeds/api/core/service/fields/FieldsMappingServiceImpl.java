@@ -40,7 +40,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     public void save(FieldsMappingEntity fieldsMappingEntity) {
 
         if (fieldsMappingEntity == null) {
-            throw new InconsistentEntityException("null fields mapping");
+            throw new InconsistentEntityException("Null fields mapping");
         }
 
         hasConflict(fieldsMappingEntity.getSlug());
@@ -53,7 +53,7 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     public void update(FieldsMappingEntity fieldsMapping) {
 
         if (fieldsMapping == null) {
-            throw new InconsistentEntityException("null fields mapping");
+            throw new InconsistentEntityException("Null fields mapping");
         }
 
         String newSlug = SlugParserUtil.toSlug(fieldsMapping.getName());
