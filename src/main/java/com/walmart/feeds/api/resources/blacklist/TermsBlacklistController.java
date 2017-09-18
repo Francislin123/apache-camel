@@ -1,9 +1,9 @@
 package com.walmart.feeds.api.resources.blacklist;
 
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.blacklist.request.TermsBlacklistRequest;
-import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -36,7 +36,8 @@ public class TermsBlacklistController {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successful terms blacklist creation", response = ResponseEntity.class),
-            @ApiResponse(code = 400, message = "Validation error")})
+            @ApiResponse(code = 409, message = "Validation error"),
+            @ApiResponse(code = 500, message = "Unhandled exception")})
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createTermsBlacklist(@Valid @RequestBody TermsBlacklistRequest termsBlacklistRequest, UriComponentsBuilder builder) {
 
