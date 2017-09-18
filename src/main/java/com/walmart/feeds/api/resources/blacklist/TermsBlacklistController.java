@@ -19,7 +19,6 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.util.Map;
 
 @Api
 @RestController
@@ -44,7 +43,7 @@ public class TermsBlacklistController {
         TermsBlacklistEntity termsBlacklistEntity = TermsBlacklistEntity.builder()
                 .slug(SlugParserUtil.toSlug(termsBlacklistRequest.getName()))
                 .name(termsBlacklistRequest.getName())
-                .list((Map<String, String>) termsBlacklistRequest.getList()).build();
+                .list(termsBlacklistRequest.getList()).build();
 
         termsBlacklistService.saveTermsBlacklist(termsBlacklistEntity);
 

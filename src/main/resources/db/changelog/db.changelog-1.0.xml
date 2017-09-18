@@ -366,6 +366,51 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="createTermsBlackListTable" author="francislin.dos.reis">
+
+        <comment>Creating Terms Black List table</comment>
+
+        <createTable tableName="terms_blacklist">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTermsTable" author="francislin.dos.reis">
+
+        <comment>Creating Terms table</comment>
+
+        <createTable tableName="terms_blacklist_items">
+            <column name="blacklist_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"
+                             foreignKeyName="term_blacklist_fk"
+                             referencedTableName="terms_blacklist"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="term" type="varchar(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+
+            <dropTable tableName="partner"/>
+        </rollback>
+
+    </changeSet>
+
     <changeSet id="createFieldsMappingTable" author="adisson.gomes">
 
         <comment>Creating fields mapping table</comment>

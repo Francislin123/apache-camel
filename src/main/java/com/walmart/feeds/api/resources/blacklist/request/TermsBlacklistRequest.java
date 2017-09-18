@@ -21,6 +21,6 @@ public class TermsBlacklistRequest {
 
     @Valid
     @NotEmptyElements
-    private Set<TermsBlacklistRequest> list;
+    private Set<String> list;
 
 }

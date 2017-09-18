@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -26,8 +27,10 @@ public class TermsBlacklistEntity {
     @Column(nullable = false)
     private String slug;
 
-    @Column(nullable = false)
-    private Map<String, String> list;
+    @ElementCollection
+    @CollectionTable(name = "terms_blacklist_items", joinColumns = @JoinColumn(name = "blacklist_id", referencedColumnName = "id"))
+    @Column(name="term", nullable = false)
+    private Set<String> list;
 
     @Tolerate
     public TermsBlacklistEntity() {
@@ -35,7 +38,7 @@ public class TermsBlacklistEntity {
     }
 
     @Builder
-    public TermsBlacklistEntity(UUID id, String name, String slug, Map<String, String> list) {
+    public TermsBlacklistEntity(UUID id, String name, String slug, Set<String> list) {
         this.id = id;
         this.name = name;
         this.slug = slug;
