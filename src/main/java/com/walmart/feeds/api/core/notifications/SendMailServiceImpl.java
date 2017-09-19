@@ -33,7 +33,7 @@ public class SendMailServiceImpl implements SendMailService {
         MailLogEntity mailLog = createLogEntity(feedSlug, partnerSlug, message,  mailConf);
 
         mail.setFrom(mailConf.getFrom());
-        mail.setTo(mailLog.getSentTo());
+        mail.setTo(mailLog.getSentTo().split(";"));
         mail.setText(mailLog.getBodyMessage());
         mail.setSubject(mailLog.getSubject());
 
