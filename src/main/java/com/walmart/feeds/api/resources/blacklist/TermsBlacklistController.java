@@ -64,6 +64,7 @@ public class TermsBlacklistController {
                 .name(termsBlacklistRequest.getName())
                 .list(termsBlacklistRequest.getList()).build();
 
+
         termsBlacklistService.updateTermsBlacklist(blacklistEntity);
 
         return ResponseEntity.ok().build();

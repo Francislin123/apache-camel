@@ -418,6 +418,35 @@
 
     </changeSet>
 
+    <changeSet id="createTermsBlacklistHistoryTable" author="gabriel.cano">
+
+        <comment>Creating Terms Black List History table</comment>
+
+        <createTable tableName="terms_blacklist_history">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner"/>
+        </rollback>
+
+    </changeSet>
+
     <changeSet id="createFieldsMappingTable" author="adisson.gomes">
 
         <comment>Creating fields mapping table</comment>

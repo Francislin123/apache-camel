@@ -38,6 +38,7 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     }
 
     @Override
+    @Transactional
     public void updateTermsBlacklist(TermsBlacklistEntity termsBlacklistEntity) {
 
         if (termsBlacklistEntity == null) {
@@ -55,12 +56,10 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
 
         TermsBlacklistEntity updatedEntity = TermsBlacklistEntity.builder()
                 .id(persistedEntity.getId())
-                .name(persistedEntity.getName())
-                .slug(persistedEntity.getSlug())
-                .list(persistedEntity.getList())
+                .name(termsBlacklistEntity.getName())
+                .slug(termsBlacklistEntity.getSlug())
+                .list(termsBlacklistEntity.getList())
                 .creationDate(persistedEntity.getCreationDate())
-                .updateDate(persistedEntity.getUpdateDate())
-                .user(persistedEntity.getUser())
                 .build();
 
         persistTermsBlacklist(updatedEntity);
