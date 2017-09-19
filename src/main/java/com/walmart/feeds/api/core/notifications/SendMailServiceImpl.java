@@ -37,8 +37,7 @@ public class SendMailServiceImpl implements SendMailService {
         mail.setText(mailLog.getBodyMessage());
         mail.setSubject(mailLog.getSubject());
 
-        //TODO BLOCK DEVIDO A PENDENCIA DE ACL
-//        sender.send(mail);
+        sender.send(mail);
 
         mailLogService.log(mailLog);
 
@@ -50,6 +49,7 @@ public class SendMailServiceImpl implements SendMailService {
 
         StringBuilder bodyMsg = new StringBuilder();
 
+        bodyMsg.append(mailConfEntity.getBodyConf());
         bodyMsg.append("Error on generate feed : " + feedSlug);
         bodyMsg.append(" for partner : " + partnerSlug);
         bodyMsg.append("; \n Error(s): \n " + message);

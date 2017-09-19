@@ -62,4 +62,16 @@
 
     </changeSet>
 
+
+    <changeSet id="insertDefaultMailConf" author="thiago.lima">
+        <insert tableName="mail_conf" >
+            <column name="id" valueComputed="${uuid_function}"/>
+            <column name="slug" value="default_slug"/>
+            <column name="mail_from" value="gecbrfeeds@wal-mart.com"/>
+            <column name="mail_to" value="gecbrfeeds@wal-mart.com"/>
+            <column name="subject" value="Feed %s generation failed warning!"/>
+            <column name="body_conf" value="/n"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
