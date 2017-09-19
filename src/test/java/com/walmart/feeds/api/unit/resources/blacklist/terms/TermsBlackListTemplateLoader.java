@@ -20,6 +20,7 @@ public class TermsBlackListTemplateLoader implements TemplateLoader {
 
     @Override
     public void load() {
+
         // ---------------------------------------------------------------------------------------------------------- //
 
         Set<String> valid_list = new HashSet<>();

@@ -1,17 +1,21 @@
 package com.walmart.feeds.api.core.service.blacklist.taxonomy;
 
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 
 @Service
 public class TermsBlacklistServiceImpl implements TermsBlacklistService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TermsBlacklistServiceImpl.class);
 
     @Autowired
     private TermsBlackListRepository termsBlacklistRepository;
@@ -24,8 +28,10 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
             throw new InconsistentEntityException("Null terms black list");
         }
 
+        LOGGER.info("fieldsMappingHistory={} message=conflict", termsBlacklistEntity.getName());
         hasConflict(termsBlacklistEntity.getSlug());
 
+        LOGGER.info("fieldsMappingHistory={} message=saved_successfully", termsBlacklistEntity.getName());
         persistTermsBlacklist(termsBlacklistEntity);
     }
 
@@ -62,29 +68,31 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
                 .creationDate(persistedEntity.getCreationDate())
                 .build();
 
+        LOGGER.info("termsBlacklistEntity={} message=update_successfully", termsBlacklistEntity.getName());
         persistTermsBlacklist(updatedEntity);
-
-
-    }
-
-    @Override
-    public void deleteTermsBlacklist(String slug) {
-
-        TermsBlacklistEntity fieldsMappingDelete = findBySlug(slug);
-        this.termsBlacklistRepository.delete(fieldsMappingDelete);
-
     }
 
     public TermsBlacklistEntity findBySlug(String slug) {
 
+        LOGGER.info("termsBlacklistEntity={} message=findBy_successfully", slug);
         TermsBlacklistEntity termsBlacklistEntity = termsBlacklistRepository.findBySlug(slug).orElseThrow(() ->
                 new EntityNotFoundException(String.format("Terms Black List %s not found!", slug)));
         return termsBlacklistEntity;
 
     }
 
+    @Override
+    public void deleteTermsBlacklist(String slug) {
+
+        LOGGER.info("termsBlacklistEntity={} message=delete_successfully", slug);
+        TermsBlacklistEntity fieldsMappingDelete = findBySlug(slug);
+        this.termsBlacklistRepository.delete(fieldsMappingDelete);
+
+    }
+
     private void persistTermsBlacklist(TermsBlacklistEntity termsBlacklistEntity) {
 
+        LOGGER.info("termsBlacklistEntity={} message=saved_successfully", termsBlacklistEntity.getName());
         termsBlacklistRepository.saveAndFlush(termsBlacklistEntity);
     }
 }
