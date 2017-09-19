@@ -68,6 +68,22 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
 
     }
 
+    @Override
+    public void deleteTermsBlacklist(String slug) {
+
+        TermsBlacklistEntity fieldsMappingDelete = findBySlug(slug);
+        this.termsBlacklistRepository.delete(fieldsMappingDelete);
+
+    }
+
+    public TermsBlacklistEntity findBySlug(String slug) {
+
+        TermsBlacklistEntity termsBlacklistEntity = termsBlacklistRepository.findBySlug(slug).orElseThrow(() ->
+                new EntityNotFoundException(String.format("Terms Black List %s not found!", slug)));
+        return termsBlacklistEntity;
+
+    }
+
     private void persistTermsBlacklist(TermsBlacklistEntity termsBlacklistEntity) {
 
         termsBlacklistRepository.saveAndFlush(termsBlacklistEntity);

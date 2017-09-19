@@ -5,6 +5,7 @@ import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistService;
 import com.walmart.feeds.api.resources.blacklist.TermsBlacklistController;
@@ -27,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.walmart.feeds.api.resources.blacklist.TermsBlacklistController.URI_TERMS_BLACKLIST;
 import static com.walmart.feeds.api.unit.resources.blacklist.terms.TermsBlackListTemplateLoader.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,8 +71,7 @@ public class TermsBlacklistControllerTest {
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_VALID))))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        Mockito.verify(termsBlacklistService).saveTermsBlacklist(Mockito.any(TermsBlacklistEntity.class));
-
+        Mockito.verify(termsBlacklistService).saveTermsBlacklist(any(TermsBlacklistEntity.class));
     }
 
     @Test
@@ -84,7 +85,7 @@ public class TermsBlacklistControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
 
-        Mockito.verify(termsBlacklistService, times(0)).saveTermsBlacklist(Mockito.any(TermsBlacklistEntity.class));
+        Mockito.verify(termsBlacklistService, times(0)).saveTermsBlacklist(any(TermsBlacklistEntity.class));
     }
 
     @Test
@@ -97,7 +98,7 @@ public class TermsBlacklistControllerTest {
                         .gimme(TERMS_BLACKLIST_REQUEST_NULL))))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
-        Mockito.verify(termsBlacklistService, times(0)).saveTermsBlacklist(Mockito.any(TermsBlacklistEntity.class));
+        Mockito.verify(termsBlacklistService, times(0)).saveTermsBlacklist(any(TermsBlacklistEntity.class));
     }
 
     @Test
@@ -105,7 +106,7 @@ public class TermsBlacklistControllerTest {
     public void testCreatedNewTermsBlackLisWithConflict() {
 
         Mockito.doThrow(EntityAlreadyExistsException.class).when(termsBlacklistService)
-                .saveTermsBlacklist(Mockito.any(TermsBlacklistEntity.class));
+                .saveTermsBlacklist(any(TermsBlacklistEntity.class));
 
         mockMvc.perform(MockMvcRequestBuilders.post(URI_TERMS_BLACKLIST)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -124,7 +125,6 @@ public class TermsBlacklistControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
         Mockito.verifyZeroInteractions(termsBlacklistService);
-
     }
 
     @Test
@@ -139,13 +139,123 @@ public class TermsBlacklistControllerTest {
         Mockito.verifyZeroInteractions(termsBlacklistService);
     }
 
-    // ---------------------------------- Test Create Terms Blacklist begin -----------------------------------------------------------------//
+    // ---------------------------------- Test Create Terms Blacklist end -------------------------------------------------------------------//
+
 
     // ---------------------------------- Test Update Terms Blacklist begin -----------------------------------------------------------------//
 
+    @Test
+    @SneakyThrows
+    public void testUpdateSuccessTermsBlackList() {
 
+        mockMvc.perform(MockMvcRequestBuilders
+                .put(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_VALID))))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(termsBlacklistService, times(1)).updateTermsBlacklist(any(TermsBlacklistEntity.class));
+    }
+
+    @Test
+    public void testUpdateTermsBlackListWhenOccursConflict() throws Exception {
+
+        Mockito.doThrow(EntityAlreadyExistsException.class).when(termsBlacklistService).updateTermsBlacklist(any(TermsBlacklistEntity.class));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_VALID))))
+                .andExpect(MockMvcResultMatchers.status().isConflict());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testUpdateTermsBlackListWithEmptyFields() {
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_EMPTY_LIST))))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testUpdateTermsBlackListWhenListFieldsHasNullElements() {
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class)
+                        .gimme(TERMS_BLACKLIST_REQUEST_NULL))))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testUpdateFieldsMappingWhenMappedFieldsIsInvalid() {
+
+        mockMvc.perform(MockMvcRequestBuilders.put(URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class)
+                        .gimme(TERMS_BLACKLIST_REQUEST_INVALID))))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+        Mockito.verify(termsBlacklistService, times(0)).saveTermsBlacklist(Mockito.any(TermsBlacklistEntity.class));
+    }
+
+    @Test
+    @SneakyThrows
+    public void testUpdateTermsBlackListOccursUnhandledException() {
+
+        Mockito.doThrow(RuntimeException.class).when(termsBlacklistService).updateTermsBlacklist(Mockito.any(TermsBlacklistEntity.class));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_VALID))))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+    }
 
     // ---------------------------------- Test Update Terms Blacklist end -------------------------------------------------------------------//
+
+    // ---------------------------------- Test Delete Terms Blacklist begin -----------------------------------------------------------------//
+
+    @Test
+    @SneakyThrows
+    public void testDeleteTermsBlackList() {
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isNoContent());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testDeleteTermsBlackListNonExistent() {
+
+        Mockito.doThrow(EntityNotFoundException.class).when(termsBlacklistService).deleteTermsBlacklist("facebook-terms-blacklist");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testDeleteFieldsMappingUnhandledException() {
+        Mockito.doThrow(Exception.class).when(termsBlacklistService).deleteTermsBlacklist("facebook-terms-blacklist");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+    }
+
+    // ---------------------------------- Test Delete Terms Blacklist end -------------------------------------------------------------------//
 
     public String jsonRequest(Object request) throws JsonProcessingException {
         return mapper.writeValueAsString(request);

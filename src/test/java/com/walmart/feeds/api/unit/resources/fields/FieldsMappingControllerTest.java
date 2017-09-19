@@ -224,6 +224,7 @@ public class FieldsMappingControllerTest {
 
     @Test
     public void testUpdateFieldsMappingWhenMappedFieldsHasNullElements() throws Exception {
+
         mockMvc.perform(MockMvcRequestBuilders
                 .put(FieldsMappingController.URI_FIELDSDMAPPING + "/buscape")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)

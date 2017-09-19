@@ -16,6 +16,7 @@ public class TermsBlackListTemplateLoader implements TemplateLoader {
     public static final String TERMS_BLACKLIST_REQUEST_INVALID = "terms_black_invalid";
     public static final String TERMS_BLACKLIST_REQUEST_NULL = "terms_black_null";
     public static final String TERMS_BLACKLIST_REQUEST_EMPTY_NAME = "terms_black_empty_name";
+    public static final String TERMS_BLACKLIST_REQUEST_EMPTY_LIST = "terms_black_empty_name";
 
     @Override
     public void load() {
@@ -43,20 +44,20 @@ public class TermsBlackListTemplateLoader implements TemplateLoader {
             add("list", terms_black_null);
         }});
 
-        // ---------------------------------------------------------------------------------------------------------- //
+        // ---------------------------------- Test Create Terms Blacklist begin --------------------------------------//
 
         Fixture.of(TermsBlacklistRequest.class).addTemplate(TERMS_BLACKLIST_REQUEST_VALID, new Rule() {{
-            add("name", "bullet");
+            add("name", "Facebook Terms Blacklist");
             add("list", valid_list);
         }});
 
         Fixture.of(TermsBlacklistRequest.class).addTemplate(TERMS_BLACKLIST_REQUEST_INVALID, new Rule() {{
-            add("name", "bullet");
+            add("name", "Facebook Terms Blacklist");
             add("list", invalid_list);
         }});
 
         Fixture.of(TermsBlacklistRequest.class).addTemplate(TERMS_BLACKLIST_REQUEST_NULL, new Rule() {{
-            add("name", "bullet");
+            add("name", "Facebook Terms Blacklist");
             add("list", terms_black_null);
         }});
 
@@ -65,6 +66,14 @@ public class TermsBlackListTemplateLoader implements TemplateLoader {
             add("list", valid_list);
         }});
 
-        // ---------------------------------------------------------------------------------------------------------- //
+        // ---------------------------------- Test Create Terms Blacklist end ----------------------------------------//
+
+        // ---------------------------------- Test Create Terms Blacklist begin --------------------------------------//
+
+        Fixture.of(TermsBlacklistRequest.class).addTemplate(TERMS_BLACKLIST_REQUEST_EMPTY_LIST, new Rule() {{
+            add("name", "Facebook Terms Blacklist");
+        }});
+
+        // ---------------------------------- Test Create Terms Blacklist end ----------------------------------------//
     }
 }
