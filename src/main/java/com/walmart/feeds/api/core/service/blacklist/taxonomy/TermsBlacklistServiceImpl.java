@@ -85,8 +85,8 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     public void deleteTermsBlacklist(String slug) {
 
         LOGGER.info("termsBlacklistEntity={} message=delete_successfully", slug);
-        TermsBlacklistEntity fieldsMappingDelete = findBySlug(slug);
-        this.termsBlacklistRepository.delete(fieldsMappingDelete);
+        TermsBlacklistEntity termsBlackListDelete = findBySlug(slug);
+        this.termsBlacklistRepository.delete(termsBlackListDelete);
 
     }
 
