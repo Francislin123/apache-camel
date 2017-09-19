@@ -49,7 +49,7 @@ public class FieldsMappingControllerTest {
     @InjectMocks
     private FieldsMappingController fieldsMappingController = new FieldsMappingController();
 
-    //Run only once
+    // Run only once
     @BeforeClass
     public static void setUp() {
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.fields.test.template");

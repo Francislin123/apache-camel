@@ -22,10 +22,10 @@ import javax.validation.Valid;
 
 @Api
 @RestController
-@RequestMapping(TermsBlacklistController.V1_BLACKLIST_TERMS)
+@RequestMapping(TermsBlacklistController.URI_TERMS_BLACKLIST)
 public class TermsBlacklistController {
 
-    public static final String V1_BLACKLIST_TERMS = "/v1/blacklist/terms";
+    public static final String URI_TERMS_BLACKLIST = "/v1/blacklist/terms";
 
     @Autowired
     private TermsBlacklistService termsBlacklistService;
@@ -47,7 +47,7 @@ public class TermsBlacklistController {
 
         termsBlacklistService.saveTermsBlacklist(termsBlacklistEntity);
 
-        UriComponents uriComponents = builder.path(V1_BLACKLIST_TERMS.concat("/{slug}")).buildAndExpand(termsBlacklistEntity.getSlug());
+        UriComponents uriComponents = builder.path(URI_TERMS_BLACKLIST.concat("/{slug}")).buildAndExpand(termsBlacklistEntity.getSlug());
 
         return ResponseEntity.created(uriComponents.toUri()).build();
     }
