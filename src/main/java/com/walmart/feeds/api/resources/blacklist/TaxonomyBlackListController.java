@@ -55,7 +55,7 @@ public class TaxonomyBlackListController {
     @ApiOperation(value = "Update a taxonomy blacklist",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful taxonomy blacklist update", response = ResponseEntity.class),
+            @ApiResponse(code = 200, message = "Successful taxonomy blacklist updateTermsBlacklist", response = ResponseEntity.class),
             @ApiResponse(code = 400, message = "Validation error"),
             @ApiResponse(code = 404, message = "Taxonomy blacklist not found")})
     @RequestMapping(value = "{taxonomyBlacklistSlug}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -60,7 +60,7 @@ public class FieldsMappingController {
 
     @ApiOperation(value = "Update an existent fields mapping", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successful on update the fields mapping"),
+            @ApiResponse(code = 200, message = "Successful on updateTermsBlacklist the fields mapping"),
             @ApiResponse(code = 404, message = "Fields mapping not found"),
             @ApiResponse(code = 500, message = "Unhandled exception")})
     @RequestMapping(value = "{slug}", method = RequestMethod.PUT,

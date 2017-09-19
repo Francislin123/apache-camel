@@ -11,10 +11,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -51,8 +48,27 @@ public class TermsBlacklistController {
 
         return ResponseEntity.created(uriComponents.toUri()).build();
     }
-}
 
+    @ApiOperation(value = "Update a terms blacklist",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful terms blacklist updateTermsBlacklist", response = ResponseEntity.class),
+            @ApiResponse(code = 404, message = "Terms blacklist not found"),
+            @ApiResponse(code = 500, message = "Unhandled error terms blacklist updateTermsBlacklist")})
+    @RequestMapping(value = "{termsBlacklistSlug}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity updateTermsBlackList(@Valid @RequestBody TermsBlacklistRequest termsBlacklistRequest,
+                                               @PathVariable(value = "termsBlacklistSlug") String termsBlacklistSlug, UriComponentsBuilder builder) {
+
+        TermsBlacklistEntity blacklistEntity = TermsBlacklistEntity.builder()
+                .slug(termsBlacklistSlug)
+                .name(termsBlacklistRequest.getName())
+                .list(termsBlacklistRequest.getList()).build();
+
+        termsBlacklistService.updateTermsBlacklist(blacklistEntity);
+
+        return ResponseEntity.ok().build();
+    }
+}
 
 
 

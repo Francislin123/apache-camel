@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.core.service.blacklist.taxonomy;
 
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 
 public interface TermsBlacklistService {
@@ -11,4 +12,7 @@ public interface TermsBlacklistService {
     void saveTermsBlacklist(TermsBlacklistEntity  termsBlacklistEntity);
 
     void hasConflict(String slug);
+
+    void updateTermsBlacklist(TermsBlacklistEntity termsBlacklistEntity);
+
 }

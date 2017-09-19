@@ -27,7 +27,7 @@ import static com.walmart.feeds.api.core.repository.feed.model.FeedType.INVENTOR
 public class FeedEntityTemplateLoader implements TemplateLoader {
 
     public static final String FEED_ENTITY = "feed-entity";
-    public static final String FEED_ENTITY_UPDATE_NAME = "feed-entity-update-name";
+    public static final String FEED_ENTITY_UPDATE_NAME = "feed-entity-updateTermsBlacklist-name";
     public static final String FEED_ENTITY_WITHOUT_TAXONOMY_BLACKLIST = "feed-entity-without-taxonomy-blacklist";
     public static final String FEED_ENTITY_WITH_INVALID_PARTNER_TAXONOMY_BLACKLIST = "feed-entity-with-invalid-partner-taxonomy-blacklist";
     public static final String TEMPLATE_ENTITY = "template-entity";
