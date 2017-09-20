@@ -21,4 +21,6 @@ public interface FeedService {
     FeedEntity fetchByPartner(String feedSlug, String partnerSlug);
 
     void hasConflict(String slug);
+
+    void validateFeed(String partnerSlug, String feedSlug);
 }

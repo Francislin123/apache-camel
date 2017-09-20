@@ -22,5 +22,6 @@
 
     <include file="src/main/resources/db/changelog/db.changelog-1.0.xml"/>
     <include file="src/main/resources/db/changelog/db.changelog-qa-1.0.xml"/>
+    <include file="src/main/resources/db/changelog/db.changelog-1.1.xml"/>
 
 </databaseChangeLog>

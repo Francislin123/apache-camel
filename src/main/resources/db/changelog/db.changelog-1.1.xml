@@ -1,0 +1,77 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="createMailSenderConfig" author="thiago.lima">
+
+        <comment>Creating mail sender configuration table</comment>
+
+        <createTable tableName="mail_conf">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="mail_from" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mail_to" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subject" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="body_conf" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="mail_conf"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createMailLog" author="thiago.lima">
+
+        <comment>Creating mail log table</comment>
+
+        <createTable tableName="mail_log">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sent_to" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="subject" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="body_msg" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="mail_log"/>
+        </rollback>
+
+    </changeSet>
+
+
+    <changeSet id="insertDefaultMailConf" author="thiago.lima">
+        <insert tableName="mail_conf" >
+            <column name="id" valueComputed="${uuid_function}"/>
+            <column name="slug" value="default_slug"/>
+            <column name="mail_from" value="gecbrfeeds@wal-mart.com"/>
+            <column name="mail_to" value="gecbrfeeds@wal-mart.com"/>
+            <column name="subject" value="Feed %s generation failed warning!"/>
+            <column name="body_conf" value="/n"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
