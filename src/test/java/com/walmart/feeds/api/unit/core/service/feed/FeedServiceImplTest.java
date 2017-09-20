@@ -4,6 +4,7 @@ import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.client.tagadmin.TagAdminCollection;
 import com.walmart.feeds.api.core.exceptions.*;
+import com.walmart.feeds.api.core.notifications.SendMailService;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
@@ -18,6 +19,7 @@ import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistNotFoundException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistPartnerException;
 import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
@@ -71,6 +73,12 @@ public class FeedServiceImplTest {
 
     @Mock
     private FieldsMappingRepository fieldsMappingRepository;
+
+    @Mock
+    private SendMailService sendMailService;
+
+    @Mock
+    private TaxonomyBlacklistService taxonomyBlacklistService;
 
     @BeforeClass
     public static void setUp() {
@@ -427,10 +435,10 @@ public class FeedServiceImplTest {
                 .template(templateEntity)
                 .partnerTaxonomy(PartnerTaxonomyEntity.builder()
                         .slug("taxonomy-slug")
-                    .build())
+                        .build())
                 .fieldsMapping(FieldsMappingEntity.builder()
                         .slug("field-mapping-slug")
-                    .build())
+                        .build())
                 .notificationUrl("http://localhost:8080/teste")
                 .type(INVENTORY).build();
 
@@ -451,8 +459,12 @@ public class FeedServiceImplTest {
     @Test(expected = InvalidFeedException.class)
     public void testFeedValidationInvalidPartner(){
         PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme("inactive-partner");
-        when(feedRepository.findBySlug("someFeedSlug")).thenReturn(Optional.of(FeedEntity.builder().build()));
+        when(feedRepository.findBySlug("someFeedSlug")).thenReturn(Optional.of(FeedEntity.builder()
+                .collectionId(0L).
+                        slug("someFeedSlug")
+                .partner(PartnerEntity.builder().slug("anyPartnerSlug").build()).build()));
         when(partnerService.findBySlug("inactivePartner")).thenReturn(partnerEntity);
+        doNothing().when(sendMailService).sendMail("someFeedSlug", " someFeedSlug", "Partner is not active/n");
         feedService.validateFeed("inactivePartner", "someFeedSlug");
     }
 
@@ -460,9 +472,12 @@ public class FeedServiceImplTest {
     public void testFeedValidationInvalidCollection(){
         PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme(PartnerTemplateLoader.PARTNER_ENTITY);
         when(feedRepository.findBySlug("someFeedSlug")).thenReturn(Optional.of(FeedEntity.builder()
-                .collectionId(0L).build()));
+                .collectionId(0L).
+                        slug("someFeedSlug")
+                .partner(PartnerEntity.builder().slug("anyPartnerSlug").build()).build()));
         when(partnerService.findBySlug("anyPartnerSlug")).thenReturn(partnerEntity);
-        doThrow(UserException.class).when(productCollectionService).validateCollectionExists(0L);
+        doNothing().when(sendMailService).sendMail("someFeedSlug", " someFeedSlug", "Error/n");
+        doAnswer(answer -> {throw new UserException("Error");}).when(productCollectionService).validateCollectionExists(0L);
         feedService.validateFeed("anyPartnerSlug", "someFeedSlug");
     }
 
