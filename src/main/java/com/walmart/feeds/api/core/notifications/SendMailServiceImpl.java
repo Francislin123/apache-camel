@@ -41,8 +41,6 @@ public class SendMailServiceImpl implements SendMailService {
 
         mailLogService.log(mailLog);
 
-
-
     }
 
     private MailLogEntity createLogEntity(String feedSlug, String partnerSlug, String message, MailConfEntity mailConfEntity){

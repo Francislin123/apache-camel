@@ -41,7 +41,7 @@ public class FeedsController {
     private FeedService feedService;
 
     @ApiOperation(value = "Create a new feed",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Successful feed creation", response = ResponseEntity.class),
             @ApiResponse(code = 409, message = "FeedEntity already exists"),
@@ -85,7 +85,7 @@ public class FeedsController {
 
     }
 
-    @ApiOperation(value = "Fetch feed by slug",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "Fetch feed by slug", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return found feed", response = FeedResponse.class),
             @ApiResponse(code = 404, message = "FeedEntity not found by slug")})
@@ -124,11 +124,11 @@ public class FeedsController {
     }
 
     @ApiOperation(value = " Fetch all feeds by partner slug ",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Return found feeds", response = FeedResponse.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Invalid partner slug")})
-    @RequestMapping( method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionResponse<FeedResponse>> fetchAll(@PathVariable("partnerSlug") String partnerSlug, @RequestParam(value = "active", required = false) Boolean active) {
 
         List<FeedEntity> listFeedEntity = feedService.fetchActiveByPartner(partnerSlug, active);
@@ -218,18 +218,19 @@ public class FeedsController {
 
         return ResponseEntity.ok().build();
     }
-    @ApiOperation(value = "Validate a Feed to generate a file",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+
+    @ApiOperation(value = "Validate a Feed to generate a file", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Valid Feed", response = FeedResponse.class),
             @ApiResponse(code = 400, message = "Invalid Feed")})
     @RequestMapping(value = "{feedSlug}/validation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity feedValidation(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("feedSlug") String feedSlug){
+    public ResponseEntity feedValidation(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("feedSlug") String feedSlug) {
         feedService.validateFeed(partnerSlug, feedSlug);
         return ResponseEntity.ok().build();
     }
 
     private String getTaxonomyBlacklistSlug(FeedEntity feedEntity) {
-        if(feedEntity.getTaxonomyBlacklist() == null) {
+        if (feedEntity.getTaxonomyBlacklist() == null) {
             return null;
         }
         return feedEntity.getTaxonomyBlacklist().getSlug();

@@ -14,6 +14,6 @@ public class MailConfServiceImpl implements MailConfService {
 
     @Override
     public MailConfEntity fetchBySlug(String slug) {
-        return mailConfRepository.findBySlug(slug).orElseThrow(() -> new SystemException(""));
+        return mailConfRepository.findBySlug(slug).orElseThrow(() -> new SystemException("There's no mail configuration setup"));
     }
 }
