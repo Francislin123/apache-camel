@@ -37,13 +37,13 @@ public abstract class AuditableEntity {
     @PrePersist
     protected void prePersist() {
         this.creationDate = LocalDateTime.now();
-        this.user = "teste";
+        this.user = "Frans";
     }
 
     @PreUpdate
     protected void preUpdate() {
         this.updateDate = LocalDateTime.now();
-        this.user = "teste";
+        this.user = "Frans";
     }
 }
 

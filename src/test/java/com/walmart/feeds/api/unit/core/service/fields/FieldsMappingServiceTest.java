@@ -85,20 +85,16 @@ public class FieldsMappingServiceTest {
     @Before
     public void init() {
 
-        Mockito.when(elasticSearchComponent.getWalmartFields())
-                .thenReturn(WM_FIELDS);
-
+        Mockito.when(elasticSearchComponent.getWalmartFields()).thenReturn(WM_FIELDS);
     }
 
     @Test
-    public void testSaveFieldsdMapping() throws Exception {
+    public void testSaveFieldsMapping() throws Exception {
 
         FieldsMappingEntity fieldsMapping = createFieldsMapping();
 
-        Mockito.when(fmRepository.findBySlug(anyString()))
-                .thenReturn(Optional.empty());
-        Mockito.when(fmRepository.saveAndFlush(any(FieldsMappingEntity.class)))
-                .thenReturn(createFieldsMapping());
+        Mockito.when(fmRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        Mockito.when(fmRepository.saveAndFlush(any(FieldsMappingEntity.class))).thenReturn(createFieldsMapping());
 
         mappingService.save(createFieldsMapping());
 
@@ -109,7 +105,7 @@ public class FieldsMappingServiceTest {
     }
 
     @Test
-    public void testSaveFieldsdMappingWhenWalmartFieldNotExist() throws Exception {
+    public void testSaveFieldsMappingWhenWalmartFieldNotExist() throws Exception {
 
         Mockito.when(fmRepository.findBySlug(anyString()))
                 .thenReturn(Optional.empty());
@@ -138,10 +134,9 @@ public class FieldsMappingServiceTest {
     }
 
     @Test(expected = EntityAlreadyExistsException.class)
-    public void testSaveFieldsdMappingDuplicatedConstraint() throws Exception {
+    public void testSaveFieldsMappingDuplicatedConstraint() throws Exception {
 
-        Mockito.when(fmRepository.findBySlug(anyString()))
-                .thenReturn(Optional.of(createFieldsMapping()));
+        Mockito.when(fmRepository.findBySlug(anyString())).thenReturn(Optional.of(createFieldsMapping()));
 
         mappingService.save(createFieldsMapping());
 
@@ -152,10 +147,8 @@ public class FieldsMappingServiceTest {
 
         FieldsMappingEntity fieldsMapping = createFieldsMapping();
 
-        Mockito.when(fmRepository.findBySlug(anyString()))
-                .thenReturn(Optional.of(fieldsMapping));
-        Mockito.when(fmRepository.saveAndFlush(any(FieldsMappingEntity.class)))
-                .thenReturn(createFieldsMapping());
+        Mockito.when(fmRepository.findBySlug(anyString())).thenReturn(Optional.of(fieldsMapping));
+        Mockito.when(fmRepository.saveAndFlush(any(FieldsMappingEntity.class))).thenReturn(createFieldsMapping());
 
         mappingService.update(fieldsMapping);
 

@@ -5,6 +5,8 @@ import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
+import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistory;
+import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistoryRepository;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,9 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
 
     @Autowired
     private TermsBlackListRepository termsBlacklistRepository;
+
+    @Autowired
+    private TermsBlacklistHistoryRepository termsBlacklistHistoryRepository;
 
     @Override
     @Transactional
@@ -47,29 +52,24 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     @Transactional
     public void updateTermsBlacklist(TermsBlacklistEntity termsBlacklistEntity) {
 
-        if (termsBlacklistEntity == null) {
-            throw new InconsistentEntityException("Null terms black list");
-        }
-
         String newSlug = SlugParserUtil.toSlug(termsBlacklistEntity.getName());
 
         if (!termsBlacklistEntity.getSlug().equals(newSlug)) {
             hasConflict(newSlug);
         }
 
-        TermsBlacklistEntity persistedEntity = termsBlacklistRepository.findBySlug(termsBlacklistEntity.getSlug())
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Terms Blacklist %s not found", termsBlacklistEntity.getSlug())));
+        TermsBlacklistEntity currentPartner = findTermsBlacklistByReference(termsBlacklistEntity.getSlug());
 
-        TermsBlacklistEntity updatedEntity = TermsBlacklistEntity.builder()
-                .id(persistedEntity.getId())
+        TermsBlacklistEntity updatedTermsBlacklist = TermsBlacklistEntity.builder()
+                .id(currentPartner.getId())
+                .creationDate(currentPartner.getCreationDate())
                 .name(termsBlacklistEntity.getName())
                 .slug(termsBlacklistEntity.getSlug())
                 .list(termsBlacklistEntity.getList())
-                .creationDate(persistedEntity.getCreationDate())
                 .build();
 
+        persistTermsBlacklist(updatedTermsBlacklist);
         LOGGER.info("termsBlacklistEntity={} message=update_successfully", termsBlacklistEntity.getName());
-        persistTermsBlacklist(updatedEntity);
     }
 
     public TermsBlacklistEntity findBySlug(String slug) {
@@ -90,9 +90,33 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
 
     }
 
-    private void persistTermsBlacklist(TermsBlacklistEntity termsBlacklistEntity) {
+    private TermsBlacklistEntity persistTermsBlacklist(TermsBlacklistEntity termsBlacklist) {
 
-        LOGGER.info("termsBlacklistEntity={} message=saved_successfully", termsBlacklistEntity.getName());
-        termsBlacklistRepository.saveAndFlush(termsBlacklistEntity);
+        TermsBlacklistEntity saveTermsBlackList = termsBlacklistRepository.saveAndFlush(termsBlacklist);
+
+        LOGGER.info("termsBlacklist={} message=saved_successfully", saveTermsBlackList);
+
+        TermsBlacklistHistory termsBlacklistHistory = buildTermsBlacklistHistory(saveTermsBlackList);
+        termsBlacklistHistory = termsBlacklistHistoryRepository.save(termsBlacklistHistory);
+
+        LOGGER.info("termsBlacklistHistory={} message=saved_successfully", termsBlacklistHistory);
+
+        return saveTermsBlackList;
+    }
+
+    private TermsBlacklistHistory buildTermsBlacklistHistory(TermsBlacklistEntity termsBlacklist) {
+        return TermsBlacklistHistory.builder()
+                .name(termsBlacklist.getName())
+                .slug(termsBlacklist.getSlug())
+                .list(String.valueOf(termsBlacklist.getList()))
+                .creationDate(termsBlacklist.getCreationDate())
+                .updateDate(termsBlacklist.getUpdateDate())
+                .user(termsBlacklist.getUser())
+                .build();
+    }
+
+    private TermsBlacklistEntity findTermsBlacklistByReference(String slug) {
+        return termsBlacklistRepository.findBySlug(slug)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("TermsBlacklist not found for slug='%s'", slug)));
     }
 }

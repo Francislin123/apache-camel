@@ -1,5 +1,6 @@
 package com.walmart.feeds.api.unit.core.service.blacklist.terms;
 
+import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistory;
@@ -19,8 +20,8 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TermsBlacklistServiceTest {
@@ -44,15 +45,37 @@ public class TermsBlacklistServiceTest {
 
         TermsBlacklistEntity termsBlackList = createTermsBlacklist();
 
-        Mockito.when(termsBlackListRepository.findBySlug(anyString()))
-                .thenReturn(Optional.empty());
-        Mockito.when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class)))
-                .thenReturn(createTermsBlacklist());
+        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        Mockito.when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class))).thenReturn(createTermsBlacklist());
 
         termsBlacklistService.saveTermsBlacklist(createTermsBlacklist());
 
-        Mockito.verify(termsBlackListRepository).findBySlug(anyString());
-        Mockito.verify(termsBlackListRepository).saveAndFlush(any(TermsBlacklistEntity.class));
+        Mockito.verify(termsBlackListRepository, Mockito.times(1)).findBySlug(anyString());
+        Mockito.verify(termsBlackListRepository, Mockito.times(1)).saveAndFlush(any(TermsBlacklistEntity.class));
+        Mockito.verify(termsBlacklistHistoryRepository, Mockito.times(1)).save(any(TermsBlacklistHistory.class));
+    }
+
+    @Test(expected = EntityAlreadyExistsException.class)
+    public void testTermsBlackListDuplicatedConstraint() {
+
+        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
+
+        termsBlacklistService.saveTermsBlacklist(createTermsBlacklist());
+    }
+
+    @Test
+    public void testUpdateTermsBlackList() {
+
+        TermsBlacklistEntity termsBlacklist = createTermsBlacklist();
+
+        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(termsBlacklist));
+        Mockito.when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class))).thenReturn(createTermsBlacklist());
+
+        termsBlacklistService.updateTermsBlacklist(termsBlacklist);
+
+        Mockito.verify(termsBlackListRepository, Mockito.times(1)).findBySlug(anyString());
+        Mockito.verify(termsBlackListRepository, Mockito.times(1)).saveAndFlush(any(TermsBlacklistEntity.class));
+        Mockito.verify(termsBlacklistHistoryRepository, Mockito.times(1)).save(any(TermsBlacklistHistory.class));
     }
 
     private TermsBlacklistEntity createTermsBlacklist() {
