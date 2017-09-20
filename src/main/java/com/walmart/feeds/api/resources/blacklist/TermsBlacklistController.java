@@ -70,13 +70,13 @@ public class TermsBlacklistController {
         return ResponseEntity.ok().build();
     }
 
-    @ApiOperation(value = "Method to delete fields mapping")
+    @ApiOperation(value = "Method to delete Terms black List")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Terms black List deleted successfully"),
             @ApiResponse(code = 404, message = "Terms black List does not deleted because it was not found."),
             @ApiResponse(code = 500, message = "Internal Server Error")})
     @RequestMapping(value = "/{termsBlacklistSlug}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteFieldsMapping(@PathVariable("termsBlacklistSlug") String slug) {
+    public ResponseEntity deleteTermsBlackList(@PathVariable("termsBlacklistSlug") String slug) {
 
         termsBlacklistService.deleteTermsBlacklist(slug);
 
