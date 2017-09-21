@@ -2,7 +2,6 @@ package com.walmart.feeds.api.core.service.blacklist.taxonomy;
 
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistory;
@@ -29,23 +28,11 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     @Transactional
     public void saveTermsBlacklist(TermsBlacklistEntity termsBlacklistEntity) {
 
-        if (termsBlacklistEntity == null) {
-            throw new InconsistentEntityException("Null terms black list");
-        }
-
-        LOGGER.info("fieldsMappingHistory={} message=conflict", termsBlacklistEntity.getName());
+        LOGGER.info("termsBlacklistHistory={} message=conflict", termsBlacklistEntity.getName());
         hasConflict(termsBlacklistEntity.getSlug());
 
-        LOGGER.info("fieldsMappingHistory={} message=saved_successfully", termsBlacklistEntity.getName());
+        LOGGER.info("termsBlacklistHistory={} message=saved_successfully", termsBlacklistEntity.getName());
         persistTermsBlacklist(termsBlacklistEntity);
-    }
-
-    @Override
-    public void hasConflict(String slug) {
-
-        if (termsBlacklistRepository.findBySlug(slug).isPresent()) {
-            throw new EntityAlreadyExistsException(String.format("Terms black list called '%s' already exists", slug));
-        }
     }
 
     @Override
@@ -95,13 +82,20 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
         TermsBlacklistEntity saveTermsBlackList = termsBlacklistRepository.saveAndFlush(termsBlacklist);
 
         LOGGER.info("termsBlacklist={} message=saved_successfully", saveTermsBlackList);
-
         TermsBlacklistHistory termsBlacklistHistory = buildTermsBlacklistHistory(saveTermsBlackList);
-        termsBlacklistHistory = termsBlacklistHistoryRepository.save(termsBlacklistHistory);
 
+        termsBlacklistHistory = termsBlacklistHistoryRepository.save(termsBlacklistHistory);
         LOGGER.info("termsBlacklistHistory={} message=saved_successfully", termsBlacklistHistory);
 
         return saveTermsBlackList;
+    }
+
+    @Override
+    public void hasConflict(String slug) {
+
+        if (termsBlacklistRepository.findBySlug(slug).isPresent()) {
+            throw new EntityAlreadyExistsException(String.format("Terms black list called '%s' already exists", slug));
+        }
     }
 
     private TermsBlacklistHistory buildTermsBlacklistHistory(TermsBlacklistEntity termsBlacklist) {

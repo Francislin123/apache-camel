@@ -16,4 +16,6 @@ public interface TermsBlacklistService {
     void updateTermsBlacklist(TermsBlacklistEntity termsBlacklistEntity);
 
     void deleteTermsBlacklist(String slug);
+
+    TermsBlacklistEntity findBySlug(String slug);
 }
