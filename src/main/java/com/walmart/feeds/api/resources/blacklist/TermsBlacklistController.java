@@ -1,19 +1,16 @@
 package com.walmart.feeds.api.resources.blacklist;
 
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
-import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.blacklist.request.TermsBlacklistRequest;
 import com.walmart.feeds.api.resources.blacklist.response.TermsBlacklistResponse;
 import com.walmart.feeds.api.resources.feed.CollectionResponse;
-import com.walmart.feeds.api.resources.fields.response.FieldsMappingResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

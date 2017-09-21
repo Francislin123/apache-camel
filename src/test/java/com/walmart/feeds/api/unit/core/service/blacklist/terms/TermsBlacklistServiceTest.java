@@ -5,17 +5,14 @@ import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
-import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistory;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistoryRepository;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistService;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistServiceImpl;
-import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklistTemplateLoader;
 import com.walmart.feeds.api.unit.resources.blacklist.terms.TermsBlackListTemplateLoader;
 import lombok.SneakyThrows;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -178,9 +175,9 @@ public class TermsBlacklistServiceTest {
     }
 
     @Test
-    public void testFindAllTermsBlacklistEntitySuccess(){
+    public void testFindAllTermsBlacklistEntitySuccess() {
 
-        Mockito.when(termsBlackListRepository.findAll()).thenReturn(Fixture.from(TermsBlacklistEntity.class).gimme(2,TermsBlackListTemplateLoader.TERMS_BLACKLIST_REQUEST_VALID));
+        Mockito.when(termsBlackListRepository.findAll()).thenReturn(Fixture.from(TermsBlacklistEntity.class).gimme(2, TermsBlackListTemplateLoader.TERMS_BLACKLIST_REQUEST_VALID));
 
         List<TermsBlacklistEntity> termsBlacklistEntities = termsBlacklistService.findAllTermsBlacklistEntity();
 

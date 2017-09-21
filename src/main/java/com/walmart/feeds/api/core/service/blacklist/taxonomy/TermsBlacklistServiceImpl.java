@@ -118,7 +118,6 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     }
 
     private TermsBlacklistEntity findTermsBlacklistBySlug(String slug) {
-        return termsBlacklistRepository.findBySlug(slug)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("TermsBlacklist not found for slug='%s'", slug)));
+        return termsBlacklistRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException(String.format("TermsBlacklist not found for slug='%s'", slug)));
     }
 }
