@@ -1,0 +1,67 @@
+databaseChangeLog:
+  - changeSet:
+      id: "insertDefaultTemplate"
+      author: "adisson.gomes"
+      comment: "Insert default template. Based on Zoom CPC XML"
+      changes:
+        - insert:
+            tableName: feed_template
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "${uuid_function}"
+              - column:
+                  name: name
+                  value: "Default Template"
+              - column:
+                  name: slug
+                  value: "default-template"
+              - column:
+                  name: header
+                  value: "<produtos>"
+              - column:
+                  name: body
+                  value: "<#compress>
+                          <#list products as p>
+                              <PRODUTO>
+                                  <SKUID>${p.id}</SKUID>
+                                  <CODIGO>0</CODIGO>
+                                  <DESCRICAO>${p.title}</DESCRICAO>
+                                  <DEPARTAMENTO>${p.categories[0].name}</DEPARTAMENTO>
+                                  <#if p.categories?size gt 1>
+                                      <CATEGORIA>${p.categories[1].name}</CATEGORIA>
+                                  </#if>
+                                  <#if p.categories?size gt 2>
+                                      <SUBCATEGORIA>${p.categories[2].name}</SUBCATEGORIA>
+                                  </#if>
+                                  <MARCA>${p.brandName}</MARCA>
+                                  <STATUS>NOVO</STATUS>
+                                  <ISBN/>
+                                  <EDITORA/>
+                                  <AUTOR/>
+                                  <EAN>${p.ean}</EAN>
+                                  <CODIGOSKUFORNECEDOR/>
+                                  <SITE>walmart.com.br</SITE>
+                                  <QTDRESENHAS>0</QTDRESENHAS>
+                                  <PRECODE>R$ ${p.payments[0].fromPrice}</PRECODE>
+                                  <PRECO>R$ ${p.payments[0].price}</PRECO>
+                                  <#list p.payments as payment>
+                                      <#if payment.hasInstallment && payment.installments gt 1>
+                                      <NPARCELA>${payment.installments}</NPARCELA>
+                                      <VPARCELA>R$ ${payment.price}</VPARCELA>
+                                      </#if>
+                                  </#list>
+                                  <URL>${p.urlWeb}</URL>
+                                  <URL_IMAGEM>${p.mainImage}</URL_IMAGEM>
+                              </PRODUTO>
+                          </#list>
+                          </#compress>"
+              - column:
+                  name: footer
+                  value: "</produtos>"
+              - column:
+                  name: separator
+                  value: ">"
+              - column:
+                  name: format
+                  value: "xml"
