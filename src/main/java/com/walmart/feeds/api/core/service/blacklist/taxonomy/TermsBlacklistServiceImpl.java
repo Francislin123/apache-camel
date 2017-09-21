@@ -47,7 +47,7 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
             hasConflict(newSlug);
         }
 
-        TermsBlacklistEntity currentPartner = findTermsBlacklistByReference(termsBlacklistEntity.getSlug());
+        TermsBlacklistEntity currentPartner = findTermsBlacklistBySlug(termsBlacklistEntity.getSlug());
 
         TermsBlacklistEntity updatedTermsBlacklist = TermsBlacklistEntity.builder()
                 .id(currentPartner.getId())
@@ -72,6 +72,10 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
 
     @Override
     public List<TermsBlacklistEntity> findAllTermsBlacklistEntity() {
+
+        if (findAllTermsBlacklistEntity() == null) {
+            throw new EntityNotFoundException(String.format("Terms Black List %s not found!"));
+        }
         return termsBlacklistRepository.findAll();
     }
 
@@ -82,6 +86,14 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
         TermsBlacklistEntity termsBlackListDelete = findBySlug(slug);
         this.termsBlacklistRepository.delete(termsBlackListDelete);
 
+    }
+
+    @Override
+    public void hasConflict(String slug) {
+
+        if (termsBlacklistRepository.findBySlug(slug).isPresent()) {
+            throw new EntityAlreadyExistsException(String.format("Terms black list called '%s' already exists", slug));
+        }
     }
 
     private TermsBlacklistEntity persistTermsBlacklist(TermsBlacklistEntity termsBlacklist) {
@@ -97,14 +109,6 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
         return saveTermsBlackList;
     }
 
-    @Override
-    public void hasConflict(String slug) {
-
-        if (termsBlacklistRepository.findBySlug(slug).isPresent()) {
-            throw new EntityAlreadyExistsException(String.format("Terms black list called '%s' already exists", slug));
-        }
-    }
-
     private TermsBlacklistHistory buildTermsBlacklistHistory(TermsBlacklistEntity termsBlacklist) {
         return TermsBlacklistHistory.builder()
                 .name(termsBlacklist.getName())
@@ -116,7 +120,7 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
                 .build();
     }
 
-    private TermsBlacklistEntity findTermsBlacklistByReference(String slug) {
+    private TermsBlacklistEntity findTermsBlacklistBySlug(String slug) {
         return termsBlacklistRepository.findBySlug(slug)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("TermsBlacklist not found for slug='%s'", slug)));
     }

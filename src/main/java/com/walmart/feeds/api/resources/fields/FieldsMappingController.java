@@ -63,8 +63,7 @@ public class FieldsMappingController {
             @ApiResponse(code = 200, message = "Successful on updateTermsBlacklist the fields mapping"),
             @ApiResponse(code = 404, message = "Fields mapping not found"),
             @ApiResponse(code = 500, message = "Unhandled exception")})
-    @RequestMapping(value = "{slug}", method = RequestMethod.PUT,
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "{slug}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity updateMapping(@RequestBody @Valid FieldsMappingRequest request,
                                         @PathVariable("slug") String slug) {
 
@@ -91,8 +90,7 @@ public class FieldsMappingController {
                     response = CollectionResponse.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Fields mapping found"),
             @ApiResponse(code = 500, message = "Unhandled exception")})
-    @RequestMapping(value = "{slug}", method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "{slug}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<FieldsMappingResponse> findFieldsMappingBySlug(@PathVariable("slug") String slug) {
 
         FieldsMappingEntity fieldsMapping = fieldsMappingService.findBySlug(slug);
@@ -103,16 +101,13 @@ public class FieldsMappingController {
                 .build();
 
         return ResponseEntity.ok(response);
-        
     }
 
     @ApiOperation(value = "List of all fields mapping", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of all fields mapping",
-                    response = CollectionResponse.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "List of all fields mapping", response = CollectionResponse.class, responseContainer = "List"),
             @ApiResponse(code = 500, message = "Unhandled exception")})
-    @RequestMapping(method = RequestMethod.GET,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CollectionResponse<FieldsMappingResponse>> listAllFieldsMapping() {
 
         List<FieldsMappingEntity> allFieldsMapping = fieldsMappingService.findAll();

@@ -23,7 +23,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -247,7 +246,8 @@ public class TermsBlacklistControllerTest {
 
     @Test
     @SneakyThrows
-    public void testDeleteFieldsMappingUnhandledException() {
+    public void testDeleteTermsBlackListUnhandledException() {
+
         Mockito.doThrow(Exception.class).when(termsBlacklistService).deleteTermsBlacklist("facebook-terms-blacklist");
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -273,6 +273,29 @@ public class TermsBlacklistControllerTest {
 
     }
 
+    @Test
+    @SneakyThrows
+    public void testListTermsBlacklistNonExistent() {
+
+        Mockito.doThrow(EntityNotFoundException.class).when(termsBlacklistService).findAllTermsBlacklistEntity();
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .get(TermsBlacklistController.URI_TERMS_BLACKLIST)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testListTermsBlackListUnhandledException() {
+
+        Mockito.doThrow(Exception.class).when(termsBlacklistService).findAllTermsBlacklistEntity();
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .get(TermsBlacklistController.URI_TERMS_BLACKLIST)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+    }
 
     // ---------------------------------- Test List Terms Blacklist end   -------------------------------------------------------------------//
 

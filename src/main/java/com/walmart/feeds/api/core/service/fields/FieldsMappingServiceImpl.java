@@ -107,7 +107,6 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
         if (fieldsMappingRepository.findBySlug(slug).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("Fields mapping called '%s' already exists", slug));
         }
-
     }
 
     private void persistFieldsMapping(FieldsMappingEntity fieldsMapping) {
