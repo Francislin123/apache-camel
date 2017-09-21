@@ -73,9 +73,6 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     @Override
     public List<TermsBlacklistEntity> findAllTermsBlacklistEntity() {
 
-        if (findAllTermsBlacklistEntity() == null) {
-            throw new EntityNotFoundException(String.format("Terms Black List %s not found!"));
-        }
         return termsBlacklistRepository.findAll();
     }
 

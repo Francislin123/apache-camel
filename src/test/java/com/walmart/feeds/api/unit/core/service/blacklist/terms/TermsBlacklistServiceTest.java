@@ -1,16 +1,22 @@
 package com.walmart.feeds.api.unit.core.service.blacklist.terms;
 
+import br.com.six2six.fixturefactory.Fixture;
+import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistory;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistoryRepository;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistService;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistServiceImpl;
+import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklistTemplateLoader;
+import com.walmart.feeds.api.unit.resources.blacklist.terms.TermsBlackListTemplateLoader;
 import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,9 +25,12 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -40,8 +49,9 @@ public class TermsBlacklistServiceTest {
     @InjectMocks
     private TermsBlacklistService termsBlacklistService = new TermsBlacklistServiceImpl();
 
-    @Before
-    public void init() {
+    @BeforeClass
+    public static void setUp() {
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.blacklist.terms");
     }
 
     @Test
@@ -165,6 +175,18 @@ public class TermsBlacklistServiceTest {
         Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
 
         termsBlacklistService.deleteTermsBlacklist(anyString());
+    }
+
+    @Test
+    public void testFindAllTermsBlacklistEntitySuccess(){
+
+        Mockito.when(termsBlackListRepository.findAll()).thenReturn(Fixture.from(TermsBlacklistEntity.class).gimme(2,TermsBlackListTemplateLoader.TERMS_BLACKLIST_REQUEST_VALID));
+
+        List<TermsBlacklistEntity> termsBlacklistEntities = termsBlacklistService.findAllTermsBlacklistEntity();
+
+        assertFalse(termsBlacklistEntities.isEmpty());
+        assertEquals(2, termsBlacklistEntities.size());
+
     }
 
     private TermsBlacklistEntity createTermsBlacklist() {
