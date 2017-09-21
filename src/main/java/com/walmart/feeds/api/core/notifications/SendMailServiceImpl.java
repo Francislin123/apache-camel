@@ -37,7 +37,7 @@ public class SendMailServiceImpl implements SendMailService {
         mail.setText(mailLog.getBodyMessage());
         mail.setSubject(mailLog.getSubject());
 
-        sender.send(mail);
+        //TODO sender.send(mail);
 
         mailLogService.log(mailLog);
 
@@ -52,13 +52,12 @@ public class SendMailServiceImpl implements SendMailService {
         bodyMsg.append(" for partner : " + partnerSlug);
         bodyMsg.append("; \n Error(s): \n " + message);
 
-        MailLogEntity mailLog = MailLogEntity.builder()
+        return MailLogEntity.builder()
                 .bodyMessage(bodyMsg.toString())
                 .sentTo(mailConfEntity.getTo())
                 .subject(String.format(mailConfEntity.getSubject(),
                         feedSlug))
                 .build();
 
-        return mailLog;
     }
 }
