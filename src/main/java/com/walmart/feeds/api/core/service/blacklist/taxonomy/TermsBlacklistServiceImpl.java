@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class TermsBlacklistServiceImpl implements TermsBlacklistService {
 
@@ -66,6 +68,11 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
                 new EntityNotFoundException(String.format("Terms Black List %s not found!", slug)));
         return termsBlacklistEntity;
 
+    }
+
+    @Override
+    public List<TermsBlacklistEntity> findAllTermsBlacklistEntity() {
+        return termsBlacklistRepository.findAll();
     }
 
     @Override

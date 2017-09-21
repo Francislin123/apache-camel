@@ -1,7 +1,8 @@
 package com.walmart.feeds.api.core.service.blacklist.taxonomy;
 
-import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
+
+import java.util.List;
 
 public interface TermsBlacklistService {
 
@@ -18,4 +19,6 @@ public interface TermsBlacklistService {
     void deleteTermsBlacklist(String slug);
 
     TermsBlacklistEntity findBySlug(String slug);
+
+    List<TermsBlacklistEntity> findAllTermsBlacklistEntity();
 }

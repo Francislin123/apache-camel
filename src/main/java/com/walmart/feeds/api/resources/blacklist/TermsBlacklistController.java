@@ -1,14 +1,19 @@
 package com.walmart.feeds.api.resources.blacklist;
 
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
+import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistService;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.blacklist.request.TermsBlacklistRequest;
+import com.walmart.feeds.api.resources.blacklist.response.TermsBlacklistResponse;
+import com.walmart.feeds.api.resources.feed.CollectionResponse;
+import com.walmart.feeds.api.resources.fields.response.FieldsMappingResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +21,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Api
 @RestController
@@ -81,6 +88,23 @@ public class TermsBlacklistController {
         termsBlacklistService.deleteTermsBlacklist(slug);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @ApiOperation(value = "List of all terms blacklist", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of all terms blacklist", response = CollectionResponse.class, responseContainer = "List"),
+            @ApiResponse(code = 500, message = "Unhandled exception")})
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<CollectionResponse<TermsBlacklistResponse>> listAllTermsBlacklist() {
+
+        List<TermsBlacklistEntity> allTermsBlacklist = termsBlacklistService.findAllTermsBlacklistEntity();
+        return ResponseEntity.ok().body(CollectionResponse.<TermsBlacklistResponse>builder()
+                .result(allTermsBlacklist.stream().map(t -> TermsBlacklistResponse.builder()
+                        .name(t.getName())
+                        .slug(t.getSlug())
+                        .list(t.getList())
+                        .build()).collect(Collectors.toList())
+                ).build());
     }
 }
 

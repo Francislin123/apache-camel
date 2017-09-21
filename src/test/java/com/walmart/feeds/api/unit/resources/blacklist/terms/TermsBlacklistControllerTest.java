@@ -23,6 +23,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -257,7 +258,27 @@ public class TermsBlacklistControllerTest {
 
     // ---------------------------------- Test Delete Terms Blacklist end -------------------------------------------------------------------//
 
+    // ---------------------------------- Test List Terms Blacklist begin -------------------------------------------------------------------//
+
+    @Test
+    @SneakyThrows
+    public void testListTermsBlacklistSuccess() {
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .get(TermsBlacklistController.URI_TERMS_BLACKLIST)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        Mockito.verify(termsBlacklistService, times(1)).findAllTermsBlacklistEntity();
+
+    }
+
+
+    // ---------------------------------- Test List Terms Blacklist end   -------------------------------------------------------------------//
+
     public String jsonRequest(Object request) throws JsonProcessingException {
         return mapper.writeValueAsString(request);
     }
+
+
 }
