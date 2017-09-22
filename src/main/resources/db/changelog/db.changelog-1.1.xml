@@ -85,14 +85,14 @@
             BEGIN
                 DELETE FROM feed_history ;
                 DELETE FROM FIELDS_MAPPING_HISTORY;
+                DELETE FROM MAPPED_FIELD;
                 DELETE FROM FIELDS_MAPPING;
                 DELETE FROM MAIL_LOG;
-                DELETE FROM MAPPED_FIELD;
                 DELETE FROM TAXONOMY_MAPPING_HISTORY;
                 DELETE FROM TAXONOMY_BLACKLIST_HISTORY;
                 DELETE FROM TAXONOMY_BLACKLIST_MAPPING;
                 DELETE FROM TAXONOMY_BLACKLIST;
-                DELETE FROM taxonomy_mapping;
+                DELETE FROM TAXONOMY_MAPPING;
                 DELETE FROM PARTNER_HISTORY;
                 DELETE FROM PARTNER_TAXONOMY_HISTORY;
                 DELETE FROM PARTNER_TAXONOMY;
