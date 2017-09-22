@@ -5,7 +5,9 @@ import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
+import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
+import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
@@ -17,6 +19,7 @@ import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntit
 import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistNotFoundException;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TermsBlacklistNotFoundException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.validation.TaxonomyBlacklistPartnerValidator;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
@@ -53,6 +56,9 @@ public class FeedServiceImpl implements FeedService {
     private TaxonomyBlacklistRepository taxonomyBlacklistRepository;
 
     @Autowired
+    private TermsBlackListRepository termsBlackListRepository;
+
+    @Autowired
     private TemplateRepository templateRepository;
 
     @Autowired
@@ -81,10 +87,11 @@ public class FeedServiceImpl implements FeedService {
         FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
                 new UserException(String.format("Field mapping not found for slug='%s'",feedEntity.getFieldsMapping().getSlug())));
 
-
         TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
         TaxonomyBlacklistPartnerValidator.validatePartnerTaxonomiesOnBlacklist(taxonomyBlacklist, partnerTaxonomyEntity);
+
+        TermsBlacklistEntity termsBlacklist = getTermsBlacklist(feedEntity);
 
         if (feedEntity.getCollectionId() != null) {
             productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
@@ -104,6 +111,7 @@ public class FeedServiceImpl implements FeedService {
                 .creationDate(feedEntity.getCreationDate())
                 .template(template)
                 .taxonomyBlacklist(taxonomyBlacklist)
+                .termsBlacklist(termsBlacklist)
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .fieldsMapping(fieldsMappingEntity)
                 .build();
@@ -187,6 +195,8 @@ public class FeedServiceImpl implements FeedService {
 
         TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
+        TermsBlacklistEntity termsBlacklist = getTermsBlacklist(feedEntity);
+
         PartnerTaxonomyEntity partnerTaxonomyEntity = getPartnerTaxonomy(feedEntity, partner);
 
         FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
@@ -214,6 +224,7 @@ public class FeedServiceImpl implements FeedService {
                 .fieldsMapping(fieldsMappingEntity)
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .taxonomyBlacklist(taxonomyBlacklist)
+                .termsBlacklist(termsBlacklist)
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
         saveFeedWithHistory(updatedFeed);
@@ -266,6 +277,19 @@ public class FeedServiceImpl implements FeedService {
 
         return taxonomyBlacklistRepository.findBySlug(feedEntity.getTaxonomyBlacklist().getSlug()).orElseThrow(() ->
                 new TaxonomyBlacklistNotFoundException(String.format("Taxonomy blacklist '%s' not found", feedEntity.getTaxonomyBlacklist().getSlug())));
+
+    }
+
+    private TermsBlacklistEntity getTermsBlacklist(FeedEntity feedEntity) {
+
+        TermsBlacklistEntity terms = feedEntity.getTermsBlacklist();
+
+        if (terms == null || terms.getSlug() == null || terms.getSlug().trim().isEmpty()) {
+            return null;
+        }
+
+        return termsBlackListRepository.findBySlug(feedEntity.getTermsBlacklist().getSlug()).orElseThrow(() ->
+                new TermsBlacklistNotFoundException(String.format("Terms blacklist '%s' not found", feedEntity.getTermsBlacklist().getSlug())));
 
     }
 

@@ -10,6 +10,7 @@ import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistNotFoundException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistPartnerException;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TermsBlacklistNotFoundException;
 import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.resources.feed.FeedsController;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
@@ -94,6 +95,19 @@ public class FeedsControllerTest {
     @Test
     public void testCreateFeedWhenTaxonomyBlacklistNotExists() throws Exception {
         doThrow(TaxonomyBlacklistNotFoundException.class).when(feedService).createFeed(any(FeedEntity.class));
+
+        mockMvc.perform(
+                post(FeedsController.V1_FEEDS, "partnerReferenceTest")
+                        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid")))
+        ).andExpect(status().isBadRequest());
+
+        verify(feedService).createFeed(any(FeedEntity.class));
+
+    }
+
+    @Test
+    public void testCreateFeedWhenTermsBlacklistNotExists() throws Exception {
+        doThrow(TermsBlacklistNotFoundException.class).when(feedService).createFeed(any(FeedEntity.class));
 
         mockMvc.perform(
                 post(FeedsController.V1_FEEDS, "partnerReferenceTest")

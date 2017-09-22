@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.core.repository.feed;
 
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
+import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,5 +31,7 @@ public interface FeedRepository extends JpaRepository<FeedEntity, String> {
     List<FeedEntity> findByPartner(PartnerEntity partner);
 
     List<FeedEntity> findByTaxonomyBlacklist(TaxonomyBlacklistEntity taxonomyBlacklist);
+
+    List<FeedEntity> findByTermsBlacklist(TermsBlacklistEntity termsBlacklistEntity);
 
 }

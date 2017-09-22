@@ -34,6 +34,8 @@ public class FeedRequest {
 
     private String taxonomyBlacklist;
 
+    private String termsBlacklist;
+
     @Valid
     @NotEmptyMapEntry(allowedKeyPattern = "[\\w\\d-_]+", allowedValuePattern = "[\\w\\d\\s-_]+")
     private Map<String, String> utms;

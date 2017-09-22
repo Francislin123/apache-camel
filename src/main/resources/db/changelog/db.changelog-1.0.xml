@@ -552,6 +552,7 @@
             <tableExists tableName="partner_taxonomy"/>
             <tableExists tableName="fields_mapping"/>
             <tableExists tableName="taxonomy_blacklist"/>
+            <tableExists tableName="terms_blacklist"/>
         </preConditions>
 
         <comment>Creating feed table</comment>
@@ -592,6 +593,7 @@
                 <constraints referencedTableName="taxonomy_blacklist" referencedColumnNames="id"
                              foreignKeyName="fk_taxonomy_blacklist"/>
             </column>
+            <column name="terms_blacklist_id" type="${uuid_type}"/>
             <column name="flag_active" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
@@ -615,6 +617,9 @@
         <addForeignKeyConstraint baseColumnNames="fields_mapping_id" baseTableName="feed"
                                  constraintName="feed_fields_mapping_fk" referencedColumnNames="id"
                                  referencedTableName="fields_mapping"/>
+        <addForeignKeyConstraint baseColumnNames="terms_blacklist_id" baseTableName="feed"
+                                 constraintName="terms_blacklist_fk" referencedColumnNames="id"
+                                 referencedTableName="terms_blacklist"/>
 
         <rollback>
             <dropTable tableName="feed" cascadeConstraints="true"/>

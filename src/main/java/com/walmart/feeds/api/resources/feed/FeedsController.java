@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.resources.feed;
 
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
+import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
@@ -69,6 +70,9 @@ public class FeedsController {
                 .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
                         .slug(request.getTaxonomyBlacklist())
                         .build())
+                .termsBlacklist(TermsBlacklistEntity.builder()
+                        .slug(request.getTermsBlacklist())
+                        .build())
                 .type(FeedType.getFromCode(request.getType()))
                 .template(TemplateEntity.builder()
                         .slug(request.getTemplate())
@@ -100,6 +104,7 @@ public class FeedsController {
                 .fieldMapping(feedEntity.getPartner().getSlug())
                 .taxonomy(feedEntity.getPartnerTaxonomy() != null ? feedEntity.getPartnerTaxonomy().getSlug() : null)
                 .taxonomyBlacklist(getTaxonomyBlacklistSlug(feedEntity))
+                .termsBlacklist(getTermsBlacklist(feedEntity))
                 .slug(feedEntity.getSlug())
                 .notification(FeedNotificationData.builder()
                         .format(feedEntity.getNotificationFormat().getType())
@@ -141,6 +146,7 @@ public class FeedsController {
                         .taxonomy(f.getPartnerTaxonomy() != null ? f.getPartnerTaxonomy().getSlug() : null)
                         .fieldMapping(f.getFieldsMapping().getSlug())
                         .taxonomyBlacklist(getTaxonomyBlacklistSlug(f))
+                        .termsBlacklist(getTermsBlacklist(f))
                         .notification(FeedNotificationData.builder()
                                 .format(f.getNotificationFormat().getType())
                                 .method(f.getNotificationMethod().getType())
@@ -210,6 +216,9 @@ public class FeedsController {
                 .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
                         .slug(request.getTaxonomyBlacklist())
                         .build())
+                .termsBlacklist(TermsBlacklistEntity.builder()
+                        .slug(request.getTermsBlacklist())
+                        .build())
                 .type(FeedType.getFromCode(request.getType()))
                 .utms(request.getUtms())
                 .build();
@@ -226,4 +235,10 @@ public class FeedsController {
         return feedEntity.getTaxonomyBlacklist().getSlug();
     }
 
+    private String getTermsBlacklist(FeedEntity feedEntity) {
+        if(feedEntity.getTermsBlacklist() == null) {
+            return null;
+        }
+        return feedEntity.getTermsBlacklist().getName();
+    }
 }

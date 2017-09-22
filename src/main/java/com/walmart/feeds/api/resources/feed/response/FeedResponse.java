@@ -27,6 +27,8 @@ public class FeedResponse {
 
     private String taxonomyBlacklist;
 
+    private String termsBlacklist;
+
     private FeedNotificationData notification;
 
     private String taxonomy;
