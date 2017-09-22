@@ -74,4 +74,32 @@
         </insert>
     </changeSet>
 
+    <changeSet author="liquibase-docs" id="createProcedureEraseDatabase">
+        <createProcedure catalogName="eraseDatabase"
+                         dbms="h2, oracle"
+                         encoding="utf8"
+                         procedureName="erase database"
+                         relativeToChangelogFile="true"
+                         schemaName="public">
+            CREATE OR REPLACE PROCEDURE clean_database  AS
+            BEGIN
+                DELETE FROM feed_history ;
+                DELETE FROM FIELDS_MAPPING_HISTORY;
+                DELETE FROM FIELDS_MAPPING;
+                DELETE FROM MAIL_LOG;
+                DELETE FROM MAPPED_FIELD;
+                DELETE FROM TAXONOMY_MAPPING_HISTORY;
+                DELETE FROM TAXONOMY_BLACKLIST_HISTORY;
+                DELETE FROM TAXONOMY_BLACKLIST_MAPPING;
+                DELETE FROM TAXONOMY_BLACKLIST;
+                DELETE FROM taxonomy_mapping;
+                DELETE FROM PARTNER_HISTORY;
+                DELETE FROM PARTNER_TAXONOMY_HISTORY;
+                DELETE FROM PARTNER_TAXONOMY;
+                DELETE FROM PARTNER;
+                DELETE FROM FEED;
+            END;
+        </createProcedure>
+    </changeSet>
+
 </databaseChangeLog>
