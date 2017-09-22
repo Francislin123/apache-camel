@@ -3,16 +3,17 @@ package com.walmart.feeds.api.resources.blacklist.request;
 
 import com.walmart.feeds.api.core.utils.Constants;
 import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyElements;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.experimental.Tolerate;
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import java.util.Set;
 
-@Data
-@Validated
+@Builder
+@Getter
 public class TermsBlacklistRequest {
 
     @NotBlank
@@ -23,4 +24,8 @@ public class TermsBlacklistRequest {
     @NotEmptyElements
     private Set<String> list;
 
+    @Tolerate
+    public TermsBlacklistRequest() {
+        // Default constructor
+    }
 }

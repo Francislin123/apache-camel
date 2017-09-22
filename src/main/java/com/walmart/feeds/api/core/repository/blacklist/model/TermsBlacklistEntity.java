@@ -2,11 +2,11 @@ package com.walmart.feeds.api.core.repository.blacklist.model;
 
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
-import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyElements;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,15 +23,16 @@ public class TermsBlacklistEntity extends AuditableEntity {
     @GenericGenerator(name = "terms_blacklist_uuid_generator", strategy = "uuid2")
     private UUID id;
 
+    @NotBlank
     @Column(nullable = false, unique = true)
     private String name;
 
+    @NotBlank
     @Column(nullable = false, unique = true)
     private String slug;
 
-    @NotEmptyElements
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "blacklist_id", referencedColumnName = "id")
+    @ElementCollection
+    @CollectionTable(name = "terms_blacklist_items", joinColumns = @JoinColumn(name = "blacklist_id", referencedColumnName = "id"))
     @Column(name="term", nullable = false)
     private Set<String> list;
 

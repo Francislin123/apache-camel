@@ -239,6 +239,6 @@ public class FeedsController {
         if(feedEntity.getTermsBlacklist() == null) {
             return null;
         }
-        return feedEntity.getTermsBlacklist().getName();
+        return feedEntity.getTermsBlacklist().getSlug();
     }
 }
