@@ -27,9 +27,6 @@ public class MailLogEntity {
     @Column(name = "sent_to")
     private String sentTo;
 
-    @Column(name = "subject")
-    private String subject;
-
     @Column(name = "body_msg")
     private String bodyMessage;
 

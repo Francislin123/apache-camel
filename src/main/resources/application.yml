@@ -16,21 +16,17 @@ spring:
         skus:
           name: skus
           type: sku
-  mail:
-    host: smtp.qa.vmcommerce.intra:25
-#    username:
-#    password:
-#    properties:
-#      mail:
-#        smtp:
-#          auth: true
-#          starttls:
-#            enable: true
 
 tagadmin:
     username: admin
     password: admin
     uri: http://vip-cat-serv.qa.vmcommerce.intra/ws/
+
+gossip:
+  username: ADMIN
+  password: 123123
+  uri: http://vip-rtg-gossip-serv.qa.vmcommerce.intra:80
+  template: FEEDS
 
 management:
   security:
