@@ -46,8 +46,7 @@ public class TaxonomyBlackListController {
 
         TaxonomyBlacklistEntity savedTaxonomyBlacklist = taxonomyBlacklistService.create(requestToEntity(taxonomyBlacklistRequest, SlugParserUtil.toSlug(taxonomyBlacklistRequest.getName())));
 
-        UriComponents uriComponents =
-                builder.path(V1_BLACKLIST_TAXONOMY.concat("/{slug}")).buildAndExpand(savedTaxonomyBlacklist.getSlug());
+        UriComponents uriComponents = builder.path(V1_BLACKLIST_TAXONOMY.concat("/{slug}")).buildAndExpand(savedTaxonomyBlacklist.getSlug());
 
         return ResponseEntity.created(uriComponents.toUri()).build();
     }

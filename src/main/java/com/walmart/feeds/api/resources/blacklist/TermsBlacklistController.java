@@ -53,6 +53,44 @@ public class TermsBlacklistController {
         return ResponseEntity.created(uriComponents.toUri()).build();
     }
 
+    @ApiOperation(value = "List of all terms blacklist", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "List of all terms blacklist", response = CollectionResponse.class, responseContainer = "List"),
+            @ApiResponse(code = 500, message = "Unhandled exception")})
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<CollectionResponse<TermsBlacklistResponse>> listAllTermsBlacklist() {
+
+        List<TermsBlacklistEntity> allTermsBlacklist = termsBlacklistService.findAllTermsBlacklistEntity();
+        return ResponseEntity.ok().body(CollectionResponse.<TermsBlacklistResponse>builder()
+                .result(allTermsBlacklist.stream().map((TermsBlacklistEntity t) -> {
+                            return TermsBlacklistResponse.builder()
+                                    .name(t.getName())
+                                    .slug(t.getSlug())
+                                    .list(t.getList())
+                                    .build();
+                        }).collect(Collectors.toList())
+                ).build());
+    }
+
+    @ApiOperation(value = "List the terms black list by Slug", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful terms blacklist fetch", response = ResponseEntity.class),
+            @ApiResponse(code = 404, message = "Terms blacklist not found"),
+            @ApiResponse(code = 500, message = "Unhandled error")})
+    @RequestMapping(value = "{termsBlacklistSlug}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity fetchTermsBlacklistSlug(@PathVariable(value = "termsBlacklistSlug", required = false) String slug) {
+
+        TermsBlacklistEntity termsBlacklist = termsBlacklistService.findBySlug(slug);
+
+        TermsBlacklistResponse response = TermsBlacklistResponse.builder()
+                .name(termsBlacklist.getName())
+                .slug(termsBlacklist.getSlug())
+                .list(termsBlacklist.getList())
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
     @ApiOperation(value = "Update a terms blacklist",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
@@ -85,25 +123,6 @@ public class TermsBlacklistController {
         termsBlacklistService.deleteTermsBlacklist(slug);
 
         return ResponseEntity.noContent().build();
-    }
-
-    @ApiOperation(value = "List of all terms blacklist", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "List of all terms blacklist", response = CollectionResponse.class, responseContainer = "List"),
-            @ApiResponse(code = 500, message = "Unhandled exception")})
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CollectionResponse<TermsBlacklistResponse>> listAllTermsBlacklist() {
-
-        List<TermsBlacklistEntity> allTermsBlacklist = termsBlacklistService.findAllTermsBlacklistEntity();
-        return ResponseEntity.ok().body(CollectionResponse.<TermsBlacklistResponse>builder()
-                .result(allTermsBlacklist.stream().map((TermsBlacklistEntity t) -> {
-                            return TermsBlacklistResponse.builder()
-                                    .name(t.getName())
-                                    .slug(t.getSlug())
-                                    .list(t.getList())
-                                    .build();
-                        }).collect(Collectors.toList())
-                ).build());
     }
 }
 
