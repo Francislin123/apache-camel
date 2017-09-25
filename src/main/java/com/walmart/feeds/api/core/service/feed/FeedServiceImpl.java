@@ -30,7 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by vn0y942 on 21/07/17.
@@ -91,7 +93,7 @@ public class FeedServiceImpl implements FeedService {
 
         TaxonomyBlacklistPartnerValidator.validatePartnerTaxonomiesOnBlacklist(taxonomyBlacklist, partnerTaxonomyEntity);
 
-        TermsBlacklistEntity termsBlacklist = getTermsBlacklist(feedEntity);
+        TermsBlacklistEntity termsBlacklist = (TermsBlacklistEntity) getTermsBlacklist(feedEntity);
 
         if (feedEntity.getCollectionId() != null) {
             productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
@@ -111,7 +113,7 @@ public class FeedServiceImpl implements FeedService {
                 .creationDate(feedEntity.getCreationDate())
                 .template(template)
                 .taxonomyBlacklist(taxonomyBlacklist)
-                .termsBlacklist(termsBlacklist)
+                .termsBlacklist(termsBlacklist.getFeed())
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .fieldsMapping(fieldsMappingEntity)
                 .build();
@@ -195,7 +197,7 @@ public class FeedServiceImpl implements FeedService {
 
         TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
-        TermsBlacklistEntity termsBlacklist = getTermsBlacklist(feedEntity);
+        TermsBlacklistEntity termsBlacklist = (TermsBlacklistEntity) getTermsBlacklist(feedEntity);
 
         PartnerTaxonomyEntity partnerTaxonomyEntity = getPartnerTaxonomy(feedEntity, partner);
 
@@ -224,7 +226,7 @@ public class FeedServiceImpl implements FeedService {
                 .fieldsMapping(fieldsMappingEntity)
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .taxonomyBlacklist(taxonomyBlacklist)
-                .termsBlacklist(termsBlacklist)
+                .termsBlacklist(getTermsBlacklist(feedEntity))
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
         saveFeedWithHistory(updatedFeed);
@@ -238,6 +240,11 @@ public class FeedServiceImpl implements FeedService {
         if (feedRepository.findBySlug(slug).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("The feed called %s already exists", slug));
         }
+    }
+
+    @Override
+    public TermsBlacklistEntity findTermBlacklistBySlug(String slug) {
+        return termsBlackListRepository.findBySlug(slug).get();
     }
 
     private FeedEntity saveFeedWithHistory(FeedEntity feed) {
@@ -280,16 +287,21 @@ public class FeedServiceImpl implements FeedService {
 
     }
 
-    private TermsBlacklistEntity getTermsBlacklist(FeedEntity feedEntity) {
+    private List<TermsBlacklistEntity> getTermsBlacklist(FeedEntity feedEntity) {
 
-        TermsBlacklistEntity terms = feedEntity.getTermsBlacklist();
+        List<TermsBlacklistEntity> response = new ArrayList<>();
 
-        if (terms == null || terms.getSlug() == null || terms.getSlug().trim().isEmpty()) {
+        if (feedEntity.getTermsBlacklist() == null || feedEntity.getTermsBlacklist().isEmpty()) {
             return null;
         }
 
-        return termsBlackListRepository.findBySlug(feedEntity.getTermsBlacklist().getSlug()).orElseThrow(() ->
-                new TermsBlacklistNotFoundException(String.format("Terms blacklist '%s' not found", feedEntity.getTermsBlacklist().getSlug())));
+        feedEntity.getTermsBlacklist().forEach(termsBlacklistEntity -> response.add(termsBlackListRepository.findBySlug(termsBlacklistEntity.getSlug()).get()));
+
+        if (response.isEmpty()){
+            throw new TermsBlacklistNotFoundException(String.format("Feeds entity %s not contains terms blacklist", feedEntity.getSlug()));
+        }
+
+        return response;
 
     }
 

@@ -2,6 +2,7 @@ package com.walmart.feeds.api.core.repository.blacklist.model;
 
 
 import com.walmart.feeds.api.core.repository.AuditableEntity;
+import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Tolerate;
@@ -10,6 +11,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,6 +38,9 @@ public class TermsBlacklistEntity extends AuditableEntity {
     @Column(name = "term", nullable = false)
     private Set<String> list;
 
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "terms_feeds", joinColumns = {@JoinColumn(name = "feed_id")}, inverseJoinColumns = {@JoinColumn(name = "terms_blacklist_id")})
+    private List<FeedEntity> feed;
 
     @Builder
     public TermsBlacklistEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String name, String slug, Set<String> list) {

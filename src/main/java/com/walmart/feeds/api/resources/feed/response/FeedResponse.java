@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.resources.feed.response;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
@@ -9,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Builder
@@ -27,7 +29,7 @@ public class FeedResponse {
 
     private String taxonomyBlacklist;
 
-    private String termsBlacklist;
+    private List<String> termsBlacklist;
 
     private FeedNotificationData notification;
 

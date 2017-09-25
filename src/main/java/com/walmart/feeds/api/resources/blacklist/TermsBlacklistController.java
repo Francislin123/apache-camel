@@ -48,7 +48,7 @@ public class TermsBlacklistController {
 
         termsBlacklistService.saveTermsBlacklist(termsBlacklistEntity);
 
-        UriComponents uriComponents = builder.path(URI_TERMS_BLACKLIST.concat("/{slug}")).buildAndExpand(termsBlacklistEntity.getSlug());
+        UriComponents uriComponents = builder.path(URI_TERMS_BLACKLIST.concat("/{termsBlacklistSlug}")).buildAndExpand(termsBlacklistEntity.getSlug());
 
         return ResponseEntity.created(uriComponents.toUri()).build();
     }

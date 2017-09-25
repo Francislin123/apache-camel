@@ -15,6 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -67,8 +68,8 @@ public class FeedEntity extends AuditableEntity {
     @ManyToOne
     private TaxonomyBlacklistEntity taxonomyBlacklist;
 
-    @ManyToOne
-    private TermsBlacklistEntity termsBlacklist;
+    @ManyToMany(mappedBy="feed", cascade = CascadeType.ALL)
+    private List<TermsBlacklistEntity> termsBlacklist;
 
     @ManyToOne
     private TemplateEntity template;
@@ -93,7 +94,7 @@ public class FeedEntity extends AuditableEntity {
 
     @Builder
 
-    public FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, PartnerTaxonomyEntity partnerTaxonomy, FieldsMappingEntity fieldsMapping, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, TaxonomyBlacklistEntity taxonomyBlacklist, TermsBlacklistEntity termsBlacklist, TemplateEntity template, Map<String, String> utms, boolean active, Long collectionId) {
+    public FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, PartnerTaxonomyEntity partnerTaxonomy, FieldsMappingEntity fieldsMapping, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, TaxonomyBlacklistEntity taxonomyBlacklist, List termsBlacklist, TemplateEntity template, Map<String, String> utms, boolean active, Long collectionId) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
