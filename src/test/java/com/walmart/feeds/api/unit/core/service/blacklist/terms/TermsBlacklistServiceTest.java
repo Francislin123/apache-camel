@@ -5,9 +5,11 @@ import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistory;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistoryRepository;
+import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistService;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistServiceImpl;
 import com.walmart.feeds.api.unit.resources.blacklist.terms.TermsBlackListTemplateLoader;
@@ -21,18 +23,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TermsBlacklistServiceTest {
@@ -42,6 +40,9 @@ public class TermsBlacklistServiceTest {
 
     @Mock
     private TermsBlacklistHistoryRepository termsBlacklistHistoryRepository;
+
+    @Mock
+    private FeedRepository feedRepository;
 
     @InjectMocks
     private TermsBlacklistService termsBlacklistService = new TermsBlacklistServiceImpl();
@@ -57,20 +58,20 @@ public class TermsBlacklistServiceTest {
 
         TermsBlacklistEntity termsBlackList = createTermsBlacklist();
 
-        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
-        Mockito.when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class))).thenReturn(createTermsBlacklist());
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class))).thenReturn(createTermsBlacklist());
 
         termsBlacklistService.saveTermsBlacklist(createTermsBlacklist());
 
-        Mockito.verify(termsBlackListRepository, Mockito.times(1)).findBySlug(anyString());
-        Mockito.verify(termsBlackListRepository, Mockito.times(1)).saveAndFlush(any(TermsBlacklistEntity.class));
-        Mockito.verify(termsBlacklistHistoryRepository, Mockito.times(1)).save(any(TermsBlacklistHistory.class));
+        verify(termsBlackListRepository, Mockito.times(1)).findBySlug(anyString());
+        verify(termsBlackListRepository, Mockito.times(1)).saveAndFlush(any(TermsBlacklistEntity.class));
+        verify(termsBlacklistHistoryRepository, Mockito.times(1)).save(any(TermsBlacklistHistory.class));
     }
 
     @Test(expected = EntityAlreadyExistsException.class)
     public void testTermsBlackListDuplicatedConstraint() {
 
-        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
 
         termsBlacklistService.saveTermsBlacklist(createTermsBlacklist());
     }
@@ -80,14 +81,14 @@ public class TermsBlacklistServiceTest {
 
         TermsBlacklistEntity termsBlacklist = createTermsBlacklist();
 
-        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(termsBlacklist));
-        Mockito.when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class))).thenReturn(createTermsBlacklist());
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(termsBlacklist));
+        when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class))).thenReturn(createTermsBlacklist());
 
         termsBlacklistService.updateTermsBlacklist(termsBlacklist);
 
-        Mockito.verify(termsBlackListRepository, Mockito.times(1)).findBySlug(anyString());
-        Mockito.verify(termsBlackListRepository, Mockito.times(1)).saveAndFlush(any(TermsBlacklistEntity.class));
-        Mockito.verify(termsBlacklistHistoryRepository, Mockito.times(1)).save(any(TermsBlacklistHistory.class));
+        verify(termsBlackListRepository, Mockito.times(1)).findBySlug(anyString());
+        verify(termsBlackListRepository, Mockito.times(1)).saveAndFlush(any(TermsBlacklistEntity.class));
+        verify(termsBlacklistHistoryRepository, Mockito.times(1)).save(any(TermsBlacklistHistory.class));
     }
 
     @Test
@@ -97,14 +98,14 @@ public class TermsBlacklistServiceTest {
         TermsBlacklistEntity termsBlacklist = createTermsBlacklistUpdateName();
 
         // Return a existent terms blacklist
-        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
 
         try {
             termsBlacklistService.updateTermsBlacklist(termsBlacklist);
             fail("Expected EntityAlreadyExistsException");
         } catch (EntityAlreadyExistsException e) {
-            Mockito.verify(termsBlackListRepository, times(0)).saveAndFlush(any(TermsBlacklistEntity.class));
-            Mockito.verify(termsBlacklistHistoryRepository, never()).save(any(TermsBlacklistHistory.class));
+            verify(termsBlackListRepository, times(0)).saveAndFlush(any(TermsBlacklistEntity.class));
+            verify(termsBlacklistHistoryRepository, never()).save(any(TermsBlacklistHistory.class));
         }
     }
 
@@ -113,7 +114,7 @@ public class TermsBlacklistServiceTest {
 
         TermsBlacklistEntity termsBlacklist = createTermsBlacklist();
 
-        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
 
         try {
 
@@ -122,8 +123,8 @@ public class TermsBlacklistServiceTest {
 
         } catch (EntityNotFoundException e) {
 
-            Mockito.verify(termsBlackListRepository).findBySlug(anyString());
-            Mockito.verify(termsBlackListRepository, Mockito.times(0)).saveAndFlush(any(TermsBlacklistEntity.class));
+            verify(termsBlackListRepository).findBySlug(anyString());
+            verify(termsBlackListRepository, Mockito.times(0)).saveAndFlush(any(TermsBlacklistEntity.class));
             Mockito.verifyNoMoreInteractions(termsBlacklistHistoryRepository);
         }
     }
@@ -131,27 +132,27 @@ public class TermsBlacklistServiceTest {
     @Test
     public void testTermsBlackListFindBySlugRepository() {
 
-        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
 
         termsBlackListRepository.findBySlug(anyString());
 
-        Mockito.verify(termsBlackListRepository).findBySlug(anyString());
+        verify(termsBlackListRepository).findBySlug(anyString());
     }
 
     @Test
     public void testTermsBlackListFindBySlugService() {
 
-        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
 
         termsBlacklistService.findBySlug(anyString());
 
-        Mockito.verify(termsBlackListRepository).findBySlug(anyString());
+        verify(termsBlackListRepository).findBySlug(anyString());
     }
 
     @Test(expected = EntityNotFoundException.class)
     public void testTermsBlackListFindBySlugNotFoundService() throws Exception {
 
-        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
 
         termsBlacklistService.findBySlug(anyString());
     }
@@ -159,17 +160,20 @@ public class TermsBlacklistServiceTest {
     @Test
     public void testDeleteTermsBlacklistSuccess() {
 
-        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
+        TermsBlacklistEntity entity = Fixture.from(TermsBlacklistEntity.class).gimme(TermsBlackListTemplateLoader.TERMS_BLACKLIST_REQUEST_VALID);
+        when(termsBlackListRepository.findBySlug("facebook-terms-blacklist")).thenReturn(Optional.of(entity));
 
-        termsBlacklistService.deleteTermsBlacklist(anyString());
+        when(feedRepository.findByTermsBlacklist(any(TermsBlacklistEntity.class))).thenReturn(new ArrayList<>());
 
-        Mockito.verify(termsBlackListRepository).findBySlug(anyString());
+        this.termsBlacklistService.deleteTermsBlacklist("facebook-terms-blacklist");
+
+        verify(termsBlackListRepository, times(1)).delete(entity);
     }
 
     @Test(expected = EntityNotFoundException.class)
     public void testDeleteTermsBlacklistNotFound() {
 
-        Mockito.when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
 
         termsBlacklistService.deleteTermsBlacklist(anyString());
     }
@@ -177,7 +181,7 @@ public class TermsBlacklistServiceTest {
     @Test
     public void testFindAllTermsBlacklistEntitySuccess() {
 
-        Mockito.when(termsBlackListRepository.findAll()).thenReturn(Fixture.from(TermsBlacklistEntity.class).gimme(2, TermsBlackListTemplateLoader.TERMS_BLACKLIST_REQUEST_VALID));
+        when(termsBlackListRepository.findAll()).thenReturn(Fixture.from(TermsBlacklistEntity.class).gimme(2, TermsBlackListTemplateLoader.TERMS_BLACKLIST_REQUEST_VALID));
 
         List<TermsBlacklistEntity> termsBlacklistEntities = termsBlacklistService.findAllTermsBlacklistEntity();
 

@@ -1,12 +1,16 @@
 package com.walmart.feeds.api.core.service.blacklist.taxonomy;
 
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityInUseException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistory;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistoryRepository;
+import com.walmart.feeds.api.core.repository.feed.FeedRepository;
+import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
+import com.walmart.feeds.api.resources.common.response.SimpleError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TermsBlacklistServiceImpl implements TermsBlacklistService {
@@ -25,6 +30,9 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
 
     @Autowired
     private TermsBlacklistHistoryRepository termsBlacklistHistoryRepository;
+
+    @Autowired
+    private FeedRepository feedRepository;
 
     @Override
     @Transactional
@@ -79,9 +87,19 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     @Override
     public void deleteTermsBlacklist(String slug) {
 
-        LOGGER.info("termsBlacklistEntity={} message=delete_successfully", slug);
-        TermsBlacklistEntity termsBlackListDelete = findBySlug(slug);
-        this.termsBlacklistRepository.delete(termsBlackListDelete);
+        //TermsBlacklistEntity termsBlackListDelete = findBySlug(slug);
+        //this.termsBlacklistRepository.delete(termsBlackListDelete);
+
+        TermsBlacklistEntity toDelete = findBySlug(slug);
+
+        List<FeedEntity> feeds = feedRepository.findByTermsBlacklist(toDelete);
+        if(!feeds.isEmpty()) {
+            List<SimpleError> feedsSlugs = feeds.stream().map(f -> SimpleError.builder().message(f.getSlug()).build()).collect(Collectors.toList());
+            throw new EntityInUseException(String.format("Terms blacklist '%s' is being used by one or more feeds", slug), feedsSlugs);
+        }
+
+        this.termsBlacklistRepository.delete(toDelete);
+        LOGGER.info("termsBlacklistEntity={} message=delete_successfully", toDelete);
 
     }
 

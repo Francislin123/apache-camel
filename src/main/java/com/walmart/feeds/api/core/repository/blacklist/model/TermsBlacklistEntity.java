@@ -33,7 +33,7 @@ public class TermsBlacklistEntity extends AuditableEntity {
 
     @ElementCollection
     @CollectionTable(name = "terms_blacklist_items", joinColumns = @JoinColumn(name = "blacklist_id", referencedColumnName = "id"))
-    @Column(name="term", nullable = false)
+    @Column(name = "term", nullable = false)
     private Set<String> list;
 
 
