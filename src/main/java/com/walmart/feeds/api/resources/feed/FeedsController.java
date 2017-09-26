@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.resources.feed;
 
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
+import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
@@ -27,6 +28,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,6 +71,7 @@ public class FeedsController {
                 .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
                         .slug(request.getTaxonomyBlacklist())
                         .build())
+                .termsBlacklist(getTermsBlacklist(request.getTermsBlacklist()))
                 .type(FeedType.getFromCode(request.getType()))
                 .template(TemplateEntity.builder()
                         .slug(request.getTemplate())
@@ -100,6 +103,7 @@ public class FeedsController {
                 .fieldMapping(feedEntity.getPartner().getSlug())
                 .taxonomy(feedEntity.getPartnerTaxonomy() != null ? feedEntity.getPartnerTaxonomy().getSlug() : null)
                 .taxonomyBlacklist(getTaxonomyBlacklistSlug(feedEntity))
+                .termsBlacklist(feedEntity.getTermsBlacklist().stream().map(tb -> tb.getSlug()).collect(Collectors.toList()))
                 .slug(feedEntity.getSlug())
                 .collectionId(feedEntity.getCollectionId())
                 .notification(FeedNotificationData.builder()
@@ -135,34 +139,37 @@ public class FeedsController {
         List<FeedEntity> listFeedEntity = feedService.fetchActiveByPartner(partnerSlug, active);
 
         return ResponseEntity.ok().body(CollectionResponse.<FeedResponse>builder()
-                .result(listFeedEntity.stream().map(f -> FeedResponse.builder()
-                        .name(f.getName())
-                        .slug(f.getSlug())
-                        .template(f.getTemplate().getSlug())
-                        .taxonomy(f.getPartnerTaxonomy() != null ? f.getPartnerTaxonomy().getSlug() : null)
-                        .fieldMapping(f.getFieldsMapping().getSlug())
-                        .taxonomyBlacklist(getTaxonomyBlacklistSlug(f))
-                        .notification(FeedNotificationData.builder()
-                                .format(f.getNotificationFormat().getType())
-                                .method(f.getNotificationMethod().getType())
-                                .url(f.getNotificationUrl())
-                                .build())
-                        .partner(PartnerResponse.builder()
-                                .slug(f.getPartner().getSlug())
-                                .active(f.getPartner().isActive())
-                                .description(f.getPartner().getDescription())
-                                .name(f.getPartner().getName())
-                                .creationDate(f.getPartner().getCreationDate())
-                                .updateDate(f.getPartner().getUpdateDate())
-                                .partnerships(f.getPartner().getPartnershipsAsList())
-                                .build())
-                        .type(f.getType())
-                        .utms(f.getUtms())
-                        .creationDate(f.getCreationDate())
-                        .updateDate(f.getUpdateDate())
-                        .active(f.isActive())
-                        .collectionId(f.getCollectionId())
-                        .build())
+                .result(listFeedEntity.stream().map(f -> {
+                    return FeedResponse.builder()
+                            .name(f.getName())
+                            .slug(f.getSlug())
+                            .template(f.getTemplate().getSlug())
+                            .taxonomy(f.getPartnerTaxonomy() != null ? f.getPartnerTaxonomy().getSlug() : null)
+                            .fieldMapping(f.getFieldsMapping().getSlug())
+                            .taxonomyBlacklist(getTaxonomyBlacklistSlug(f))
+                            .termsBlacklist(f.getTermsBlacklist().stream().map(tb -> tb.getSlug()).collect(Collectors.toList()))
+                            .notification(FeedNotificationData.builder()
+                                    .format(f.getNotificationFormat().getType())
+                                    .method(f.getNotificationMethod().getType())
+                                    .url(f.getNotificationUrl())
+                                    .build())
+                            .partner(PartnerResponse.builder()
+                                    .slug(f.getPartner().getSlug())
+                                    .active(f.getPartner().isActive())
+                                    .description(f.getPartner().getDescription())
+                                    .name(f.getPartner().getName())
+                                    .creationDate(f.getPartner().getCreationDate())
+                                    .updateDate(f.getPartner().getUpdateDate())
+                                    .partnerships(f.getPartner().getPartnershipsAsList())
+                                    .build())
+                            .type(f.getType())
+                            .utms(f.getUtms())
+                            .creationDate(f.getCreationDate())
+                            .updateDate(f.getUpdateDate())
+                            .active(f.isActive())
+                            .collectionId(f.getCollectionId())
+                            .build();
+                })
                         .collect(Collectors.toList())).build());
     }
 
@@ -211,6 +218,7 @@ public class FeedsController {
                 .taxonomyBlacklist(TaxonomyBlacklistEntity.builder()
                         .slug(request.getTaxonomyBlacklist())
                         .build())
+                .termsBlacklist(getTermsBlacklist(request.getTermsBlacklist()))
                 .type(FeedType.getFromCode(request.getType()))
                 .utms(request.getUtms())
                 .build();
@@ -237,4 +245,15 @@ public class FeedsController {
         return feedEntity.getTaxonomyBlacklist().getSlug();
     }
 
+    private List<TermsBlacklistEntity> getTermsBlacklist(List<String> slugs) {
+
+        List<TermsBlacklistEntity> termsBlacklistEntities = new ArrayList<>();
+        if (slugs == null || slugs.isEmpty()) {
+            return null;
+        }
+
+        slugs.forEach(slug -> termsBlacklistEntities.add(feedService.findTermBlacklistBySlug(slug)));
+
+        return termsBlacklistEntities;
+    }
 }

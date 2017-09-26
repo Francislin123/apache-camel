@@ -29,9 +29,7 @@ public class TaxonomyBlacklistMappingRequest {
     }
 
     @Tolerate
-    public TaxonomyBlacklistMappingRequest(){
+    public TaxonomyBlacklistMappingRequest() {
         // default
     }
-
-
 }

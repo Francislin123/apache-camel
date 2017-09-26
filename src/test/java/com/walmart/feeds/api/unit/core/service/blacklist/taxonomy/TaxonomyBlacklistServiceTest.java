@@ -30,10 +30,8 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.util.AssertionErrors.fail;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaxonomyBlacklistServiceTest {
@@ -64,7 +62,7 @@ public class TaxonomyBlacklistServiceTest {
     }
 
     @Test
-    public void createTaxonomyBlacklistTest(){
+    public void createTaxonomyBlacklistTest() {
 
         TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
@@ -80,7 +78,7 @@ public class TaxonomyBlacklistServiceTest {
     }
 
     @Test(expected = EntityAlreadyExistsException.class)
-    public void testSaveWhenBlacklistAlreadyExists(){
+    public void testSaveWhenBlacklistAlreadyExists() {
 
         TaxonomyBlacklistEntity blacklist = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
@@ -91,7 +89,7 @@ public class TaxonomyBlacklistServiceTest {
     }
 
     @Test
-    public void updateBlackList(){
+    public void updateBlackList() {
         TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
         when(taxonomyBlacklistRepository.findBySlug(entity.getSlug())).thenReturn(Optional.of(entity));
@@ -129,7 +127,7 @@ public class TaxonomyBlacklistServiceTest {
     @Test
     public void testFindAll() {
 
-        when(taxonomyBlacklistRepository.findAll()).thenReturn(Fixture.from(TaxonomyBlacklistEntity.class).gimme(2,TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST));
+        when(taxonomyBlacklistRepository.findAll()).thenReturn(Fixture.from(TaxonomyBlacklistEntity.class).gimme(2, TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST));
 
         List<TaxonomyBlacklistEntity> taxonomyBlacklists = taxonomyBlacklistService.findAll();
 
@@ -139,7 +137,7 @@ public class TaxonomyBlacklistServiceTest {
     }
 
     @Test
-    public void testDelete(){
+    public void testDelete() {
 
         TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
         when(taxonomyBlacklistRepository.findBySlug("any-name")).thenReturn(Optional.of(entity));
@@ -153,7 +151,7 @@ public class TaxonomyBlacklistServiceTest {
     }
 
     @Test(expected = EntityNotFoundException.class)
-    public void testDeleteInvalidSlug(){
+    public void testDeleteInvalidSlug() {
 
         doThrow(EntityNotFoundException.class).when(taxonomyBlacklistRepository).findBySlug("invalidSlug");
 
@@ -161,7 +159,7 @@ public class TaxonomyBlacklistServiceTest {
     }
 
     @Test(expected = EntityInUseException.class)
-    public void testDeleteWhenBlacklistIsInUseByFeed(){
+    public void testDeleteWhenBlacklistIsInUseByFeed() {
 
         TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
         when(taxonomyBlacklistRepository.findBySlug(anyString())).thenReturn(Optional.of(entity));
@@ -174,7 +172,7 @@ public class TaxonomyBlacklistServiceTest {
     }
 
     @Test(expected = EntityAlreadyExistsException.class)
-    public void testTaxonomyBlacklistConflict(){
+    public void testTaxonomyBlacklistConflict() {
         TaxonomyBlacklistEntity entity = TaxonomyBlacklistEntity.builder()
                 .name("already-existent-slug").slug("Slug-different-from-name").build();
 
@@ -185,7 +183,7 @@ public class TaxonomyBlacklistServiceTest {
     }
 
     @Test(expected = UserException.class)
-    public void testInvalidWalmartTaxonomy(){
+    public void testInvalidWalmartTaxonomy() {
         TaxonomyBlacklistMapping taxMap = TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.WALMART)
                 .taxonomy("Invalid Taxonomy").build();
         Set<TaxonomyBlacklistMapping> set = new HashSet<>();

@@ -26,11 +26,13 @@ public class FieldsMappingTemplateLoader implements TemplateLoader {
 
         Fixture.of(MappedFieldEntity.class).addTemplate("mapped_field", new Rule() {{
             add("wmField", "Buscape");
-            add("partnerField", "descricao");
+            add("partnerField", "description");
             add("required", true);
         }});
+
         List<MappedFieldEntity> mappedFields = new ArrayList<>();
         mappedFields.add(Fixture.from(MappedFieldEntity.class).gimme("mapped_field"));
+
 
         Fixture.of(MappedFieldEntity.class).addTemplate("invalid_mapped_field", new Rule() {{
             add("wmField", null);

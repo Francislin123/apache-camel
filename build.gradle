@@ -32,7 +32,7 @@ ext {
     hibernateVersion = '5.0.12.Final'
     camelVersion ='2.19.2'
     elasticSearchVersion ='5.5.2'
-    feingVersion ='9.3.1'
+    feignVersion ='9.3.1'
     keycloakVersion = '3.3.0.CR2'
 }
 
@@ -129,9 +129,9 @@ dependencies {
 
     compile "org.keycloak:keycloak-spring-boot-starter:${keycloakVersion}"
 
-    compile "io.github.openfeign:feign-okhttp:${feingVersion}"
-    compile "io.github.openfeign:feign-jackson:${feingVersion}"
-    compile "io.github.openfeign:feign-slf4j:${feingVersion}"
+    compile "io.github.openfeign:feign-okhttp:${feignVersion}"
+    compile "io.github.openfeign:feign-jackson:${feignVersion}"
+    compile "io.github.openfeign:feign-slf4j:${feignVersion}"
 
     compile "org.hibernate:hibernate-java8:${hibernateVersion}"
     compile "oracle:ojdbc6:11.2.0.3"

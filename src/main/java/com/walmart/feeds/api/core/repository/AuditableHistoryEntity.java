@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 public abstract class AuditableHistoryEntity extends AuditableEntity {
 
     @Tolerate
-    public AuditableHistoryEntity() {
-    }
+    public AuditableHistoryEntity() {}
 
     public AuditableHistoryEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user) {
         super(creationDate, updateDate, user);

@@ -77,6 +77,7 @@
         </rollback>
 
     </changeSet>
+
     <changeSet id="createPartnerTaxonomyTable" author="thiago.lima">
 
         <preConditions onError="WARN">
@@ -372,6 +373,91 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="createTermsBlackListTable" author="francislin.reis">
+
+        <comment>Creating Terms Black List table</comment>
+
+        <createTable tableName="terms_blacklist">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTermsTable" author="francislin.reis">
+
+        <comment>Creating Terms table</comment>
+
+        <createTable tableName="terms_blacklist_items">
+            <column name="blacklist_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"
+                             foreignKeyName="term_blacklist_fk"
+                             referencedTableName="terms_blacklist"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="term" type="varchar(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+
+            <dropTable tableName="partner"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTermsBlacklistHistoryTable" author="gabriel.cano">
+
+        <comment>Creating Terms Black List History table</comment>
+
+        <createTable tableName="terms_blacklist_history">
+            <column name="history_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="terms_blacklist_items" type="varchar(4000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner"/>
+        </rollback>
+
+    </changeSet>
+
     <changeSet id="createFieldsMappingTable" author="adisson.gomes">
 
         <comment>Creating fields mapping table</comment>
@@ -400,7 +486,7 @@
         </rollback>
     </changeSet>
 
-    <changeSet id="createMappedFieldTable" author="francislin.souza">
+    <changeSet id="createMappedFieldTable" author="francislin.reis">
 
         <comment>Creating mapping field table</comment>
 
@@ -472,6 +558,7 @@
             <tableExists tableName="partner_taxonomy"/>
             <tableExists tableName="fields_mapping"/>
             <tableExists tableName="taxonomy_blacklist"/>
+            <tableExists tableName="terms_blacklist"/>
         </preConditions>
 
         <comment>Creating feed table</comment>
@@ -535,7 +622,6 @@
         <addForeignKeyConstraint baseColumnNames="fields_mapping_id" baseTableName="feed"
                                  constraintName="feed_fields_mapping_fk" referencedColumnNames="id"
                                  referencedTableName="fields_mapping"/>
-
         <rollback>
             <dropTable tableName="feed" cascadeConstraints="true"/>
         </rollback>
@@ -626,6 +712,33 @@
             <dropForeignKeyConstraint baseTableName="feed_utms" constraintName="fk_feed_utm"/>
             <dropTable tableName="feed_utms"/>
         </rollback>
+    </changeSet>
+
+    <changeSet id="createTermsAndFeedsTable" author="gabriel.cano">
+
+        <preConditions>
+            <tableExists tableName="terms_blacklist"/>
+            <tableExists tableName="feed"/>
+        </preConditions>
+
+        <comment>Creating Terms And Feeds Table</comment>
+
+        <createTable tableName="terms_feeds">
+
+            <column name="terms_blacklist_id" type="${uuid_type}">
+                <constraints referencedTableName="terms_blacklist" referencedColumnNames="id"
+                             foreignKeyName="fk_terms_blacklist" primaryKey="true"/>
+            </column>
+            <column name="feed_id" type="${uuid_type}">
+                <constraints referencedTableName="feed" referencedColumnNames="id"
+                             foreignKeyName="fk_feed_terms_id" primaryKey="true"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="terms_feeds" cascadeConstraints="true"/>
+        </rollback>
+
     </changeSet>
 
 </databaseChangeLog>

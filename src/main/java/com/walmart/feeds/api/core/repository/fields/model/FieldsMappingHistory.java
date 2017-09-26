@@ -34,8 +34,7 @@ public class FieldsMappingHistory extends AuditableHistoryEntity {
     private String mappedFields;
 
     @Builder
-    public FieldsMappingHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user,
-                                UUID id, String name, String slug, String mappedFields) {
+    public FieldsMappingHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String name, String slug, String mappedFields) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.name = name;

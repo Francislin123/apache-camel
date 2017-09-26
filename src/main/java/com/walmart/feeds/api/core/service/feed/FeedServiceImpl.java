@@ -7,7 +7,9 @@ import com.walmart.feeds.api.core.exceptions.InvalidFeedException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.notifications.SendMailService;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
+import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
+import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
@@ -20,6 +22,7 @@ import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistNotFoundException;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TermsBlacklistNotFoundException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.validation.TaxonomyBlacklistPartnerValidator;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
@@ -31,6 +34,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,6 +59,9 @@ public class FeedServiceImpl implements FeedService {
 
     @Autowired
     private TaxonomyBlacklistRepository taxonomyBlacklistRepository;
+
+    @Autowired
+    private TermsBlackListRepository termsBlackListRepository;
 
     @Autowired
     private TemplateRepository templateRepository;
@@ -84,17 +91,18 @@ public class FeedServiceImpl implements FeedService {
 
         PartnerEntity partner = partnerService.findActiveBySlug(feedEntity.getPartner().getSlug());
 
-        TemplateEntity template = getTemplate(feedEntity) ;
+        TemplateEntity template = getTemplate(feedEntity);
 
         PartnerTaxonomyEntity partnerTaxonomyEntity = getPartnerTaxonomy(feedEntity, partner);
 
         FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
-                new UserException(String.format("Field mapping not found for slug='%s'",feedEntity.getFieldsMapping().getSlug())));
-
+                new UserException(String.format("Field mapping not found for slug='%s'", feedEntity.getFieldsMapping().getSlug())));
 
         TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
         TaxonomyBlacklistPartnerValidator.validatePartnerTaxonomiesOnBlacklist(taxonomyBlacklist, partnerTaxonomyEntity);
+
+        List<TermsBlacklistEntity> termsBlacklist = getTermsBlacklist(feedEntity);
 
         if (feedEntity.getCollectionId() != null) {
             productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
@@ -114,6 +122,7 @@ public class FeedServiceImpl implements FeedService {
                 .creationDate(feedEntity.getCreationDate())
                 .template(template)
                 .taxonomyBlacklist(taxonomyBlacklist)
+                .termsBlacklist(termsBlacklist)
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .fieldsMapping(fieldsMappingEntity)
                 .build();
@@ -197,10 +206,12 @@ public class FeedServiceImpl implements FeedService {
 
         TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
+        List<TermsBlacklistEntity> termsBlacklist = getTermsBlacklist(feedEntity);
+
         PartnerTaxonomyEntity partnerTaxonomyEntity = getPartnerTaxonomy(feedEntity, partner);
 
         FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
-                new UserException(String.format("Field mapping not found for slug='%s'",feedEntity.getFieldsMapping().getSlug())));
+                new UserException(String.format("Field mapping not found for slug='%s'", feedEntity.getFieldsMapping().getSlug())));
 
         TaxonomyBlacklistPartnerValidator.validatePartnerTaxonomiesOnBlacklist(taxonomyBlacklist, partnerTaxonomyEntity);
 
@@ -224,6 +235,7 @@ public class FeedServiceImpl implements FeedService {
                 .fieldsMapping(fieldsMappingEntity)
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .taxonomyBlacklist(taxonomyBlacklist)
+                .termsBlacklist(getTermsBlacklist(feedEntity))
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
         saveFeedWithHistory(updatedFeed);
@@ -248,21 +260,27 @@ public class FeedServiceImpl implements FeedService {
 
         validateFeedActivePartner(partnerSlug, sb);
 
-        if(feedEntity.getCollectionId() != null){
+        if (feedEntity.getCollectionId() != null) {
             validateCollection(feedEntity.getCollectionId(), sb);
         }
 
-        if(feedEntity.getTaxonomyBlacklist() != null){
+        if (feedEntity.getTaxonomyBlacklist() != null) {
             validateBlackList(feedEntity.getTaxonomyBlacklist());
         }
 
-        if(sb.length() > 0){
+        if (sb.length() > 0) {
 
             sendMailService.sendMail(feedEntity.getSlug(), feedEntity.getPartner().getSlug(), sb.toString());
             LOGGER.error("[Error] Feed error notification feed-name: {}, message: {}, partner-slug: {}", feedEntity.getSlug(), sb.toString(), partnerSlug);
             throw new InvalidFeedException(sb.toString());
         }
         LOGGER.debug("End validation on feed: {} for partner : {}", feedSlug, partnerSlug);
+    }
+
+    @Override
+    public TermsBlacklistEntity findTermBlacklistBySlug(String slug) {
+        return termsBlackListRepository.findBySlug(slug).orElseThrow(() ->
+                new UserException(String.format("Terms BlackList is not found for slug='%s", slug)));
     }
 
     private FeedEntity saveFeedWithHistory(FeedEntity feed) {
@@ -305,6 +323,23 @@ public class FeedServiceImpl implements FeedService {
 
     }
 
+    private List<TermsBlacklistEntity> getTermsBlacklist(FeedEntity feedEntity) {
+
+        List<TermsBlacklistEntity> response = new ArrayList<>();
+
+        if (feedEntity.getTermsBlacklist() == null || feedEntity.getTermsBlacklist().isEmpty()) {
+            return null;
+        }
+
+        feedEntity.getTermsBlacklist().forEach(termsBlacklistEntity -> response.add(termsBlackListRepository.findBySlug(termsBlacklistEntity.getSlug()).get()));
+
+        if (response.isEmpty()) {
+            throw new TermsBlacklistNotFoundException(String.format("Feeds entity %s not contains terms blacklist", feedEntity.getSlug()));
+        }
+
+        return response;
+    }
+
     private FeedHistory buildPartnerHistory(FeedEntity currentFeed) {
 
         FeedHistory feedHistory = FeedHistory.builder()
@@ -327,11 +362,11 @@ public class FeedServiceImpl implements FeedService {
         return feedHistory;
     }
 
-    private void validateFeedActivePartner(String partnerSlug, StringBuilder sb){
+    private void validateFeedActivePartner(String partnerSlug, StringBuilder sb) {
 
         LOGGER.debug("Validating active partner: {} ", partnerSlug);
         PartnerEntity partner = partnerService.findBySlug(partnerSlug);
-        if(!partner.isActive()){
+        if (!partner.isActive()) {
             LOGGER.debug("Partner {} is not active: {} ", partnerSlug);
             sb.append(" Partner is not active" + System.lineSeparator());
         }
@@ -339,19 +374,20 @@ public class FeedServiceImpl implements FeedService {
 
     private void validateCollection(Long collectionId, StringBuilder sb) {
         LOGGER.debug("Validating collection:  {}", collectionId);
-        try{
+        try {
             productCollectionService.validateCollectionExists(collectionId);
-        }catch (UserException ex){
+        } catch (UserException ex) {
             LOGGER.debug("Invalid Collection:  {}", collectionId);
             sb.append(ex.getMessage() + System.lineSeparator());
         }
     }
+
     @Async
-    private void validateBlackList(TaxonomyBlacklistEntity taxonomyBlacklistEntity){
+    private void validateBlackList(TaxonomyBlacklistEntity taxonomyBlacklistEntity) {
         LOGGER.debug("Validating blacklist:  {}", taxonomyBlacklistEntity.getSlug());
-        try{
+        try {
             taxonomyBlacklistService.validateBlacklist(taxonomyBlacklistEntity);
-        }catch (UserException ex){
+        } catch (UserException ex) {
             LOGGER.error("Starting call to check if taxonomy exists and don't have any products");
             //TODO PENDENCIA DE ESTORIA PARA BUSCA DA ESTRUTURA COMERCIAL NO CATALOGO
         }
