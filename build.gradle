@@ -31,7 +31,7 @@ ext {
     hibernateVersion = '5.0.12.Final'
     camelVersion ='2.19.2'
     elasticSearchVersion ='5.5.2'
-    feingVersion ='9.3.1'
+    feignVersion ='9.3.1'
 }
 
 repositories {
@@ -128,9 +128,9 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
 
 
-    compile "io.github.openfeign:feign-okhttp:9.3.1"
-    compile "io.github.openfeign:feign-jackson:9.3.1"
-    compile "io.github.openfeign:feign-slf4j:9.3.1"
+    compile "io.github.openfeign:feign-okhttp:${feignVersion}"
+    compile "io.github.openfeign:feign-jackson:${feignVersion}"
+    compile "io.github.openfeign:feign-slf4j:${feignVersion}"
 
     compile "org.hibernate:hibernate-java8:${hibernateVersion}"
     compile "oracle:ojdbc6:11.2.0.3"
