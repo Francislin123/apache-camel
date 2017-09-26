@@ -3,15 +3,17 @@ package com.walmart.feeds.api.unit.core.service.blacklist.terms;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
+import com.walmart.feeds.api.core.exceptions.EntityInUseException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
-import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistory;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
+import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistService;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.TermsBlacklistServiceImpl;
+import com.walmart.feeds.api.unit.core.service.feed.FeedEntityTemplateLoader;
 import com.walmart.feeds.api.unit.resources.blacklist.terms.TermsBlackListTemplateLoader;
 import lombok.SneakyThrows;
 import org.junit.Assert;
@@ -49,7 +51,9 @@ public class TermsBlacklistServiceTest {
 
     @BeforeClass
     public static void setUp() {
+
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.blacklist.terms");
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.core.service.feed");
     }
 
     @Test
@@ -176,6 +180,18 @@ public class TermsBlacklistServiceTest {
         when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
 
         termsBlacklistService.deleteTermsBlacklist(anyString());
+    }
+
+    @Test(expected = EntityInUseException.class)
+    public void testDeleteTermsBlacklistIsInUseByFeed() {
+
+        TermsBlacklistEntity entity = Fixture.from(TermsBlacklistEntity.class).gimme(TermsBlackListTemplateLoader.TERMS_BLACKLIST_REQUEST_VALID);
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(entity));
+
+        FeedEntity feed = Fixture.from(FeedEntity.class).gimme(FeedEntityTemplateLoader.FEED_ENTITY);
+        when(feedRepository.findByTermsBlacklist(any(TermsBlacklistEntity.class))).thenReturn(Arrays.asList(feed));
+
+        this.termsBlacklistService.deleteTermsBlacklist(entity.getSlug());
     }
 
     @Test

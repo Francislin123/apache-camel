@@ -87,13 +87,10 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     @Override
     public void deleteTermsBlacklist(String slug) {
 
-        //TermsBlacklistEntity termsBlackListDelete = findBySlug(slug);
-        //this.termsBlacklistRepository.delete(termsBlackListDelete);
-
         TermsBlacklistEntity toDelete = findBySlug(slug);
 
         List<FeedEntity> feeds = feedRepository.findByTermsBlacklist(toDelete);
-        if(!feeds.isEmpty()) {
+        if (!feeds.isEmpty()) {
             List<SimpleError> feedsSlugs = feeds.stream().map(f -> SimpleError.builder().message(f.getSlug()).build()).collect(Collectors.toList());
             throw new EntityInUseException(String.format("Terms blacklist '%s' is being used by one or more feeds", slug), feedsSlugs);
         }

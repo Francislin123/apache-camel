@@ -23,13 +23,17 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static com.walmart.feeds.api.resources.blacklist.TermsBlacklistController.URI_TERMS_BLACKLIST;
 import static com.walmart.feeds.api.unit.resources.blacklist.terms.TermsBlackListTemplateLoader.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TermsBlacklistControllerTest {
@@ -69,7 +73,7 @@ public class TermsBlacklistControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post(URI_TERMS_BLACKLIST)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_VALID))))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                .andExpect(status().isCreated());
 
         Mockito.verify(termsBlacklistService).saveTermsBlacklist(any(TermsBlacklistEntity.class));
     }
@@ -82,7 +86,7 @@ public class TermsBlacklistControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class)
                         .gimme(TERMS_BLACKLIST_REQUEST_INVALID))))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(status().isBadRequest());
 
 
         Mockito.verify(termsBlacklistService, times(0)).saveTermsBlacklist(any(TermsBlacklistEntity.class));
@@ -96,7 +100,7 @@ public class TermsBlacklistControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class)
                         .gimme(TERMS_BLACKLIST_REQUEST_NULL))))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(status().isBadRequest());
 
         Mockito.verify(termsBlacklistService, times(0)).saveTermsBlacklist(any(TermsBlacklistEntity.class));
     }
@@ -112,7 +116,7 @@ public class TermsBlacklistControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class)
                         .gimme(TERMS_BLACKLIST_REQUEST_VALID))))
-                .andExpect(MockMvcResultMatchers.status().isConflict());
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -122,7 +126,7 @@ public class TermsBlacklistControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post(URI_TERMS_BLACKLIST)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_EMPTY_NAME))))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(status().isBadRequest());
 
         Mockito.verifyZeroInteractions(termsBlacklistService);
     }
@@ -134,7 +138,7 @@ public class TermsBlacklistControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post(URI_TERMS_BLACKLIST)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_EMPTY_NAME))))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(status().isBadRequest());
 
         Mockito.verifyZeroInteractions(termsBlacklistService);
     }
@@ -152,7 +156,7 @@ public class TermsBlacklistControllerTest {
                 .put(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_VALID))))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(status().isOk());
 
         Mockito.verify(termsBlacklistService, times(1)).updateTermsBlacklist(any(TermsBlacklistEntity.class));
     }
@@ -166,7 +170,7 @@ public class TermsBlacklistControllerTest {
                 .put(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_VALID))))
-                .andExpect(MockMvcResultMatchers.status().isConflict());
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -177,7 +181,7 @@ public class TermsBlacklistControllerTest {
                 .put(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_EMPTY_LIST))))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -189,7 +193,7 @@ public class TermsBlacklistControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class)
                         .gimme(TERMS_BLACKLIST_REQUEST_NULL))))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -200,7 +204,7 @@ public class TermsBlacklistControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class)
                         .gimme(TERMS_BLACKLIST_REQUEST_INVALID))))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(status().isBadRequest());
 
         Mockito.verify(termsBlacklistService, times(0)).saveTermsBlacklist(Mockito.any(TermsBlacklistEntity.class));
     }
@@ -215,7 +219,7 @@ public class TermsBlacklistControllerTest {
                 .put(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(jsonRequest(Fixture.from(TermsBlacklistRequest.class).gimme(TERMS_BLACKLIST_REQUEST_VALID))))
-                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+                .andExpect(status().isInternalServerError());
     }
 
     // ---------------------------------- Test Update Terms Blacklist end -------------------------------------------------------------------//
@@ -229,7 +233,7 @@ public class TermsBlacklistControllerTest {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.status().isNoContent());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -241,7 +245,7 @@ public class TermsBlacklistControllerTest {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -253,7 +257,7 @@ public class TermsBlacklistControllerTest {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+                .andExpect(status().isInternalServerError());
     }
 
     // ---------------------------------- Test Delete Terms Blacklist end -------------------------------------------------------------------//
@@ -264,10 +268,10 @@ public class TermsBlacklistControllerTest {
     @SneakyThrows
     public void testListTermsBlacklistSuccess() {
 
-        mockMvc.perform(MockMvcRequestBuilders
-                .get(TermsBlacklistController.URI_TERMS_BLACKLIST)
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(
+                get(TermsBlacklistController.URI_TERMS_BLACKLIST)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
 
         Mockito.verify(termsBlacklistService, times(1)).findAllTermsBlacklistEntity();
 
@@ -279,10 +283,10 @@ public class TermsBlacklistControllerTest {
 
         Mockito.doThrow(EntityNotFoundException.class).when(termsBlacklistService).findAllTermsBlacklistEntity();
 
-        mockMvc.perform(MockMvcRequestBuilders
-                .get(TermsBlacklistController.URI_TERMS_BLACKLIST)
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.status().isNotFound());
+        mockMvc.perform(
+                get(TermsBlacklistController.URI_TERMS_BLACKLIST)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -291,13 +295,98 @@ public class TermsBlacklistControllerTest {
 
         Mockito.doThrow(Exception.class).when(termsBlacklistService).findAllTermsBlacklistEntity();
 
-        mockMvc.perform(MockMvcRequestBuilders
-                .get(TermsBlacklistController.URI_TERMS_BLACKLIST)
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(MockMvcResultMatchers.status().isInternalServerError());
+        mockMvc.perform(
+                get(TermsBlacklistController.URI_TERMS_BLACKLIST)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isInternalServerError());
     }
 
     // ---------------------------------- Test List Terms Blacklist end   -------------------------------------------------------------------//
+
+
+    // ---------------------------------- Test List Fetch all Terms Blacklist begin ---------------------------------------------------------//
+
+
+    // ---------------------------------- Test List Fetch all Terms Blacklist end -----------------------------------------------------------//
+
+    @Test
+    @SneakyThrows
+    public void testTermsBlackListFetchAll() {
+
+        when(termsBlacklistService.findAllTermsBlacklistEntity())
+                .thenReturn(Fixture.from(TermsBlacklistEntity.class).gimme(2, TermsBlackListTemplateLoader.TERMS_BLACKLIST_REQUEST_VALID));
+
+        mockMvc.perform(get(TermsBlacklistController.URI_TERMS_BLACKLIST).contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").isArray())
+                .andExpect(jsonPath("$.result").isNotEmpty());
+
+    }
+
+    @Test
+    @SneakyThrows
+    public void testTermsBlackListFetchAllWhenOccursRuntimeException() {
+
+        when(termsBlacklistService.findAllTermsBlacklistEntity()).thenThrow(RuntimeException.class);
+
+        mockMvc.perform(get(TermsBlacklistController.URI_TERMS_BLACKLIST).contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testTermsBlackListFetchAllInternalServerError() {
+
+        Mockito.doThrow(Exception.class).when(termsBlacklistService).findAllTermsBlacklistEntity();
+
+        mockMvc.perform(get(TermsBlacklistController.URI_TERMS_BLACKLIST).contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isInternalServerError());
+    }
+
+    // ---------------------------------- Test List findBySlug Terms Blacklist begin --------------------------------------------------------//
+
+    @Test
+    @SneakyThrows
+    public void testFetchTermsBlackListBySlug() {
+
+        String slug = "facebook-terms-blacklist";
+        when(termsBlacklistService.findBySlug(anyString())).thenReturn(Fixture.from(TermsBlacklistEntity.class)
+                .gimme(TermsBlackListTemplateLoader.TERMS_BLACKLIST_ENTITY_VALID_BY_SLUG));
+
+        mockMvc.perform(get(TermsBlacklistController.URI_TERMS_BLACKLIST + "/" + slug)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andDo(result -> System.out.println(result.getResponse().getContentAsString()))
+                .andExpect(jsonPath("$.id").doesNotExist())
+                .andExpect(jsonPath("$.name").value("Facebook Terms Blacklist"));
+
+    }
+
+    @Test
+    @SneakyThrows
+    public void testFetchTermsBlackListBySlugNotFound() {
+
+        String slug = "facebook-terms-blacklist";
+        when(termsBlacklistService.findBySlug(slug)).thenThrow(EntityNotFoundException.class);
+
+        mockMvc.perform(get(TermsBlacklistController.URI_TERMS_BLACKLIST + "/" + slug)
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testFetchTermsBlackListBySlugInternalServerError() {
+
+        Mockito.doThrow(Exception.class).when(termsBlacklistService).deleteTermsBlacklist("facebook-terms-blacklist");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .get(TermsBlacklistController.URI_TERMS_BLACKLIST + "/facebook-terms-blacklist")
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isInternalServerError());
+    }
+
+    // ---------------------------------- Test List findBySlug Terms Blacklist end ----------------------------------------------------------//
 
     public String jsonRequest(Object request) throws JsonProcessingException {
         return mapper.writeValueAsString(request);

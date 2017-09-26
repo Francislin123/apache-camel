@@ -17,6 +17,7 @@ public class TermsBlackListTemplateLoader implements TemplateLoader {
     public static final String TERMS_BLACKLIST_REQUEST_NULL = "terms_black_null";
     public static final String TERMS_BLACKLIST_REQUEST_EMPTY_NAME = "terms_black_empty_name";
     public static final String TERMS_BLACKLIST_REQUEST_EMPTY_LIST = "terms_black_empty_name";
+    public static final String TERMS_BLACKLIST_ENTITY_VALID_BY_SLUG = "terms_black_valid_by_slug";
 
     @Override
     public void load() {
@@ -64,6 +65,12 @@ public class TermsBlackListTemplateLoader implements TemplateLoader {
 
         Fixture.of(TermsBlacklistRequest.class).addTemplate(TERMS_BLACKLIST_REQUEST_EMPTY_NAME, new Rule() {{
             add("name", "");
+            add("list", validList);
+        }});
+
+        Fixture.of(TermsBlacklistEntity.class).addTemplate(TERMS_BLACKLIST_ENTITY_VALID_BY_SLUG, new Rule() {{
+            add("name", "Facebook Terms Blacklist");
+            add("slug", "facebook-terms-blacklist");
             add("list", validList);
         }});
 
