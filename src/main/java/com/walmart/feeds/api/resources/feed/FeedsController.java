@@ -103,7 +103,7 @@ public class FeedsController {
                 .fieldMapping(feedEntity.getPartner().getSlug())
                 .taxonomy(feedEntity.getPartnerTaxonomy() != null ? feedEntity.getPartnerTaxonomy().getSlug() : null)
                 .taxonomyBlacklist(getTaxonomyBlacklistSlug(feedEntity))
-                .termsBlacklist(feedEntity.getTermsBlacklist().
+                .termsBlacklist(feedEntity.getTermsBlacklist().stream().map(tb -> tb.getSlug()).collect(Collectors.toList()))
                 .slug(feedEntity.getSlug())
                 .notification(FeedNotificationData.builder()
                         .format(feedEntity.getNotificationFormat().getType())
@@ -146,9 +146,7 @@ public class FeedsController {
                             .taxonomy(f.getPartnerTaxonomy() != null ? f.getPartnerTaxonomy().getSlug() : null)
                             .fieldMapping(f.getFieldsMapping().getSlug())
                             .taxonomyBlacklist(getTaxonomyBlacklistSlug(f))
-
-                            .termsBlacklist(getTermsBlacklist()
-
+                            .termsBlacklist(f.getTermsBlacklist().stream().map(tb -> tb.getSlug()).collect(Collectors.toList()))
                             .notification(FeedNotificationData.builder()
                                     .format(f.getNotificationFormat().getType())
                                     .method(f.getNotificationMethod().getType())

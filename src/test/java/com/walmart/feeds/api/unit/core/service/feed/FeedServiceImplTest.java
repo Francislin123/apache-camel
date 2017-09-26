@@ -5,10 +5,9 @@ import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.client.tagadmin.TagAdminCollection;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
-import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
+import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
@@ -27,8 +26,6 @@ import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.core.service.feed.ProductCollectionService;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
-import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklistTemplateLoader;
-import com.walmart.feeds.api.unit.resources.feed.test.template.FeedTemplateLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,6 +60,9 @@ public class FeedServiceImplTest {
     private TaxonomyBlacklistRepository taxonomyBlacklistRepository;
 
     @Mock
+    private TermsBlackListRepository termsBlackListRepository;
+
+    @Mock
     private TemplateRepository templateRepository;
 
     @Mock
@@ -77,9 +77,7 @@ public class FeedServiceImplTest {
     @BeforeClass
     public static void setUp() {
 
-        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.blacklist.taxonomy");
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.core.service.feed");
-
     }
 
     @Test(expected = UserException.class)
@@ -122,12 +120,14 @@ public class FeedServiceImplTest {
         when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
         when(taxonomyBlacklistRepository.findBySlug(feedEntity.getTaxonomyBlacklist().getSlug())).thenReturn(Optional.of(feedEntity.getTaxonomyBlacklist()));
         when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.empty());
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getTermsBlacklist().get(0)));
 
         this.feedService.updateFeed(feedEntity);
     }
 
     @Test(expected = UserException.class)
     public void updateFeedWhenFieldMappingDoNotExists() {
+
         FeedEntity feedEntity = Fixture.from(FeedEntity.class).gimme(FeedEntityTemplateLoader.FEED_ENTITY);
         when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
@@ -135,6 +135,7 @@ public class FeedServiceImplTest {
         when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
         when(fieldsMappingRepository.findBySlug(anyString())).thenReturn(Optional.empty());
         when(taxonomyBlacklistRepository.findBySlug(feedEntity.getTaxonomyBlacklist().getSlug())).thenReturn(Optional.of(feedEntity.getTaxonomyBlacklist()));
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getTermsBlacklist().get(0)));
 
         this.feedService.updateFeed(feedEntity);
     }
@@ -196,11 +197,10 @@ public class FeedServiceImplTest {
         when(fieldsMappingRepository.findBySlug(anyString())).thenReturn(Optional.of(f.getFieldsMapping()));
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(f);
         when(feedHistoryRepository.save(any(FeedHistory.class))).thenReturn(mock(FeedHistory.class));
-        when(taxonomyBlacklistRepository.findBySlug(f.getTaxonomyBlacklist().getSlug()))
-                .thenReturn(Optional.of(f.getTaxonomyBlacklist()));
+        when(taxonomyBlacklistRepository.findBySlug(f.getTaxonomyBlacklist().getSlug())).thenReturn(Optional.of(f.getTaxonomyBlacklist()));
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(f.getTermsBlacklist().get(0)));
 
         feedService.createFeed(f);
-
     }
 
     @Test(expected = TaxonomyBlacklistNotFoundException.class)
@@ -217,8 +217,7 @@ public class FeedServiceImplTest {
         when(fieldsMappingRepository.findBySlug(anyString())).thenReturn(Optional.of(f.getFieldsMapping()));
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(f);
         when(feedHistoryRepository.save(any(FeedHistory.class))).thenReturn(mock(FeedHistory.class));
-        when(taxonomyBlacklistRepository.findBySlug(f.getTaxonomyBlacklist().getSlug()))
-                .thenReturn(Optional.empty());
+        when(taxonomyBlacklistRepository.findBySlug(f.getTaxonomyBlacklist().getSlug())).thenReturn(Optional.empty());
 
         feedService.createFeed(f);
 
@@ -256,6 +255,8 @@ public class FeedServiceImplTest {
         when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
         when(fieldsMappingRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getFieldsMapping()));
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getTermsBlacklist().get(0)));
+
 
         this.feedService.createFeed(feedEntity);
 
@@ -331,6 +332,7 @@ public class FeedServiceImplTest {
         when(fieldsMappingRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getFieldsMapping()));
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getTermsBlacklist().get(0)));
 
         this.feedService.updateFeed(feedEntity);
 
@@ -349,7 +351,7 @@ public class FeedServiceImplTest {
         when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
         when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
         when(fieldsMappingRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getFieldsMapping()));
-
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getTermsBlacklist().get(0)));
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
 
         this.feedService.updateFeed(feedEntity);
@@ -429,10 +431,10 @@ public class FeedServiceImplTest {
                 .template(templateEntity)
                 .partnerTaxonomy(PartnerTaxonomyEntity.builder()
                         .slug("taxonomy-slug")
-                    .build())
+                        .build())
                 .fieldsMapping(FieldsMappingEntity.builder()
                         .slug("field-mapping-slug")
-                    .build())
+                        .build())
                 .notificationUrl("http://localhost:8080/teste")
                 .type(INVENTORY).build();
 

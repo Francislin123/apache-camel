@@ -2,10 +2,10 @@ package com.walmart.feeds.api.unit.core.service.feed;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
-import br.com.six2six.fixturefactory.function.Function;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
+import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
@@ -13,16 +13,12 @@ import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
-import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
-import com.walmart.feeds.api.core.service.blacklist.taxonomy.validation.TaxonomyBlacklistPartnerValidator;
 import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklistTemplateLoader;
+import com.walmart.feeds.api.unit.resources.blacklist.terms.TermsBlackListTemplateLoader;
 import com.walmart.feeds.api.unit.resources.partner.test.template.PartnerTemplateLoader;
 
-import java.util.Arrays;
-import java.util.UUID;
-
-import static com.walmart.feeds.api.core.repository.feed.model.FeedType.INVENTORY;
+import java.util.List;
 
 public class FeedEntityTemplateLoader implements TemplateLoader {
 
@@ -38,27 +34,30 @@ public class FeedEntityTemplateLoader implements TemplateLoader {
 
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.partner.test.template");
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.blacklist.taxonomy");
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.blacklist.terms");
 
-        Fixture.of(TemplateEntity.class).addTemplate(TEMPLATE_ENTITY, new Rule(){{
+        Fixture.of(TemplateEntity.class).addTemplate(TEMPLATE_ENTITY, new Rule() {{
             add("slug", "template");
         }});
 
-        Fixture.of(FeedEntity.class).addTemplate(FEED_ENTITY, new Rule(){{
+        Fixture.of(FeedEntity.class).addTemplate(FEED_ENTITY, new Rule() {{
 
             TemplateEntity template = TemplateEntity.builder().slug("template").name("default").separator(">").template("default").format("xml").build();
             PartnerEntity partner = Fixture.from(PartnerEntity.class).gimme(PartnerTemplateLoader.PARTNER_ENTITY);
             TaxonomyBlacklistEntity blacklistEntity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
             PartnerTaxonomyEntity partnerTaxonomy = Fixture.from(PartnerTaxonomyEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY);
             FieldsMappingEntity fieldsMapping = FieldsMappingEntity.builder().slug("fields-mapping").build();
+            List<TermsBlacklistEntity> termsBlacklists = Fixture.from(TermsBlacklistEntity.class).gimme(1, TermsBlackListTemplateLoader.TERMS_BLACKLIST_REQUEST_VALID);
 
-            add("name", "Feed teste");
-            add("slug", "feed-teste");
+            add("name", "Feed test");
+            add("slug", "feed-test");
             add("active", true);
             add("notificationFormat", FeedNotificationFormat.JSON);
             add("notificationMethod", FeedNotificationMethod.FILE);
             add("type", FeedType.INVENTORY);
             add("collectionId", 7380L);
             add("taxonomyBlacklist", blacklistEntity);
+            add("termsBlacklist", termsBlacklists);
             add("template", template);
             add("partner", partner);
             add("partnerTaxonomy", partnerTaxonomy);
@@ -66,16 +65,16 @@ public class FeedEntityTemplateLoader implements TemplateLoader {
 
         }});
 
-        Fixture.of(FeedEntity.class).addTemplate(FEED_ENTITY_UPDATE_NAME).inherits(FEED_ENTITY, new Rule(){{
+        Fixture.of(FeedEntity.class).addTemplate(FEED_ENTITY_UPDATE_NAME).inherits(FEED_ENTITY, new Rule() {{
             add("name", "Big teste");
 
         }});
 
-        Fixture.of(FeedEntity.class).addTemplate(FEED_ENTITY_WITHOUT_TAXONOMY_BLACKLIST).inherits(FEED_ENTITY, new Rule(){{
+        Fixture.of(FeedEntity.class).addTemplate(FEED_ENTITY_WITHOUT_TAXONOMY_BLACKLIST).inherits(FEED_ENTITY, new Rule() {{
             add("taxonomyBlacklist", null);
         }});
 
-        Fixture.of(FeedEntity.class).addTemplate(FEED_ENTITY_WITH_INVALID_PARTNER_TAXONOMY_BLACKLIST).inherits(FEED_ENTITY, new Rule(){{
+        Fixture.of(FeedEntity.class).addTemplate(FEED_ENTITY_WITH_INVALID_PARTNER_TAXONOMY_BLACKLIST).inherits(FEED_ENTITY, new Rule() {{
             TaxonomyBlacklistEntity blacklist = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TB_INVALID_PARTNER_TAXONOMY);
             add("taxonomyBlacklist", blacklist);
         }});

@@ -23,23 +23,23 @@ public class TermsBlackListTemplateLoader implements TemplateLoader {
 
         // ---------------------------------------------------------------------------------------------------------- //
 
-        Set<String> valid_list = new HashSet<>();
-        valid_list.add("bullet");
-        valid_list.add("beverage");
+        Set<String> validList = new HashSet<>();
+        validList.add("bullet");
+        validList.add("beverage");
 
         Fixture.of(TermsBlacklistEntity.class).addTemplate("terms_black_valid", new Rule() {{
-            add("list", valid_list);
+            add("list", validList);
         }});
 
-        Set<String> invalid_list = new HashSet<>();
-        invalid_list.add(null);
+        Set<String> invalidList = new HashSet<>();
+        invalidList.add(null);
 
         Fixture.of(TermsBlacklistEntity.class).addTemplate("terms_black_invalid", new Rule() {{
-            add("list", invalid_list);
+            add("list", invalidList);
         }});
 
         Set<String> terms_black_null = new HashSet<>();
-        invalid_list.add(null);
+        invalidList.add(null);
 
         Fixture.of(TermsBlacklistEntity.class).addTemplate("terms_black_null", new Rule() {{
             add("list", terms_black_null);
@@ -49,12 +49,12 @@ public class TermsBlackListTemplateLoader implements TemplateLoader {
 
         Fixture.of(TermsBlacklistRequest.class).addTemplate(TERMS_BLACKLIST_REQUEST_VALID, new Rule() {{
             add("name", "Facebook Terms Blacklist");
-            add("list", valid_list);
+            add("list", validList);
         }});
 
         Fixture.of(TermsBlacklistRequest.class).addTemplate(TERMS_BLACKLIST_REQUEST_INVALID, new Rule() {{
             add("name", "Facebook Terms Blacklist");
-            add("list", invalid_list);
+            add("list", invalidList);
         }});
 
         Fixture.of(TermsBlacklistRequest.class).addTemplate(TERMS_BLACKLIST_REQUEST_NULL, new Rule() {{
@@ -64,7 +64,7 @@ public class TermsBlackListTemplateLoader implements TemplateLoader {
 
         Fixture.of(TermsBlacklistRequest.class).addTemplate(TERMS_BLACKLIST_REQUEST_EMPTY_NAME, new Rule() {{
             add("name", "");
-            add("list", valid_list);
+            add("list", validList);
         }});
 
         // ---------------------------------- Test Create Terms Blacklist end ----------------------------------------//

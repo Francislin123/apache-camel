@@ -93,7 +93,7 @@ public class FeedServiceImpl implements FeedService {
 
         TaxonomyBlacklistPartnerValidator.validatePartnerTaxonomiesOnBlacklist(taxonomyBlacklist, partnerTaxonomyEntity);
 
-        TermsBlacklistEntity termsBlacklist = (TermsBlacklistEntity) getTermsBlacklist(feedEntity);
+        List<TermsBlacklistEntity> termsBlacklist = getTermsBlacklist(feedEntity);
 
         if (feedEntity.getCollectionId() != null) {
             productCollectionService.validateCollectionExists(feedEntity.getCollectionId());
@@ -113,7 +113,7 @@ public class FeedServiceImpl implements FeedService {
                 .creationDate(feedEntity.getCreationDate())
                 .template(template)
                 .taxonomyBlacklist(taxonomyBlacklist)
-                .termsBlacklist(termsBlacklist.getFeed())
+                .termsBlacklist(termsBlacklist)
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .fieldsMapping(fieldsMappingEntity)
                 .build();
@@ -197,7 +197,7 @@ public class FeedServiceImpl implements FeedService {
 
         TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
-        TermsBlacklistEntity termsBlacklist = (TermsBlacklistEntity) getTermsBlacklist(feedEntity);
+        List<TermsBlacklistEntity> termsBlacklist = getTermsBlacklist(feedEntity);
 
         PartnerTaxonomyEntity partnerTaxonomyEntity = getPartnerTaxonomy(feedEntity, partner);
 
