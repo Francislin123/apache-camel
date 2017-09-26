@@ -333,7 +333,7 @@ public class FeedServiceImpl implements FeedService {
         PartnerEntity partner = partnerService.findBySlug(partnerSlug);
         if(!partner.isActive()){
             LOGGER.debug("Partner {} is not active: {} ", partnerSlug);
-            sb.append("Partner is not active" + System.lineSeparator());
+            sb.append(" Partner is not active" + System.lineSeparator());
         }
     }
 

@@ -27,16 +27,7 @@ public class MailConfEntity {
     @Column(name = "slug")
     private String slug;
 
-    @Column(name = "mail_from")
-    private String from;
-
     @Column(name = "mail_to")
     private String to;
-
-    @Column(name = "subject")
-    private String subject;
-
-    @Column(name = "body_conf")
-    private String bodyConf;
 
 }
