@@ -2,76 +2,43 @@ server:
   port: 8080
   context-path: /api
 
-spring:
-  jackson:
-    default-property-inclusion: non_null
+management:
+  security:
+    enabled: false
 
+spring:
   jpa:
-    show-sql: true
-  data:
-    elasticsearch:
-      cluster-name: elasticsearch
-      cluster-nodes: napsao-qa-nix-feeds-elasticsearch-1.qa.vmcommerce.intra:9300
-      indexes:
-        skus:
-          name: skus
-          type: sku
+    show-sql: false
+  mail:
+    host: smtp.qa.vmcommerce.intra:25
+#    username:
+#    password:
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
 
-tagadmin:
-    username: admin
-    password: admin
-    uri: http://vip-cat-serv.qa.vmcommerce.intra/ws/
-
-gossip:
-  username: ADMIN
-  password: 123123
-  uri: http://vip-rtg-gossip-serv.qa.vmcommerce.intra:80
-  template: FEEDS
-
-management:
-  security:
-    enabled: false
-
----
-
-spring:
-  profiles: local
-  datasource:
-    url: jdbc:oracle:thin:@localhost:1521/xe
-    username: FEEDS_ADMIN
-    password: FEEDS_ADMIN
-    hikari:
-      connection-timeout: 60000
-      maximum-pool-size: 5
-  jpa:
-    database-platform: org.hibernate.dialect.Oracle10gDialect
-
-management:
-  security:
-    enabled: false
-
----
-
-spring:
-  profiles: qa
-  datasource:
-    url: jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF
-    username: FEEDS_ADMIN
-    password: FEEDS_ADMIN
-    tomcat:
-      max-wait: 60000
-      initial-size: 10
-      max-active: 150
-      test-on-borrow: true
-  data:
-      elasticsearch:
-        cluster-name: elasticsearch
-        cluster-nodes: napsao-qa-nix-feeds-elasticsearch-1.qa.vmcommerce.intra:9300
-        indexes:
-          skus:
-            name: skus
-            type: sku
-
-management:
-  security:
-    enabled: false
+#keycloak:
+#    securityConstraints:
+#      - authRoles:
+#        - default
+#      - securityCollections:
+#        - name: insecure stuff
+#          patterns:
+#            - /api/health
+#            - /api/metrics
+#        - name: admin stuff
+#          patterns:
+#            - /api/v1/*
+#            - /api/v2/*
+#    realm: vmcommerce
+#    realmKey: b44af5eb-03da-41ef-8e77-35f9ff44ff7a
+#    auth-server-url: https://vip-keycloak.qa.vmcommerce.intra/auth
+#    ssl-required: external
+#    resource: feeds-admin-api
+#    public-client: false
+#    bearer-only: true
+#    credentials:
+#        secret: 5154ca38-7f8e-40ad-86a7-891944bdd573

@@ -9,6 +9,7 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Getter
+@Builder
 @Entity
 @Table(name = "feed_template")
 public class TemplateEntity {
@@ -25,8 +26,14 @@ public class TemplateEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "template")
-    private String template;
+    @Column(name = "header")
+    private String header;
+
+    @Column(name = "body")
+    private String body;
+
+    @Column(name = "footer")
+    private String footer;
 
     @Column(name = "separator")
     private String separator;
@@ -39,13 +46,5 @@ public class TemplateEntity {
         //default constructor for hibernate
     }
 
-    @Builder
-    public TemplateEntity(String slug, String name, String template, String separator, String format) {
-        this.slug = slug;
-        this.name = name;
-        this.template = template;
-        this.separator = separator;
-        this.format = format;
-    }
 }
 

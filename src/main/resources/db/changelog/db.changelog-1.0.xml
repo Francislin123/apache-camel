@@ -354,7 +354,13 @@
             <column name="name" type="varchar(50)">
                 <constraints unique="false" nullable="false"/>
             </column>
-            <column name="template" type="longvarchar">
+            <column name="header" type="longvarchar">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="body" type="longvarchar">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="footer" type="longvarchar">
                 <constraints unique="false" nullable="false"/>
             </column>
             <column name="separator" type="char">
