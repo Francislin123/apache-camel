@@ -69,10 +69,8 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     public TermsBlacklistEntity findBySlug(String slug) {
 
         LOGGER.info("termsBlacklistEntity={} message=findBy_successfully", slug);
-        TermsBlacklistEntity termsBlacklistEntity = termsBlacklistRepository.findBySlug(slug).orElseThrow(() ->
-                new EntityNotFoundException(String.format("Terms Black List %s not found!", slug)));
+        TermsBlacklistEntity termsBlacklistEntity = termsBlacklistRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException(String.format("Terms Black List %s not found!", slug)));
         return termsBlacklistEntity;
-
     }
 
     @Override
@@ -92,9 +90,8 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
             throw new EntityInUseException(String.format("Terms blacklist '%s' is being used by one or more feeds", slug), feedsSlugs);
         }
 
-        this.termsBlacklistRepository.delete(toDelete);
         LOGGER.info("termsBlacklistEntity={} message=delete_successfully", toDelete);
-
+        this.termsBlacklistRepository.delete(toDelete);
     }
 
     @Override
@@ -112,8 +109,8 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
 
         TermsBlacklistHistory termsBlacklistHistory = buildTermsBlacklistHistory(saveTermsBlackList);
 
-        termsBlacklistHistory = termsBlacklistHistoryRepository.save(termsBlacklistHistory);
         LOGGER.info("termsBlacklistHistory={} message=saved_successfully", termsBlacklistHistory);
+        termsBlacklistHistoryRepository.save(termsBlacklistHistory);
 
         return saveTermsBlackList;
     }
