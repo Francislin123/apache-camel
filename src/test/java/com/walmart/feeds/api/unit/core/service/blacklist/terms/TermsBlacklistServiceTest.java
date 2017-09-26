@@ -60,8 +60,6 @@ public class TermsBlacklistServiceTest {
     @SneakyThrows
     public void testSaveTermsBlackList() {
 
-        TermsBlacklistEntity termsBlackList = createTermsBlacklist();
-
         when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
         when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class))).thenReturn(createTermsBlacklist());
 

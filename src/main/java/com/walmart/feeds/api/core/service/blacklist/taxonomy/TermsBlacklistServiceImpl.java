@@ -38,10 +38,8 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     @Transactional
     public void saveTermsBlacklist(TermsBlacklistEntity termsBlacklistEntity) {
 
-        LOGGER.info("termsBlacklistHistory={} message=conflict", termsBlacklistEntity.getName());
         hasConflict(termsBlacklistEntity.getSlug());
 
-        LOGGER.info("termsBlacklistHistory={} message=saved_successfully", termsBlacklistEntity.getName());
         persistTermsBlacklist(termsBlacklistEntity);
     }
 
@@ -66,7 +64,6 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
                 .build();
 
         persistTermsBlacklist(updatedTermsBlacklist);
-        LOGGER.info("termsBlacklistEntity={} message=update_successfully", termsBlacklistEntity.getName());
     }
 
     public TermsBlacklistEntity findBySlug(String slug) {
@@ -103,6 +100,7 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     @Override
     public void hasConflict(String slug) {
 
+        LOGGER.info("termsBlacklistHistory={} message=conflict", slug);
         if (termsBlacklistRepository.findBySlug(slug).isPresent()) {
             throw new EntityAlreadyExistsException(String.format("Terms black list called '%s' already exists", slug));
         }
@@ -112,7 +110,6 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
 
         TermsBlacklistEntity saveTermsBlackList = termsBlacklistRepository.saveAndFlush(termsBlacklist);
 
-        LOGGER.info("termsBlacklist={} message=saved_successfully", saveTermsBlackList);
         TermsBlacklistHistory termsBlacklistHistory = buildTermsBlacklistHistory(saveTermsBlackList);
 
         termsBlacklistHistory = termsBlacklistHistoryRepository.save(termsBlacklistHistory);
