@@ -63,7 +63,7 @@ public class FeedsAdminAPIExceptionHandler {
     }
 
     @ExceptionHandler(value = BindException.class)
-    public ResponseEntity<ErrorResponse> genericExceptionHandler(BindException ex, WebRequest request) {
+    public ResponseEntity<ErrorResponse> bindExceptionHandler(BindException ex, WebRequest request) {
         LOGGER.error(DEFAULT_ERROR_MESSAGE, ex);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
