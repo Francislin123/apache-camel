@@ -105,6 +105,7 @@ public class FeedsController {
                 .taxonomyBlacklist(getTaxonomyBlacklistSlug(feedEntity))
                 .termsBlacklist(feedEntity.getTermsBlacklist().stream().map(tb -> tb.getSlug()).collect(Collectors.toList()))
                 .slug(feedEntity.getSlug())
+                .collectionId(feedEntity.getCollectionId())
                 .notification(FeedNotificationData.builder()
                         .format(feedEntity.getNotificationFormat().getType())
                         .method(feedEntity.getNotificationMethod().getType())
@@ -224,6 +225,16 @@ public class FeedsController {
 
         feedService.updateFeed(feedEntity);
 
+        return ResponseEntity.ok().build();
+    }
+
+    @ApiOperation(value = "Validate a Feed to generate a file", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Valid Feed", response = FeedResponse.class),
+            @ApiResponse(code = 400, message = "Invalid Feed")})
+    @RequestMapping(value = "{feedSlug}/validation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity feedValidation(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("feedSlug") String feedSlug) {
+        feedService.validateFeed(partnerSlug, feedSlug);
         return ResponseEntity.ok().build();
     }
 

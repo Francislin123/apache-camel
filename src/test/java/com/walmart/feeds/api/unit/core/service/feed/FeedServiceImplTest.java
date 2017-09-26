@@ -3,6 +3,8 @@ package com.walmart.feeds.api.unit.core.service.feed;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.client.tagadmin.TagAdminCollection;
+import com.walmart.feeds.api.core.exceptions.*;
+import com.walmart.feeds.api.core.notifications.SendMailService;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.UserException;
@@ -20,12 +22,16 @@ import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistNotFoundException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistPartnerException;
 import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.core.service.feed.ProductCollectionService;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
+import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklistTemplateLoader;
+import com.walmart.feeds.api.unit.resources.feed.test.template.FeedTemplateLoader;
+import com.walmart.feeds.api.unit.resources.partner.test.template.PartnerTemplateLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,6 +79,12 @@ public class FeedServiceImplTest {
 
     @Mock
     private FieldsMappingRepository fieldsMappingRepository;
+
+    @Mock
+    private SendMailService sendMailService;
+
+    @Mock
+    private TaxonomyBlacklistService taxonomyBlacklistService;
 
     @BeforeClass
     public static void setUp() {
@@ -451,5 +463,32 @@ public class FeedServiceImplTest {
         verify(feedHistoryRepository).save(any(FeedHistory.class));
         verify(productCollectionService, never()).validateCollectionExists(anyLong());
     }
+
+    @Test(expected = InvalidFeedException.class)
+    public void testFeedValidationInvalidPartner(){
+        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme("inactive-partner");
+        when(feedRepository.findBySlug("someFeedSlug")).thenReturn(Optional.of(FeedEntity.builder()
+                .collectionId(0L).
+                        slug("someFeedSlug")
+                .partner(PartnerEntity.builder().slug("anyPartnerSlug").build()).build()));
+        when(partnerService.findBySlug("inactivePartner")).thenReturn(partnerEntity);
+        doNothing().when(sendMailService).sendMail("someFeedSlug", " someFeedSlug", "Partner is not active/n");
+        feedService.validateFeed("inactivePartner", "someFeedSlug");
+    }
+
+    @Test(expected = InvalidFeedException.class)
+    public void testFeedValidationInvalidCollection(){
+        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme(PartnerTemplateLoader.PARTNER_ENTITY);
+        when(feedRepository.findBySlug("someFeedSlug")).thenReturn(Optional.of(FeedEntity.builder()
+                .collectionId(0L).
+                        slug("someFeedSlug")
+                .partner(PartnerEntity.builder().slug("anyPartnerSlug").build()).build()));
+        when(partnerService.findBySlug("anyPartnerSlug")).thenReturn(partnerEntity);
+        doNothing().when(sendMailService).sendMail("someFeedSlug", " someFeedSlug", "Error/n");
+        doAnswer(answer -> {throw new UserException("Error");}).when(productCollectionService).validateCollectionExists(0L);
+        feedService.validateFeed("anyPartnerSlug", "someFeedSlug");
+    }
+
+
 
 }

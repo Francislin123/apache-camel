@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.walmart.feeds.api.client.tagadmin.TagAdmimCollectionClient;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.InvalidFeedException;
 import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistNotFoundException;
@@ -31,6 +32,7 @@ import java.util.Arrays;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -187,6 +189,18 @@ public class FeedsControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(Fixture.from(FeedRequest.class).gimme("feed-full-api-valid"))))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    public void testFeedValid() throws Exception {
+        doNothing().when(feedService).validateFeed("partnerSlug", "feedSlug");
+        mockMvc.perform(get(FeedsController.V1_FEEDS + "/feedSlug/validation", "partnerSlug")).andExpect(status().isOk());
+    }
+
+    @Test
+    public void testFeedValidationInactivePartner() throws Exception {
+        doThrow(InvalidFeedException.class).when(feedService).validateFeed("inactivePartner", "feedSlug");
+        mockMvc.perform(get(FeedsController.V1_FEEDS + "/feedSlug/validation", "inactivePartner")).andExpect(status().isBadRequest());
     }
 
     private String asJsonString(FeedRequest feedRequest) {

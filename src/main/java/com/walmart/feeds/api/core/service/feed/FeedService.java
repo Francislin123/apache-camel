@@ -24,4 +24,6 @@ public interface FeedService {
     void hasConflict(String slug);
 
     TermsBlacklistEntity findTermBlacklistBySlug(String slug);
+
+    void validateFeed(String partnerSlug, String feedSlug);
 }

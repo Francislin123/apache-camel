@@ -3,7 +3,9 @@ package com.walmart.feeds.api.core.service.feed;
 import com.walmart.feeds.api.client.tagadmin.TagAdmimCollectionClient;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.exceptions.InvalidFeedException;
 import com.walmart.feeds.api.core.exceptions.UserException;
+import com.walmart.feeds.api.core.notifications.SendMailService;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
 import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
@@ -18,6 +20,7 @@ import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
+import com.walmart.feeds.api.core.service.blacklist.taxonomy.TaxonomyBlacklistService;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistNotFoundException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TermsBlacklistNotFoundException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.validation.TaxonomyBlacklistPartnerValidator;
@@ -27,6 +30,7 @@ import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +75,12 @@ public class FeedServiceImpl implements FeedService {
 
     @Autowired
     private FieldsMappingRepository fieldsMappingRepository;
+
+    @Autowired
+    private TaxonomyBlacklistService taxonomyBlacklistService;
+
+    @Autowired
+    private SendMailService sendMailService;
 
     @Override
     @Transactional
@@ -243,6 +253,32 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Override
+    public void validateFeed(String partnerSlug, String feedSlug) {
+        LOGGER.debug("Start validation on feed: {} for partner : {}", feedSlug, partnerSlug);
+        StringBuilder sb = new StringBuilder();
+
+        FeedEntity feedEntity = feedRepository.findBySlug(feedSlug).get();
+
+        validateFeedActivePartner(partnerSlug, sb);
+
+        if(feedEntity.getCollectionId() != null){
+            validateCollection(feedEntity.getCollectionId(), sb);
+        }
+
+        if(feedEntity.getTaxonomyBlacklist() != null){
+            validateBlackList(feedEntity.getTaxonomyBlacklist());
+        }
+
+        if(sb.length() > 0){
+
+            sendMailService.sendMail(feedEntity.getSlug(), feedEntity.getPartner().getSlug(), sb.toString());
+            LOGGER.error("[Error] Feed error notification feed-name: {}, message: {}, partner-slug: {}", feedEntity.getSlug(), sb.toString(), partnerSlug);
+            throw new InvalidFeedException(sb.toString());
+        }
+        LOGGER.debug("End validation on feed: {} for partner : {}", feedSlug, partnerSlug);
+    }
+
+    @Override
     public TermsBlacklistEntity findTermBlacklistBySlug(String slug) {
         return termsBlackListRepository.findBySlug(slug).get();
     }
@@ -324,5 +360,35 @@ public class FeedServiceImpl implements FeedService {
                 .build();
 
         return feedHistory;
+    }
+
+    private void validateFeedActivePartner(String partnerSlug, StringBuilder sb){
+
+        LOGGER.debug("Validating active partner: {} ", partnerSlug);
+        PartnerEntity partner = partnerService.findBySlug(partnerSlug);
+        if(!partner.isActive()){
+            LOGGER.debug("Partner {} is not active: {} ", partnerSlug);
+            sb.append(" Partner is not active" + System.lineSeparator());
+        }
+    }
+
+    private void validateCollection(Long collectionId, StringBuilder sb) {
+        LOGGER.debug("Validating collection:  {}", collectionId);
+        try{
+            productCollectionService.validateCollectionExists(collectionId);
+        }catch (UserException ex){
+            LOGGER.debug("Invalid Collection:  {}", collectionId);
+            sb.append(ex.getMessage() + System.lineSeparator());
+        }
+    }
+    @Async
+    private void validateBlackList(TaxonomyBlacklistEntity taxonomyBlacklistEntity){
+        LOGGER.debug("Validating blacklist:  {}", taxonomyBlacklistEntity.getSlug());
+        try{
+            taxonomyBlacklistService.validateBlacklist(taxonomyBlacklistEntity);
+        }catch (UserException ex){
+            LOGGER.error("Starting call to check if taxonomy exists and don't have any products");
+            //TODO PENDENCIA DE ESTORIA PARA BUSCA DA ESTRUTURA COMERCIAL NO CATALOGO
+        }
     }
 }

@@ -42,6 +42,10 @@
         </layout>
     </appender>
 
+    <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="info">
+        <level value="info" />
+    </logger>
+
     <!-- Loggers -->
     <logger name="com.walmart" level="info"/>
 

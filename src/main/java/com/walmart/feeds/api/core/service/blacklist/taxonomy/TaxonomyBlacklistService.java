@@ -20,4 +20,6 @@ public interface TaxonomyBlacklistService {
     void deleteBySlug(String slug);
 
     List<TaxonomyBlacklistEntity> findBlackList(String taxonomyPath);
+
+    void validateBlacklist(TaxonomyBlacklistEntity taxonomyBlacklistEntity);
 }
