@@ -41,7 +41,7 @@ public class PartnerController {
             @ApiResponse(code = 201, message = "Successful new partner", response = PartnerRequest.class),
             @ApiResponse(code = 409, message = "PartnerEntity already exists"),
             @ApiResponse(code = 500, message = "Unhandled exception")})
-    @RequestMapping(method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> createPartner(@RequestBody @Valid PartnerRequest partnerRequest, UriComponentsBuilder builder) {
 
         PartnerEntity partner = PartnerEntity.builder()
@@ -123,7 +123,7 @@ public class PartnerController {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation(value = "PartnerEntity Listing Method")
+    @ApiOperation(value = "PartnerEntity Listing Method", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "List of all partners", response = CollectionResponse.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Partner not change"),
@@ -146,7 +146,7 @@ public class PartnerController {
                 ).build());
     }
 
-    @ApiOperation(value = "Method for fetching partners using query text", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "Method for fetching partners using query text", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Search found partners", response = CollectionResponse.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Empty result")})

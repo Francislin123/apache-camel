@@ -28,11 +28,12 @@ apply plugin: 'docker'
 
 ext {
     springBootVersion = '1.5.6.RELEASE'
-    springFoxVersion = '2.4.0'
+    springFoxVersion = '2.7.0'
     hibernateVersion = '5.0.12.Final'
     camelVersion ='2.19.2'
     elasticSearchVersion ='5.5.2'
     feingVersion ='9.3.1'
+    keycloakVersion = '3.3.0.CR2'
 }
 
 repositories {
@@ -57,10 +58,6 @@ release {
     git {
         requireBranch = 'homolog'
     }
-}
-
-configurations {
-    compile.exclude module: "spring-boot-starter-tomcat"
 }
 
 sonarqube {
@@ -122,13 +119,15 @@ task printProjectVersion() {
 dependencies {
 
     compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-    compile "org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-data-elasticsearch:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-mail:${springBootVersion}"
 
+    compile "org.keycloak:keycloak-spring-boot-starter:${keycloakVersion}"
 
     compile "io.github.openfeign:feign-okhttp:${feingVersion}"
     compile "io.github.openfeign:feign-jackson:${feingVersion}"
