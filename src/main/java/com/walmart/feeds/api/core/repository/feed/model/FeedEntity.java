@@ -68,7 +68,11 @@ public class FeedEntity extends AuditableEntity {
     @ManyToOne
     private TaxonomyBlacklistEntity taxonomyBlacklist;
 
-    @ManyToMany(mappedBy="feed", cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name="terms_feeds",
+            joinColumns = {@JoinColumn(name="feed_id")},
+            inverseJoinColumns = {@JoinColumn(name="terms_blacklist_id")}
+    )
     private List<TermsBlacklistEntity> termsBlacklist;
 
     @ManyToOne

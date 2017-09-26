@@ -593,7 +593,6 @@
                 <constraints referencedTableName="taxonomy_blacklist" referencedColumnNames="id"
                              foreignKeyName="fk_taxonomy_blacklist"/>
             </column>
-            <column name="terms_blacklist_id" type="${uuid_type}"/>
             <column name="flag_active" type="boolean" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
@@ -617,10 +616,6 @@
         <addForeignKeyConstraint baseColumnNames="fields_mapping_id" baseTableName="feed"
                                  constraintName="feed_fields_mapping_fk" referencedColumnNames="id"
                                  referencedTableName="fields_mapping"/>
-        <addForeignKeyConstraint baseColumnNames="terms_blacklist_id" baseTableName="feed"
-                                 constraintName="terms_blacklist_fk" referencedColumnNames="id"
-                                 referencedTableName="terms_blacklist"/>
-
         <rollback>
             <dropTable tableName="feed" cascadeConstraints="true"/>
         </rollback>
@@ -711,6 +706,33 @@
             <dropForeignKeyConstraint baseTableName="feed_utms" constraintName="fk_feed_utm"/>
             <dropTable tableName="feed_utms"/>
         </rollback>
+    </changeSet>
+
+    <changeSet id="createTermsAndFeedsTable" author="gabriel.cano">
+
+        <preConditions>
+            <tableExists tableName="terms_blacklist"/>
+            <tableExists tableName="feed"/>
+        </preConditions>
+
+        <comment>Creating Terms And Feeds Table</comment>
+
+        <createTable tableName="terms_feeds">
+
+            <column name="terms_blacklist_id" type="${uuid_type}">
+                <constraints referencedTableName="terms_blacklist" referencedColumnNames="id"
+                             foreignKeyName="fk_terms_blacklist" primaryKey="true"/>
+            </column>
+            <column name="feed_id" type="${uuid_type}">
+                <constraints referencedTableName="feed" referencedColumnNames="id"
+                             foreignKeyName="fk_feed_terms_id" primaryKey="true"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="terms_feeds" cascadeConstraints="true"/>
+        </rollback>
+
     </changeSet>
 
 </databaseChangeLog>

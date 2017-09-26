@@ -61,7 +61,7 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
                 .id(currentPartner.getId())
                 .creationDate(currentPartner.getCreationDate())
                 .name(termsBlacklistEntity.getName())
-                .slug(termsBlacklistEntity.getSlug())
+                .slug(newSlug)
                 .list(termsBlacklistEntity.getList())
                 .build();
 

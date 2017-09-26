@@ -38,17 +38,17 @@ public class TermsBlacklistEntity extends AuditableEntity {
     @Column(name = "term", nullable = false)
     private Set<String> list;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "terms_feeds", joinColumns = {@JoinColumn(name = "feed_id")}, inverseJoinColumns = {@JoinColumn(name = "terms_blacklist_id")})
+    @ManyToMany(mappedBy = "termsBlacklist")
     private List<FeedEntity> feed;
 
     @Builder
-    public TermsBlacklistEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String name, String slug, Set<String> list) {
+    public TermsBlacklistEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String name, String slug, Set<String> list, List<FeedEntity> feed) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.name = name;
         this.slug = slug;
         this.list = list;
+        this.feed = feed;
     }
 
     @Tolerate
