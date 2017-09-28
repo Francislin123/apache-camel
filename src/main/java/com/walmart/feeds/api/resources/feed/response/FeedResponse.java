@@ -1,7 +1,6 @@
 package com.walmart.feeds.api.resources.feed.response;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
