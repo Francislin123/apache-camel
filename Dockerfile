@@ -1,9 +1,33 @@
-FROM openjdk:8-jre
+#FROM openjdk:8-jre
+#
+#VOLUME /tmp
+#
+#ADD "./build/libs/feeds-admin-api-0.0.3-SNAPSHOT.jar" "app.jar"
+#
+#RUN bash -c 'touch /app.jar'
+#
+#ENTRYPOINT ["java","-jar","/app.jar"]
 
-VOLUME /tmp
 
-ADD "./build/libs/feeds-admin-api-0.0.3-SNAPSHOT.jar" "app.jar"
+FROM openjdk:8-jdk-alpine
 
-RUN bash -c 'touch /app.jar'
+COPY docker/start.sh /usr/bin/start.sh
+RUN chmod -R 700 /usr/bin/start.sh
 
-ENTRYPOINT ["java","-jar","/app.jar"]
+ADD ./ /build
+
+WORKDIR /build
+
+RUN mkdir -p /app/log && \
+    mkdir -p /app/config && \
+    ./gradlew clean assemble && \
+    mv -f build/libs/*.jar /app && \
+    rm -rvf /root/.gradle/ && rm -rf /var/cache/apk/* && \
+    rm -rf ~/.m2 && \
+    rm -rf /build/*
+
+WORKDIR /app
+
+EXPOSE 8080
+
+ENTRYPOINT ["/usr/bin/start.sh"]

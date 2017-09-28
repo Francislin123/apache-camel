@@ -40,9 +40,7 @@ wm:
           secret: 554b3d2b-4a6c-4c57-bc9e-c3de713dc966
 
 keycloak:
-# FIXME: This url is pointing to jboss directly because exists a bug in ngix
-# The correct url is http://vip-keycloak.qa.vmcommerce.intra/auth
-  auth-server-url: http://napsao-qa-nix-keycloak-1.qa.vmcommerce.intra:8080/auth
+  auth-server-url: http://vip-keycloak.qa.vmcommerce.intra/auth
   realm: vmcommerce
   realm-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1omVrjER5CYUmSrp4qB13wQcqy1dD3m7T3LdUUuwRpTM9kqgmixpqSlf0foGqHysEpFKfyx/qta/83SUozyzcE23Y0y9vXJp3jzFHMPSinCBts+tsynIm21Nxbw8CLlJauaHwl5zZcS9xOBN6Z578DfAkHA/OoCS7H2oygaiSuYO2Xz6IFZc4FJbhZVw1RhHjG1UxQy50OjIsb6zK5ALcB6mQQaleKScSOfmVOgN/phudzfpb7bs+1iCFBr9gab/S6+6vT0QH6fqMzW/CQpfFniO4XRESfmCAzJrhtLWjXvUhye1ShO1xMK1BgdoD8O2wtVeJKfD5h58V+LR+vAvbwIDAQAB
   resource: feeds-admin-api
