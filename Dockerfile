@@ -1,22 +1,16 @@
-FROM openjdk:8-jdk-alpine
+FROM openjdk:8-jre-alpine
 
 COPY docker/start.sh /usr/bin/start.sh
 RUN chmod -R 700 /usr/bin/start.sh
 
-ADD ./ /build
+EXPOSE 8080
 
-WORKDIR /build
-
-RUN mkdir -p /app/log && \
-    mkdir -p /app/config && \
-    ./gradlew clean assemble && \
-    mv -f build/libs/*.jar /app && \
-    rm -rvf /root/.gradle/ && rm -rf /var/cache/apk/* && \
-    rm -rf ~/.m2 && \
-    rm -rf /build/*
+ADD ./build/libs/feeds-admin-api-*.jar /app/libs/
 
 WORKDIR /app
 
-EXPOSE 8080
+RUN mkdir -p /app/log && \
+    mkdir -p /app/config && \
+    mv -f /app/libs/*.jar /app
 
 ENTRYPOINT ["/usr/bin/start.sh"]
