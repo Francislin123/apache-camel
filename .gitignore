@@ -7,3 +7,4 @@ gradlew.bat
 /.project
 /.classpath
 data/
+src/main/resources/application-*.yml
