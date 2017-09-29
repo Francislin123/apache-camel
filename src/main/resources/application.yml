@@ -17,6 +17,7 @@ spring:
     default-property-inclusion: non_null
   jpa:
     show-sql: true
+    database-platform: org.hibernate.dialect.Oracle10gDialect
   datasource:
     url: jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF
     username: FEEDS_ADMIN
