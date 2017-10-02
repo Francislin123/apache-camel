@@ -30,6 +30,7 @@ ext {
     springBootVersion = '1.5.6.RELEASE'
     springFoxVersion = '2.7.0'
     hibernateVersion = '5.0.12.Final'
+    healthcheckVersion = '1.5.3'
     camelVersion ='2.19.2'
     elasticSearchVersion ='5.5.2'
     feignVersion ='9.3.1'
@@ -123,7 +124,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-data-elasticsearch:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
-    compile "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
+    compile "com.walmart:wmapp-springboot-healthcheck:${healthcheckVersion}"
     compile "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-mail:${springBootVersion}"
 

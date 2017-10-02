@@ -50,7 +50,7 @@ public class KeyCloakSecurityConfiguration extends KeycloakWebSecurityConfigurer
                     .addFilterBefore(keycloakAuthenticationProcessingFilter(), BasicAuthenticationFilter.class)
             .authorizeRequests()
                 //actuator endpoints
-                .antMatchers("/health", "/metrics").permitAll()
+                .antMatchers("/health", "/metrics", "/healthcheck/complete").permitAll()
                 //swagger endpoints
                 .antMatchers("/configuration/ui", "/configuration/security", "/v2/api-docs", "/docs/index.html", "/swagger-resources/**", "/webjars/**", "/swagger-ui.html", "/swagger-ui.html#/**").permitAll()
                 .antMatchers(HttpMethod.GET, API_URL_MATCHER).hasRole(FEEDS_READ_ONLY)
