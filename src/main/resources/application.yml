@@ -75,26 +75,26 @@ keycloak:
     secret: bc3a789e-1e9c-4075-a349-10d43814197a
 
 walmart:
-    healthcheck:
-        urls:
-          elasticsearch: \${spring.data.elasticsearch.cluster-nodes}
-          oracle: \${spring.datasource.url}
-        probes:
-          json:
-            gossip:
-              url: "http://vip-rtg-gossip-serv.qa.vmcommerce.intra:80/rest/healthcheck"
-              user: "ADMIN"
-              password: "123123"
-              statusNode: "value.appStatus"
-              statusOK: "OK"
-              kind: EXTERNAL_SERVICE
-            tagAdmin:
-              url: "http://vip-cat-serv.qa.vmcommerce.intra:80/ws/status/echo"
-              user: "admin"
-              password: "admin"
-              statusNode: "ok"
-              statusOK: true
-              kind: EXTERNAL_SERVICE
+  healthcheck:
+    urls:
+      elasticsearch: \${spring.data.elasticsearch.cluster-nodes}
+      oracle: \${spring.datasource.url}
+    probes:
+      json:
+        gossip:
+          url: http://vip-rtg-gossip-serv.qa.vmcommerce.intra:80/rest/healthcheck
+          user: ADMIN
+          password: 123123
+          statusNode: value.appStatus
+          statusOK: OK
+          kind: EXTERNAL_SERVICE
+        tagAdmin:
+          url: http://vip-cat-serv.qa.vmcommerce.intra:80/ws/status/echo
+          user: admin
+          password: admin
+          statusNode: ok
+          statusOK: true
+          kind: EXTERNAL_SERVICE
 
 #keycloak:
 #    securityConstraints:
