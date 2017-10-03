@@ -3,19 +3,18 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [0.2.0](f7e8ac4...d8880a7) (03/10/2017)
+## [0.2.0](8be8049...3e6b37b) (03/10/2017)
 ------
+- feat(release-plugin): Configuring release plugin [3e6b37b]
+- Changelog modified: CHANGELOG.md [3348706]
 - Changelog modified: CHANGELOG.md [d8880a7]
 - feat(release-plugin): Configuring release plugin [9e25aa0]
+- feat(release-plugin): Configuring release plugin [7d17a49]
+- [Gradle Release Plugin] - new version commit:  '0.1.1-SNAPSHOT'. [45915f2]
 - Update README.md [8f376d4]
 - Update README.md [383ca44]
 - Update README.md [345d330]
 - Add readme.md [bea2353]
-
-## [origin/homolog](8be8049...f7e8ac4) (03/10/2017)
-------
-- feat(release-plugin): Configuring release plugin [7d17a49]
-- [Gradle Release Plugin] - new version commit:  '0.1.1-SNAPSHOT'. [45915f2]
 
 ## [0.1.0](b475898...8be8049) (03/10/2017)
 ------
