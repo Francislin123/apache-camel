@@ -73,15 +73,23 @@ liquibase {
         prod {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             contexts 'prod'
-            url 'jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF'
-            username 'FEEDS_ADMIN'
-            password 'FEEDS_ADMIN'
+            url 'jdbc:oracle:thin:@nae1-scan.vmcommerce.intra:1521/WAL01'
+            username 'FEEDS_ADMIN_USR'
+            password 'FEEDS_ADMIN_USR'
+        }
+
+        stg {
+            changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
+            contexts 'prod'
+            url 'jdbc:oracle:thin:@nae1-stg-scan.stg.vmcommerce.intra:1521/WAL01'
+            username 'FEEDS_ADMIN_USR'
+            password 'FEEDS_ADMIN_USR'
         }
 
         qa {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             contexts 'qa'
-            url 'jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF'
+            url 'jdbc:oracle:thin:@vip-qa-ora-q4.qa.vmcommerce.intra:1521/WAL01'
             username 'FEEDS_ADMIN'
             password 'FEEDS_ADMIN'
         }
