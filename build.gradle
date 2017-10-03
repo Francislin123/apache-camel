@@ -82,16 +82,16 @@ liquibase {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             contexts 'prod'
             url 'jdbc:oracle:thin:@nae1-stg-scan.stg.vmcommerce.intra:1521/WAL01'
-            username 'FEEDS_ADMIN_USR'
-            password 'FEEDS_ADMIN_USR'
+            username 'FEEDS_ADMIN_ADM'
+            password 'FEEDS_ADMIN_ADM'
         }
 
         qa {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             contexts 'qa'
-            url 'jdbc:oracle:thin:@vip-qa-ora-q4.qa.vmcommerce.intra:1521/WAL01'
-            username 'FEEDS_ADMIN'
-            password 'FEEDS_ADMIN'
+            url 'jdbc:oracle:thin:@nae1-qa-scan.qa.vmcommerce.intra:1521/WAL01'
+            username 'FEEDS_ADMIN_ADM'
+            password 'FEEDS_ADMIN_ADM'
         }
 
         local {
