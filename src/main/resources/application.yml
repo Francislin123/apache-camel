@@ -88,7 +88,7 @@ walmart:
           statusNode: value.appStatus
           statusOK: OK
           kind: EXTERNAL_SERVICE
-        tagAdmin:
+        tag-admin:
           url: http://vip-cat-serv.qa.vmcommerce.intra:80/ws/status/echo
           user: admin
           password: admin
