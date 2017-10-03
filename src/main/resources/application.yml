@@ -81,7 +81,7 @@ walmart:
       oracle: \${spring.datasource.url}
     probes:
       json:
-        gossip:
+        gossip-rest:
           url: http://vip-rtg-gossip-serv.qa.vmcommerce.intra:80/rest/healthcheck
           user: ADMIN
           password: 123123
