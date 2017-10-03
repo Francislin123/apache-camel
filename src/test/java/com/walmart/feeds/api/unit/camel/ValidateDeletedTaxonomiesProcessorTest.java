@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.unit.camel;
 
-import com.walmart.feeds.api.camel.TaxonomyMappingBindy;
 import com.walmart.feeds.api.camel.ValidateDeletedTaxonomiesProcessor;
 import com.walmart.feeds.api.core.exceptions.SystemException;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
@@ -23,7 +22,7 @@ import java.util.List;
 
 import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.ERROR_LIST;
 import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.PERSISTED_PARTNER_TAXONOMY;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;

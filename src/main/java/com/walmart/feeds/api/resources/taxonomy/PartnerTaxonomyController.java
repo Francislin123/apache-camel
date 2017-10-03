@@ -1,12 +1,11 @@
 package com.walmart.feeds.api.resources.taxonomy;
 
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
-import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingEntity;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
+import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.core.utils.TaxonomyMappingCSVHandler;
-import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyRequest;
 import com.walmart.feeds.api.resources.taxonomy.response.PartnerTaxonomyResponse;
 import com.walmart.feeds.api.resources.taxonomy.response.TaxonomyMappingResponse;

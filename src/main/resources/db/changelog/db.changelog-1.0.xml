@@ -741,4 +741,36 @@
 
     </changeSet>
 
+    <changeSet id="createGenerationHistoryTable" author="adisson.gomes">
+
+        <comment>Creating Generation History Table</comment>
+
+        <createTable tableName="generation_history">
+
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="file_name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="feed_slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_skus" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="generation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="generation_history"/>
+        </rollback>
+
+    </changeSet>
+
 </databaseChangeLog>

@@ -16,7 +16,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.PERSISTED_PARTNER_TAXONOMY;
 import static com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus.ERROR;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 

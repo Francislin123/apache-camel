@@ -7,7 +7,6 @@ import com.walmart.feeds.api.client.tagadmin.TagAdmimCollectionClient;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InvalidFeedException;
-import com.walmart.feeds.api.core.exceptions.UserException;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistNotFoundException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TaxonomyBlacklistPartnerException;
@@ -28,13 +27,9 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

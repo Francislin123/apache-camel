@@ -7,27 +7,18 @@ import com.walmart.feeds.api.core.repository.template.TemplateRepository;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
 import com.walmart.feeds.api.core.service.template.TemplateService;
 import com.walmart.feeds.api.core.service.template.TemplateServiceImpl;
-import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
-import com.walmart.feeds.api.resources.template.TemplateController;
 import com.walmart.feeds.api.unit.core.service.feed.FeedEntityTemplateLoader;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TemplateServiceTest {

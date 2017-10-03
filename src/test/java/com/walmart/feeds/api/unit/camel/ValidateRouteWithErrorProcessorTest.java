@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.unit.camel;
 
-import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.camel.ValidateRouteWithErrorProcessor;
 import com.walmart.feeds.api.core.exceptions.InvalidFileException;
 import com.walmart.feeds.api.core.exceptions.SystemException;
@@ -8,7 +7,6 @@ import com.walmart.feeds.api.resources.common.response.FileError;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
