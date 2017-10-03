@@ -45,6 +45,9 @@ repositories {
     jcenter()
 }
 
+
+
+
 bootRun {
     jvmArgs = ["-Dspring.profiles.active=${project.env}"]
 }
