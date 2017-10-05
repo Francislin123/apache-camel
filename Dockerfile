@@ -7,11 +7,9 @@ ADD ./build/libs/feeds-admin-api-*.jar /app/libs/
 RUN mkdir -p /app/log && \
     mkdir -p /app/config && \
     mkdir -p /walmart && \
-    mv -f /app/libs/*.jar /app
-
-RUN adduser -S feeds-admin-api
-
-RUN chown feeds-admin-api /usr/bin/start.sh && \
+    mv -f /app/libs/*.jar /app && \
+    adduser -S feeds-admin-api && \
+    chown feeds-admin-api /usr/bin/start.sh && \
     chmod +x /usr/bin/start.sh && \
     chown -R feeds-admin-api /app && \
     chown -R feeds-admin-api /walmart
