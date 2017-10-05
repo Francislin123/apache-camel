@@ -8,9 +8,11 @@ import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyHistoryRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
+import com.walmart.feeds.api.core.repository.taxonomy.TaxonomyMappingRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHistory;
+import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatcherTO;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyServiceImpl;
@@ -28,13 +30,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.PARSE_FILE_ROUTE;
 import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.VALIDATE_FILE_ROUTE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,6 +50,9 @@ public class PartnerTaxonomyServiceImplTest {
 
     @Mock
     private PartnerTaxonomyHistoryRepository partnerTaxonomyHistoryRepository;
+
+    @Mock
+    private TaxonomyMappingRepository taxonomyMappingRepository;
 
     @Mock
     private PartnerService partnerService;
@@ -326,6 +331,34 @@ public class PartnerTaxonomyServiceImplTest {
         when(partnerTaxonomyRepository.findBySlug("anyValidSlug")).thenReturn(Optional.of(partnerTaxonomyEntity));
         String response = this.partnerTaxonomyService.fetchWalmartTaxonomy("anyValidSlug", "empty");
         assertEquals("", response);
+    }
+
+
+    @Test
+    public void matchedTaxonomies() throws Exception {
+        List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
+
+        when(taxonomyMappingRepository.findMappingByPartner("zoom", "test", walmartTaxonomies.get(0))).thenReturn("Games > Consoles > PS3");
+        when(taxonomyMappingRepository.findMappingByPartner("zoom", "test", walmartTaxonomies.get(1))).thenReturn("Games > Consoles > PS4");
+
+        TaxonomiesMatcherTO result = partnerTaxonomyService.matchedTaxonomies("zoom", "test", walmartTaxonomies);
+
+        assertNotNull(result);
+        assertTrue(result.getMatched().get("Games > Playstation 3 > Jogos para PS3").equals("Games > Consoles > PS3"));
+        assertTrue(result.getNonMatched().isEmpty());
+    }
+
+    @Test
+    public void matchedTaxonomiesWithNonMatched() throws Exception {
+        List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
+
+        when(taxonomyMappingRepository.findMappingByPartner("zoom", "test", walmartTaxonomies.get(0))).thenReturn("Games > Consoles > PS3");
+
+        TaxonomiesMatcherTO result = partnerTaxonomyService.matchedTaxonomies("zoom", "test", walmartTaxonomies);
+
+        assertNotNull(result);
+        assertTrue(result.getMatched().get("Games > Playstation 3 > Jogos para PS3").equals("Games > Consoles > PS3"));
+        assertFalse(result.getNonMatched().isEmpty());
     }
 
 }

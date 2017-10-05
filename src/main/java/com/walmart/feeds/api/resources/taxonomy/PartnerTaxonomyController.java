@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.resources.taxonomy;
 
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
+import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatcherTO;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
@@ -23,6 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -153,5 +155,17 @@ public class PartnerTaxonomyController {
         return ResponseEntity.ok().body(response);
     }
 
+    @ApiOperation(value = "Match of walmart/partner taxonomies", httpMethod = "POST",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successful match", response = ResponseEntity.class)})
+    @RequestMapping(method = RequestMethod.POST, value = "{slug}/matcher",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity matchedTaxonomies(@PathVariable("partnerSlug") String partnerSlug,
+                                            @PathVariable("slug") String slug, @RequestBody String[] taxonomies) {
+
+        TaxonomiesMatcherTO taxonomiesMatcher = partnerTaxonomyService.matchedTaxonomies(partnerSlug, slug, Arrays.asList(taxonomies));
+        return ResponseEntity.ok(taxonomiesMatcher);
+
+    }
 
 }

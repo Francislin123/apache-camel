@@ -4,12 +4,15 @@ import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
+import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatcherTO;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
+import com.walmart.feeds.api.core.utils.MapperUtil;
 import com.walmart.feeds.api.resources.infrastructure.FeedsAdminAPIExceptionHandler;
 import com.walmart.feeds.api.resources.taxonomy.PartnerTaxonomyController;
 import org.apache.camel.ProducerTemplate;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,12 +25,12 @@ import org.springframework.security.access.method.P;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -132,6 +135,45 @@ public class PartnerTaxonomyControllerTest {
         mockMvc.perform(get(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/getWalmartTaxonomy", "anySlug").param("taxonomySlug", "anySlug").param("taxonomy", "any string")).andExpect(status().isOk());
     }
 
+    @Test
+    public void matchedTaxonomies() throws Exception {
+        List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
 
+        Map<String, String> matched = new HashMap<>();
+        matched.put(walmartTaxonomies.get(0), "Games > Consoles > PS3");
+        matched.put(walmartTaxonomies.get(1), "Games > Consoles > PS4");
+
+        when(partnerTaxonomyService.matchedTaxonomies(eq("zoom"), eq("test"), anyList()))
+                .thenReturn(TaxonomiesMatcherTO.builder()
+                        .matched(matched)
+                        .nonMatched(new ArrayList<>())
+                        .build());
+
+        mockMvc.perform(post(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/test/matcher", "zoom")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(MapperUtil.getMapsAsJson(walmartTaxonomies)))
+                .andExpect(jsonPath("$.nonMatched", Matchers.empty()))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void matchedTaxonomiesWithNonMatched() throws Exception {
+        List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
+
+        Map<String, String> matched = new HashMap<>();
+        matched.put(walmartTaxonomies.get(0), "Games > Consoles > PS3");
+
+        when(partnerTaxonomyService.matchedTaxonomies(eq("zoom"), eq("test"), anyList()))
+                .thenReturn(TaxonomiesMatcherTO.builder()
+                        .matched(matched)
+                        .nonMatched(Arrays.asList(walmartTaxonomies.get(1)))
+                        .build());
+
+        mockMvc.perform(post(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/test/matcher", "zoom")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(MapperUtil.getMapsAsJson(walmartTaxonomies)))
+                .andExpect(jsonPath("$.nonMatched", Matchers.contains("Games > Playstation 4 > Jogos para PS4")))
+                .andExpect(status().isOk());
+    }
 
 }

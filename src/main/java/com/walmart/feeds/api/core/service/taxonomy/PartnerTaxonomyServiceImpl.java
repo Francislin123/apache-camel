@@ -9,13 +9,13 @@ import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyHistoryRepo
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.*;
 import com.walmart.feeds.api.core.service.feed.FeedService;
+import com.walmart.feeds.api.core.repository.taxonomy.TaxonomyMappingRepository;
+import com.walmart.feeds.api.core.repository.taxonomy.model.*;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -34,13 +34,14 @@ import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.*;
 @Service
 public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PartnerTaxonomyServiceImpl.class);
-
     @Autowired
     private PartnerTaxonomyRepository partnerTaxonomyRepository;
 
     @Autowired
     private PartnerTaxonomyHistoryRepository partnerTaxonomyHistoryRepository;
+
+    @Autowired
+    private TaxonomyMappingRepository taxonomyMappingRepository;
 
     @Autowired
     private PartnerService partnerService;
@@ -93,7 +94,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
         TaxonomyUploadReportTO reportTO = producerTemplate.requestBodyAndHeaders(PARSE_FILE_ROUTE, taxonomyMappingBindy, map, TaxonomyUploadReportTO.class);
 
-        producerTemplate.asyncCallbackSendBody(PERSIST_PARTNER_TAXONOMY_ROUTE, reportTO, persistPartnerTaxonomyCallBack);
+        producerTemplate.asyncCallbackSendBody(PERSIST_PARTNER_TAXONOMY_ROUTE, reportTO.getEntityToSave(), persistPartnerTaxonomyCallBack);
 
         return reportTO;
 
@@ -176,4 +177,27 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
         return "";
     }
 
+    @Override
+    public TaxonomiesMatcherTO matchedTaxonomies(String partnerSlug, String slug, List<String> walmartTaxonomies) {
+
+        Map<String, String> matched = new HashMap<>();
+        List<String> nonMatched = new ArrayList<>();
+
+        for (String walmartPath : walmartTaxonomies) {
+
+            String partnerPath = taxonomyMappingRepository.findMappingByPartner(partnerSlug, slug, walmartPath);
+
+            if (partnerPath == null) {
+                nonMatched.add(walmartPath);
+            } else {
+                matched.put(walmartPath, partnerPath);
+            }
+
+        }
+
+        return TaxonomiesMatcherTO.builder()
+                .matched(matched)
+                .nonMatched(nonMatched).build();
+
+    }
 }
