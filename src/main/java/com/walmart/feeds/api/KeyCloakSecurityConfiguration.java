@@ -16,8 +16,7 @@ import org.springframework.security.web.authentication.session.RegisterSessionAu
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import static com.walmart.feeds.api.core.utils.FeedsAdminAPIRoles.FEEDS_ADMIN;
-import static com.walmart.feeds.api.core.utils.FeedsAdminAPIRoles.FEEDS_READ_ONLY;
+import static com.walmart.feeds.api.core.utils.FeedsAdminAPIRoles.*;
 
 @KeycloakConfiguration
 public class KeyCloakSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
@@ -50,14 +49,15 @@ public class KeyCloakSecurityConfiguration extends KeycloakWebSecurityConfigurer
                     .addFilterBefore(keycloakAuthenticationProcessingFilter(), BasicAuthenticationFilter.class)
             .authorizeRequests()
                 //actuator endpoints
-                .antMatchers("/health", "/metrics", "/healthcheck/complete").permitAll()
+                .antMatchers("/health", "/healthcheck", "/healthcheck/complete", "/info").permitAll()
+                .antMatchers("/metrics", "/dump", "/loggers", "/loggers/**", "/trace", "/autoconfig", "/mappings", "/configprops", "/heapdump", "/env", "/env/**", "/beans", "/auditevents").hasRole(FEEDS_ADMIN)
                 //swagger endpoints
                 .antMatchers("/configuration/ui", "/configuration/security", "/v2/api-docs", "/docs/index.html", "/swagger-resources/**", "/webjars/**", "/swagger-ui.html", "/swagger-ui.html#/**").permitAll()
-                .antMatchers(HttpMethod.GET, API_URL_MATCHER).hasRole(FEEDS_READ_ONLY)
-                .antMatchers(HttpMethod.POST, API_URL_MATCHER).hasRole(FEEDS_ADMIN)
-                .antMatchers(HttpMethod.PUT, API_URL_MATCHER).hasRole(FEEDS_ADMIN)
-                .antMatchers(HttpMethod.DELETE, API_URL_MATCHER).hasRole(FEEDS_ADMIN)
-                .antMatchers(HttpMethod.PATCH, API_URL_MATCHER).hasRole(FEEDS_ADMIN)
+                .antMatchers(HttpMethod.GET, API_URL_MATCHER).hasAnyRole(FEEDS_READ_ONLY, FEEDS_OPERATOR, FEEDS_MANAGER, FEEDS_ADMIN)
+                .antMatchers(HttpMethod.POST, API_URL_MATCHER).hasAnyRole(FEEDS_OPERATOR, FEEDS_MANAGER, FEEDS_ADMIN)
+                .antMatchers(HttpMethod.PUT, API_URL_MATCHER).hasAnyRole(FEEDS_OPERATOR, FEEDS_MANAGER, FEEDS_ADMIN)
+                .antMatchers(HttpMethod.PATCH, API_URL_MATCHER).hasAnyRole(FEEDS_OPERATOR, FEEDS_MANAGER, FEEDS_ADMIN)
+                .antMatchers(HttpMethod.DELETE, API_URL_MATCHER).hasAnyRole(FEEDS_MANAGER, FEEDS_ADMIN)
             .anyRequest().authenticated();
     }
 
