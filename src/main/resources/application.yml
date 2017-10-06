@@ -1,12 +1,12 @@
 info:
-    component: Feeds Admin Api
-    project:
-        name: feeds-admin-api
-        version: 0.0.4-SNAPSHOT
+  component: Feeds Admin Api
+  project:
+      name: feeds-admin-api
+      version: 0.0.4-SNAPSHOT
 
 server:
   port: 8080
-  context-path: /api
+  context-path: /admin-api
 
 management:
   security:
