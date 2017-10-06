@@ -149,6 +149,10 @@ dependencies {
     compile 'de.siegmar:logback-gelf:1.0.4'
     compile "org.apache.camel:camel-spring-boot-starter:${camelVersion}"
     compile "org.apache.camel:camel-csv:${camelVersion}"
+    compile ("org.apache.camel:camel-spring-security:${camelVersion}") {
+        exclude module: "org.springframework.security"
+    }
+
     compile "org.apache.camel:camel-bindy:${camelVersion}"
     compile "commons-io:commons-io:2.5"
 
