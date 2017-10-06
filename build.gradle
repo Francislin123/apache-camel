@@ -57,7 +57,7 @@ docker {
 
 release {
     git {
-        requireBranch = 'homolog'
+        requireBranch = 'master'
     }
 }
 
