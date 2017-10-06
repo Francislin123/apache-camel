@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [1.0.8](e800c93...439aef8) (06/10/2017)
+## [1.0.9](c55bbba...16c1826) (06/10/2017)
+- fix(master): Testing build stage [16c1826]
+
+## [1.0.8](e800c93...c55bbba) (06/10/2017)
 - fix(master): Change main branch to master [439aef8]
 - fix(master): Changing database url until we do not have the synonyms create at qa database. [cdf91d0]
 
