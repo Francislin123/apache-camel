@@ -104,7 +104,6 @@ liquibase {
 
     }
     runList = project.ext.runList
-
 }
 
 task buildDocker(type: Docker) {
