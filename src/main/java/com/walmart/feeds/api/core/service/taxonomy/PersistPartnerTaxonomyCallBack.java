@@ -5,6 +5,7 @@ import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHistory;
+import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import org.apache.camel.Exchange;
 import org.apache.camel.spi.Synchronization;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class PersistPartnerTaxonomyCallBack implements Synchronization {
     @Override
     @Transactional
     public void onComplete(Exchange exchange) {
-        PartnerTaxonomyEntity body = exchange.getIn().getBody(PartnerTaxonomyEntity.class);
+        PartnerTaxonomyEntity body = exchange.getIn().getBody(TaxonomyUploadReportTO.class).getEntityToSave();
 
         PartnerTaxonomyEntity foundEntity = partnerTaxonomyRepository.findOne(body.getId());
 
@@ -56,7 +57,7 @@ public class PersistPartnerTaxonomyCallBack implements Synchronization {
     @Override
     @Transactional
     public void onFailure(Exchange exchange) {
-        PartnerTaxonomyEntity body = exchange.getIn().getBody(PartnerTaxonomyEntity.class);
+        PartnerTaxonomyEntity body = exchange.getIn().getBody(TaxonomyUploadReportTO.class).getEntityToSave();
 
         PartnerTaxonomyEntity foundEntity = partnerTaxonomyRepository.findOne(body.getId());
 

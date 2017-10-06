@@ -8,6 +8,8 @@ import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.utils.MergeListUtils;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
@@ -64,6 +66,10 @@ public class FillPartnerTaxonomiesProcessor implements Processor {
                 .build());
 
         reportTO.setStatus(reportTO.getEntityToSave().getStatus());
+
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            reportTO.setAuthenticationToken((SimpleKeycloakAccount) SecurityContextHolder.getContext().getAuthentication().getDetails());
+        }
 
         exchange.getOut().setBody(reportTO);
 

@@ -1,14 +1,18 @@
 package com.walmart.feeds.api.camel;
 
 import com.walmart.feeds.api.core.exceptions.UserException;
-import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
+import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import org.apache.camel.CamelContext;
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.BindyType;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import javax.security.auth.Subject;
 import java.util.LinkedList;
 
 /**
@@ -75,7 +79,18 @@ public class PartnerTaxonomyRouteBuilder extends RouteBuilder {
                 .process(fillPartnerTaxonomiesProcessor);
 
         from(PERSIST_PARTNER_TAXONOMY_ROUTE)
-                .process(exchange -> partnerTaxonomyService.saveWithHistory(exchange.getIn().getBody(PartnerTaxonomyEntity.class)));
+                .process(exchange -> {
+                    TaxonomyUploadReportTO taxonomyUploadReportTO = exchange.getIn().getBody(TaxonomyUploadReportTO.class);
+
+                    Subject subject = new Subject();
+                    KeycloakAuthenticationToken authToken = new KeycloakAuthenticationToken(taxonomyUploadReportTO.getAuthenticationToken());
+                    subject.getPrincipals().add(authToken);
+                    exchange.getIn().setHeader(Exchange.AUTHENTICATION, subject);
+
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                    partnerTaxonomyService.saveWithHistory(taxonomyUploadReportTO.getEntityToSave());
+                });
 
     }
 
