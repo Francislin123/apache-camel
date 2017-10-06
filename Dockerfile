@@ -4,7 +4,8 @@ COPY docker/start.sh /usr/bin/start.sh
 
 ADD ./build/libs/feeds-admin-api-*.jar /app/libs/
 
-RUN mkdir -p /app/log && \
+RUN apk update && apk add libstdc++ curl grep && \
+    mkdir -p /app/log && \
     mkdir -p /app/config && \
     mkdir -p /walmart && \
     mv -f /app/libs/*.jar /app && \
