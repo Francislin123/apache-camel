@@ -4,6 +4,7 @@ package com.walmart.feeds.api.core.repository;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.walmart.feeds.api.resources.serializers.LocalDateTimeSerializer;
 import lombok.Getter;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -37,13 +38,13 @@ public abstract class AuditableEntity {
     @PrePersist
     protected void prePersist() {
         this.creationDate = LocalDateTime.now();
-        this.user = "Frans";
+        this.user = SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     @PreUpdate
     protected void preUpdate() {
         this.updateDate = LocalDateTime.now();
-        this.user = "Frans";
+        this.user = SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }
 
