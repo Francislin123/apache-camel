@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [1.0.9](c55bbba...16c1826) (06/10/2017)
+## [1.0.10](77c1d9a...c33e33e) (06/10/2017)
+- fix(master): Fixing bug when sabe a taxonomy. Camel did not have access to SecurityContext. [c33e33e]
+
+## [1.0.9](c55bbba...77c1d9a) (06/10/2017)
 - fix(master): Testing build stage [16c1826]
 
 ## [1.0.8](e800c93...c55bbba) (06/10/2017)
