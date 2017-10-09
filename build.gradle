@@ -57,7 +57,7 @@ docker {
 
 release {
     git {
-        requireBranch = 'homolog'
+        requireBranch = 'master'
     }
 }
 
@@ -89,9 +89,9 @@ liquibase {
         qa {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             contexts 'qa'
-            url 'jdbc:oracle:thin:@nae1-qa-scan.qa.vmcommerce.intra:1521/WAL01'
-            username 'FEEDS_ADMIN_ADM'
-            password 'FEEDS_ADMIN_ADM'
+            url 'jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF'
+            username 'FEEDS_ADMIN'
+            password 'FEEDS_ADMIN'
         }
 
         local {
@@ -104,7 +104,6 @@ liquibase {
 
     }
     runList = project.ext.runList
-
 }
 
 task buildDocker(type: Docker) {
@@ -150,6 +149,10 @@ dependencies {
     compile 'de.siegmar:logback-gelf:1.0.4'
     compile "org.apache.camel:camel-spring-boot-starter:${camelVersion}"
     compile "org.apache.camel:camel-csv:${camelVersion}"
+    compile ("org.apache.camel:camel-spring-security:${camelVersion}") {
+        exclude module: "org.springframework.security"
+    }
+
     compile "org.apache.camel:camel-bindy:${camelVersion}"
     compile "commons-io:commons-io:2.5"
 
