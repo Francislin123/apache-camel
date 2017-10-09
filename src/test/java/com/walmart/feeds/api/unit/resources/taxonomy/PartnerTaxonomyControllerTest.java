@@ -6,6 +6,7 @@ import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatcherTO;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
+import com.walmart.feeds.api.core.service.taxonomy.model.MatcherRequest;
 import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import com.walmart.feeds.api.core.utils.MapperUtil;
@@ -136,7 +137,9 @@ public class PartnerTaxonomyControllerTest {
 
     @Test
     public void matchedTaxonomies() throws Exception {
+
         List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
+        MatcherRequest request = MatcherRequest.builder().taxonomies(walmartTaxonomies).build();
 
         Map<String, String> matched = new HashMap<>();
         matched.put(walmartTaxonomies.get(0), "Games > Consoles > PS3");
@@ -150,14 +153,16 @@ public class PartnerTaxonomyControllerTest {
 
         mockMvc.perform(post(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/test/matcher", "zoom")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(MapperUtil.getMapsAsJson(walmartTaxonomies)))
+                .content(MapperUtil.getMapsAsJson(request)))
                 .andExpect(jsonPath("$.nonMatched", Matchers.empty()))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void matchedTaxonomiesWithNonMatched() throws Exception {
+
         List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
+        MatcherRequest request = MatcherRequest.builder().taxonomies(walmartTaxonomies).build();
 
         Map<String, String> matched = new HashMap<>();
         matched.put(walmartTaxonomies.get(0), "Games > Consoles > PS3");
@@ -170,7 +175,7 @@ public class PartnerTaxonomyControllerTest {
 
         mockMvc.perform(post(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/test/matcher", "zoom")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(MapperUtil.getMapsAsJson(walmartTaxonomies)))
+                .content(MapperUtil.getMapsAsJson(request)))
                 .andExpect(jsonPath("$.nonMatched", Matchers.contains("Games > Playstation 4 > Jogos para PS4")))
                 .andExpect(status().isOk());
     }

@@ -3,6 +3,7 @@ package com.walmart.feeds.api.resources.taxonomy;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatcherTO;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
+import com.walmart.feeds.api.core.service.taxonomy.model.MatcherRequest;
 import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
@@ -161,9 +162,9 @@ public class PartnerTaxonomyController {
     @RequestMapping(method = RequestMethod.POST, value = "{slug}/matcher",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity matchedTaxonomies(@PathVariable("partnerSlug") String partnerSlug,
-                                            @PathVariable("slug") String slug, @RequestBody String[] taxonomies) {
+                                            @PathVariable("slug") String slug, @RequestBody MatcherRequest request) {
 
-        TaxonomiesMatcherTO taxonomiesMatcher = partnerTaxonomyService.matchedTaxonomies(partnerSlug, slug, Arrays.asList(taxonomies));
+        TaxonomiesMatcherTO taxonomiesMatcher = partnerTaxonomyService.matchedTaxonomies(partnerSlug, slug, request.getTaxonomies());
         return ResponseEntity.ok(taxonomiesMatcher);
 
     }
