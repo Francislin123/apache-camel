@@ -3,7 +3,31 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [1.0.10](77c1d9a...c33e33e) (06/10/2017)
+## [2.0.0](7d5a7c5...eeae32a) (09/10/2017)
+- fix(FDS-1437):  Adding tests [4390b45]
+- [FDS-1437]: Fixing errors. [4e7da8f]
+- [Gradle Release Plugin] - new version commit:  '1.0.11-SNAPSHOT'. [8579c3b]
+- [Gradle Release Plugin] - pre tag commit:  '1.0.10'. [3625fa9]
+- Changelog modified: CHANGELOG.md [5c4e792]
+- fix(master): Fixing bug when sabe a taxonomy. Camel did not have access to SecurityContext. [cb30bbc]
+- [Gradle Release Plugin] - new version commit:  '1.0.10-SNAPSHOT'. [3c9aa30]
+- [Gradle Release Plugin] - pre tag commit:  '1.0.9'. [5cd15af]
+- Changelog modified: CHANGELOG.md [0a38393]
+- fix(master): Testing build stage [d33f0dd]
+- [Gradle Release Plugin] - new version commit:  '1.0.9-SNAPSHOT'. [d816ade]
+- [Gradle Release Plugin] - pre tag commit:  '1.0.8'. [a30bb18]
+- Changelog modified: CHANGELOG.md [42e50eb]
+- fix(master): Change main branch to master [f811545]
+- fix(master): Changing database url until we do not have the synonyms create at qa database. [9f77995]
+- [Gradle Release Plugin] - new version commit:  '1.0.8-SNAPSHOT'. [67863bf]
+- [Gradle Release Plugin] - pre tag commit:  '1.0.7'. [4a15bb8]
+- fix(homolog): Adding curl to dockerfile [af901f6]
+- [Gradle Release Plugin] - new version commit:  '1.0.7-SNAPSHOT'. [dc7e669]
+- [Gradle Release Plugin] - pre tag commit:  '1.0.6'. [3338b10]
+- fix(homolog): Changing app context. [b0f5f20]
+- feature(FDS-1437): [2bf8453]
+
+## [1.0.10](77c1d9a...7d5a7c5) (06/10/2017)
 - fix(master): Fixing bug when sabe a taxonomy. Camel did not have access to SecurityContext. [c33e33e]
 
 ## [1.0.9](c55bbba...77c1d9a) (06/10/2017)
