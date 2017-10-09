@@ -3,13 +3,12 @@ package com.walmart.feeds.api.core.service.taxonomy;
 import com.walmart.feeds.api.camel.TaxonomyMappingBindy;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
+import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyHistoryRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
-import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
-import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
-import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHistory;
-import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomyMappingHistory;
+import com.walmart.feeds.api.core.repository.taxonomy.model.*;
+import com.walmart.feeds.api.core.service.feed.FeedService;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
@@ -51,6 +50,9 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
     @Autowired
     private ProducerTemplate producerTemplate;
+
+    @Autowired
+    private FeedService feedService;
 
     @Override
     public TaxonomyUploadReportTO processFile(UploadTaxonomyMappingTO uploadTaxonomyMappingTO) throws IOException {
@@ -158,6 +160,20 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
         partnerTaxonomyHistoryRepository.saveAndFlush(history);
 
         return persistedEntity;
+    }
+
+    @Override
+    public String fetchWalmartTaxonomy(String partnerTaxonomySlug, String partnerTaxonomy){
+
+        PartnerTaxonomyEntity partnerTaxonomyEntity = partnerTaxonomyRepository.findBySlug(partnerTaxonomySlug).orElseThrow(() -> new EntityNotFoundException("Partner Taxonomy not found or imported with invalid status"));
+
+        for(TaxonomyMappingEntity mapping : partnerTaxonomyEntity.getTaxonomyMappings()){
+            if(partnerTaxonomy.equals(mapping.getPartnerPath())){
+                return mapping.getWalmartPath();
+            }
+        }
+
+        return "";
     }
 
 }

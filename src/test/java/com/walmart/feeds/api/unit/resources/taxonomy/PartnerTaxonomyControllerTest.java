@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.access.method.P;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -123,6 +124,12 @@ public class PartnerTaxonomyControllerTest {
         when(partnerTaxonomyService.fetchProcessedPartnerTaxonomy(partnerTaxonomyEntity.getPartner().getSlug(), partnerTaxonomyEntity.getSlug())).thenReturn(partnerTaxonomyEntity);
         mockMvc.perform(get(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/download/{csSlug}",
                 partnerTaxonomyEntity.getPartner().getSlug(), partnerTaxonomyEntity.getSlug())).andExpect(status().isOk());
+    }
+
+    @Test
+    public void fetchWalmartTaxonomy() throws Exception {
+        when(partnerTaxonomyService.fetchWalmartTaxonomy("anySlug", "any string")).thenReturn("any string");
+        mockMvc.perform(get(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/getWalmartTaxonomy", "anySlug").param("taxonomySlug", "anySlug").param("taxonomy", "any string")).andExpect(status().isOk());
     }
 
 

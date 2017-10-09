@@ -19,4 +19,6 @@ public interface PartnerTaxonomyService {
     PartnerTaxonomyEntity fetchProcessedPartnerTaxonomy(String partnerSlug, String slug);
 
     PartnerTaxonomyEntity saveWithHistory(PartnerTaxonomyEntity entity);
+
+    String fetchWalmartTaxonomy(String partnerTaxonomySlug, String partnerTaxonomy);
 }

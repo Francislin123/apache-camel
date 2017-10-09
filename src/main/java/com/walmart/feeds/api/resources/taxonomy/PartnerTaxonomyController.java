@@ -141,4 +141,17 @@ public class PartnerTaxonomyController {
         return ResponseEntity.ok().build();
     }
 
+    @ApiOperation(value = "Fetch Walmart taxonomy based on partner taxonomy",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful", response = ResponseEntity.class),
+            @ApiResponse(code = 404, message = "Partner Taxonomy not found")})
+    @RequestMapping(value = "/getWalmartTaxonomy", method = RequestMethod.GET)
+    public ResponseEntity getWalmartTaxonomy(@PathVariable("partnerSlug") String partnerSlug, @RequestParam("taxonomySlug") String taxonomySlug, @RequestParam("taxonomy") String taxonomy) throws IOException {
+
+        String walmartTaxonomy = partnerTaxonomyService.fetchWalmartTaxonomy(taxonomySlug, taxonomy);
+
+        return ResponseEntity.ok().body(walmartTaxonomy);
+    }
+
 }
