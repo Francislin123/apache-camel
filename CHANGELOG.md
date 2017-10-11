@@ -3,7 +3,7 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.1](77c1d9a...e60c9df) (11/10/2017)
+## [2.0.1](77c1d9a...86fbfd5) (11/10/2017)
 - fix(relase): Fixing release version from gradle.properties [517e56f]
 - fix(FDS-1437):  Changing method response [69deec8]
 - fix(FDS-1437):  Adding tests [4390b45]
