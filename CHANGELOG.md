@@ -3,7 +3,11 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.1](77c1d9a...86fbfd5) (11/10/2017)
+## [1.0.0](83cf86c...39789b2) (11/10/2017)
+- [Gradle Release Plugin] - new version commit:  '0.2.1-SNAPSHOT'. [39789b2]
+
+## [0.2.0](e800c93...83cf86c) (11/10/2017)
+- [Gradle Release Plugin] - pre tag commit:  '0.2.0'. [83cf86c]
 - fix(relase): Fixing release version from gradle.properties [517e56f]
 - fix(FDS-1437):  Changing method response [69deec8]
 - fix(FDS-1437):  Adding tests [4390b45]
@@ -28,28 +32,17 @@ entry.
 - [Gradle Release Plugin] - pre tag commit:  '1.0.6'. [3338b10]
 - fix(homolog): Changing app context. [b0f5f20]
 - fix(master): Fixing bug when sabe a taxonomy. Camel did not have access to SecurityContext. [c33e33e]
-- feature(FDS-1437): [2bf8453]
-
-## [1.0.9](c55bbba...77c1d9a) (06/10/2017)
 - fix(master): Testing build stage [16c1826]
-
-## [1.0.8](e800c93...c55bbba) (06/10/2017)
 - fix(master): Change main branch to master [439aef8]
 - fix(master): Changing database url until we do not have the synonyms create at qa database. [cdf91d0]
+- feature(FDS-1437): [2bf8453]
 
-## [origin/homolog](46b7025...e800c93) (06/10/2017)
-- 
-
-## [1.0.7](d4c20bf...46b7025) (06/10/2017)
+## [origin/homolog](8be8049...e800c93) (06/10/2017)
 - fix(homolog): Adding curl to dockerfile [bcac684]
 - fix(homolog): Changing app context. [f44253e]
 - fix(FDS-1899): Configuring persistence with keycloak authenticated user. [0395698]
-
-## [1.0.4](064ad78...d4c20bf) (05/10/2017)
 - refactor(remove stages, join runs) [e6a3c81]
 - set user and password admin [6117e09]
-
-## [1.0.3](8be8049...064ad78) (05/10/2017)
 - fix(FDS-1897): Configuring access roles to application endpoints [b8d7b57]
 - fix(FDS-1894): Configuring Dockerfile to use an user who has not root privileges [9f2ef8f]
 - fix(FDS-1894): Configuring Dockerfile to use an user who has not root privileges [f41c1c7]
