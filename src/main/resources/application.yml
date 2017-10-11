@@ -37,8 +37,8 @@ spring:
       test-on-borrow: true
   data:
     elasticsearch:
-      cluster-name: elasticsearch
-      cluster-nodes: napsao-qa-nix-feeds-elasticsearch-1.qa.vmcommerce.intra:9300
+      cluster-name: feeds
+      cluster-nodes: napsao-qa-nix-feeds-elastic-1.qa.vmcommerce.intra:9300
       indexes:
         skus:
           name: skus
