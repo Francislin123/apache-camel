@@ -131,7 +131,6 @@ task updateProjectVersionYAML << {
     println "### New version set in application.yml version=${project.version} ###"
 }
 
-build.dependsOn updateProjectVersionYAML
 beforeReleaseBuild.dependsOn updateProjectVersionYAML
 commitNewVersion.dependsOn updateProjectVersionYAML
 
