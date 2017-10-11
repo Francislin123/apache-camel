@@ -124,6 +124,17 @@ task printProjectVersion() {
     println project.version
 }
 
+task updateProjectVersionYAML << {
+    ant.replaceregexp(match:'version: \\d+\\.\\d+\\.\\d+(-SNAPSHOT)?', replace:"version: ${project.version}", flags:'g', byline:true) {
+        fileset(dir: 'src/main/resources', includes: 'application.yml')
+    }
+    println "### New version set in application.yml version=${project.version} ###"
+}
+
+build.dependsOn updateProjectVersionYAML
+beforeReleaseBuild.dependsOn updateProjectVersionYAML
+commitNewVersion.dependsOn updateProjectVersionYAML
+
 dependencies {
 
     compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
