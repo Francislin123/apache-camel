@@ -3,7 +3,9 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.0](7d5a7c5...eeae32a) (09/10/2017)
+## [2.0.1](77c1d9a...e60c9df) (11/10/2017)
+- fix(relase): Fixing release version from gradle.properties [517e56f]
+- fix(FDS-1437):  Changing method response [69deec8]
 - fix(FDS-1437):  Adding tests [4390b45]
 - [FDS-1437]: Fixing errors. [4e7da8f]
 - [Gradle Release Plugin] - new version commit:  '1.0.11-SNAPSHOT'. [8579c3b]
@@ -25,10 +27,8 @@ entry.
 - [Gradle Release Plugin] - new version commit:  '1.0.7-SNAPSHOT'. [dc7e669]
 - [Gradle Release Plugin] - pre tag commit:  '1.0.6'. [3338b10]
 - fix(homolog): Changing app context. [b0f5f20]
-- feature(FDS-1437): [2bf8453]
-
-## [1.0.10](77c1d9a...7d5a7c5) (06/10/2017)
 - fix(master): Fixing bug when sabe a taxonomy. Camel did not have access to SecurityContext. [c33e33e]
+- feature(FDS-1437): [2bf8453]
 
 ## [1.0.9](c55bbba...77c1d9a) (06/10/2017)
 - fix(master): Testing build stage [16c1826]
