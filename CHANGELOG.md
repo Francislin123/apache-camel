@@ -3,7 +3,8 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [1.0.0](83cf86c...39789b2) (11/10/2017)
+## [1.0.1](83cf86c...595fb30) (11/10/2017)
+- chore(relase): removing unnecessary call from task to update version in application.yml [91805f3]
 - [Gradle Release Plugin] - new version commit:  '0.2.1-SNAPSHOT'. [39789b2]
 
 ## [0.2.0](e800c93...83cf86c) (11/10/2017)
