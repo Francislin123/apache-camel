@@ -3,7 +3,11 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [1.0.2](83cf86c...44142f9) (11/10/2017)
+## [1.1.0](6cbd981...93a3d23) (11/10/2017)
+- feat(FDS-1436): udpate default template [93a3d23]
+
+## [1.0.3](83cf86c...6cbd981) (11/10/2017)
+- fix(relase): fixing elasticsearch url [0ba9089]
 - chore(relase): removing unused import [7fbb896]
 - chore(relase): removing unnecessary call from task to update version in application.yml [91805f3]
 - [Gradle Release Plugin] - new version commit:  '0.2.1-SNAPSHOT'. [39789b2]
