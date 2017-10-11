@@ -312,4 +312,20 @@ public class PartnerTaxonomyServiceImplTest {
 
     }
 
+    @Test
+    public void fetchWalmartTaxonomyNotEmpty(){
+        PartnerTaxonomyEntity partnerTaxonomyEntity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-ok");
+        when(partnerTaxonomyRepository.findBySlug("anyValidSlug")).thenReturn(Optional.of(partnerTaxonomyEntity));
+        String response = this.partnerTaxonomyService.fetchWalmartTaxonomy("anyValidSlug", "any string");
+        assertEquals("any string", response);
+    }
+
+    @Test
+    public void fetchWalmartTaxonomyEmpty(){
+        PartnerTaxonomyEntity partnerTaxonomyEntity = Fixture.from(PartnerTaxonomyEntity.class).gimme("cs-input-ok");
+        when(partnerTaxonomyRepository.findBySlug("anyValidSlug")).thenReturn(Optional.of(partnerTaxonomyEntity));
+        String response = this.partnerTaxonomyService.fetchWalmartTaxonomy("anyValidSlug", "empty");
+        assertEquals("", response);
+    }
+
 }

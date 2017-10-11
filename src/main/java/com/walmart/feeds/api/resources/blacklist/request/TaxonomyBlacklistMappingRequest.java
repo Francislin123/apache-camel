@@ -9,8 +9,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.validation.annotation.Validated;
 
+@Builder
 @Getter
-@Validated
 @EqualsAndHashCode
 public class TaxonomyBlacklistMappingRequest {
 
@@ -20,13 +20,6 @@ public class TaxonomyBlacklistMappingRequest {
     @NotEmpty
     @ValidTaxonomyOwner
     private String owner;
-
-
-    @Builder
-    public TaxonomyBlacklistMappingRequest(String taxonomy, String owner) {
-        this.taxonomy = taxonomy;
-        this.owner = owner;
-    }
 
     @Tolerate
     public TaxonomyBlacklistMappingRequest() {
