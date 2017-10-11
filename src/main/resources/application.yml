@@ -95,26 +95,3 @@ walmart:
           statusNode: ok
           statusOK: true
           kind: EXTERNAL_SERVICE
-
-#keycloak:
-#    securityConstraints:
-#      - authRoles:
-#        - default
-#      - securityCollections:
-#        - name: insecure stuff
-#          patterns:
-#            - /api/health
-#            - /api/metrics
-#        - name: admin stuff
-#          patterns:
-#            - /api/v1/*
-#            - /api/v2/*
-#    realm: vmcommerce
-#    realmKey: b44af5eb-03da-41ef-8e77-35f9ff44ff7a
-#    auth-server-url: https://vip-keycloak.qa.vmcommerce.intra/auth
-#    ssl-required: external
-#    resource: feeds-admin-api
-#    public-client: false
-#    bearer-only: true
-#    credentials:
-#        secret: 5154ca38-7f8e-40ad-86a7-891944bdd573
