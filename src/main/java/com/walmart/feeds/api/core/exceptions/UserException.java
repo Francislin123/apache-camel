@@ -3,7 +3,6 @@ package com.walmart.feeds.api.core.exceptions;
 import com.walmart.feeds.api.resources.common.response.ErrorElementResponse;
 import org.springframework.http.HttpStatus;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserException extends InternalArchitectureException {
