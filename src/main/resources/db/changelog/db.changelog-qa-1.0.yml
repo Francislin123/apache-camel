@@ -43,14 +43,10 @@ databaseChangeLog:
                                   <CODIGOSKUFORNECEDOR/>
                                   <SITE>walmart.com.br</SITE>
                                   <QTDRESENHAS>0</QTDRESENHAS>
-                                  <PRECODE>R$ ${p.payments[0].fromPrice}</PRECODE>
-                                  <PRECO>R$ ${p.payments[0].price}</PRECO>
-                                  <#list p.payments as payment>
-                                      <#if payment.hasInstallment && payment.installments gt 1>
-                                      <NPARCELA>${payment.installments}</NPARCELA>
-                                      <VPARCELA>R$ ${payment.price}</VPARCELA>
-                                      </#if>
-                                  </#list>
+                                  <PRECODE>R$ ${p.payments.fromPrice}</PRECODE>
+                                  <PRECO>R$ <#if p.payment.suggestionPrice gt 0>${p.payment.suggestionPrice}<#else>${p.payment.price}</#if></PRECO>
+                                  <NPARCELA>${p.payment.installmentAmount}</NPARCELA>
+                                  <VPARCELA>R$ ${p.payment.valuePerInstallment}</VPARCELA>
                                   <URL>${p.urlWeb}</URL>
                                   <URL_IMAGEM>${p.mainImage}</URL_IMAGEM>
                               </PRODUTO>

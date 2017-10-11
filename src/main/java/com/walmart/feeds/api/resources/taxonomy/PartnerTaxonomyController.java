@@ -7,10 +7,7 @@ import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.core.utils.TaxonomyMappingCSVHandler;
 import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyRequest;
-import com.walmart.feeds.api.resources.taxonomy.response.PartnerTaxonomyResponse;
-import com.walmart.feeds.api.resources.taxonomy.response.TaxonomyMappingResponse;
-import com.walmart.feeds.api.resources.taxonomy.response.TaxonomyReportResponse;
-import com.walmart.feeds.api.resources.taxonomy.response.UploadTaxonomyResponse;
+import com.walmart.feeds.api.resources.taxonomy.response.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -151,7 +148,10 @@ public class PartnerTaxonomyController {
 
         String walmartTaxonomy = partnerTaxonomyService.fetchWalmartTaxonomy(taxonomySlug, taxonomy);
 
-        return ResponseEntity.ok().body(walmartTaxonomy);
+        TaxonomyResponse response = TaxonomyResponse.builder().taxonomy(walmartTaxonomy).build();
+
+        return ResponseEntity.ok().body(response);
     }
+
 
 }
