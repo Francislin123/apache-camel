@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [1.1.1](83cf86c...5091c52) (11/10/2017)
+## [1.2.0](ee84007...a1fff25) (13/10/2017)
+- feat(adjustments): removed the feed's required fields mapping [a1fff25]
+
+## [1.1.1](83cf86c...ee84007) (11/10/2017)
 - chore(relase): Removing comments [7f7d0f6]
 - feat(FDS-1436): udpate default template [93a3d23]
 - fix(relase): fixing elasticsearch url [0ba9089]
