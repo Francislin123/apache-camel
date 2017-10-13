@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [1.2.0](ee84007...a1fff25) (13/10/2017)
+## [1.2.1](68d67dc...80bce47) (13/10/2017)
+- chore(relase): Removing comments [80bce47]
+
+## [1.2.0](ee84007...68d67dc) (13/10/2017)
 - feat(adjustments): removed the feed's required fields mapping [a1fff25]
 
 ## [1.1.1](83cf86c...ee84007) (11/10/2017)
