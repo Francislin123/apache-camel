@@ -49,7 +49,6 @@ public class FeedRequest {
 
     private Long collectionId;
 
-    @NotBlank
     private String fieldMapping;
 
     private String taxonomy;

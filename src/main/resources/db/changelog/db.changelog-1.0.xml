@@ -580,7 +580,7 @@
                 <constraints foreignKeyName="feed_taxonomy_fk"/>
             </column>
             <column name="fields_mapping_id" type="${uuid_type}">
-                <constraints nullable="false" foreignKeyName="feed_fields_mapping_fk"/>
+                <constraints nullable="true" foreignKeyName="feed_fields_mapping_fk"/>
             </column>
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>

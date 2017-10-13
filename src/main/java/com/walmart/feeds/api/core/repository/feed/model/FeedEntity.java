@@ -47,7 +47,6 @@ public class FeedEntity extends AuditableEntity {
     private PartnerTaxonomyEntity partnerTaxonomy;
 
     @ManyToOne
-    @NotNull
     private FieldsMappingEntity fieldsMapping;
 
     @Enumerated(EnumType.STRING)

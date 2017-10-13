@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @RequestMapping(FieldsMappingController.URI_FIELDSDMAPPING)
 public class FieldsMappingController {
 
-    public static final String URI_FIELDSDMAPPING = "/v1/fieldsmapping";
+    public static final String URI_FIELDSDMAPPING = "/v1/fields-mapping";
 
     @Autowired
     private FieldsMappingService fieldsMappingService;
