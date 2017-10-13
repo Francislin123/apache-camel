@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [1.2.1](68d67dc...80bce47) (13/10/2017)
+## [1.2.2](c40ab97...38b269e) (13/10/2017)
+- chore(relase): Removing comments [38b269e]
+
+## [1.2.1](68d67dc...c40ab97) (13/10/2017)
 - chore(relase): Removing comments [80bce47]
 
 ## [1.2.0](ee84007...68d67dc) (13/10/2017)
