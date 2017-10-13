@@ -134,7 +134,6 @@ beforeReleaseBuild.dependsOn updateProjectVersionYAML
 commitNewVersion.dependsOn updateProjectVersionYAML
 
 dependencies {
-
     compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-tomcat:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
@@ -167,6 +166,5 @@ dependencies {
 
     testCompile "br.com.six2six:fixture-factory:3.1.0"
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
-
 }
 
