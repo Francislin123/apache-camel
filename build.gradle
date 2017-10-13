@@ -1,5 +1,4 @@
 buildscript {
-
     repositories {
         jcenter()
         maven { url "http://www.datanucleus.org/downloads/maven2/" }
