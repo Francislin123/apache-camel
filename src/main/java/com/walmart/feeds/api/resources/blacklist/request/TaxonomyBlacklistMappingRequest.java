@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.experimental.Tolerate;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.validation.annotation.Validated;
 
 @Builder
 @Getter
