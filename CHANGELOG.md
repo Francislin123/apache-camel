@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [1.2.3](ff50822...6aaf180) (17/10/2017)
+## [1.2.4](bd9c61b...3692b30) (17/10/2017)
+- chore(qa): configuring application-qa.yml to integration tests environment. [3692b30]
+
+## [1.2.3](ff50822...bd9c61b) (17/10/2017)
 - chore(qa): configuring application-qa.yml to integration tests environment. [6aaf180]
 
 ## [1.2.2](c40ab97...ff50822) (13/10/2017)
