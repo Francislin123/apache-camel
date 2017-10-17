@@ -176,7 +176,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
     }
 
     @Override
-    public TaxonomiesMatcherTO matchedTaxonomies(String partnerSlug, String slug, List<String> walmartTaxonomies) {
+    public TaxonomiesMatchedTO matchedPartnerTaxonomies(String partnerSlug, String slug, List<String> walmartTaxonomies) {
 
         Map<String, String> matched = new HashMap<>();
         List<String> nonMatched = new ArrayList<>();
@@ -193,7 +193,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
         }
 
-        return TaxonomiesMatcherTO.builder()
+        return TaxonomiesMatchedTO.builder()
                 .matched(matched)
                 .nonMatched(nonMatched).build();
 

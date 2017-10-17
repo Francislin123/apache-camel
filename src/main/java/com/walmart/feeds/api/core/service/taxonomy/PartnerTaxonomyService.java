@@ -1,7 +1,7 @@
 package com.walmart.feeds.api.core.service.taxonomy;
 
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
-import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatcherTO;
+import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatchedTO;
 import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 
@@ -23,5 +23,5 @@ public interface PartnerTaxonomyService {
 
     String fetchWalmartTaxonomy(String partnerTaxonomySlug, String partnerTaxonomy);
 
-    TaxonomiesMatcherTO matchedTaxonomies(String partnerSlug, String slug, List<String> walmartTaxonomies);
+    TaxonomiesMatchedTO matchedPartnerTaxonomies(String partnerSlug, String slug, List<String> walmartTaxonomies);
 }

@@ -12,7 +12,7 @@ import com.walmart.feeds.api.core.repository.taxonomy.TaxonomyMappingRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.ImportStatus;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyHistory;
-import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatcherTO;
+import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatchedTO;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyServiceImpl;
@@ -341,7 +341,7 @@ public class PartnerTaxonomyServiceImplTest {
         when(taxonomyMappingRepository.findMappingByPartner("zoom", "test", walmartTaxonomies.get(0))).thenReturn("Games > Consoles > PS3");
         when(taxonomyMappingRepository.findMappingByPartner("zoom", "test", walmartTaxonomies.get(1))).thenReturn("Games > Consoles > PS4");
 
-        TaxonomiesMatcherTO result = partnerTaxonomyService.matchedTaxonomies("zoom", "test", walmartTaxonomies);
+        TaxonomiesMatchedTO result = partnerTaxonomyService.matchedPartnerTaxonomies("zoom", "test", walmartTaxonomies);
 
         assertNotNull(result);
         assertTrue(result.getMatched().get("Games > Playstation 3 > Jogos para PS3").equals("Games > Consoles > PS3"));
@@ -354,7 +354,7 @@ public class PartnerTaxonomyServiceImplTest {
 
         when(taxonomyMappingRepository.findMappingByPartner("zoom", "test", walmartTaxonomies.get(0))).thenReturn("Games > Consoles > PS3");
 
-        TaxonomiesMatcherTO result = partnerTaxonomyService.matchedTaxonomies("zoom", "test", walmartTaxonomies);
+        TaxonomiesMatchedTO result = partnerTaxonomyService.matchedPartnerTaxonomies("zoom", "test", walmartTaxonomies);
 
         assertNotNull(result);
         assertTrue(result.getMatched().get("Games > Playstation 3 > Jogos para PS3").equals("Games > Consoles > PS3"));

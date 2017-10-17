@@ -1,7 +1,7 @@
 package com.walmart.feeds.api.resources.taxonomy;
 
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
-import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatcherTO;
+import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatchedTO;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import com.walmart.feeds.api.core.service.taxonomy.model.MatcherRequest;
 import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
@@ -25,7 +25,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -147,7 +146,7 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 200, message = "Successful", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Partner Taxonomy not found")})
     @RequestMapping(value = "/getWalmartTaxonomy", method = RequestMethod.GET)
-    public ResponseEntity getWalmartTaxonomy(@PathVariable("partnerSlug") String partnerSlug, @RequestParam("taxonomySlug") String taxonomySlug, @RequestParam("taxonomy") String taxonomy) throws IOException {
+    public ResponseEntity getWalmartTaxonomy(@PathVariable("partnerSlug") String partnerSlug, @RequestParam("taxonomySlug") String taxonomySlug, @RequestParam("taxonomy") String taxonomy) {
 
         String walmartTaxonomy = partnerTaxonomyService.fetchWalmartTaxonomy(taxonomySlug, taxonomy);
 
@@ -161,11 +160,11 @@ public class PartnerTaxonomyController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successful match", response = ResponseEntity.class)})
     @RequestMapping(method = RequestMethod.POST, value = "{slug}/matcher",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity matchedTaxonomies(@PathVariable("partnerSlug") String partnerSlug,
-                                            @PathVariable("slug") String slug, @RequestBody MatcherRequest request) {
+    public ResponseEntity matchedPartnerTaxonomies(@PathVariable("partnerSlug") String partnerSlug,
+                                                   @PathVariable("slug") String slug, @RequestBody MatcherRequest request) {
 
-        TaxonomiesMatcherTO taxonomiesMatcher = partnerTaxonomyService.matchedTaxonomies(partnerSlug, slug, request.getTaxonomies());
-        return ResponseEntity.ok(taxonomiesMatcher);
+        TaxonomiesMatchedTO taxonomiesMatched = partnerTaxonomyService.matchedPartnerTaxonomies(partnerSlug, slug, request.getWalmartTaxonomies());
+        return ResponseEntity.ok(taxonomiesMatched);
 
     }
 

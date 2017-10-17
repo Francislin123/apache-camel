@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Getter
 @Builder
-public class TaxonomiesMatcherTO {
+public class TaxonomiesMatchedTO {
 
     /**
      * Matched taxonomies. <br>

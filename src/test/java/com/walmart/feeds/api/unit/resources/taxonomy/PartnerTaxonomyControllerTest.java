@@ -4,7 +4,7 @@ import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
-import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatcherTO;
+import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatchedTO;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
 import com.walmart.feeds.api.core.service.taxonomy.model.MatcherRequest;
 import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
@@ -139,14 +139,14 @@ public class PartnerTaxonomyControllerTest {
     public void matchedTaxonomies() throws Exception {
 
         List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
-        MatcherRequest request = MatcherRequest.builder().taxonomies(walmartTaxonomies).build();
+        MatcherRequest request = MatcherRequest.builder().walmartTaxonomies(walmartTaxonomies).build();
 
         Map<String, String> matched = new HashMap<>();
         matched.put(walmartTaxonomies.get(0), "Games > Consoles > PS3");
         matched.put(walmartTaxonomies.get(1), "Games > Consoles > PS4");
 
-        when(partnerTaxonomyService.matchedTaxonomies(eq("zoom"), eq("test"), anyList()))
-                .thenReturn(TaxonomiesMatcherTO.builder()
+        when(partnerTaxonomyService.matchedPartnerTaxonomies(eq("zoom"), eq("test"), anyList()))
+                .thenReturn(TaxonomiesMatchedTO.builder()
                         .matched(matched)
                         .nonMatched(new ArrayList<>())
                         .build());
@@ -162,13 +162,13 @@ public class PartnerTaxonomyControllerTest {
     public void matchedTaxonomiesWithNonMatched() throws Exception {
 
         List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
-        MatcherRequest request = MatcherRequest.builder().taxonomies(walmartTaxonomies).build();
+        MatcherRequest request = MatcherRequest.builder().walmartTaxonomies(walmartTaxonomies).build();
 
         Map<String, String> matched = new HashMap<>();
         matched.put(walmartTaxonomies.get(0), "Games > Consoles > PS3");
 
-        when(partnerTaxonomyService.matchedTaxonomies(eq("zoom"), eq("test"), anyList()))
-                .thenReturn(TaxonomiesMatcherTO.builder()
+        when(partnerTaxonomyService.matchedPartnerTaxonomies(eq("zoom"), eq("test"), anyList()))
+                .thenReturn(TaxonomiesMatchedTO.builder()
                         .matched(matched)
                         .nonMatched(Arrays.asList(walmartTaxonomies.get(1)))
                         .build());

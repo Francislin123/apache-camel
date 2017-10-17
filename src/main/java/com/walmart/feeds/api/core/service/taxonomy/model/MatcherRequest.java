@@ -1,6 +1,9 @@
 package com.walmart.feeds.api.core.service.taxonomy.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -10,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class MatcherRequest {
 
-    private List<String> taxonomies;
+    private List<String> walmartTaxonomies;
 
 }
