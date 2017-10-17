@@ -1,0 +1,9 @@
+spring:
+  data:
+    elasticsearch:
+      cluster-name: feeds
+      cluster-nodes: napsao-qa-nix-feeds-elastic-1.qa.vmcommerce.intra:9300
+      indexes:
+        skus:
+          name: skus-qa
+          type: sku
