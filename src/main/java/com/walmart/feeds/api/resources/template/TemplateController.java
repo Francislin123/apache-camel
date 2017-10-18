@@ -39,6 +39,10 @@ public class TemplateController {
                 .body(templateEntity.getBody())
                 .footer(templateEntity.getFooter())
                 .format(templateEntity.getFormat())
+                .language(templateEntity.getLanguage())
+                .country(templateEntity.getCountry())
+                .encoding(templateEntity.getEncoding())
+                .numberFormat(templateEntity.getNumberFormat())
                 .build();
 
         return ResponseEntity.ok(response);

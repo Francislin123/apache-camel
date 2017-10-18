@@ -22,34 +22,34 @@ databaseChangeLog:
               - column:
                   name: body
                   value: "<#compress>
-                          <#list products as p>
-                              <PRODUTO>
-                                  <SKUID>${p.id}</SKUID>
-                                  <CODIGO>0</CODIGO>
-                                  <DESCRICAO>${p.title}</DESCRICAO>
-                                  <DEPARTAMENTO>${p.categories[0].name}</DEPARTAMENTO>
+                          <#list products as p>\n
+                              <PRODUTO>\n
+                                  <SKUID>${p.id}</SKUID>\n
+                                  <CODIGO>0</CODIGO>\n
+                                  <DESCRICAO>${p.title}</DESCRICAO>\n
+                                  <DEPARTAMENTO>${p.categories[0].name}</DEPARTAMENTO>\n
                                   <#if p.categories?size gt 1>
-                                      <CATEGORIA>${p.categories[1].name}</CATEGORIA>
+                                      <CATEGORIA>${p.categories[1].name}</CATEGORIA>\n
                                   </#if>
                                   <#if p.categories?size gt 2>
-                                      <SUBCATEGORIA>${p.categories[2].name}</SUBCATEGORIA>
+                                      <SUBCATEGORIA>${p.categories[2].name}</SUBCATEGORIA>\n
                                   </#if>
-                                  <MARCA>${p.brandName}</MARCA>
-                                  <STATUS>NOVO</STATUS>
-                                  <ISBN/>
-                                  <EDITORA/>
-                                  <AUTOR/>
-                                  <EAN>${p.ean}</EAN>
-                                  <CODIGOSKUFORNECEDOR/>
-                                  <SITE>walmart.com.br</SITE>
-                                  <QTDRESENHAS>0</QTDRESENHAS>
-                                  <PRECODE>R$ ${p.payment.price}</PRECODE>
-                                  <PRECO>R$ <#if p.payment.suggestionPrice gt 0>${p.payment.suggestionPrice}<#else>${p.payment.discountedPrice}</#if></PRECO>
-                                  <NPARCELA>${p.payment.installmentAmount}</NPARCELA>
-                                  <VPARCELA>R$ ${p.payment.valuePerInstallment}</VPARCELA>
-                                  <URL>${p.urlWeb}</URL>
-                                  <URL_IMAGEM>${p.mainImage}</URL_IMAGEM>
-                              </PRODUTO>
+                                  <MARCA>${p.brandName}</MARCA>\n
+                                  <STATUS>NOVO</STATUS>\n
+                                  <ISBN/>\n
+                                  <EDITORA/>\n
+                                  <AUTOR/>\n
+                                  <EAN>${p.ean}</EAN>\n
+                                  <CODIGOSKUFORNECEDOR/>\n
+                                  <SITE>walmart.com.br</SITE>\n
+                                  <QTDRESENHAS>0</QTDRESENHAS>\n
+                                  <PRECODE>R$ ${p.payment.price}</PRECODE>\n
+                                  <PRECO>R$ <#if p.payment.suggestionPrice gt 0>${p.payment.suggestionPrice}<#else>${p.payment.discountedPrice}</#if></PRECO>\n
+                                  <NPARCELA>${p.payment.installmentAmount}</NPARCELA>\n
+                                  <VPARCELA>R$ ${p.payment.valuePerInstallment}</VPARCELA>\n
+                                  <URL>${p.urlWeb}</URL>\n
+                                  <URL_IMAGEM>${p.mainImage}</URL_IMAGEM>\n
+                              </PRODUTO>\n
                           </#list>
                           </#compress>"
               - column:
@@ -57,11 +57,10 @@ databaseChangeLog:
                   value: "</produtos>"
               - column:
                   name: separator
-                  value: ">"
+                  value: "/"
               - column:
                   name: format
-                  value: "xml"
-  - changeSet:
+                  value: "xml"  - changeSet:
         id: "insertInventoryTemplate"
         author: "thiago.lima"
         comment: "Insert google based inventory template"

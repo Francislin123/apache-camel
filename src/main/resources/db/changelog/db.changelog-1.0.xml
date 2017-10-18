@@ -370,6 +370,18 @@
             <column name="format" type="varchar(20)">
                 <constraints unique="false" nullable="false"/>
             </column>
+            <column name="language" type="varchar(50)" defaultValue="pt">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="country" type="varchar(50)" defaultValue="BR">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="encoding" type="varchar(20)" defaultValue="UTF-8">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="number_format" type="varchar(20)" defaultValue="####.##">
+                <constraints unique="false" nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 

@@ -41,6 +41,18 @@ public class TemplateEntity {
     @Column(name = "format")
     private String format;
 
+    @Column
+    private String language;
+
+    @Column
+    private String country;
+
+    @Column
+    private String encoding;
+
+    @Column
+    private String numberFormat;
+
     @Tolerate
     public TemplateEntity() {
         //default constructor for hibernate
