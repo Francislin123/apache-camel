@@ -142,6 +142,7 @@ dependencies {
     compile "com.walmart:wmapp-springboot-healthcheck:${healthcheckVersion}"
     compile "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-mail:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-cache:${springBootVersion}"
 
     compile "org.keycloak:keycloak-spring-boot-starter:${keycloakVersion}"
 
@@ -163,6 +164,8 @@ dependencies {
 
     compile "org.apache.camel:camel-bindy:${camelVersion}"
     compile "commons-io:commons-io:2.5"
+    compile "javax.cache:cache-api:1.0.0"
+    compile "org.ehcache:ehcache:3.1.0"
 
     testCompile "br.com.six2six:fixture-factory:3.1.0"
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
