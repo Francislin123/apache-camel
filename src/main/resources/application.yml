@@ -2,7 +2,7 @@ info:
   component: Feeds Admin Api
   project:
       name: feeds-admin-api
-      version: 1.2.9-SNAPSHOT
+      version: 2.0.1-SNAPSHOT
 
 server:
   port: 8080
@@ -43,6 +43,9 @@ spring:
         skus:
           name: skus
           type: sku
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
 
 tagadmin:
     username: admin

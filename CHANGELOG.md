@@ -3,7 +3,15 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [1.2.8](fff2390...de81d55) (17/10/2017)
+## [2.0.0](a7e99fe...a574ebc) (18/10/2017)
+- fix(FDS-1443): bad merged line [bf8f1c2]
+- fix(FDS-1443): recovery removed line EnableJpaAuditing [ea5ee39]
+- feat(FDS-1443): rename endpoint and fields of taxonomies matcher [5eb6b20]
+- [FDS-1443]: Fixing errors. [8121d17]
+- feat(FDS-1443): remove unused imports [2d1200d]
+- feat(FDS-1443): FDS-1825 Fetch taxonomy by partner, taxonomy-slug and walmartPath [b4d7946]
+
+## [1.2.8](fff2390...a7e99fe) (17/10/2017)
 - chore(qa): configuring application-qa.yml to integration tests environment. [2665d20]
 - chore(qa): configuring application-qa.yml to integration tests environment. [c37986f]
 - chore(qa): configuring application-qa.yml to integration tests environment. [d45bd32]
