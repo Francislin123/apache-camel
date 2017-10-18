@@ -92,7 +92,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
         TaxonomyUploadReportTO reportTO = producerTemplate.requestBodyAndHeaders(PARSE_FILE_ROUTE, taxonomyMappingBindy, map, TaxonomyUploadReportTO.class);
 
-        producerTemplate.asyncCallbackSendBody(PERSIST_PARTNER_TAXONOMY_ROUTE, reportTO.getEntityToSave(), persistPartnerTaxonomyCallBack);
+        producerTemplate.asyncCallbackSendBody(PERSIST_PARTNER_TAXONOMY_ROUTE, reportTO, persistPartnerTaxonomyCallBack);
 
         return reportTO;
 
