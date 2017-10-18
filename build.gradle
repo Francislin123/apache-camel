@@ -8,7 +8,6 @@ buildscript {
     }
     dependencies {
         classpath 'se.transmode.gradle:gradle-docker:1.2'
-        classpath 'com.h2database:h2:1.3.160'
         classpath 'oracle:ojdbc6:11.2.0.3'
         classpath "org.yaml:snakeyaml:1.15"
     }
@@ -160,6 +159,8 @@ dependencies {
     compile ("org.apache.camel:camel-spring-security:${camelVersion}") {
         exclude module: "org.springframework.security"
     }
+
+    compile "com.h2database:h2:1.3.160"
 
     compile "org.apache.camel:camel-bindy:${camelVersion}"
     compile "commons-io:commons-io:2.5"
