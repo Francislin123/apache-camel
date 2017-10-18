@@ -3,7 +3,8 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.0](a7e99fe...a574ebc) (18/10/2017)
+## [2.0.1](a7e99fe...316158c) (18/10/2017)
+- chore(qa): configuring application-integration.yml to run app point to a h2 database. [c059d4b]
 - fix(FDS-1443): bad merged line [bf8f1c2]
 - fix(FDS-1443): recovery removed line EnableJpaAuditing [ea5ee39]
 - feat(FDS-1443): rename endpoint and fields of taxonomies matcher [5eb6b20]
