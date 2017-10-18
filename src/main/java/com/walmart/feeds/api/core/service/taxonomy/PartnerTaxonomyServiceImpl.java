@@ -3,10 +3,10 @@ package com.walmart.feeds.api.core.service.taxonomy;
 import com.walmart.feeds.api.camel.TaxonomyMappingBindy;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
-import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyHistoryRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
+import com.walmart.feeds.api.core.repository.taxonomy.TaxonomyMappingRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.*;
 import com.walmart.feeds.api.core.service.feed.FeedService;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
@@ -14,8 +14,6 @@ import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -34,13 +32,14 @@ import static com.walmart.feeds.api.camel.PartnerTaxonomyRouteBuilder.*;
 @Service
 public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PartnerTaxonomyServiceImpl.class);
-
     @Autowired
     private PartnerTaxonomyRepository partnerTaxonomyRepository;
 
     @Autowired
     private PartnerTaxonomyHistoryRepository partnerTaxonomyHistoryRepository;
+
+    @Autowired
+    private TaxonomyMappingRepository taxonomyMappingRepository;
 
     @Autowired
     private PartnerService partnerService;
@@ -176,4 +175,27 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
         return "";
     }
 
+    @Override
+    public TaxonomiesMatchedTO matchedPartnerTaxonomies(String partnerSlug, String slug, List<String> walmartTaxonomies) {
+
+        Map<String, String> matched = new HashMap<>();
+        List<String> nonMatched = new ArrayList<>();
+
+        for (String walmartPath : walmartTaxonomies) {
+
+            String partnerPath = taxonomyMappingRepository.findMappingByPartner(partnerSlug, slug, walmartPath);
+
+            if (partnerPath == null) {
+                nonMatched.add(walmartPath);
+            } else {
+                matched.put(walmartPath, partnerPath);
+            }
+
+        }
+
+        return TaxonomiesMatchedTO.builder()
+                .matched(matched)
+                .nonMatched(nonMatched).build();
+
+    }
 }

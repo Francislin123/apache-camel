@@ -1,7 +1,9 @@
 package com.walmart.feeds.api.resources.taxonomy;
 
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
+import com.walmart.feeds.api.core.repository.taxonomy.model.TaxonomiesMatchedTO;
 import com.walmart.feeds.api.core.service.taxonomy.PartnerTaxonomyService;
+import com.walmart.feeds.api.core.service.taxonomy.model.MatcherRequest;
 import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
@@ -144,7 +146,7 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 200, message = "Successful", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Partner Taxonomy not found")})
     @RequestMapping(value = "/getWalmartTaxonomy", method = RequestMethod.GET)
-    public ResponseEntity getWalmartTaxonomy(@PathVariable("partnerSlug") String partnerSlug, @RequestParam("taxonomySlug") String taxonomySlug, @RequestParam("taxonomy") String taxonomy) throws IOException {
+    public ResponseEntity getWalmartTaxonomy(@PathVariable("partnerSlug") String partnerSlug, @RequestParam("taxonomySlug") String taxonomySlug, @RequestParam("taxonomy") String taxonomy) {
 
         String walmartTaxonomy = partnerTaxonomyService.fetchWalmartTaxonomy(taxonomySlug, taxonomy);
 
@@ -153,5 +155,17 @@ public class PartnerTaxonomyController {
         return ResponseEntity.ok().body(response);
     }
 
+    @ApiOperation(value = "Match of walmart/partner taxonomies", httpMethod = "POST",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiResponses(value = {@ApiResponse(code = 200, message = "Successful match", response = ResponseEntity.class)})
+    @RequestMapping(method = RequestMethod.POST, value = "{slug}/matcher",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity matchedPartnerTaxonomies(@PathVariable("partnerSlug") String partnerSlug,
+                                                   @PathVariable("slug") String slug, @RequestBody MatcherRequest request) {
+
+        TaxonomiesMatchedTO taxonomiesMatched = partnerTaxonomyService.matchedPartnerTaxonomies(partnerSlug, slug, request.getWalmartTaxonomies());
+        return ResponseEntity.ok(taxonomiesMatched);
+
+    }
 
 }

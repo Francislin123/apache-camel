@@ -43,6 +43,9 @@ spring:
         skus:
           name: skus
           type: sku
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
 
 tagadmin:
     username: admin

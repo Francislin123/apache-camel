@@ -100,10 +100,10 @@ public class FeedsController {
         return ResponseEntity.ok().body(FeedResponse.builder()
                 .name(feedEntity.getName())
                 .template(feedEntity.getTemplate().getSlug())
-                .fieldMapping(feedEntity.getPartner().getSlug())
+                .fieldMapping(feedEntity.getFieldsMapping() != null ? feedEntity.getFieldsMapping().getSlug(): null)
                 .taxonomy(feedEntity.getPartnerTaxonomy() != null ? feedEntity.getPartnerTaxonomy().getSlug() : null)
                 .taxonomyBlacklist(getTaxonomyBlacklistSlug(feedEntity))
-                .termsBlacklist(feedEntity.getTermsBlacklist().stream().map(tb -> tb.getSlug()).collect(Collectors.toList()))
+                .termsBlacklist(feedEntity.getTermsBlacklist().stream().map(TermsBlacklistEntity::getSlug).collect(Collectors.toList()))
                 .slug(feedEntity.getSlug())
                 .collectionId(feedEntity.getCollectionId())
                 .notification(FeedNotificationData.builder()
@@ -139,15 +139,15 @@ public class FeedsController {
         List<FeedEntity> listFeedEntity = feedService.fetchActiveByPartner(partnerSlug, active);
 
         return ResponseEntity.ok().body(CollectionResponse.<FeedResponse>builder()
-                .result(listFeedEntity.stream().map(f -> {
-                    return FeedResponse.builder()
+                .result(listFeedEntity.stream().map(f ->
+                        FeedResponse.builder()
                             .name(f.getName())
                             .slug(f.getSlug())
                             .template(f.getTemplate().getSlug())
                             .taxonomy(f.getPartnerTaxonomy() != null ? f.getPartnerTaxonomy().getSlug() : null)
-                            .fieldMapping(f.getFieldsMapping().getSlug())
+                            .fieldMapping(f.getFieldsMapping() != null ? f.getFieldsMapping().getSlug(): null)
                             .taxonomyBlacklist(getTaxonomyBlacklistSlug(f))
-                            .termsBlacklist(f.getTermsBlacklist().stream().map(tb -> tb.getSlug()).collect(Collectors.toList()))
+                            .termsBlacklist(f.getTermsBlacklist().stream().map(TermsBlacklistEntity::getSlug).collect(Collectors.toList()))
                             .notification(FeedNotificationData.builder()
                                     .format(f.getNotificationFormat().getType())
                                     .method(f.getNotificationMethod().getType())
@@ -168,9 +168,8 @@ public class FeedsController {
                             .updateDate(f.getUpdateDate())
                             .active(f.isActive())
                             .collectionId(f.getCollectionId())
-                            .build();
-                })
-                        .collect(Collectors.toList())).build());
+                            .build()
+                ).collect(Collectors.toList())).build());
     }
 
     @ApiOperation(value = "Change feed status",
@@ -249,7 +248,7 @@ public class FeedsController {
 
         List<TermsBlacklistEntity> termsBlacklistEntities = new ArrayList<>();
         if (slugs == null || slugs.isEmpty()) {
-            return null;
+            return termsBlacklistEntities;
         }
 
         slugs.forEach(slug -> termsBlacklistEntities.add(feedService.findTermBlacklistBySlug(slug)));
