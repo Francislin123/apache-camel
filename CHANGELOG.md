@@ -3,7 +3,13 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.1](a7e99fe...316158c) (18/10/2017)
+## [2.0.2](eb7b47d...708775e) (19/10/2017)
+- fix(FDS-1433):   including changeset to inventory template [1f5f622]
+
+## [origin/feature/fds-1946](c7edb6c...eb7b47d) (18/10/2017)
+- 
+
+## [2.0.1](a7e99fe...c7edb6c) (18/10/2017)
 - chore(qa): configuring application-integration.yml to run app point to a h2 database. [c059d4b]
 - fix(FDS-1443): bad merged line [bf8f1c2]
 - fix(FDS-1443): recovery removed line EnableJpaAuditing [ea5ee39]
