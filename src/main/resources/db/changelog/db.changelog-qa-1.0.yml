@@ -61,3 +61,35 @@ databaseChangeLog:
               - column:
                   name: format
                   value: "xml"
+  - changeSet:
+        id: "insertInventoryTemplate"
+        author: "thiago.lima"
+        comment: "Insert google based inventory template"
+        changes:
+          - insert:
+              tableName: feed_template
+              columns:
+                - column:
+                    name: id
+                    valueComputed: "${uuid_function}"
+                - column:
+                    name: name
+                    value: "Inventory Template"
+                - column:
+                    name: slug
+                    value: "inventory"
+                - column:
+                    name: header
+                    value: "id    price    availability\n"
+                - column:
+                    name: body
+                    value: "<#list products as p>${p.id}	<#if p.payment.suggestionPrice gt 0>${p.payment.suggestionPrice}<#else>${p.payment.discountedPrice}</#if>	<#if p.quantity gt 0>in stock<#else>out of stock</#if>\n</#list>"
+                - column:
+                    name: footer
+                    value: " "
+                - column:
+                    name: separator
+                    value: "T"
+                - column:
+                    name: format
+                    value: "tsv"
