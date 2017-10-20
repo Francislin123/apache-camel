@@ -3,7 +3,8 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.4](c1790d2...461aa98) (20/10/2017)
+## [2.0.5](c1790d2...634a782) (20/10/2017)
+- chore(qa): removing h2 database configuration. [203f1ff]
 - chore(qa): removing h2 database configuration. [461aa98]
 
 ## [2.0.3](7572783...c1790d2) (20/10/2017)
