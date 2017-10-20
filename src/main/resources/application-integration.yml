@@ -1,17 +1,8 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:dbfeedsadmin_integration;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
-    username: FEEDS_ADMIN
-    password: FEEDS_ADMIN
   jpa:
     show-sql: true
-    ddl-auto: create-drop
-    database-platform: org.hibernate.dialect.H2Dialect
   data:
     elasticsearch:
-      cluster-name: feeds
-      cluster-nodes: napsao-qa-nix-feeds-elastic-1.qa.vmcommerce.intra:9300
       indexes:
         skus:
           name: skus-qa
