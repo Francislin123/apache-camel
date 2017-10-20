@@ -3,11 +3,11 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.2](eb7b47d...708775e) (19/10/2017)
-- fix(FDS-1433):   including changeset to inventory template [1f5f622]
+## [2.0.3](7572783...369e465) (20/10/2017)
+- chore(qa): removing h2 database configuration. [369e465]
 
-## [origin/feature/fds-1946](c7edb6c...eb7b47d) (18/10/2017)
-- 
+## [2.0.2](c7edb6c...7572783) (19/10/2017)
+- fix(FDS-1433):   including changeset to inventory template [1f5f622]
 
 ## [2.0.1](a7e99fe...c7edb6c) (18/10/2017)
 - chore(qa): configuring application-integration.yml to run app point to a h2 database. [c059d4b]
