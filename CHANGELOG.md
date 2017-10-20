@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.6](c1790d2...ca896c7) (20/10/2017)
+## [2.0.7](e85f5d5...845158f) (20/10/2017)
+- fix(generation-history): increase file name field size [845158f]
+
+## [2.0.6](c1790d2...e85f5d5) (20/10/2017)
 - chore(qa): removing h2 database configuration. [5074d07]
 - chore(qa): removing h2 database configuration. [203f1ff]
 - chore(qa): removing h2 database configuration. [461aa98]
