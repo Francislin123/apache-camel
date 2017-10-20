@@ -167,8 +167,14 @@ dependencies {
     compile "commons-io:commons-io:2.5"
     compile "javax.cache:cache-api:1.0.0"
     compile "org.ehcache:ehcache:3.1.0"
+    
+    compile "org.quartz-scheduler:quartz:2.2.1"
+    compile "org.quartz-scheduler:quartz-jobs:2.2.1"
+    compile "org.springframework:spring-context-support"
 
     testCompile "br.com.six2six:fixture-factory:3.1.0"
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
+
+
 }
 

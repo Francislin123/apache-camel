@@ -51,3 +51,11 @@ keycloak:
   use-resource-role-mappings: true
   credentials:
     secret: bc3a789e-1e9c-4075-a349-10d43814197a
+
+org:
+  quartz:
+    scheduler:
+      instanceId: AUTO
+    threadPool:
+      threadCount: 20
+
