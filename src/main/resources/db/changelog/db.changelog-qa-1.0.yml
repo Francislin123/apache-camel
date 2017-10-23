@@ -3,6 +3,7 @@ databaseChangeLog:
       id: "insertDefaultTemplate"
       author: "adisson.gomes"
       comment: "Insert default template. Based on Zoom CPC XML"
+      context: local,qa
       changes:
         - insert:
             tableName: feed_template
@@ -65,6 +66,7 @@ databaseChangeLog:
       id: "insertBuscapeTemplate"
       author: "adisson.gomes"
       comment: "Insert buscape template. Based on feed buscape.xml and StormLab 'br.com.walmart.frontend.xml.SkuFileBuscapeLayout"
+      context: local,qa
       changes:
         - insert:
             tableName: feed_template
@@ -146,9 +148,10 @@ databaseChangeLog:
                   name: format
                   value: "xml"
   - changeSet:
-      id: "insertGoogle XML Template"
+      id: "insertGoogleXMLTemplate"
       author: "adisson.gomes"
       comment: "Insert google xml template. Based on https://support.google.com/merchants/answer/160589"
+      context: local,qa
       changes:
         - insert:
             tableName: feed_template
@@ -212,35 +215,37 @@ databaseChangeLog:
               - column:
                   name: country
                   value: "US"
-                  value: "xml"  - changeSet:
-        id: "insertInventoryTemplate"
-        author: "thiago.lima"
-        comment: "Insert google based inventory template"
-        changes:
-          - insert:
-              tableName: feed_template
-              columns:
-                - column:
-                    name: id
-                    valueComputed: "${uuid_function}"
-                - column:
-                    name: name
-                    value: "Inventory Template"
-                - column:
-                    name: slug
-                    value: "inventory"
-                - column:
-                    name: header
-                    value: "id    price    availability\n"
-                - column:
-                    name: body
-                    value: "<#list products as p>${p.id}	<#if p.payment.suggestionPrice gt 0>${p.payment.suggestionPrice}<#else>${p.payment.discountedPrice}</#if>	<#if p.quantity gt 0>in stock<#else>out of stock</#if>\n</#list>"
-                - column:
-                    name: footer
-                    value: " "
-                - column:
-                    name: separator
-                    value: "T"
-                - column:
-                    name: format
-                    value: "txt" # file content is TSV but google read a .txt file
+                  value: "xml"
+  - changeSet:
+      id: "insertInventoryTemplate"
+      author: "thiago.lima"
+      comment: "Insert google based inventory template"
+      context: local,qa
+      changes:
+        - insert:
+            tableName: feed_template
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "${uuid_function}"
+              - column:
+                  name: name
+                  value: "Inventory Template"
+              - column:
+                  name: slug
+                  value: "inventory"
+              - column:
+                  name: header
+                  value: "id    price    availability\n"
+              - column:
+                  name: body
+                  value: "<#list products as p>${p.id}	<#if p.payment.suggestionPrice gt 0>${p.payment.suggestionPrice}<#else>${p.payment.discountedPrice}</#if>	<#if p.quantity gt 0>in stock<#else>out of stock</#if>\n</#list>"
+              - column:
+                  name: footer
+                  value: " "
+              - column:
+                  name: separator
+                  value: "T"
+              - column:
+                  name: format
+                  value: "txt" # file content is TSV but google read a .txt file
