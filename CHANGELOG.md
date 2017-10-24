@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.9](4464c27...639d1f4) (24/10/2017)
+## [2.0.10](4464c27...82849e7) (24/10/2017)
+- chore(qa): commit to start build [82849e7]
+- vai [e89feea]
+- logback changed [0405bdf]
 - refactor(remove vulnerability expose in check marx) [639d1f4]
 
 ## [origin/feature/FDS-1930](c40ccea...4464c27) (21/10/2017)
