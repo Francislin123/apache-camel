@@ -15,6 +15,7 @@ import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.resources.feed.request.FeedNotificationData;
 import com.walmart.feeds.api.resources.feed.request.FeedRequest;
 import com.walmart.feeds.api.resources.feed.response.FeedResponse;
+import com.walmart.feeds.api.resources.feed.validator.annotation.ValidSlug;
 import com.walmart.feeds.api.resources.partner.response.PartnerResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -93,14 +94,14 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Return found feed", response = FeedResponse.class),
             @ApiResponse(code = 404, message = "FeedEntity not found by slug")})
     @RequestMapping(value = "{feedSlug}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity fetchFeed(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("feedSlug") String feedSlug) {
+    public ResponseEntity fetchFeed(@ValidSlug @PathVariable("partnerSlug") String partnerSlug,@ValidSlug @PathVariable("feedSlug") String feedSlug) {
 
         FeedEntity feedEntity = feedService.fetchByPartner(feedSlug, partnerSlug);
 
         return ResponseEntity.ok().body(FeedResponse.builder()
                 .name(feedEntity.getName())
                 .template(feedEntity.getTemplate().getSlug())
-                .fieldMapping(feedEntity.getFieldsMapping() != null ? feedEntity.getFieldsMapping().getSlug(): null)
+                .fieldMapping(feedEntity.getFieldsMapping() != null ? feedEntity.getFieldsMapping().getSlug() : null)
                 .taxonomy(feedEntity.getPartnerTaxonomy() != null ? feedEntity.getPartnerTaxonomy().getSlug() : null)
                 .taxonomyBlacklist(getTaxonomyBlacklistSlug(feedEntity))
                 .termsBlacklist(feedEntity.getTermsBlacklist().stream().map(TermsBlacklistEntity::getSlug).collect(Collectors.toList()))
@@ -134,41 +135,41 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Return found feeds", response = FeedResponse.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Invalid partner slug")})
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CollectionResponse<FeedResponse>> fetchAll(@PathVariable("partnerSlug") String partnerSlug, @RequestParam(value = "active", required = false) Boolean active) {
+    public ResponseEntity<CollectionResponse<FeedResponse>> fetchAll(@ValidSlug @PathVariable("partnerSlug") String partnerSlug, @RequestParam(value = "active", required = false) Boolean active) {
 
         List<FeedEntity> listFeedEntity = feedService.fetchActiveByPartner(partnerSlug, active);
 
         return ResponseEntity.ok().body(CollectionResponse.<FeedResponse>builder()
                 .result(listFeedEntity.stream().map(f ->
                         FeedResponse.builder()
-                            .name(f.getName())
-                            .slug(f.getSlug())
-                            .template(f.getTemplate().getSlug())
-                            .taxonomy(f.getPartnerTaxonomy() != null ? f.getPartnerTaxonomy().getSlug() : null)
-                            .fieldMapping(f.getFieldsMapping() != null ? f.getFieldsMapping().getSlug(): null)
-                            .taxonomyBlacklist(getTaxonomyBlacklistSlug(f))
-                            .termsBlacklist(f.getTermsBlacklist().stream().map(TermsBlacklistEntity::getSlug).collect(Collectors.toList()))
-                            .notification(FeedNotificationData.builder()
-                                    .format(f.getNotificationFormat().getType())
-                                    .method(f.getNotificationMethod().getType())
-                                    .url(f.getNotificationUrl())
-                                    .build())
-                            .partner(PartnerResponse.builder()
-                                    .slug(f.getPartner().getSlug())
-                                    .active(f.getPartner().isActive())
-                                    .description(f.getPartner().getDescription())
-                                    .name(f.getPartner().getName())
-                                    .creationDate(f.getPartner().getCreationDate())
-                                    .updateDate(f.getPartner().getUpdateDate())
-                                    .partnerships(f.getPartner().getPartnershipsAsList())
-                                    .build())
-                            .type(f.getType())
-                            .utms(f.getUtms())
-                            .creationDate(f.getCreationDate())
-                            .updateDate(f.getUpdateDate())
-                            .active(f.isActive())
-                            .collectionId(f.getCollectionId())
-                            .build()
+                                .name(f.getName())
+                                .slug(f.getSlug())
+                                .template(f.getTemplate().getSlug())
+                                .taxonomy(f.getPartnerTaxonomy() != null ? f.getPartnerTaxonomy().getSlug() : null)
+                                .fieldMapping(f.getFieldsMapping() != null ? f.getFieldsMapping().getSlug() : null)
+                                .taxonomyBlacklist(getTaxonomyBlacklistSlug(f))
+                                .termsBlacklist(f.getTermsBlacklist().stream().map(TermsBlacklistEntity::getSlug).collect(Collectors.toList()))
+                                .notification(FeedNotificationData.builder()
+                                        .format(f.getNotificationFormat().getType())
+                                        .method(f.getNotificationMethod().getType())
+                                        .url(f.getNotificationUrl())
+                                        .build())
+                                .partner(PartnerResponse.builder()
+                                        .slug(f.getPartner().getSlug())
+                                        .active(f.getPartner().isActive())
+                                        .description(f.getPartner().getDescription())
+                                        .name(f.getPartner().getName())
+                                        .creationDate(f.getPartner().getCreationDate())
+                                        .updateDate(f.getPartner().getUpdateDate())
+                                        .partnerships(f.getPartner().getPartnershipsAsList())
+                                        .build())
+                                .type(f.getType())
+                                .utms(f.getUtms())
+                                .creationDate(f.getCreationDate())
+                                .updateDate(f.getUpdateDate())
+                                .active(f.isActive())
+                                .collectionId(f.getCollectionId())
+                                .build()
                 ).collect(Collectors.toList())).build());
     }
 
@@ -178,7 +179,7 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Status modified with success", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Invalid feed or partner slug")})
     @RequestMapping(value = "{feedSlug}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity changeFeedStatus(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("feedSlug") String feedSlug, @RequestParam(value = "active", required = true) Boolean active) {
+    public ResponseEntity changeFeedStatus(@ValidSlug @PathVariable("partnerSlug") String partnerSlug, @ValidSlug @PathVariable("feedSlug") String feedSlug, @RequestParam(value = "active", required = true) Boolean active) {
 
         feedService.changeFeedStatus(partnerSlug, feedSlug, active);
 
@@ -192,7 +193,7 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "FeedEntity removed with success", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Invalid feed reference")})
     @RequestMapping(value = "{feedSlug}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateFeed(@Valid @RequestBody FeedRequest request, @PathVariable("feedSlug") String feedSlug, @PathVariable("partnerSlug") String partnerSlug) {
+    public ResponseEntity updateFeed(@ValidSlug @RequestBody FeedRequest request, @ValidSlug @PathVariable("feedSlug") String feedSlug, @ValidSlug @PathVariable("partnerSlug") String partnerSlug) {
 
         FeedEntity feedEntity = FeedEntity.builder()
                 .slug(feedSlug)
@@ -232,7 +233,7 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Valid Feed", response = FeedResponse.class),
             @ApiResponse(code = 400, message = "Invalid Feed")})
     @RequestMapping(value = "{feedSlug}/validation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity feedValidation(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("feedSlug") String feedSlug) {
+    public ResponseEntity feedValidation(@ValidSlug @PathVariable("partnerSlug") String partnerSlug, @ValidSlug @PathVariable("feedSlug") String feedSlug) {
         feedService.validateFeed(partnerSlug, feedSlug);
         return ResponseEntity.ok().build();
     }
