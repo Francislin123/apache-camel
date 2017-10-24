@@ -3,7 +3,11 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.11](4464c27...ecaf7ce) (24/10/2017)
+## [2.0.12](4fd4832...eee7819) (24/10/2017)
+- refactor(change logback format to logback-spring) [eee7819]
+- refactor(remove vulnerability expose in check marx) [13852d5]
+
+## [2.0.11](4464c27...4fd4832) (24/10/2017)
 - chore(qa): commit to start build [d17d5ed]
 - new logback to don't write to file [24bfa64]
 - chore(qa): commit to start build [82849e7]
