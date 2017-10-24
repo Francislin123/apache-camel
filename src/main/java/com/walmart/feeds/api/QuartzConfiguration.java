@@ -43,6 +43,7 @@ public class QuartzConfiguration {
         properties.setProperty("org.quartz.scheduler.instanceName",INSTANCE_NAME);
         properties.setProperty("org.quartz.scheduler.instanceId",instanceId);
         properties.setProperty("org.quartz.threadPool.threadCount",threadCount);
+        properties.setProperty("org.quartz.jobStore.isClustered", "true");
 
         factory.setDataSource(dataSource);
 

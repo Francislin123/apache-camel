@@ -51,6 +51,10 @@ keycloak:
   use-resource-role-mappings: true
   credentials:
     secret: bc3a789e-1e9c-4075-a349-10d43814197a
+amqp:
+  exchange: feed-exchange
+  generator-routing-key: generate
+  generator-queue-name: feed-generator-queue
 
 org:
   quartz:

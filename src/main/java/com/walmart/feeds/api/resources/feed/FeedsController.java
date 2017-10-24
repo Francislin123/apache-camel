@@ -220,6 +220,7 @@ public class FeedsController {
                 .termsBlacklist(getTermsBlacklist(request.getTermsBlacklist()))
                 .type(FeedType.getFromCode(request.getType()))
                 .utms(request.getUtms())
+                .cronPattern(request.getCronPattern())
                 .build();
 
         feedService.updateFeed(feedEntity);

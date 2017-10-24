@@ -26,6 +26,8 @@ import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TermsBla
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.validation.TaxonomyBlacklistPartnerValidator;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
+import com.walmart.feeds.api.core.service.scheduler.FeedScheduler;
+import com.walmart.feeds.api.core.service.scheduler.FeedSchedulerImpl;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by vn0y942 on 21/07/17.
- */
 @Service
 public class FeedServiceImpl implements FeedService {
 
@@ -80,6 +79,9 @@ public class FeedServiceImpl implements FeedService {
 
     @Autowired
     private SendMailService sendMailService;
+
+    @Autowired
+    private FeedScheduler feedScheduler;
 
     @Override
     @Transactional
@@ -125,11 +127,14 @@ public class FeedServiceImpl implements FeedService {
                 .termsBlacklist(termsBlacklist)
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .fieldsMapping(fieldsMappingEntity)
+                .cronPattern(feedEntity.getCronPattern() == null ? FeedSchedulerImpl.DEFAULT_CRON_INTERVAL : feedEntity.getCronPattern() )
                 .build();
 
         FeedEntity savedFeedEntity = saveFeedWithHistory(newFeed);
 
         LOGGER.info("feedEntity={} message=saved_successfully", savedFeedEntity);
+
+        feedScheduler.createFeedScheduler(savedFeedEntity.getSlug(), savedFeedEntity.getPartner().getSlug(), savedFeedEntity.getCronPattern());
 
         return savedFeedEntity;
     }
@@ -180,10 +185,17 @@ public class FeedServiceImpl implements FeedService {
                 .template(feedEntity.getTemplate())
                 .fieldsMapping(feedEntity.getFieldsMapping())
                 .partnerTaxonomy(feedEntity.getPartnerTaxonomy())
+                .cronPattern(feedEntity.getCronPattern())
                 .creationDate(feedEntity.getCreationDate())
                 .build();
 
         saveFeedWithHistory(updatedFeed);
+
+        if (active){
+            feedScheduler.createFeedScheduler(updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
+        }else {
+            feedScheduler.deleteJob(updatedFeed.getSlug(),updatedFeed.getPartner().getSlug());
+        }
 
         LOGGER.info("feed={} message=updated_successfully", feedEntity);
     }
@@ -236,9 +248,16 @@ public class FeedServiceImpl implements FeedService {
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .taxonomyBlacklist(taxonomyBlacklist)
                 .termsBlacklist(getTermsBlacklist(feedEntity))
+                .cronPattern(feedEntity.getCronPattern())
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
         saveFeedWithHistory(updatedFeed);
+
+        if (updatedFeed.isActive()){
+            feedScheduler.createFeedScheduler(updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
+        }else {
+            feedScheduler.deleteJob(updatedFeed.getSlug(),updatedFeed.getPartner().getSlug());
+        }
 
         LOGGER.info("feedEntity={} message=update_successfully", feedEntity);
     }
@@ -342,7 +361,7 @@ public class FeedServiceImpl implements FeedService {
 
     private FeedHistory buildPartnerHistory(FeedEntity currentFeed) {
 
-        FeedHistory feedHistory = FeedHistory.builder()
+        return FeedHistory.builder()
                 .active(currentFeed.isActive())
                 .creationDate(currentFeed.getCreationDate())
                 .name(currentFeed.getName())
@@ -354,12 +373,11 @@ public class FeedServiceImpl implements FeedService {
                 .fieldsMapping(currentFeed.getFieldsMapping())
                 .slug(currentFeed.getSlug())
                 .type(currentFeed.getType())
+                .cronPattern(currentFeed.getCronPattern())
                 .template(currentFeed.getTemplate())
                 .updateDate(currentFeed.getUpdateDate())
                 .user(currentFeed.getUser())
                 .build();
-
-        return feedHistory;
     }
 
     private void validateFeedActivePartner(String partnerSlug, StringBuilder sb) {

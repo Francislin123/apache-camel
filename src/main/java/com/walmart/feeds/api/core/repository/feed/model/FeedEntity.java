@@ -89,13 +89,20 @@ public class FeedEntity extends AuditableEntity {
     @Column(name = "collection_id")
     private Long collectionId;
 
+    @Column(name = "cron_pattern")
+    private String cronPattern;
+
     @Tolerate
     public FeedEntity() {
         //default constructor for hibernate
     }
 
     @Builder
-    public FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerEntity partner, PartnerTaxonomyEntity partnerTaxonomy, FieldsMappingEntity fieldsMapping, FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat, String notificationUrl, TaxonomyBlacklistEntity taxonomyBlacklist, List<TermsBlacklistEntity> termsBlacklist, TemplateEntity template, Map<String, String> utms, boolean active, Long collectionId) {
+    public FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name,
+                      PartnerEntity partner, PartnerTaxonomyEntity partnerTaxonomy, FieldsMappingEntity fieldsMapping,
+                      FeedType type, FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat,
+                      String notificationUrl, TaxonomyBlacklistEntity taxonomyBlacklist, List<TermsBlacklistEntity> termsBlacklist,
+                      TemplateEntity template, Map<String, String> utms, boolean active, Long collectionId, String cronPattern) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
@@ -113,6 +120,7 @@ public class FeedEntity extends AuditableEntity {
         this.utms = utms;
         this.active = active;
         this.collectionId = collectionId;
+        this.cronPattern = cronPattern;
     }
 }
 

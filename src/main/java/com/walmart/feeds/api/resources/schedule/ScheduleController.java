@@ -5,7 +5,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,10 +28,6 @@ public class ScheduleController {
             @ApiResponse(code = 500, message = "Unhandled exception")})
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public void createSchedule(@RequestBody SchedulerRequest schedulerRequest){
-        try {
-            feedScheduler.createFeedScheduler(schedulerRequest.getName(), schedulerRequest.getGroup());
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-        }
+        feedScheduler.createFeedScheduler(schedulerRequest.getName(), schedulerRequest.getGroup(), "");
     }
 }

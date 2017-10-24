@@ -142,6 +142,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-starter-security:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-mail:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-cache:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-amqp:${springBootVersion}"
 
     compile "org.keycloak:keycloak-spring-boot-starter:${keycloakVersion}"
 
