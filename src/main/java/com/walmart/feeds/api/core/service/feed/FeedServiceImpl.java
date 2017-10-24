@@ -206,8 +206,6 @@ public class FeedServiceImpl implements FeedService {
 
         TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
-        List<TermsBlacklistEntity> termsBlacklist = getTermsBlacklist(feedEntity);
-
         PartnerTaxonomyEntity partnerTaxonomyEntity = getPartnerTaxonomy(feedEntity, partner);
 
         FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
@@ -325,11 +323,11 @@ public class FeedServiceImpl implements FeedService {
 
     private List<TermsBlacklistEntity> getTermsBlacklist(FeedEntity feedEntity) {
 
-        List<TermsBlacklistEntity> response = new ArrayList<>();
-
         if (feedEntity.getTermsBlacklist() == null || feedEntity.getTermsBlacklist().isEmpty()) {
             return null;
         }
+
+        List<TermsBlacklistEntity> response = new ArrayList<>();
 
         feedEntity.getTermsBlacklist().forEach(termsBlacklistEntity -> response.add(termsBlackListRepository.findBySlug(termsBlacklistEntity.getSlug()).get()));
 
@@ -342,7 +340,7 @@ public class FeedServiceImpl implements FeedService {
 
     private FeedHistory buildPartnerHistory(FeedEntity currentFeed) {
 
-        FeedHistory feedHistory = FeedHistory.builder()
+        return FeedHistory.builder()
                 .active(currentFeed.isActive())
                 .creationDate(currentFeed.getCreationDate())
                 .name(currentFeed.getName())
@@ -359,7 +357,6 @@ public class FeedServiceImpl implements FeedService {
                 .user(currentFeed.getUser())
                 .build();
 
-        return feedHistory;
     }
 
     private void validateFeedActivePartner(String partnerSlug, StringBuilder sb) {

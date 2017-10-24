@@ -144,7 +144,7 @@ public class PartnerServiceImpl implements PartnerService {
 
     private PartnerHistory buildPartnerHistory(PartnerEntity currentPartner) {
 
-        PartnerHistory partnerHistory = PartnerHistory.builder()
+        return PartnerHistory.builder()
                 .active(currentPartner.isActive())
                 .creationDate(currentPartner.getCreationDate())
                 .description(currentPartner.getDescription())
@@ -154,8 +154,6 @@ public class PartnerServiceImpl implements PartnerService {
                 .user(currentPartner.getUser())
                 .updateDate(currentPartner.getUpdateDate())
                 .build();
-
-        return partnerHistory;
     }
 
     private PartnerEntity persistPartner(PartnerEntity partner) {

@@ -21,7 +21,7 @@ import static com.walmart.feeds.api.core.utils.FeedsAdminAPIRoles.*;
 @KeycloakConfiguration
 public class KeyCloakSecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
 
-    public static final String API_URL_MATCHER = "/v1/**";
+    private static final String API_URL_MATCHER = "/v1/**";
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

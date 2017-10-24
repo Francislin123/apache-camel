@@ -12,4 +12,5 @@ public class TagAdminErrorDecoder implements ErrorDecoder {
     @Override
     public Exception decode(String methodKey, Response response) {
         return new UserException("TagAdmin collection not found!");
-    }}
+    }
+}
