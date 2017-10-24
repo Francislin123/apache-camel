@@ -62,13 +62,13 @@ public class TermsBlacklistController {
 
         List<TermsBlacklistEntity> allTermsBlacklist = termsBlacklistService.findAllTermsBlacklistEntity();
         return ResponseEntity.ok().body(CollectionResponse.<TermsBlacklistResponse>builder()
-                .result(allTermsBlacklist.stream().map((TermsBlacklistEntity t) -> {
-                            return TermsBlacklistResponse.builder()
-                                    .name(t.getName())
-                                    .slug(t.getSlug())
-                                    .list(t.getList())
-                                    .build();
-                        }).collect(Collectors.toList())
+                .result(allTermsBlacklist.stream().map((TermsBlacklistEntity t) ->
+                                TermsBlacklistResponse.builder()
+                                        .name(t.getName())
+                                        .slug(t.getSlug())
+                                        .list(t.getList())
+                                        .build()
+                        ).collect(Collectors.toList())
                 ).build());
     }
 

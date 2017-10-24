@@ -24,7 +24,8 @@ import java.util.stream.Collectors;
 public class FeedsAdminAPIExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FeedsAdminAPIExceptionHandler.class);
-    public static final String DEFAULT_ERROR_MESSAGE = "An unhandled error occurred";
+    private static final String DEFAULT_ERROR_MESSAGE = "An unhandled error occurred";
+    private static final String ERROR_MESSAGE = "An user error occurred";
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleBadRequestException(MethodArgumentNotValidException ex, WebRequest request) {
@@ -102,7 +103,7 @@ public class FeedsAdminAPIExceptionHandler {
             MissingServletRequestParameterException.class
     })
     public ResponseEntity<ErrorResponse> servletExceptionHandler(ServletException ex, WebRequest request) {
-        LOGGER.error("An user error occurred", ex);
+        LOGGER.error(ERROR_MESSAGE, ex);
 
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.builder()
@@ -113,7 +114,7 @@ public class FeedsAdminAPIExceptionHandler {
 
     @ExceptionHandler(value = UserException.class)
     public ResponseEntity<ErrorResponse> userExceptionHandler(UserException ex, WebRequest request) {
-        LOGGER.error("An user error occurred", ex);
+        LOGGER.error(ERROR_MESSAGE, ex);
 
         if (ex instanceof InvalidFileException) {
 
@@ -137,7 +138,7 @@ public class FeedsAdminAPIExceptionHandler {
 
     @ExceptionHandler(value = InvalidFileException.class)
     public ResponseEntity<ErrorResponse> invalidFileExceptionHandler(InvalidFileException ex, WebRequest request) {
-        LOGGER.error("An user error occurred", ex);
+        LOGGER.error(ERROR_MESSAGE, ex);
 
         return ResponseEntity.status(ex.getErrorCode())
                 .body(ErrorResponse.builder()

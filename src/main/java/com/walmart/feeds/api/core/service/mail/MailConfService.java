@@ -1,4 +1,4 @@
-package com.walmart.feeds.api.core.service.mailConf;
+package com.walmart.feeds.api.core.service.mail;
 
 
 import com.walmart.feeds.api.core.repository.mailconf.model.MailConfEntity;

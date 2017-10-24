@@ -67,15 +67,12 @@ public class TermsBlacklistServiceImpl implements TermsBlacklistService {
     }
 
     public TermsBlacklistEntity findBySlug(String slug) {
-
         LOGGER.info("termsBlacklistEntity={} message=findBy_successfully", slug);
-        TermsBlacklistEntity termsBlacklistEntity = termsBlacklistRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException(String.format("Terms Black List %s not found!", slug)));
-        return termsBlacklistEntity;
+        return termsBlacklistRepository.findBySlug(slug).orElseThrow(() -> new EntityNotFoundException(String.format("Terms Black List %s not found!", slug)));
     }
 
     @Override
     public List<TermsBlacklistEntity> findAllTermsBlacklistEntity() {
-
         return termsBlacklistRepository.findAll();
     }
 

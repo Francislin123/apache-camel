@@ -51,19 +51,27 @@ public class TaxonomyMappingEntity extends AuditableEntity {
     }
 
     @Tolerate
-    public TaxonomyMappingEntity(){
+    public TaxonomyMappingEntity() {
         //default constructor for hibernate
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         TaxonomyMappingEntity that = (TaxonomyMappingEntity) o;
 
-        if (!partnerPathId.equals(that.partnerPathId)) return false;
-        if (!partnerPath.equals(that.partnerPath)) return false;
+        if (!partnerPathId.equals(that.partnerPathId)) {
+            return false;
+        }
+        if (!partnerPath.equals(that.partnerPath)) {
+            return false;
+        }
         return walmartPath.equals(that.walmartPath);
     }
 
