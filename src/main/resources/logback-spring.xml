@@ -4,6 +4,9 @@
     <contextName>feeds-admin-api</contextName>
     <property name="APP" value="feeds-admin-api"/>
 
+    <springProperty scope="context" name="LOGGING_HOST" source="graylog.host"/>
+    <springProperty scope="context" name="LOGGING_PORT" source="graylog.port"/>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
@@ -12,8 +15,8 @@
 
     <!-- Appenders -->
     <appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">
-        <graylogHost>${logging_host}</graylogHost>
-        <graylogPort>${logging_port}</graylogPort>
+        <graylogHost>${LOGGING_HOST}</graylogHost>
+        <graylogPort>${LOGGING_PORT}</graylogPort>
         <layout class="de.siegmar.logbackgelf.GelfLayout">
             <shortPatternLayout class="ch.qos.logback.classic.PatternLayout">
                 <pattern>%m%nopex</pattern>

@@ -12,6 +12,10 @@ management:
   security:
     enabled: false
 
+graylog:
+  host: teste
+  port: 1010
+
 gossip:
   username: ADMIN
   password: 123123
