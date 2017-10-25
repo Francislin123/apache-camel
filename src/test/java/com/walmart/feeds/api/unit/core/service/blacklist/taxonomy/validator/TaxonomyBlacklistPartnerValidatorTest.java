@@ -15,8 +15,6 @@ import static org.mockito.Mockito.*;
 
 public class TaxonomyBlacklistPartnerValidatorTest {
 
-    private static final String BLACKLIST_SLUG = "blacklist";
-
     @BeforeClass
     public static void init() {
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.blacklist.taxonomy");

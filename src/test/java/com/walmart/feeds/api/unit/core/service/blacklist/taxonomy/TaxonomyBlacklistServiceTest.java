@@ -90,6 +90,7 @@ public class TaxonomyBlacklistServiceTest {
 
     @Test
     public void updateBlackList() {
+
         TaxonomyBlacklistEntity entity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
 
         when(taxonomyBlacklistRepository.findBySlug(entity.getSlug())).thenReturn(Optional.of(entity));
@@ -173,19 +174,18 @@ public class TaxonomyBlacklistServiceTest {
 
     @Test(expected = EntityAlreadyExistsException.class)
     public void testTaxonomyBlacklistConflict() {
-        TaxonomyBlacklistEntity entity = TaxonomyBlacklistEntity.builder()
-                .name("already-existent-slug").slug("Slug-different-from-name").build();
+
+        TaxonomyBlacklistEntity entity = TaxonomyBlacklistEntity.builder().name("already-existent-slug").slug("Slug-different-from-name").build();
 
         when(taxonomyBlacklistRepository.findBySlug("already-existent-slug")).thenReturn(Optional.of(entity));
 
         this.taxonomyBlacklistService.update(entity);
-
     }
 
     @Test(expected = UserException.class)
     public void testInvalidWalmartTaxonomy() {
-        TaxonomyBlacklistMapping taxMap = TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.WALMART)
-                .taxonomy("Invalid Taxonomy").build();
+
+        TaxonomyBlacklistMapping taxMap = TaxonomyBlacklistMapping.builder().owner(TaxonomyOwner.WALMART).taxonomy("Invalid Taxonomy").build();
         Set<TaxonomyBlacklistMapping> set = new HashSet<>();
         set.add(taxMap);
 
@@ -196,5 +196,4 @@ public class TaxonomyBlacklistServiceTest {
 
         this.taxonomyBlacklistService.create(entity);
     }
-
 }

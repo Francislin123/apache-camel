@@ -13,8 +13,6 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntit
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
-import com.walmart.feeds.api.core.repository.fields.FieldsMappingRepository;
-import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
@@ -73,9 +71,6 @@ public class FeedServiceImpl implements FeedService {
     private PartnerTaxonomyRepository partnerTaxonomyRepository;
 
     @Autowired
-    private FieldsMappingRepository fieldsMappingRepository;
-
-    @Autowired
     private TaxonomyBlacklistService taxonomyBlacklistService;
 
     @Autowired
@@ -94,9 +89,6 @@ public class FeedServiceImpl implements FeedService {
         TemplateEntity template = getTemplate(feedEntity);
 
         PartnerTaxonomyEntity partnerTaxonomyEntity = getPartnerTaxonomy(feedEntity, partner);
-
-        FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
-                new UserException(String.format("Field mapping not found for slug='%s'", feedEntity.getFieldsMapping().getSlug())));
 
         TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
@@ -124,7 +116,6 @@ public class FeedServiceImpl implements FeedService {
                 .taxonomyBlacklist(taxonomyBlacklist)
                 .termsBlacklist(termsBlacklist)
                 .partnerTaxonomy(partnerTaxonomyEntity)
-                .fieldsMapping(fieldsMappingEntity)
                 .build();
 
         FeedEntity savedFeedEntity = saveFeedWithHistory(newFeed);
@@ -178,7 +169,6 @@ public class FeedServiceImpl implements FeedService {
                 .name(feedEntity.getName())
                 .active(active)
                 .template(feedEntity.getTemplate())
-                .fieldsMapping(feedEntity.getFieldsMapping())
                 .partnerTaxonomy(feedEntity.getPartnerTaxonomy())
                 .creationDate(feedEntity.getCreationDate())
                 .build();
@@ -210,9 +200,6 @@ public class FeedServiceImpl implements FeedService {
 
         PartnerTaxonomyEntity partnerTaxonomyEntity = getPartnerTaxonomy(feedEntity, partner);
 
-        FieldsMappingEntity fieldsMappingEntity = fieldsMappingRepository.findBySlug(feedEntity.getFieldsMapping().getSlug()).orElseThrow(() ->
-                new UserException(String.format("Field mapping not found for slug='%s'", feedEntity.getFieldsMapping().getSlug())));
-
         TaxonomyBlacklistPartnerValidator.validatePartnerTaxonomiesOnBlacklist(taxonomyBlacklist, partnerTaxonomyEntity);
 
         if (feedEntity.getCollectionId() != null) {
@@ -232,7 +219,6 @@ public class FeedServiceImpl implements FeedService {
                 .active(feedEntity.isActive())
                 .collectionId(feedEntity.getCollectionId())
                 .template(template)
-                .fieldsMapping(fieldsMappingEntity)
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .taxonomyBlacklist(taxonomyBlacklist)
                 .termsBlacklist(getTermsBlacklist(feedEntity))
@@ -351,7 +337,6 @@ public class FeedServiceImpl implements FeedService {
                 .notificationUrl(currentFeed.getNotificationUrl())
                 .partner(currentFeed.getPartner())
                 .partnerTaxonomy(currentFeed.getPartnerTaxonomy())
-                .fieldsMapping(currentFeed.getFieldsMapping())
                 .slug(currentFeed.getSlug())
                 .type(currentFeed.getType())
                 .template(currentFeed.getTemplate())

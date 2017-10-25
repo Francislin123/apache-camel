@@ -1,5 +1,7 @@
 package com.walmart.feeds.api.unit.core.service.partner;
 
+import br.com.six2six.fixturefactory.Fixture;
+import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.InconsistentEntityException;
 import com.walmart.feeds.api.core.exceptions.UserException;
@@ -9,7 +11,7 @@ import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.partner.PartnerServiceImpl;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -47,9 +49,10 @@ public class PartnerServiceTest {
     @InjectMocks
     private PartnerService partnerService = new PartnerServiceImpl();
 
-    @Before
-    public void setUp() throws NoSuchMethodException {
+    @BeforeClass
+    public static void setUp() {
 
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.core.service.partner");
     }
 
     //--------------------------------------------------------------------------------------------------------------//
@@ -57,8 +60,10 @@ public class PartnerServiceTest {
     @Test
     public void testUpdatePartner() {
 
-        when(partnerRepository.findBySlug(PARTNER_SLUG)).thenReturn(Optional.of(createPartner()));
-        when(partnerRepository.saveAndFlush(any(PartnerEntity.class))).thenReturn(createPartner());
+        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme(PartnerServiceTemplateLoader.PARTNER_ENTITY);
+
+        when(partnerRepository.findBySlug(PARTNER_SLUG)).thenReturn(Optional.of(partnerEntity));
+        when(partnerRepository.saveAndFlush(any(PartnerEntity.class))).thenReturn(partnerEntity);
 
         PartnerEntity request = PartnerEntity.builder().name(PARTNER_NAME).slug(PARTNER_SLUG).build();
         this.partnerService.update(request);
@@ -83,20 +88,18 @@ public class PartnerServiceTest {
     @Test(expected = InconsistentEntityException.class)
     public void testCreatePartnerWIthEmptyPartnershipList() {
 
-        PartnerEntity partner = PartnerEntity.builder()
-                .name(PARTNER_NAME)
-                .slug(PARTNER_SLUG)
-                .description("New partner")
-                .partnerships("").build();
+        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme(PartnerServiceTemplateLoader.PARTNER_ENTITY_PARTNER_SHIPS_NULL);
 
-        partnerService.save(partner);
+        partnerService.save(partnerEntity);
     }
 
     @Test
     public void testSearchPartners() {
 
+        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme(PartnerServiceTemplateLoader.PARTNER_ENTITY);
+
         String queryParam = "bus";
-        when(partnerRepository.searchPartners(queryParam)).thenReturn(Arrays.asList(createPartner()));
+        when(partnerRepository.searchPartners(queryParam)).thenReturn(Arrays.asList(partnerEntity));
 
         List<PartnerEntity> partners = partnerService.search(queryParam);
         assertFalse(partners.isEmpty());
@@ -116,6 +119,7 @@ public class PartnerServiceTest {
 
     @Test(expected = UserException.class)
     public void testSearchPartnersWhenQueryParamIsNull() {
+
         List<PartnerEntity> partners = partnerService.search(null);
     }
 
@@ -124,27 +128,5 @@ public class PartnerServiceTest {
 
         when(partnerRepository.searchPartners(anyString())).thenThrow(DataAccessResourceFailureException.class);
         List<PartnerEntity> partners = partnerService.search("buscape");
-
     }
-
-    private PartnerEntity createPartner() {
-        PartnerEntity partner = PartnerEntity.builder()
-                .name(PARTNER_NAME)
-                .slug(PARTNER_SLUG)
-                .description("New partner")
-                .partnerships("teste123").build();
-
-        return partner;
-    }
-
-    private PartnerEntity createPartnerUpdateName() {
-        PartnerEntity partner = PartnerEntity.builder()
-                .name(PARTNER_NAME)
-                .slug(DIVERGENT_SLUG)
-                .description("New partner")
-                .partnerships("teste123").build();
-
-        return partner;
-    }
-
 }
