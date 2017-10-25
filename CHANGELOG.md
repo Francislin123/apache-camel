@@ -3,7 +3,12 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.12](4fd4832...eee7819) (24/10/2017)
+## [2.0.13](35d9ac9...3fc466a) (25/10/2017)
+- fix(FDS-1947): context for qa liquibase scripts [5a2d3c5]
+- fix(FDS-1947): templates google xml and buscape xml [adc45cb]
+- fix(FDS-1947): new fields to configure template [52b42bb]
+
+## [2.0.12](4fd4832...35d9ac9) (24/10/2017)
 - refactor(change logback format to logback-spring) [eee7819]
 - refactor(remove vulnerability expose in check marx) [13852d5]
 
