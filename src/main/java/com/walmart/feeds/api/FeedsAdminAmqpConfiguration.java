@@ -32,9 +32,7 @@ public class FeedsAdminAmqpConfiguration {
 
     @Bean
     public DirectExchange exchange() {
-        DirectExchange direct = new DirectExchange(exchangeName);
-        direct.setDelayed(true);
-        return direct;
+        return new DirectExchange(exchangeName);
     }
 
     @Bean
