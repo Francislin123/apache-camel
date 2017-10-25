@@ -102,3 +102,15 @@ walmart:
           statusNode: ok
           statusOK: true
           kind: EXTERNAL_SERVICE
+
+amqp:
+  exchange: feed-exchange
+  generator-routing-key: generate
+  generator-queue-name: feed-generator-queue
+
+org:
+  quartz:
+    scheduler:
+      instanceId: AUTO
+    threadPool:
+      threadCount: 20
