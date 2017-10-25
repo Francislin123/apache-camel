@@ -21,4 +21,12 @@ public class TemplateResponse {
 
     private String format;
 
+    private String language;
+
+    private String country;
+
+    private String encoding;
+
+    private String numberFormat;
+
 }
