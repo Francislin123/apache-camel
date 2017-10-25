@@ -12,7 +12,7 @@ public class FeedSchedulerImpl implements FeedScheduler{
     @Autowired
     private SchedulerFactoryBean schedulerFactoryBean;
 
-    public static final String DEFAULT_CRON_INTERVAL = "0 0/1 * * * ?";
+    public static final String DEFAULT_CRON_INTERVAL = "0 0 0/1 * * ?";
 
     @Override
     public void createFeedScheduler(String name, String group, String interval) {
