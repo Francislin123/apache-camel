@@ -2,7 +2,7 @@ info:
   component: Feeds Admin Api
   project:
       name: feeds-admin-api
-      version: 2.0.2-SNAPSHOT
+      version: 2.0.13-SNAPSHOT
 
 server:
   port: 8080
@@ -11,6 +11,10 @@ server:
 management:
   security:
     enabled: false
+
+graylog:
+  host: teste
+  port: 1010
 
 gossip:
   username: ADMIN

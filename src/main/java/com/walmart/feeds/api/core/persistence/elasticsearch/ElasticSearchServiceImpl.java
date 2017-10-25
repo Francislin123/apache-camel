@@ -17,7 +17,11 @@ import java.util.Map;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 @Service
-public class ElasticSearchServiceImpl implements ElasticSearchService{
+public class ElasticSearchServiceImpl implements ElasticSearchService {
+
+    private static final String PROPERTIES = "properties";
+    private static final String TYPE = "type";
+    private static final String INDICES = "skus";
 
     @Autowired
     private ElasticsearchTemplate elasticsearchTemplate;
@@ -29,14 +33,14 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
     private String type;
 
     @Override
-    public boolean validateWalmartTaxonomy(String taxonomy){
-        if(StringUtils.isEmpty(taxonomy)){
+    public boolean validateWalmartTaxonomy(String taxonomy) {
+        if (StringUtils.isEmpty(taxonomy)) {
             return false;
-        }else{
+        } else {
             Boolean valid = Boolean.TRUE;
             final String[] split = taxonomy.split(">");
             int i = 0;
-            for (String name: split) {
+            for (String name : split) {
                 valid &= validateWalmartTaxonomy(name, i);
                 i++;
             }
@@ -50,7 +54,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
         Map<String, Map> mapping = elasticsearchTemplate.getMapping(index, type);
 
         List<String> listFields = new ArrayList<>();
-        processMap(mapping.get("properties"), "", listFields);
+        processMap(mapping.get(PROPERTIES), "", listFields);
 
         return listFields;
 
@@ -61,19 +65,19 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
         parent = (parent != null && !parent.trim().isEmpty()) ?
                 parent + "." : "";
 
-        for(String key: mapping.keySet()) {
+        for (String key : mapping.keySet()) {
 
             String hierarchicalFieldName = parent + key;
 
-            if(key.equals("properties")) {
+            if (PROPERTIES.equals(key)) {
 
-                processMap(mapping.get("properties"), hierarchicalFieldName, listFields);
+                processMap(mapping.get(PROPERTIES), hierarchicalFieldName, listFields);
 
-            } else if (mapping.get(key).containsKey("properties")) {
+            } else if (mapping.get(key).containsKey(PROPERTIES)) {
 
-                processMap((Map) mapping.get(key).get("properties"), hierarchicalFieldName, listFields);
+                processMap((Map) mapping.get(key).get(PROPERTIES), hierarchicalFieldName, listFields);
 
-            } else if (!key.equals("type")) {
+            } else if (!TYPE.equals(key)) {
 
                 listFields.add(hierarchicalFieldName);
 
@@ -90,7 +94,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
         NestedQueryBuilder nestedQueryBuilder = QueryBuilders.nestedQuery("categories", queryBuilder);
 
         return elasticsearchTemplate.count(new NativeSearchQueryBuilder()
-                .withIndices("skus")
+                .withIndices(INDICES)
                 .withTypes("sku")
                 .withQuery(nestedQueryBuilder)
                 .build()) > 0;

@@ -24,7 +24,7 @@ For more details access [Admin e API Interna Feeds](https://confluence.wmxp.com.
 - A member who has developed the story will be responsible for the merge request in the homologation
 
 
-### Clone project and Run application
+#### Clone project and Run application
 
 ```sh
 $ git clone https://gitlab.wmxp.com.br/feeds/feeds-admin-api.git

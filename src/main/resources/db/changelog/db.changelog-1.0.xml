@@ -750,13 +750,13 @@
             <column name="id" type="${uuid_type}">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="file_name" type="varchar(100)">
+            <column name="file_name" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="feed_slug" type="varchar(50)">
+            <column name="feed_slug" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="partner_slug" type="varchar(50)">
+            <column name="partner_slug" type="varchar(100)">
                 <constraints nullable="false"/>
             </column>
             <column name="total_skus" type="integer">

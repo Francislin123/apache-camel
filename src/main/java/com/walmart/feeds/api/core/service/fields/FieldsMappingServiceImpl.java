@@ -87,11 +87,8 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
     @Override
     public FieldsMappingEntity findBySlug(String slug) {
 
-        FieldsMappingEntity fieldsMapping = fieldsMappingRepository.findBySlug(slug).orElseThrow(() ->
+        return fieldsMappingRepository.findBySlug(slug).orElseThrow(() ->
                 new EntityNotFoundException(String.format("FieldsMappging %s not found!", slug)));
-
-        return fieldsMapping;
-
     }
 
     @Override
@@ -136,13 +133,13 @@ public class FieldsMappingServiceImpl implements FieldsMappingService {
 
     private FieldsMappingHistory buildHistory(FieldsMappingEntity fieldsMapping) {
         return FieldsMappingHistory.builder()
-                    .name(fieldsMapping.getName())
-                    .slug(fieldsMapping.getSlug())
-                    .creationDate(fieldsMapping.getCreationDate())
-                    .updateDate(fieldsMapping.getUpdateDate())
-                    .user(fieldsMapping.getUser())
-                    .mappedFields(MapperUtil.getMapsAsJson(fieldsMapping.getMappedFields()))
-                    .build();
+                .name(fieldsMapping.getName())
+                .slug(fieldsMapping.getSlug())
+                .creationDate(fieldsMapping.getCreationDate())
+                .updateDate(fieldsMapping.getUpdateDate())
+                .user(fieldsMapping.getUser())
+                .mappedFields(MapperUtil.getMapsAsJson(fieldsMapping.getMappedFields()))
+                .build();
     }
 
 }

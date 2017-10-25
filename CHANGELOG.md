@@ -3,7 +3,39 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.1](a7e99fe...316158c) (18/10/2017)
+## [2.0.12](4fd4832...eee7819) (24/10/2017)
+- refactor(change logback format to logback-spring) [eee7819]
+- refactor(remove vulnerability expose in check marx) [13852d5]
+
+## [2.0.11](4464c27...4fd4832) (24/10/2017)
+- chore(qa): commit to start build [d17d5ed]
+- new logback to don't write to file [24bfa64]
+- chore(qa): commit to start build [82849e7]
+- vai [e89feea]
+- logback changed [0405bdf]
+- refactor(remove vulnerability expose in check marx) [639d1f4]
+
+## [origin/feature/FDS-1930](c40ccea...4464c27) (21/10/2017)
+- 
+
+## [2.0.8](3f7be14...c40ccea) (21/10/2017)
+- fix(generation-history): increase file name field size [7befeed]
+
+## [2.0.7](e85f5d5...3f7be14) (20/10/2017)
+- fix(generation-history): increase file name field size [845158f]
+
+## [2.0.6](c1790d2...e85f5d5) (20/10/2017)
+- chore(qa): removing h2 database configuration. [5074d07]
+- chore(qa): removing h2 database configuration. [203f1ff]
+- chore(qa): removing h2 database configuration. [461aa98]
+
+## [2.0.3](7572783...c1790d2) (20/10/2017)
+- chore(qa): removing h2 database configuration. [369e465]
+
+## [2.0.2](c7edb6c...7572783) (19/10/2017)
+- fix(FDS-1433):   including changeset to inventory template [1f5f622]
+
+## [2.0.1](a7e99fe...c7edb6c) (18/10/2017)
 - chore(qa): configuring application-integration.yml to run app point to a h2 database. [c059d4b]
 - fix(FDS-1443): bad merged line [bf8f1c2]
 - fix(FDS-1443): recovery removed line EnableJpaAuditing [ea5ee39]
