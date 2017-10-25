@@ -25,6 +25,7 @@ public class FeedsAdminAmqpConfiguration {
     @Value("${amqp.generator-queue-name}")
     private String queueName;
 
+
     @Bean
     public Queue generatorQueue() {
         return new Queue(queueName);
@@ -36,8 +37,8 @@ public class FeedsAdminAmqpConfiguration {
     }
 
     @Bean
-    public Binding bindingTtl(@Qualifier("exchange") DirectExchange exchange,
-                              @Qualifier("generatorQueue") Queue queue) {
+    public Binding binding(@Qualifier("exchange") DirectExchange exchange,
+                           @Qualifier("generatorQueue") Queue queue) {
         LOGGER.info("Binding {} to exchange {}", exchange, queue);
         return BindingBuilder.bind(queue).to(exchange).with(routingKey);
     }
