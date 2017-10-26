@@ -464,7 +464,6 @@
             <tableExists tableName="feed_template"/>
             <tableExists tableName="partner"/>
             <tableExists tableName="partner_taxonomy"/>
-            <tableExists tableName="fields_mapping"/>
             <tableExists tableName="taxonomy_blacklist"/>
             <tableExists tableName="terms_blacklist"/>
         </preConditions>
@@ -486,9 +485,6 @@
             </column>
             <column name="partner_taxonomy_id" type="${uuid_type}">
                 <constraints foreignKeyName="feed_taxonomy_fk"/>
-            </column>
-            <column name="fields_mapping_id" type="${uuid_type}">
-                <constraints nullable="true" foreignKeyName="feed_fields_mapping_fk"/>
             </column>
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -527,9 +523,6 @@
         <addForeignKeyConstraint baseColumnNames="partner_taxonomy_id" baseTableName="feed"
                                  constraintName="feed_taxonomy_fk" referencedColumnNames="id"
                                  referencedTableName="partner_taxonomy"/>
-        <addForeignKeyConstraint baseColumnNames="fields_mapping_id" baseTableName="feed"
-                                 constraintName="feed_fields_mapping_fk" referencedColumnNames="id"
-                                 referencedTableName="fields_mapping"/>
         <rollback>
             <dropTable tableName="feed" cascadeConstraints="true"/>
         </rollback>
@@ -558,9 +551,6 @@
             </column>
             <column name="partner_taxonomy_id" type="${uuid_type}">
                 <constraints foreignKeyName="feed_taxonomy_fk"/>
-            </column>
-            <column name="fields_mapping_id" type="${uuid_type}">
-                <constraints nullable="false" foreignKeyName="feed_fields_mapping_fk"/>
             </column>
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
