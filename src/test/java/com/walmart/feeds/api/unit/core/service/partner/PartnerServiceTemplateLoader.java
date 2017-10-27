@@ -8,7 +8,7 @@ import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 public class PartnerServiceTemplateLoader implements TemplateLoader {
 
     public static final String PARTNER_ENTITY = "partner-entity";
-    public static final String PARTNER_ENTITY_PARTNER_SHIPS_NULL = "partner-ships-null";
+    public static final String PARTNER_ENTITY_PARTNERSHIPS_NULL = "partner-ships-null";
 
     @Override
     public void load() {
@@ -21,7 +21,7 @@ public class PartnerServiceTemplateLoader implements TemplateLoader {
             add("partnerships", "Test123");
         }});
 
-        Fixture.of(PartnerEntity.class).addTemplate(PARTNER_ENTITY_PARTNER_SHIPS_NULL, new Rule() {{
+        Fixture.of(PartnerEntity.class).addTemplate(PARTNER_ENTITY_PARTNERSHIPS_NULL, new Rule() {{
 
             add("name", "PartnerEntity");
             add("slug", "partnerentity");
