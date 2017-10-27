@@ -400,9 +400,13 @@ public class FeedServiceImpl implements FeedService {
 
     private void changeScheduleByFeedStatus(boolean status, String slug, String partnerSlug, String cronPattern){
         if (status){
+
             feedScheduler.createFeedScheduler(slug, partnerSlug, cronPattern);
+
         }else {
+
             feedScheduler.deleteJob(slug,partnerSlug);
+
         }
     }
 }
