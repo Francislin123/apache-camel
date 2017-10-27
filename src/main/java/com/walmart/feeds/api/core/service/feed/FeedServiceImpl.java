@@ -187,11 +187,7 @@ public class FeedServiceImpl implements FeedService {
 
         saveFeedWithHistory(updatedFeed);
 
-        if (active){
-            feedScheduler.createFeedScheduler(updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
-        }else {
-            feedScheduler.deleteJob(updatedFeed.getSlug(),updatedFeed.getPartner().getSlug());
-        }
+        changeScheduleByFeedStatus(active, updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
 
         LOGGER.info("feed={} message=updated_successfully", feedEntity);
     }
@@ -247,11 +243,7 @@ public class FeedServiceImpl implements FeedService {
                 .build();
         saveFeedWithHistory(updatedFeed);
 
-        if (updatedFeed.isActive()){
-            feedScheduler.createFeedScheduler(updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
-        }else {
-            feedScheduler.deleteJob(updatedFeed.getSlug(),updatedFeed.getPartner().getSlug());
-        }
+        changeScheduleByFeedStatus(updatedFeed.isActive(), updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
 
         LOGGER.info("feedEntity={} message=update_successfully", feedEntity);
     }
@@ -403,6 +395,14 @@ public class FeedServiceImpl implements FeedService {
         } catch (UserException ex) {
             LOGGER.error("Starting call to check if taxonomy exists and don't have any products");
             //TODO PENDENCIA DE ESTORIA PARA BUSCA DA ESTRUTURA COMERCIAL NO CATALOGO
+        }
+    }
+
+    private void changeScheduleByFeedStatus(boolean status, String slug, String partnerSlug, String cronPattern){
+        if (status){
+            feedScheduler.createFeedScheduler(slug, partnerSlug, cronPattern);
+        }else {
+            feedScheduler.deleteJob(slug,partnerSlug);
         }
     }
 }

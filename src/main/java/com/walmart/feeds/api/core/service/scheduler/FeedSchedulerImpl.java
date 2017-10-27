@@ -26,6 +26,7 @@ public class FeedSchedulerImpl implements FeedScheduler{
                             .withMisfireHandlingInstructionFireAndProceed()).build();
 
             Scheduler scheduler = schedulerFactoryBean.getScheduler();
+            System.out.println(scheduler.getClass().toString());
             scheduler.start();
             scheduler.scheduleJob(job, trigger);
         } catch (SchedulerException ex){
