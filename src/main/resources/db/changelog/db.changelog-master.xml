@@ -24,5 +24,6 @@
     <include file="src/main/resources/db/changelog/db.changelog-qa-1.0.yml"/>
     <include file="src/main/resources/db/changelog/db.changelog-1.1.xml"/>
     <include file="src/main/resources/db/changelog/db.changelog-1.2.xml"/>
+    <include file="src/main/resources/db/changelog/db.changelog-quartz-2.2.3.xml"/>
 
 </databaseChangeLog>

@@ -2,7 +2,6 @@ package com.walmart.feeds.api.unit.core.service.feed;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
-import com.walmart.feeds.api.client.tagadmin.TagAdminCollection;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InvalidFeedException;
@@ -24,6 +23,7 @@ import com.walmart.feeds.api.core.service.feed.FeedServiceImpl;
 import com.walmart.feeds.api.core.service.feed.ProductCollectionService;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
+import com.walmart.feeds.api.core.service.scheduler.FeedScheduler;
 import com.walmart.feeds.api.unit.resources.partner.test.template.PartnerTemplateLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -74,6 +74,9 @@ public class FeedServiceImplTest {
 
     @Mock
     private TaxonomyBlacklistService taxonomyBlacklistService;
+
+    @Mock
+    private FeedScheduler feedScheduler;
 
     @BeforeClass
     public static void setUp() {
@@ -158,7 +161,7 @@ public class FeedServiceImplTest {
         when(feedHistoryRepository.save(any(FeedHistory.class))).thenReturn(mock(FeedHistory.class));
         when(taxonomyBlacklistRepository.findBySlug(f.getTaxonomyBlacklist().getSlug())).thenReturn(Optional.of(f.getTaxonomyBlacklist()));
         when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(f.getTermsBlacklist().get(0)));
-
+        doNothing().when(feedScheduler).createFeedScheduler(anyString(), anyString(), anyString());
         feedService.createFeed(f);
     }
 
@@ -211,6 +214,7 @@ public class FeedServiceImplTest {
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
         when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getTermsBlacklist().get(0)));
 
+doNothing().when(feedScheduler).createFeedScheduler(anyString(), anyString(), anyString());
         this.feedService.createFeed(feedEntity);
 
         verify(feedRepository).findBySlug(anyString());
@@ -268,6 +272,7 @@ public class FeedServiceImplTest {
         when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
         when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getTermsBlacklist().get(0)));
+        doNothing().when(feedScheduler).createFeedScheduler(anyString(), anyString(), anyString());
 
         this.feedService.updateFeed(feedEntity);
 
@@ -287,6 +292,7 @@ public class FeedServiceImplTest {
         when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
         when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getTermsBlacklist().get(0)));
         when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+        doNothing().when(feedScheduler).createFeedScheduler(anyString(), anyString(), anyString());
 
         this.feedService.updateFeed(feedEntity);
 

@@ -1,6 +1,7 @@
 package com.walmart.feeds.api.resources.feed.request;
 
 import com.walmart.feeds.api.core.utils.Constants;
+import com.walmart.feeds.api.resources.feed.validator.annotation.CronPatternValidator;
 import com.walmart.feeds.api.resources.feed.validator.annotation.NotEmptyMapEntry;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedNotificationUrl;
 import com.walmart.feeds.api.resources.feed.validator.annotation.ValidFeedType;
@@ -50,5 +51,8 @@ public class FeedRequest {
     private Long collectionId;
 
     private String taxonomy;
+
+    @CronPatternValidator
+    private String cronPattern;
 
 }

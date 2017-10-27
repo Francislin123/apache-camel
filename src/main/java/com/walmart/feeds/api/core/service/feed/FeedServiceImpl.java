@@ -23,6 +23,8 @@ import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TermsBla
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.validation.TaxonomyBlacklistPartnerValidator;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
+import com.walmart.feeds.api.core.service.scheduler.FeedScheduler;
+import com.walmart.feeds.api.core.service.scheduler.FeedSchedulerImpl;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by vn0y942 on 21/07/17.
- */
 @Service
 public class FeedServiceImpl implements FeedService {
 
@@ -71,6 +70,9 @@ public class FeedServiceImpl implements FeedService {
 
     @Autowired
     private SendMailService sendMailService;
+
+    @Autowired
+    private FeedScheduler feedScheduler;
 
     @Override
     @Transactional
@@ -112,11 +114,14 @@ public class FeedServiceImpl implements FeedService {
                 .taxonomyBlacklist(taxonomyBlacklist)
                 .termsBlacklist(termsBlacklist)
                 .partnerTaxonomy(partnerTaxonomyEntity)
+                .cronPattern(feedEntity.getCronPattern() == null ? FeedSchedulerImpl.DEFAULT_CRON_INTERVAL : feedEntity.getCronPattern() )
                 .build();
 
         FeedEntity savedFeedEntity = saveFeedWithHistory(newFeed);
 
         LOGGER.info("feedEntity={} message=saved_successfully", savedFeedEntity);
+
+        feedScheduler.createFeedScheduler(savedFeedEntity.getSlug(), savedFeedEntity.getPartner().getSlug(), savedFeedEntity.getCronPattern());
 
         return savedFeedEntity;
     }
@@ -166,10 +171,13 @@ public class FeedServiceImpl implements FeedService {
                 .active(active)
                 .template(feedEntity.getTemplate())
                 .partnerTaxonomy(feedEntity.getPartnerTaxonomy())
+                .cronPattern(feedEntity.getCronPattern())
                 .creationDate(feedEntity.getCreationDate())
                 .build();
 
         saveFeedWithHistory(updatedFeed);
+
+        changeScheduleByFeedStatus(active, updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
 
         LOGGER.info("feed={} message=updated_successfully", feedEntity);
     }
@@ -216,9 +224,12 @@ public class FeedServiceImpl implements FeedService {
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .taxonomyBlacklist(taxonomyBlacklist)
                 .termsBlacklist(getTermsBlacklist(feedEntity))
+                .cronPattern(feedEntity.getCronPattern())
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
         saveFeedWithHistory(updatedFeed);
+
+        changeScheduleByFeedStatus(updatedFeed.isActive(), updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
 
         LOGGER.info("feedEntity={} message=update_successfully", feedEntity);
     }
@@ -250,9 +261,10 @@ public class FeedServiceImpl implements FeedService {
 
         if (sb.length() > 0) {
 
-            sendMailService.sendMail(feedEntity.getSlug(), feedEntity.getPartner().getSlug(), sb.toString());
-            LOGGER.error("[Error] Feed error notification feed-name: {}, message: {}, partner-slug: {}", feedEntity.getSlug(), sb.toString(), partnerSlug);
-            throw new InvalidFeedException(sb.toString());
+            String message = sb.toString();
+            sendMailService.sendMail(feedEntity.getSlug(), feedEntity.getPartner().getSlug(), message);
+            LOGGER.error("[Error] Feed error notification feed-name: {}, message: {}, partner-slug: {}", feedEntity.getSlug(), message, partnerSlug);
+            throw new InvalidFeedException(message);
         }
         LOGGER.debug("End validation on feed: {} for partner : {}", feedSlug, partnerSlug);
     }
@@ -333,6 +345,7 @@ public class FeedServiceImpl implements FeedService {
                 .partnerTaxonomy(currentFeed.getPartnerTaxonomy())
                 .slug(currentFeed.getSlug())
                 .type(currentFeed.getType())
+                .cronPattern(currentFeed.getCronPattern())
                 .template(currentFeed.getTemplate())
                 .updateDate(currentFeed.getUpdateDate())
                 .user(currentFeed.getUser())
@@ -368,6 +381,18 @@ public class FeedServiceImpl implements FeedService {
         } catch (UserException ex) {
             LOGGER.error("Starting call to check if taxonomy exists and don't have any products");
             //TODO PENDENCIA DE ESTORIA PARA BUSCA DA ESTRUTURA COMERCIAL NO CATALOGO
+        }
+    }
+
+    private void changeScheduleByFeedStatus(boolean status, String slug, String partnerSlug, String cronPattern){
+        if (status){
+
+            feedScheduler.createFeedScheduler(slug, partnerSlug, cronPattern);
+
+        }else {
+
+            feedScheduler.deleteJob(slug,partnerSlug);
+
         }
     }
 }

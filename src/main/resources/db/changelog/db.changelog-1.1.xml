@@ -87,4 +87,20 @@
         </createProcedure>
     </changeSet>
 
+    <changeSet author="thiago.lima" id="add-column">
+        <addColumn tableName="feed">
+            <column name="cron_pattern" type="varchar(50)"/>
+        </addColumn>
+
+        <addDefaultValue columnName="cron_pattern"
+                         defaultValue="0 0 1 * * ?"
+                         tableName="feed"/>
+    </changeSet>
+
+    <changeSet author="thiago.lima" id="add-column_history">
+        <addColumn tableName="feed_history">
+            <column name="cron_pattern" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -2,11 +2,13 @@ info:
   component: Feeds Admin Api
   project:
       name: feeds-admin-api
-      version: 2.0.14-SNAPSHOT
+      version: 2.1.1-SNAPSHOT
 
 server:
   port: 8080
   context-path: /admin-api
+  tomcat:
+    basedir: /tmp/tomcat
 
 management:
   security:
@@ -102,3 +104,15 @@ walmart:
           statusNode: ok
           statusOK: true
           kind: EXTERNAL_SERVICE
+
+amqp:
+  exchange: feed-exchange
+  generator-routing-key: generate
+  generator-queue-name: feed-generator-queue
+
+org:
+  quartz:
+    scheduler:
+      instanceId: AUTO
+    threadPool:
+      threadCount: 20
