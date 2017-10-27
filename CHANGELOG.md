@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.0.1](88d3f56...71f0792) (27/10/2017)
+## [3.0.2](8652d3f...fe9804b) (27/10/2017)
+- refactor(db): include new feed for test on db.feeds-test.sql [fe9804b]
+
+## [3.0.1](88d3f56...8652d3f) (27/10/2017)
 - fix(db): trigger jenkins [71f0792]
 
 ## [3.0.0](868b9f5...88d3f56) (27/10/2017)
