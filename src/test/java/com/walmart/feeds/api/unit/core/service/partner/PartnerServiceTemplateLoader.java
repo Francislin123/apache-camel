@@ -18,7 +18,7 @@ public class PartnerServiceTemplateLoader implements TemplateLoader {
             add("name", "Facebook-terms-blacklist");
             add("slug", "facebook-terms-blacklist");
             add("description", "New partner");
-            add("partnerships", "Test123" );
+            add("partnerships", "Test123");
         }});
 
         Fixture.of(PartnerEntity.class).addTemplate(PARTNER_ENTITY_PARTNERSHIPS_NULL, new Rule() {{
