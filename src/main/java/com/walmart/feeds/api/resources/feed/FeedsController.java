@@ -6,7 +6,6 @@ import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
-import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
@@ -63,9 +62,6 @@ public class FeedsController {
                 .partnerTaxonomy(PartnerTaxonomyEntity.builder()
                         .slug(request.getTaxonomy())
                         .build())
-                .fieldsMapping(FieldsMappingEntity.builder()
-                        .slug(request.getFieldMapping())
-                        .build())
                 .partner(PartnerEntity.builder()
                         .slug(partnerSlug)
                         .build())
@@ -94,14 +90,13 @@ public class FeedsController {
             @ApiResponse(code = 200, message = "Return found feed", response = FeedResponse.class),
             @ApiResponse(code = 404, message = "FeedEntity not found by slug")})
     @RequestMapping(value = "{feedSlug}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity fetchFeed(@ValidSlug @PathVariable("partnerSlug") String partnerSlug,@ValidSlug @PathVariable("feedSlug") String feedSlug) {
+    public ResponseEntity fetchFeed(@ValidSlug @PathVariable("partnerSlug") String partnerSlug, @ValidSlug @PathVariable("feedSlug") String feedSlug) {
 
         FeedEntity feedEntity = feedService.fetchByPartner(feedSlug, partnerSlug);
 
         return ResponseEntity.ok().body(FeedResponse.builder()
                 .name(feedEntity.getName())
                 .template(feedEntity.getTemplate().getSlug())
-                .fieldMapping(feedEntity.getFieldsMapping() != null ? feedEntity.getFieldsMapping().getSlug() : null)
                 .taxonomy(feedEntity.getPartnerTaxonomy() != null ? feedEntity.getPartnerTaxonomy().getSlug() : null)
                 .taxonomyBlacklist(getTaxonomyBlacklistSlug(feedEntity))
                 .termsBlacklist(feedEntity.getTermsBlacklist().stream().map(TermsBlacklistEntity::getSlug).collect(Collectors.toList()))
@@ -146,7 +141,6 @@ public class FeedsController {
                                 .slug(f.getSlug())
                                 .template(f.getTemplate().getSlug())
                                 .taxonomy(f.getPartnerTaxonomy() != null ? f.getPartnerTaxonomy().getSlug() : null)
-                                .fieldMapping(f.getFieldsMapping() != null ? f.getFieldsMapping().getSlug() : null)
                                 .taxonomyBlacklist(getTaxonomyBlacklistSlug(f))
                                 .termsBlacklist(f.getTermsBlacklist().stream().map(TermsBlacklistEntity::getSlug).collect(Collectors.toList()))
                                 .notification(FeedNotificationData.builder()
@@ -206,9 +200,6 @@ public class FeedsController {
                         .build())
                 .partnerTaxonomy(PartnerTaxonomyEntity.builder()
                         .slug(request.getTaxonomy())
-                        .build())
-                .fieldsMapping(FieldsMappingEntity.builder()
-                        .slug(request.getFieldMapping())
                         .build())
                 .active(request.getActive())
                 .collectionId(request.getCollectionId())

@@ -255,5 +255,4 @@ public class PartnerControllerTest {
     public String jsonRequest(Object request) throws JsonProcessingException {
         return mapper.writeValueAsString(request);
     }
-
 }

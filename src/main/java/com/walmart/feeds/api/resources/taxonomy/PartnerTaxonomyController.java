@@ -8,6 +8,7 @@ import com.walmart.feeds.api.core.service.taxonomy.model.TaxonomyUploadReportTO;
 import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO;
 import com.walmart.feeds.api.core.utils.SlugParserUtil;
 import com.walmart.feeds.api.core.utils.TaxonomyMappingCSVHandler;
+import com.walmart.feeds.api.resources.feed.validator.annotation.ValidSlug;
 import com.walmart.feeds.api.resources.taxonomy.request.UploadTaxonomyRequest;
 import com.walmart.feeds.api.resources.taxonomy.response.*;
 import io.swagger.annotations.Api;
@@ -46,7 +47,7 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 202, message = "Request to import taxonomy file was accepted and will be executed asynchronously", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "File not found")})
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity uploadTaxonomyMappingFile(@PathVariable("partnerSlug") String partnerSlug, @Valid @ModelAttribute UploadTaxonomyRequest uploadTaxonomyRequest, UriComponentsBuilder builder) throws IOException {
+    public ResponseEntity uploadTaxonomyMappingFile(@ValidSlug @PathVariable("partnerSlug") String partnerSlug, @Valid @ModelAttribute UploadTaxonomyRequest uploadTaxonomyRequest, UriComponentsBuilder builder) throws IOException {
 
         String taxonomySlug = SlugParserUtil.toSlug(uploadTaxonomyRequest.getName());
 
@@ -60,26 +61,26 @@ public class PartnerTaxonomyController {
         UriComponents uriComponents = builder.path(V1_PARTNER_TAXONOMY.concat("/{slug}")).buildAndExpand(partnerSlug, taxonomySlug);
 
         return ResponseEntity.accepted()
-                    .header(HttpHeaders.LOCATION, uriComponents.toUriString())
-                    .body(UploadTaxonomyResponse.builder()
-                            .report(TaxonomyReportResponse.builder()
-                                    .totalItemsImported(reportTO.getItemsImported())
-                                    .added(reportTO.getTaxonomiesToInsert().stream().map(t ->
-                                            TaxonomyMappingResponse.builder()
-                                                    .partnerPath(t.getPartnerPath())
-                                                    .partnerPathId(t.getPartnerPathId())
-                                                    .walmartPath(t.getWalmartPath())
-                                                    .build()
-                                    ).collect(Collectors.toList()))
-                                    .removed(reportTO.getTaxonomiesToRemove() == null ? null : reportTO.getTaxonomiesToRemove().stream().map(t ->
-                                            TaxonomyMappingResponse.builder()
-                                                    .partnerPath(t.getPartnerPath())
-                                                    .partnerPathId(t.getPartnerPathId())
-                                                    .walmartPath(t.getWalmartPath())
-                                                    .build()
-                                    ).collect(Collectors.toList()))
+                .header(HttpHeaders.LOCATION, uriComponents.toUriString())
+                .body(UploadTaxonomyResponse.builder()
+                        .report(TaxonomyReportResponse.builder()
+                                .totalItemsImported(reportTO.getItemsImported())
+                                .added(reportTO.getTaxonomiesToInsert().stream().map(t ->
+                                        TaxonomyMappingResponse.builder()
+                                                .partnerPath(t.getPartnerPath())
+                                                .partnerPathId(t.getPartnerPathId())
+                                                .walmartPath(t.getWalmartPath())
+                                                .build()
+                                ).collect(Collectors.toList()))
+                                .removed(reportTO.getTaxonomiesToRemove() == null ? null : reportTO.getTaxonomiesToRemove().stream().map(t ->
+                                        TaxonomyMappingResponse.builder()
+                                                .partnerPath(t.getPartnerPath())
+                                                .partnerPathId(t.getPartnerPathId())
+                                                .walmartPath(t.getWalmartPath())
+                                                .build()
+                                ).collect(Collectors.toList()))
                                 .build())
-                            .status(reportTO.getStatus())
+                        .status(reportTO.getStatus())
                         .build());
     }
 
@@ -90,7 +91,7 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 204, message = "Successful delete", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Partner Taxonomy not found")})
     @RequestMapping(value = "{taxonomySlug}", method = RequestMethod.DELETE)
-    public ResponseEntity removeBySlug(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("taxonomySlug") String taxonomySlug) {
+    public ResponseEntity removeBySlug(@ValidSlug @PathVariable("partnerSlug") String partnerSlug, @ValidSlug @PathVariable("taxonomySlug") String taxonomySlug) {
 
         partnerTaxonomyService.removeEntityBySlug(partnerSlug, taxonomySlug);
 
@@ -103,19 +104,19 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 200, message = "Successful fetch", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Partner Taxonomy or partner not found")})
     @RequestMapping(value = {"", "{taxonomySlug}"}, method = RequestMethod.GET)
-    public ResponseEntity fetchBySlug(@PathVariable("partnerSlug") String partnerSlug, @PathVariable(value = "taxonomySlug", required = false) String taxonomySlug, UriComponentsBuilder builder) {
+    public ResponseEntity fetchBySlug(@ValidSlug @PathVariable("partnerSlug") String partnerSlug, @PathVariable(value = "taxonomySlug", required = false) String taxonomySlug, UriComponentsBuilder builder) {
 
         List<PartnerTaxonomyEntity> entities = partnerTaxonomyService.fetchPartnerTaxonomies(partnerSlug, taxonomySlug);
         List<PartnerTaxonomyResponse> response = entities.stream().map(t -> {
             UriComponentsBuilder uriComponentsBuilder = builder.cloneBuilder();
             return PartnerTaxonomyResponse.builder()
-                        .archiveName(t.getFileName())
-                        .status(t.getStatus())
-                        .slug(t.getSlug())
-                        .mappingDate(t.getCreationDate())
-                        .link(uriComponentsBuilder.path(V1_PARTNER_TAXONOMY.concat("/download/{slug}")).buildAndExpand(t.getPartner().getSlug(), t.getSlug()).toUriString())
+                    .archiveName(t.getFileName())
+                    .status(t.getStatus())
+                    .slug(t.getSlug())
+                    .mappingDate(t.getCreationDate())
+                    .link(uriComponentsBuilder.path(V1_PARTNER_TAXONOMY.concat("/download/{slug}")).buildAndExpand(t.getPartner().getSlug(), t.getSlug()).toUriString())
                     .build();
-                })
+        })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(response);
@@ -127,7 +128,7 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 200, message = "Successful download", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Partner Taxonomy or partner not found")})
     @RequestMapping(value = "download/{taxonomySlug}", method = RequestMethod.GET)
-    public ResponseEntity downloadCSVFile(@PathVariable("partnerSlug") String partnerSlug, @PathVariable("taxonomySlug") String taxonomySlug, UriComponentsBuilder builder, HttpServletResponse response) throws IOException {
+    public ResponseEntity downloadCSVFile(@ValidSlug @PathVariable("partnerSlug") String partnerSlug, @ValidSlug @PathVariable("taxonomySlug") String taxonomySlug, UriComponentsBuilder builder, HttpServletResponse response) throws IOException {
         PartnerTaxonomyEntity entity = partnerTaxonomyService.fetchProcessedPartnerTaxonomy(partnerSlug, taxonomySlug);
 
         response.setContentType(TEXT_CSV);
@@ -146,7 +147,7 @@ public class PartnerTaxonomyController {
             @ApiResponse(code = 200, message = "Successful", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Partner Taxonomy not found")})
     @RequestMapping(value = "/getWalmartTaxonomy", method = RequestMethod.GET)
-    public ResponseEntity getWalmartTaxonomy(@PathVariable("partnerSlug") String partnerSlug, @RequestParam("taxonomySlug") String taxonomySlug, @RequestParam("taxonomy") String taxonomy) {
+    public ResponseEntity getWalmartTaxonomy(@ValidSlug @PathVariable("partnerSlug") String partnerSlug, @ValidSlug @RequestParam("taxonomySlug") String taxonomySlug, @RequestParam("taxonomy") String taxonomy) {
 
         String walmartTaxonomy = partnerTaxonomyService.fetchWalmartTaxonomy(taxonomySlug, taxonomy);
 
@@ -160,8 +161,8 @@ public class PartnerTaxonomyController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successful match", response = ResponseEntity.class)})
     @RequestMapping(method = RequestMethod.POST, value = "{slug}/matcher",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity matchedPartnerTaxonomies(@PathVariable("partnerSlug") String partnerSlug,
-                                                   @PathVariable("slug") String slug, @RequestBody MatcherRequest request) {
+    public ResponseEntity matchedPartnerTaxonomies(@ValidSlug @PathVariable("partnerSlug") String partnerSlug,
+                                                   @PathVariable("slug") String slug, @ValidSlug @RequestBody MatcherRequest request) {
 
         TaxonomiesMatchedTO taxonomiesMatched = partnerTaxonomyService.matchedPartnerTaxonomies(partnerSlug, slug, request.getWalmartTaxonomies());
         return ResponseEntity.ok(taxonomiesMatched);

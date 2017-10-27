@@ -391,6 +391,4 @@ public class TermsBlacklistControllerTest {
     public String jsonRequest(Object request) throws JsonProcessingException {
         return mapper.writeValueAsString(request);
     }
-
-
 }

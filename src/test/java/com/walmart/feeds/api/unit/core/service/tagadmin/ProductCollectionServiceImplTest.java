@@ -31,7 +31,6 @@ public class ProductCollectionServiceImplTest {
         when(tagAdmimCollectionClient.findById(7380L)).thenReturn(tagAdminCollection);
 
         productCollectionServiceImpl.validateCollectionExists(7380L);
-
     }
 
     @Test
@@ -52,5 +51,4 @@ public class ProductCollectionServiceImplTest {
         productCollectionServiceImpl.validateCollectionExists(1111L);
         verify(tagAdmimCollectionClient, times(1)).findById(null);
     }
-
 }

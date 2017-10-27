@@ -2,7 +2,6 @@ package com.walmart.feeds.api.core.service.feed.model;
 
 import com.walmart.feeds.api.core.repository.AuditableHistoryEntity;
 import com.walmart.feeds.api.core.repository.feed.model.FeedType;
-import com.walmart.feeds.api.core.repository.fields.model.FieldsMappingEntity;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
 import com.walmart.feeds.api.core.repository.template.model.TemplateEntity;
@@ -38,9 +37,6 @@ public class FeedHistory extends AuditableHistoryEntity {
     private PartnerTaxonomyEntity partnerTaxonomy;
 
     @ManyToOne
-    private FieldsMappingEntity fieldsMapping;
-
-    @ManyToOne
     private PartnerEntity partner;
 
     @Enumerated(EnumType.STRING)
@@ -73,7 +69,7 @@ public class FeedHistory extends AuditableHistoryEntity {
 
     @Builder
     public FeedHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name,
-                       PartnerTaxonomyEntity partnerTaxonomy, FieldsMappingEntity fieldsMapping, PartnerEntity partner,
+                       PartnerTaxonomyEntity partnerTaxonomy, PartnerEntity partner,
                        FeedType type, String notificationMethod, String notificationFormat, String notificationUrl, boolean active,
                        TemplateEntity template, String cronPattern) {
         super(creationDate, updateDate, user);
@@ -81,7 +77,6 @@ public class FeedHistory extends AuditableHistoryEntity {
         this.slug = slug;
         this.name = name;
         this.partnerTaxonomy = partnerTaxonomy;
-        this.fieldsMapping = fieldsMapping;
         this.partner = partner;
         this.type = type;
         this.notificationMethod = notificationMethod;

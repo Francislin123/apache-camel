@@ -470,105 +470,12 @@
 
     </changeSet>
 
-    <changeSet id="createFieldsMappingTable" author="adisson.gomes">
-
-        <comment>Creating fields mapping table</comment>
-
-        <createTable tableName="fields_mapping">
-            <column name="id" type="${uuid_type}">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="slug" type="varchar(50)">
-                <constraints nullable="false" unique="true"/>
-            </column>
-            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
-                <constraints nullable="false"/>
-            </column>
-            <column name="update_date" type="datetime"/>
-            <column name="user_login" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <rollback>
-            <dropTable tableName="fields_mapping"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="createMappedFieldTable" author="francislin.reis">
-
-        <comment>Creating mapping field table</comment>
-
-        <createTable tableName="mapped_field">
-            <column name="id" type="${uuid_type}">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="wm_field" type="varchar(50)">
-            </column>
-            <column name="partner_field" type="varchar(50)">
-            </column>
-            <column name="required" type="boolean" defaultValueBoolean="false">
-            </column>
-            <column name="fields_mapping_id" type="${uuid_type}">
-            </column>
-        </createTable>
-
-        <addForeignKeyConstraint baseTableName="mapped_field" baseColumnNames="fields_mapping_id"
-                                 constraintName="fk_fields_mapping_id"
-                                 onDelete="CASCADE"
-                                 referencedTableName="fields_mapping"
-                                 referencedColumnNames="id"/>
-        <rollback>
-            <dropForeignKeyConstraint baseTableName="mapped_field" constraintName="fk_fields_mapping_id"/>
-            <dropTable tableName="mapped_field"/>
-        </rollback>
-    </changeSet>
-
-
-    <changeSet id="createFieldsMappingHistoryTable" author="adisson.gomes">
-
-        <comment>Creating fields mapping history table</comment>
-
-        <createTable tableName="fields_mapping_history">
-            <column name="history_id" type="${uuid_type}">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="slug" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="mapped_fields" type="varchar2(4000)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
-                <constraints nullable="false"/>
-            </column>
-            <column name="update_date" type="datetime"/>
-            <column name="required" type="boolean" defaultValueBoolean="false">
-                <constraints nullable="false"/>
-            </column>
-            <column name="user_login" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <rollback>
-            <dropTable tableName="fields_mapping_history"/>
-        </rollback>
-    </changeSet>
-
     <changeSet id="createFeedTable" author="renato.ibanhez">
 
         <preConditions>
             <tableExists tableName="feed_template"/>
             <tableExists tableName="partner"/>
             <tableExists tableName="partner_taxonomy"/>
-            <tableExists tableName="fields_mapping"/>
             <tableExists tableName="taxonomy_blacklist"/>
             <tableExists tableName="terms_blacklist"/>
         </preConditions>
@@ -590,9 +497,6 @@
             </column>
             <column name="partner_taxonomy_id" type="${uuid_type}">
                 <constraints foreignKeyName="feed_taxonomy_fk"/>
-            </column>
-            <column name="fields_mapping_id" type="${uuid_type}">
-                <constraints nullable="true" foreignKeyName="feed_fields_mapping_fk"/>
             </column>
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>
@@ -631,9 +535,6 @@
         <addForeignKeyConstraint baseColumnNames="partner_taxonomy_id" baseTableName="feed"
                                  constraintName="feed_taxonomy_fk" referencedColumnNames="id"
                                  referencedTableName="partner_taxonomy"/>
-        <addForeignKeyConstraint baseColumnNames="fields_mapping_id" baseTableName="feed"
-                                 constraintName="feed_fields_mapping_fk" referencedColumnNames="id"
-                                 referencedTableName="fields_mapping"/>
         <rollback>
             <dropTable tableName="feed" cascadeConstraints="true"/>
         </rollback>
@@ -662,9 +563,6 @@
             </column>
             <column name="partner_taxonomy_id" type="${uuid_type}">
                 <constraints foreignKeyName="feed_taxonomy_fk"/>
-            </column>
-            <column name="fields_mapping_id" type="${uuid_type}">
-                <constraints nullable="false" foreignKeyName="feed_fields_mapping_fk"/>
             </column>
             <column name="name" type="varchar(50)">
                 <constraints nullable="false"/>

@@ -45,7 +45,6 @@ public class FeedTemplateLoader implements TemplateLoader {
             add("active", true);
             add("template", "template-buscape");
             add("taxonomyBlacklist", "blacklist-taxonomia-buscape");
-            add("fieldMapping", "google-fields");
             add("taxonomy", "google-taxonomy");
         }});
 

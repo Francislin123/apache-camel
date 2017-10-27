@@ -37,7 +37,5 @@ public class GenerationHistoryTemplateLoader implements TemplateLoader {
         .addTemplate(GENERATION_HISTORY_NO_FILENAME).inherits(GENERATION_HISTORY, new Rule() {{
             add("fileName", null);
         }});
-
     }
-
 }

@@ -24,6 +24,7 @@
             <fullPatternLayout class="ch.qos.logback.classic.PatternLayout">
                 <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${APP} [%thread] %-5level %logger{36} - %msg%n</pattern>
             </fullPatternLayout>
+            <staticField>_app:${APP}</staticField>
         </layout>
     </appender>
 

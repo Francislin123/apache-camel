@@ -54,16 +54,19 @@ public class TermsBlacklistServiceTest {
 
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.resources.blacklist.terms");
         FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.core.service.feed");
+        FixtureFactoryLoader.loadTemplates("com.walmart.feeds.api.unit.core.service.blacklist.terms");
     }
 
     @Test
     @SneakyThrows
     public void testSaveTermsBlackList() {
 
-        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
-        when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class))).thenReturn(createTermsBlacklist());
+        TermsBlacklistEntity termsBlacklistEntity = Fixture.from(TermsBlacklistEntity.class).gimme(TermsBlacklistServiceTemplateLoader.TERMS_BLACK_LIST);
 
-        termsBlacklistService.saveTermsBlacklist(createTermsBlacklist());
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+        when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class))).thenReturn(termsBlacklistEntity);
+
+        termsBlacklistService.saveTermsBlacklist(Fixture.from(TermsBlacklistEntity.class).gimme(TermsBlacklistServiceTemplateLoader.TERMS_BLACK_LIST));
 
         verify(termsBlackListRepository, Mockito.times(1)).findBySlug(anyString());
         verify(termsBlackListRepository, Mockito.times(1)).saveAndFlush(any(TermsBlacklistEntity.class));
@@ -73,20 +76,22 @@ public class TermsBlacklistServiceTest {
     @Test(expected = EntityAlreadyExistsException.class)
     public void testTermsBlackListDuplicatedConstraint() {
 
-        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
+        TermsBlacklistEntity termsBlacklistEntity = Fixture.from(TermsBlacklistEntity.class).gimme(TermsBlacklistServiceTemplateLoader.TERMS_BLACK_LIST);
 
-        termsBlacklistService.saveTermsBlacklist(createTermsBlacklist());
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(termsBlacklistEntity));
+
+        termsBlacklistService.saveTermsBlacklist(termsBlacklistEntity);
     }
 
     @Test
     public void testUpdateTermsBlackList() {
 
-        TermsBlacklistEntity termsBlacklist = createTermsBlacklist();
+        TermsBlacklistEntity termsBlacklistEntity = Fixture.from(TermsBlacklistEntity.class).gimme(TermsBlacklistServiceTemplateLoader.TERMS_BLACK_LIST);
 
-        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(termsBlacklist));
-        when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class))).thenReturn(createTermsBlacklist());
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(termsBlacklistEntity));
+        when(termsBlackListRepository.saveAndFlush(any(TermsBlacklistEntity.class))).thenReturn(termsBlacklistEntity);
 
-        termsBlacklistService.updateTermsBlacklist(termsBlacklist);
+        termsBlacklistService.updateTermsBlacklist(termsBlacklistEntity);
 
         verify(termsBlackListRepository, Mockito.times(1)).findBySlug(anyString());
         verify(termsBlackListRepository, Mockito.times(1)).saveAndFlush(any(TermsBlacklistEntity.class));
@@ -97,10 +102,12 @@ public class TermsBlacklistServiceTest {
     @SneakyThrows
     public void testUpdateTermsBlackListWhenOccursConflict() {
 
-        TermsBlacklistEntity termsBlacklist = createTermsBlacklistUpdateName();
+        TermsBlacklistEntity termsBlacklistEntity = Fixture.from(TermsBlacklistEntity.class).gimme(TermsBlacklistServiceTemplateLoader.TERMS_BLACK_LIST);
+
+        TermsBlacklistEntity termsBlacklist = Fixture.from(TermsBlacklistEntity.class).gimme(TermsBlacklistServiceTemplateLoader.TERMS_BLACK_LIST_UPDATE_NAME);
 
         // Return a existent terms blacklist
-        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(termsBlacklistEntity));
 
         try {
             termsBlacklistService.updateTermsBlacklist(termsBlacklist);
@@ -114,13 +121,13 @@ public class TermsBlacklistServiceTest {
     @Test
     public void testUpdateTermsBlackListNonexistentEntity() {
 
-        TermsBlacklistEntity termsBlacklist = createTermsBlacklist();
+        TermsBlacklistEntity termsBlacklistEntity = Fixture.from(TermsBlacklistEntity.class).gimme(TermsBlacklistServiceTemplateLoader.TERMS_BLACK_LIST);
 
         when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.empty());
 
         try {
 
-            termsBlacklistService.updateTermsBlacklist(termsBlacklist);
+            termsBlacklistService.updateTermsBlacklist(termsBlacklistEntity);
             Assert.fail("Expected EntityNotFoundException");
 
         } catch (EntityNotFoundException e) {
@@ -134,7 +141,9 @@ public class TermsBlacklistServiceTest {
     @Test
     public void testTermsBlackListFindBySlugRepository() {
 
-        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
+        TermsBlacklistEntity termsBlacklistEntity = Fixture.from(TermsBlacklistEntity.class).gimme(TermsBlacklistServiceTemplateLoader.TERMS_BLACK_LIST);
+
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(termsBlacklistEntity));
 
         termsBlackListRepository.findBySlug(anyString());
 
@@ -144,7 +153,9 @@ public class TermsBlacklistServiceTest {
     @Test
     public void testTermsBlackListFindBySlugService() {
 
-        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(createTermsBlacklist()));
+        TermsBlacklistEntity termsBlacklistEntity = Fixture.from(TermsBlacklistEntity.class).gimme(TermsBlacklistServiceTemplateLoader.TERMS_BLACK_LIST);
+
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(termsBlacklistEntity));
 
         termsBlacklistService.findBySlug(anyString());
 
@@ -202,34 +213,5 @@ public class TermsBlacklistServiceTest {
         assertFalse(termsBlacklistEntities.isEmpty());
         assertEquals(2, termsBlacklistEntities.size());
 
-    }
-
-    private TermsBlacklistEntity createTermsBlacklist() {
-
-        Set<String> list = new HashSet<>();
-        list.add("bullet");
-
-        TermsBlacklistEntity termsBlacklistEntity = TermsBlacklistEntity.builder()
-                .name("Facebook-terms-blacklist")
-                .slug("facebook-terms-blacklist")
-                .list(list)
-                .build();
-
-        return termsBlacklistEntity;
-    }
-
-    private TermsBlacklistEntity createTermsBlacklistUpdateName() {
-
-        Set<String> list = new HashSet<>();
-        list.add("bullet");
-        list.add("arms");
-
-        TermsBlacklistEntity termsBlacklistEntity = TermsBlacklistEntity.builder()
-                .name("Google-terms-blacklist")
-                .slug("facebook-terms-blacklist")
-                .list(list)
-                .build();
-
-        return termsBlacklistEntity;
     }
 }
