@@ -3,7 +3,13 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.13](35d9ac9...3fc466a) (25/10/2017)
+## [2.0.14](2bff4e0...e3bd138) (27/10/2017)
+- fix(qa): Fixing acces to tmp directory [e3bd138]
+
+## [origin/v1-sync-api](59e7843...2bff4e0) (25/10/2017)
+- 
+
+## [2.0.13](35d9ac9...59e7843) (25/10/2017)
 - fix(FDS-1947): context for qa liquibase scripts [5a2d3c5]
 - fix(FDS-1947): templates google xml and buscape xml [adc45cb]
 - fix(FDS-1947): new fields to configure template [52b42bb]
