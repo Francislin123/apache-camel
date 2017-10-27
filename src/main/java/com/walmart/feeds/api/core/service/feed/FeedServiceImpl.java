@@ -1,6 +1,5 @@
 package com.walmart.feeds.api.core.service.feed;
 
-import com.walmart.feeds.api.client.tagadmin.TagAdmimCollectionClient;
 import com.walmart.feeds.api.core.exceptions.EntityAlreadyExistsException;
 import com.walmart.feeds.api.core.exceptions.EntityNotFoundException;
 import com.walmart.feeds.api.core.exceptions.InvalidFeedException;
@@ -42,9 +41,6 @@ import java.util.List;
 public class FeedServiceImpl implements FeedService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FeedServiceImpl.class);
-
-    @Autowired
-    private TagAdmimCollectionClient tagAdminCollectionClient;
 
     @Autowired
     private FeedRepository feedRepository;
@@ -196,8 +192,6 @@ public class FeedServiceImpl implements FeedService {
 
         TaxonomyBlacklistEntity taxonomyBlacklist = getTaxonomyBlacklist(feedEntity);
 
-        List<TermsBlacklistEntity> termsBlacklist = getTermsBlacklist(feedEntity);
-
         PartnerTaxonomyEntity partnerTaxonomyEntity = getPartnerTaxonomy(feedEntity, partner);
 
         TaxonomyBlacklistPartnerValidator.validatePartnerTaxonomiesOnBlacklist(taxonomyBlacklist, partnerTaxonomyEntity);
@@ -311,11 +305,11 @@ public class FeedServiceImpl implements FeedService {
 
     private List<TermsBlacklistEntity> getTermsBlacklist(FeedEntity feedEntity) {
 
-        List<TermsBlacklistEntity> response = new ArrayList<>();
-
         if (feedEntity.getTermsBlacklist() == null || feedEntity.getTermsBlacklist().isEmpty()) {
             return null;
         }
+
+        List<TermsBlacklistEntity> response = new ArrayList<>();
 
         feedEntity.getTermsBlacklist().forEach(termsBlacklistEntity -> response.add(termsBlackListRepository.findBySlug(termsBlacklistEntity.getSlug()).get()));
 
@@ -328,7 +322,7 @@ public class FeedServiceImpl implements FeedService {
 
     private FeedHistory buildPartnerHistory(FeedEntity currentFeed) {
 
-        FeedHistory feedHistory = FeedHistory.builder()
+        return FeedHistory.builder()
                 .active(currentFeed.isActive())
                 .creationDate(currentFeed.getCreationDate())
                 .name(currentFeed.getName())
@@ -344,7 +338,6 @@ public class FeedServiceImpl implements FeedService {
                 .user(currentFeed.getUser())
                 .build();
 
-        return feedHistory;
     }
 
     private void validateFeedActivePartner(String partnerSlug, StringBuilder sb) {

@@ -3,7 +3,27 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.0.8](3f7be14...7befeed) (21/10/2017)
+## [2.0.13](35d9ac9...3fc466a) (25/10/2017)
+- fix(FDS-1947): context for qa liquibase scripts [5a2d3c5]
+- fix(FDS-1947): templates google xml and buscape xml [adc45cb]
+- fix(FDS-1947): new fields to configure template [52b42bb]
+
+## [2.0.12](4fd4832...35d9ac9) (24/10/2017)
+- refactor(change logback format to logback-spring) [eee7819]
+- refactor(remove vulnerability expose in check marx) [13852d5]
+
+## [2.0.11](4464c27...4fd4832) (24/10/2017)
+- chore(qa): commit to start build [d17d5ed]
+- new logback to don't write to file [24bfa64]
+- chore(qa): commit to start build [82849e7]
+- vai [e89feea]
+- logback changed [0405bdf]
+- refactor(remove vulnerability expose in check marx) [639d1f4]
+
+## [origin/feature/FDS-1930](c40ccea...4464c27) (21/10/2017)
+- 
+
+## [2.0.8](3f7be14...c40ccea) (21/10/2017)
 - fix(generation-history): increase file name field size [7befeed]
 
 ## [2.0.7](e85f5d5...3f7be14) (20/10/2017)

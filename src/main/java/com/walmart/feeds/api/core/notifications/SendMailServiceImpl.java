@@ -4,7 +4,7 @@ import com.walmart.feeds.api.client.gossip.GossipClient;
 import com.walmart.feeds.api.core.repository.mailconf.model.MailConfEntity;
 import com.walmart.feeds.api.core.repository.maillog.model.GossipEntity;
 import com.walmart.feeds.api.core.repository.maillog.model.MailLogEntity;
-import com.walmart.feeds.api.core.service.mailConf.MailConfService;
+import com.walmart.feeds.api.core.service.mail.MailConfService;
 import com.walmart.feeds.api.core.service.maillog.MailLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
