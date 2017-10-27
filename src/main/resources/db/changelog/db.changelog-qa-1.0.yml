@@ -3,6 +3,7 @@ databaseChangeLog:
       id: "insertDefaultTemplate"
       author: "adisson.gomes"
       comment: "Insert default template. Based on Zoom CPC XML"
+      context: local,qa
       changes:
         - insert:
             tableName: feed_template
@@ -22,34 +23,34 @@ databaseChangeLog:
               - column:
                   name: body
                   value: "<#compress>
-                          <#list products as p>
-                              <PRODUTO>
-                                  <SKUID>${p.id}</SKUID>
-                                  <CODIGO>0</CODIGO>
-                                  <DESCRICAO>${p.title}</DESCRICAO>
-                                  <DEPARTAMENTO>${p.categories[0].name}</DEPARTAMENTO>
+                          <#list products as p>\n
+                              <PRODUTO>\n
+                                  <SKUID>${p.id}</SKUID>\n
+                                  <CODIGO>0</CODIGO>\n
+                                  <DESCRICAO>${p.title}</DESCRICAO>\n
+                                  <DEPARTAMENTO>${p.categories[0].name}</DEPARTAMENTO>\n
                                   <#if p.categories?size gt 1>
-                                      <CATEGORIA>${p.categories[1].name}</CATEGORIA>
+                                      <CATEGORIA>${p.categories[1].name}</CATEGORIA>\n
                                   </#if>
                                   <#if p.categories?size gt 2>
-                                      <SUBCATEGORIA>${p.categories[2].name}</SUBCATEGORIA>
+                                      <SUBCATEGORIA>${p.categories[2].name}</SUBCATEGORIA>\n
                                   </#if>
-                                  <MARCA>${p.brandName}</MARCA>
-                                  <STATUS>NOVO</STATUS>
-                                  <ISBN/>
-                                  <EDITORA/>
-                                  <AUTOR/>
-                                  <EAN>${p.ean}</EAN>
-                                  <CODIGOSKUFORNECEDOR/>
-                                  <SITE>walmart.com.br</SITE>
-                                  <QTDRESENHAS>0</QTDRESENHAS>
-                                  <PRECODE>R$ ${p.payment.price}</PRECODE>
-                                  <PRECO>R$ <#if p.payment.suggestionPrice gt 0>${p.payment.suggestionPrice}<#else>${p.payment.discountedPrice}</#if></PRECO>
-                                  <NPARCELA>${p.payment.installmentAmount}</NPARCELA>
-                                  <VPARCELA>R$ ${p.payment.valuePerInstallment}</VPARCELA>
-                                  <URL>${p.urlWeb}</URL>
-                                  <URL_IMAGEM>${p.mainImage}</URL_IMAGEM>
-                              </PRODUTO>
+                                  <MARCA>${p.brandName}</MARCA>\n
+                                  <STATUS>NOVO</STATUS>\n
+                                  <ISBN/>\n
+                                  <EDITORA/>\n
+                                  <AUTOR/>\n
+                                  <EAN>${p.ean}</EAN>\n
+                                  <CODIGOSKUFORNECEDOR/>\n
+                                  <SITE>walmart.com.br</SITE>\n
+                                  <QTDRESENHAS>0</QTDRESENHAS>\n
+                                  <PRECODE>R$ ${p.payment.price}</PRECODE>\n
+                                  <PRECO>R$ <#if p.payment.suggestionPrice gt 0>${p.payment.suggestionPrice}<#else>${p.payment.discountedPrice}</#if></PRECO>\n
+                                  <NPARCELA>${p.payment.installmentAmount}</NPARCELA>\n
+                                  <VPARCELA>R$ ${p.payment.valuePerInstallment}</VPARCELA>\n
+                                  <URL>${p.urlWeb}</URL>\n
+                                  <URL_IMAGEM>${p.mainImage}</URL_IMAGEM>\n
+                              </PRODUTO>\n
                           </#list>
                           </#compress>"
               - column:
@@ -57,39 +58,194 @@ databaseChangeLog:
                   value: "</produtos>"
               - column:
                   name: separator
-                  value: ">"
+                  value: "/"
               - column:
                   name: format
                   value: "xml"
   - changeSet:
-        id: "insertInventoryTemplate"
-        author: "thiago.lima"
-        comment: "Insert google based inventory template"
-        changes:
-          - insert:
-              tableName: feed_template
-              columns:
-                - column:
-                    name: id
-                    valueComputed: "${uuid_function}"
-                - column:
-                    name: name
-                    value: "Inventory Template"
-                - column:
-                    name: slug
-                    value: "inventory"
-                - column:
-                    name: header
-                    value: "id    price    availability\n"
-                - column:
-                    name: body
-                    value: "<#list products as p>${p.id}	<#if p.payment.suggestionPrice gt 0>${p.payment.suggestionPrice}<#else>${p.payment.discountedPrice}</#if>	<#if p.quantity gt 0>in stock<#else>out of stock</#if>\n</#list>"
-                - column:
-                    name: footer
-                    value: " "
-                - column:
-                    name: separator
-                    value: "T"
-                - column:
-                    name: format
-                    value: "tsv"
+      id: "insertBuscapeTemplate"
+      author: "adisson.gomes"
+      comment: "Insert buscape template. Based on feed buscape.xml and StormLab 'br.com.walmart.frontend.xml.SkuFileBuscapeLayout"
+      context: local,qa
+      changes:
+        - insert:
+            tableName: feed_template
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "${uuid_function}"
+              - column:
+                  name: name
+                  value: "Buscape Template"
+              - column:
+                  name: slug
+                  value: "buscape-template"
+              - column:
+                  name: header
+                  value: "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
+                          <#assign updateDate = .now>\n
+                          <buscape>\n
+                            <data_atualizacao>${updateDate?iso(\"America/Sao_Paulo\")}</data_atualizacao>\n
+                            <produtos>\n"
+              - column:
+                  name: body
+                  value: "<#compress>
+                          <#list products as p>\n
+                              <produto>\n
+                                <descricao>${p.title}</descricao>\n
+                                <canal_buscape>\n
+                                  <canal_url>${p.urlWeb}</canal_url>\n
+                                  <valores>\n
+                                    <#if p.payment.suggestionPrice gt 0>
+                                    <valor>\n
+                                      <forma_de_pagamento><#if p.payment.paymentMethod??><#if p.payment.paymentMethod?lower_case==\"bank_slip\">boleto<#else>${p.payment.paymentMethod}</#if></#if></forma_de_pagamento>\n
+                                      <parcelamento>1</parcelamento>\n
+                                      <canal_preco>${p.payment.suggestionPrice?string.currency}</canal_preco>\n
+                                    </valor>\n
+                                    <#else>
+                                    <valor>\n
+                                      <forma_de_pagamento>boleto</forma_de_pagamento>\n
+                                      <parcelamento>1</parcelamento>\n
+                                      <canal_preco>${p.payment.discountedPrice?string.currency}</canal_preco>\n
+                                    </valor>\n
+                                    </#if>
+                                    <valor>\n
+                                      <forma_de_pagamento>cartao_avista</forma_de_pagamento>\n
+                                      <parcelamento>1</parcelamento>\n
+                                      <canal_preco>${p.payment.discountedPrice?string.currency}</canal_preco>\n
+                                    </valor>\n
+                                    <valor>\n
+                                      <forma_de_pagamento>cartao_parcelado_sem_juros</forma_de_pagamento>\n
+                                      <parcelamento>${p.payment.installmentAmount}x de ${p.payment.valuePerInstallment?string.currency}</parcelamento>\n
+                                      <canal_preco>${p.payment.discountedPrice?string.currency}</canal_preco>\n
+                                    </valor>\n
+                                  </valores>\n
+                                </canal_buscape>\n
+                                <id_oferta>${p.id}</id_oferta>\n
+                                <imagens>\n
+                                  <imagem  tipo=\"O\">${p.mainImage}</imagem>\n
+                                </imagens>\n
+                                <categoria>${p.categoryName}</categoria>\n
+                                <cod_barra>${p.ean}</cod_barra>\n
+                                <disponibilidade>${p.quantity}</disponibilidade>\n
+                                <isbn/>\n
+                                <editora/>\n
+                                <autor/>\n
+                                <marca>${p.brandName}</marca>\n
+                                <marketplace/>\n
+                                <marketplace_nomeparceiro/>\n
+                              </produto>\n
+                          </#list>
+                          </#compress>"
+              - column:
+                  name: footer
+                  value: "  </produtos>\n
+                          </buscape>"
+              - column:
+                  name: separator
+                  value: "/"
+              - column:
+                  name: format
+                  value: "xml"
+  - changeSet:
+      id: "insertGoogleXMLTemplate"
+      author: "adisson.gomes"
+      comment: "Insert google xml template. Based on https://support.google.com/merchants/answer/160589"
+      context: local,qa
+      changes:
+        - insert:
+            tableName: feed_template
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "${uuid_function}"
+              - column:
+                  name: name
+                  value: "Google XML Template"
+              - column:
+                  name: slug
+                  value: "google-xml-template"
+              - column:
+                  name: header
+                  value: "<?xml version=\"1.0\"?>\n
+                          <rss xmlns:g=\"http://base.google.com/ns/1.0\" version=\"2.0\">\n
+                          	<channel>\n"
+              - column:
+                  name: body
+                  value: "<#compress>
+                          <#list products as p>\n
+                                <item>\n
+                                    <g:title>${p.title}</g:title>\n
+                                    <g:brand>${p.brandName}</g:brand>\n
+                                    <g:condition>new</g:condition>\n
+                                    <g:description>${p.description}</g:description>\n
+                                    <g:id>${p.id}</g:id>\n
+                                    <g:image_link>${p.mainImage}${p.utmsParams}</g:image_link>\n
+                                    <g:mobile_link>${p.urlMobile}${p.utmsParams}</g:mobile_link>\n
+                                    <g:link>${p.urlWeb}</g:link>\n
+                                    <g:adwords_redirect>{ifnotmobile:${p.urlWeb}}{ifmobile:${p.urlMobile}}?utm_source=google-{ifpe:pe}{ifpla:pla}{ifdyn:dyn}&amp;adtype={ifpe:pe}{ifpla:pla}{ifdyn:dyn}&amp;utm_medium=ppc&amp;utm_term=${p.id}&amp;utm_campaign=${p.categories[0].name}+${p.id}</g:adwords_redirect>\n
+                                    <g:price><#if p.payment.suggestionPrice gt 0>${p.payment.suggestionPrice}<#else>${p.payment.discountedPrice}</#if> BRL</g:price>\n
+                                    <g:product_type>${p.categoryName}</g:product_type>\n
+                                    <g:google_product_category>${p.partnerCategoryName}</g:google_product_category>\n
+                                    <g:gtin>${p.ean}</g:gtin>\n
+                                    <g:availability><#if p.quantity gt 0>in stock<#else>out of stock</#if></g:availability>\n
+                                    <g:is_bundle>${p.kit?string('yes', 'no')}</g:is_bundle>\n
+                                    <g:installment>${p.payment.installmentAmount}:${p.payment.valuePerInstallment} BRL</g:installment>\n
+                                    <g:item_group_id>${p.productId}</g:item_group_id>\n
+                                    <g:gender></g:gender>\n
+                                    <g:color></g:color>\n
+                                    <g:size></g:size>\n
+                                    <g:age_group></g:age_group>\n
+                                </item>\n
+                          </#list>
+                          </#compress>"
+              - column:
+                  name: footer
+                  value: "    </channel>\n
+                          </rss>"
+              - column:
+                  name: separator
+                  value: ">"
+              - column:
+                  name: format
+                  value: "xml"
+              - column:
+                  name: language
+                  value: "en"
+              - column:
+                  name: country
+                  value: "US"
+                  value: "xml"
+  - changeSet:
+      id: "insertInventoryTemplate"
+      author: "thiago.lima"
+      comment: "Insert google based inventory template"
+      context: local,qa
+      changes:
+        - insert:
+            tableName: feed_template
+            columns:
+              - column:
+                  name: id
+                  valueComputed: "${uuid_function}"
+              - column:
+                  name: name
+                  value: "Inventory Template"
+              - column:
+                  name: slug
+                  value: "inventory"
+              - column:
+                  name: header
+                  value: "id    price    availability\n"
+              - column:
+                  name: body
+                  value: "<#list products as p>${p.id}	<#if p.payment.suggestionPrice gt 0>${p.payment.suggestionPrice}<#else>${p.payment.discountedPrice}</#if>	<#if p.quantity gt 0>in stock<#else>out of stock</#if>\n</#list>"
+              - column:
+                  name: footer
+                  value: " "
+              - column:
+                  name: separator
+                  value: "T"
+              - column:
+                  name: format
+                  value: "txt" # file content is TSV but google read a .txt file
