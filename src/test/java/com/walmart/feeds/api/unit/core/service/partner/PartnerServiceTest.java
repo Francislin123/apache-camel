@@ -88,7 +88,7 @@ public class PartnerServiceTest {
     @Test(expected = InconsistentEntityException.class)
     public void testCreatePartnerWIthEmptyPartnershipList() {
 
-        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme(PartnerServiceTemplateLoader.PARTNER_ENTITY_PARTNER_SHIPS_NULL);
+        PartnerEntity partnerEntity = Fixture.from(PartnerEntity.class).gimme(PartnerServiceTemplateLoader.PARTNER_ENTITY_PARTNERSHIPS_NULL);
 
         partnerService.save(partnerEntity);
     }
