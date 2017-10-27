@@ -59,6 +59,9 @@ public class FeedHistory extends AuditableHistoryEntity {
     @Column(name = "flag_active")
     private boolean active;
 
+    @Column(name = "cron_pattern")
+    private String cronPattern;
+
     @Transient
     private TemplateEntity template;
 
@@ -69,7 +72,10 @@ public class FeedHistory extends AuditableHistoryEntity {
     }
 
     @Builder
-    public FeedHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name, PartnerTaxonomyEntity partnerTaxonomy, FieldsMappingEntity fieldsMapping, PartnerEntity partner, FeedType type, String notificationMethod, String notificationFormat, String notificationUrl, boolean active, TemplateEntity template) {
+    public FeedHistory(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug, String name,
+                       PartnerTaxonomyEntity partnerTaxonomy, FieldsMappingEntity fieldsMapping, PartnerEntity partner,
+                       FeedType type, String notificationMethod, String notificationFormat, String notificationUrl, boolean active,
+                       TemplateEntity template, String cronPattern) {
         super(creationDate, updateDate, user);
         this.id = id;
         this.slug = slug;
@@ -83,5 +89,6 @@ public class FeedHistory extends AuditableHistoryEntity {
         this.notificationUrl = notificationUrl;
         this.active = active;
         this.template = template;
+        this.cronPattern = cronPattern;
     }
 }
