@@ -3,7 +3,18 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [2.1.0](2b26b9c...15882bd) (27/10/2017)
+## [3.0.0](868b9f5...715e8a7) (27/10/2017)
+- [Master]---> [technical-debt] Merge Request correction Ok 14:04 [d20dfa4]
+- [Master]---> [technical-debt] Merge Request correction Ok 14:04 [5f046e1]
+- refactor(remove fieldMapping in FeedRequest.java, and change test FeedTemplate) [89b9ff8]
+- refactor(remove gradle wrapper) [e56d7c9]
+- [Master]---> [technical-debt] Merge Request correction Ok [1f96588]
+- [Master]---> [technical-debt] Removed fields mapping changelog 15:12 Ok [869f55a]
+- [Master]---> [technical-debt] Removed fields mapping changelog [69dc0fe]
+- fix(technical-debt): Standardized tests [a5308c1]
+- refactor(add slug validation, and set app name in logback) [945a9f7]
+
+## [2.1.0](2b26b9c...868b9f5) (27/10/2017)
 - fix(FDS-1946): Fixing some discussions on merge request. [cac6428]
 - fix(FDS-1946): Fixing some discussions on merge request. [3a182bd]
 - fix(FDS-1946): fixing cron trigger. [e5b87b5]
