@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.0.0](868b9f5...715e8a7) (27/10/2017)
+## [3.0.1](88d3f56...71f0792) (27/10/2017)
+- fix(db): trigger jenkins [71f0792]
+
+## [3.0.0](868b9f5...88d3f56) (27/10/2017)
 - [Master]---> [technical-debt] Merge Request correction Ok 14:04 [d20dfa4]
 - [Master]---> [technical-debt] Merge Request correction Ok 14:04 [5f046e1]
 - refactor(remove fieldMapping in FeedRequest.java, and change test FeedTemplate) [89b9ff8]
