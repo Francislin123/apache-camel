@@ -7,6 +7,8 @@ info:
 server:
   port: 8080
   context-path: /admin-api
+  tomcat:
+    basedir: /tmp/tomcat
 
 management:
   security:

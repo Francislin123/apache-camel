@@ -4,6 +4,8 @@ COPY docker/start.sh /usr/bin/start.sh
 
 ADD ./build/libs/feeds-admin-api-*.jar /app/libs/
 
+WORKDIR /app
+
 RUN apk update && apk add libstdc++ curl grep && \
     mkdir -p /app/log && \
     mkdir -p /app/config && \
@@ -17,8 +19,8 @@ RUN apk update && apk add libstdc++ curl grep && \
 
 USER feeds-admin-api
 
-EXPOSE 8080
+RUN mkdir /tmp/tomcat static
 
-WORKDIR /app
+EXPOSE 8080
 
 ENTRYPOINT ["/usr/bin/start.sh"]
