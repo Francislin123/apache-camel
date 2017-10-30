@@ -126,3 +126,20 @@ sys_guid(),
 Insert into FEEDS_ADMIN.FEED_UTMS (FEED_ID,UTM_TYPE,UTM_VALUE) values ((SELECT id FROM FEED WHERE slug = 'google'), 'utm_source','google-pla');
 Insert into FEEDS_ADMIN.FEED_UTMS (FEED_ID,UTM_TYPE,UTM_VALUE) values ((SELECT id FROM FEED WHERE slug = 'google'), 'utm_medium','feed-medium');
 Insert into FEEDS_ADMIN.FEED_UTMS (FEED_ID,UTM_TYPE,UTM_VALUE) values ((SELECT id FROM FEED WHERE slug = 'google'), 'utm_campaign','feed-campaign');
+
+-- GOOGLE INVENTORY
+
+INSERT INTO FEED(id, name, slug, PARTNER_TAXONOMY_ID, partner_id, template_id, "TYPE", notification_method, notification_format, flag_active, creation_date, user_login) VALUES (
+sys_guid(),
+'google-inventory',
+'google-inventory',
+(SELECT id FROM PARTNER_TAXONOMY WHERE slug='zoom'),
+(SELECT id FROM PARTNER WHERE slug='zoom'),
+(SELECT id FROM FEED_TEMPLATE WHERE slug='inventory'),
+'INVENTORY', 'FILE', 'XML',
+1, CURRENT_TIMESTAMP, 'user'
+);
+
+Insert into FEEDS_ADMIN.FEED_UTMS (FEED_ID,UTM_TYPE,UTM_VALUE) values ((SELECT id FROM FEED WHERE slug = 'google-inventory'), 'utm_source','google-pla');
+Insert into FEEDS_ADMIN.FEED_UTMS (FEED_ID,UTM_TYPE,UTM_VALUE) values ((SELECT id FROM FEED WHERE slug = 'google-inventory'), 'utm_medium','feed-medium');
+Insert into FEEDS_ADMIN.FEED_UTMS (FEED_ID,UTM_TYPE,UTM_VALUE) values ((SELECT id FROM FEED WHERE slug = 'google-inventory'), 'utm_campaign','feed-campaign');
