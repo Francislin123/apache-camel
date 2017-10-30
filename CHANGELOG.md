@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.0.5](1c18f82...04b7bef) (30/10/2017)
+## [3.0.6](9e0a946...d5c9f7f) (30/10/2017)
+- refactor(readme) remove white space [d5c9f7f]
+
+## [3.0.5](1c18f82...9e0a946) (30/10/2017)
 - fix(FDS-1945): Fixing bug on update. [0312270]
 
 ## [3.0.4](a973347...1c18f82) (30/10/2017)
