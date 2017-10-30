@@ -18,16 +18,18 @@ public class FeedSchedulerImpl implements FeedScheduler{
     public void createFeedScheduler(String name, String group, String interval) {
 
         try {
-            JobDetail job = JobBuilder.newJob(MessageSenderJob.class)
-                    .withIdentity(name, group).build();
-
-            Trigger trigger = TriggerBuilder.newTrigger().withIdentity(name, group)
-                    .withSchedule(CronScheduleBuilder.cronSchedule(interval)
-                            .withMisfireHandlingInstructionFireAndProceed()).build();
-
             Scheduler scheduler = schedulerFactoryBean.getScheduler();
-            scheduler.start();
-            scheduler.scheduleJob(job, trigger);
+            if(!scheduler.checkExists(new JobKey(name, group))){
+                JobDetail job = JobBuilder.newJob(MessageSenderJob.class)
+                        .withIdentity(name, group).build();
+
+                Trigger trigger = TriggerBuilder.newTrigger().withIdentity(name, group)
+                        .withSchedule(CronScheduleBuilder.cronSchedule(interval)
+                                .withMisfireHandlingInstructionFireAndProceed()).build();
+
+                scheduler.start();
+                scheduler.scheduleJob(job, trigger);
+            }
         } catch (SchedulerException ex){
             throw new SystemException("Quartz exception", ex);
         }
