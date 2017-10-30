@@ -16,7 +16,6 @@ For more details access [Admin e API Interna Feeds](https://confluence.wmxp.com.
 
 ##### You can also:
 
-
 - Merge request in the master branch after being applied in production
 - All stories need a branch from the homologation
 - Every task needs a branch from the story
