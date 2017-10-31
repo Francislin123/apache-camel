@@ -8,10 +8,15 @@ For more details access [Admin e API Interna Feeds](https://confluence.wmxp.com.
 
   - Java 8
   - Gradle 4.0.1
-  - Spring Boot 2.0.0M3
+  - Spring Boot 1.5.6.RELEASE
   - Liquibase 1.2.4
-  - Hibernate 5.2.10
+  - Hibernate 5.2.12
   - Oracle 11
+  - SpringFox 2.7.0
+  - Apache Camel 2.19.2
+  - Elastic Search 2.4.6
+  - Feign 9.3.1
+  - Keycloak 3.3.0.CR2
 
 
 ##### You can also:
