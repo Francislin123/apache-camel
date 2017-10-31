@@ -93,7 +93,7 @@
         </addColumn>
 
         <addDefaultValue columnName="cron_pattern"
-                         defaultValue="0 0 1 * * ?"
+                         defaultValue="0 0 0/1 * * ?"
                          tableName="feed"/>
     </changeSet>
 

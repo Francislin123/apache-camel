@@ -48,4 +48,6 @@ public class FeedResponse {
 
     private Long collectionId;
 
+    private String cronPattern;
+
 }

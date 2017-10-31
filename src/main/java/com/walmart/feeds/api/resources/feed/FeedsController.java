@@ -70,6 +70,7 @@ public class FeedsController {
                         .build())
                 .termsBlacklist(getTermsBlacklist(request.getTermsBlacklist()))
                 .type(FeedType.getFromCode(request.getType()))
+                .cronPattern(request.getCronPattern())
                 .template(TemplateEntity.builder()
                         .slug(request.getTemplate())
                         .build())
@@ -120,6 +121,7 @@ public class FeedsController {
                 .utms(feedEntity.getUtms())
                 .creationDate(feedEntity.getCreationDate())
                 .updateDate(feedEntity.getUpdateDate())
+                .cronPattern(feedEntity.getCronPattern())
                 .active(feedEntity.isActive())
                 .build());
     }
@@ -162,6 +164,7 @@ public class FeedsController {
                                 .creationDate(f.getCreationDate())
                                 .updateDate(f.getUpdateDate())
                                 .active(f.isActive())
+                                .cronPattern(f.getCronPattern())
                                 .collectionId(f.getCollectionId())
                                 .build()
                 ).collect(Collectors.toList())).build());

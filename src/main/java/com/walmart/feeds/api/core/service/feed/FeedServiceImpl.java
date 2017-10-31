@@ -114,7 +114,7 @@ public class FeedServiceImpl implements FeedService {
                 .taxonomyBlacklist(taxonomyBlacklist)
                 .termsBlacklist(termsBlacklist)
                 .partnerTaxonomy(partnerTaxonomyEntity)
-                .cronPattern(feedEntity.getCronPattern() == null ? FeedSchedulerImpl.DEFAULT_CRON_INTERVAL : feedEntity.getCronPattern() )
+                .cronPattern(feedEntity.getCronPattern() == null ? FeedSchedulerImpl.DEFAULT_CRON_INTERVAL : feedEntity.getCronPattern())
                 .build();
 
         FeedEntity savedFeedEntity = saveFeedWithHistory(newFeed);
@@ -224,7 +224,7 @@ public class FeedServiceImpl implements FeedService {
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .taxonomyBlacklist(taxonomyBlacklist)
                 .termsBlacklist(getTermsBlacklist(feedEntity))
-                .cronPattern(feedEntity.getCronPattern())
+                .cronPattern(feedEntity.getCronPattern() == null ? FeedSchedulerImpl.DEFAULT_CRON_INTERVAL : feedEntity.getCronPattern() )
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
         saveFeedWithHistory(updatedFeed);
