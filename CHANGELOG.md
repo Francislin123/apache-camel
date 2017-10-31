@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.0.7](b5d4b5a...34373ce) (31/10/2017)
+## [3.0.8](f5a8c37...465986e) (31/10/2017)
+- fix(scheduler): fix invalid argument for scheduler [465986e]
+
+## [3.0.7](b5d4b5a...f5a8c37) (31/10/2017)
 - refactor(README): update readme [34373ce]
 
 ## [3.0.6](9e0a946...b5d4b5a) (30/10/2017)
