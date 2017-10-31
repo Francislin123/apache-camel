@@ -2,7 +2,7 @@ info:
   component: Feeds Admin Api
   project:
       name: feeds-admin-api
-      version: 3.0.7-SNAPSHOT
+      version: 3.0.7
 
 server:
   port: 8080
