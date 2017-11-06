@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.0.11](bca411f...2444dbf) (06/11/2017)
+## [3.0.12](a5e79a3...2dd52e0) (06/11/2017)
+- chore(README) teste build [2dd52e0]
+
+## [3.0.11](bca411f...a5e79a3) (06/11/2017)
 - chore(README) teste build [2444dbf]
 
 ## [3.0.10](2a1e656...bca411f) (06/11/2017)
