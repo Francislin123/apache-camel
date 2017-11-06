@@ -4,7 +4,7 @@ This application responsible for setting up a feed, through it you can register 
 
 For more details access [Admin e API Interna Feeds](https://confluence.wmxp.com.br/display/MI/2.+Admin+e+API+interna+Feeds).
 
-## Technologies
+# Technologies
 
   - Java 8
   - Gradle 4.0.1
