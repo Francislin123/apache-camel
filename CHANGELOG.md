@@ -3,7 +3,11 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.0.9](1f9d809...3b35756) (31/10/2017)
+## [3.0.10](2a1e656...671d548) (06/11/2017)
+- chore(README) teste build [671d548]
+- teste build [3941611]
+
+## [3.0.9](1f9d809...2a1e656) (31/10/2017)
 - chore(qa): commit to start build [3b35756]
 
 ## [3.0.8](f5a8c37...1f9d809) (31/10/2017)
@@ -51,11 +55,8 @@ entry.
 - feat(FDS-1946): scheduling feature ready to deploy [e73dc8b]
 - feat(FDS-1946):   Create a quartz based schedule [50b0539]
 
-## [2.0.14](2bff4e0...2b26b9c) (27/10/2017)
+## [2.0.14](59e7843...2b26b9c) (27/10/2017)
 - fix(qa): Fixing acces to tmp directory [e3bd138]
-
-## [origin/v1-sync-api](59e7843...2bff4e0) (25/10/2017)
-- 
 
 ## [2.0.13](35d9ac9...59e7843) (25/10/2017)
 - fix(FDS-1947): context for qa liquibase scripts [5a2d3c5]
