@@ -28,7 +28,7 @@
             <fullPatternLayout class="ch.qos.logback.classic.PatternLayout">
                 <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${APP} [%thread] %-5level %logger{36} - %msg%n</pattern>
             </fullPatternLayout>
-            <staticField>_app:${APP}</staticField>
+            <staticField>application:${APP}</staticField>
             <staticField>container_id:${SWARM_CONTAINER_ID}</staticField>
             <staticField>service_name:${SWARM_SERVICE_NAME}</staticField>
             <staticField>node_id:${SWARM_NODE_ID}</staticField>
