@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.0.12](a5e79a3...2dd52e0) (06/11/2017)
+## [3.0.13](30f6da6...e409abf) (07/11/2017)
+- refactor(logback): set static fields [e409abf]
+
+## [3.0.12](a5e79a3...30f6da6) (06/11/2017)
 - chore(README) teste build [2dd52e0]
 
 ## [3.0.11](bca411f...a5e79a3) (06/11/2017)
