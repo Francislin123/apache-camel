@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.0.14](5b48b27...68b597f) (07/11/2017)
+## [3.1.0](1c00c8c...3c9bd27) (10/11/2017)
+- feat(partner-taxonomy): match single walmart taxonomy to partner taxonomy [3c9bd27]
+
+## [3.0.14](5b48b27...1c00c8c) (07/11/2017)
 - refactor(logback): change _app to application [68b597f]
 
 ## [3.0.13](30f6da6...5b48b27) (07/11/2017)
