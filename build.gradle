@@ -72,32 +72,32 @@ liquibase {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             contexts 'prod'
             url 'jdbc:oracle:thin:@nae1-scan.vmcommerce.intra:1521/WAL01'
-            username 'FEEDS_ADMIN_ADM'
-            password 'FEEDS_ADMIN_ADM'
+            username "$System.env.FEEDS_DB_USER"
+            password "$System.env.FEEDS_DB_PASSWD"
         }
 
         stg {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             contexts 'prod'
             url 'jdbc:oracle:thin:@nae1-stg-scan.stg.vmcommerce.intra:1521/WAL01'
-            username 'FEEDS_ADMIN_ADM'
-            password 'FEEDS_ADMIN_ADM'
+            username "$System.env.FEEDS_DB_USER"
+            password "$System.env.FEEDS_DB_PASSWD"
         }
 
         qa {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             contexts 'qa'
             url 'jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF'
-            username 'FEEDS_ADMIN'
-            password 'FEEDS_ADMIN'
+            username "$System.env.FEEDS_DB_USER"
+            password "$System.env.FEEDS_DB_PASSWD"
         }
 
         local {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             url 'jdbc:oracle:thin:@localhost:1521/xe'
             contexts 'local'
-            username 'FEEDS_ADMIN'
-            password 'FEEDS_ADMIN'
+            username "$System.env.FEEDS_DB_USER"
+            password "$System.env.FEEDS_DB_PASSWD"
         }
 
     }
