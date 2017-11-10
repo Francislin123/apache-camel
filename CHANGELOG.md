@@ -3,7 +3,11 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.1.0](1c00c8c...3c9bd27) (10/11/2017)
+## [3.1.1](561bfb6...2768064) (10/11/2017)
+- chore(qa): commit to start build [2768064]
+- refactor: Changing user and passowrd from liquibase... Getting from system environment variable. Issue from SEC [1cad934]
+
+## [3.1.0](1c00c8c...561bfb6) (10/11/2017)
 - feat(partner-taxonomy): match single walmart taxonomy to partner taxonomy [3c9bd27]
 
 ## [3.0.14](5b48b27...1c00c8c) (07/11/2017)
