@@ -23,5 +23,5 @@ public interface PartnerTaxonomyService {
 
     String fetchWalmartTaxonomy(String partnerTaxonomySlug, String partnerTaxonomy);
 
-    TaxonomiesMatchedTO matchedPartnerTaxonomies(String partnerSlug, String slug, List<String> walmartTaxonomies);
+    TaxonomiesMatchedTO matchedPartnerTaxonomies(String partnerSlug, String slug, String walmartTaxonomy);
 }

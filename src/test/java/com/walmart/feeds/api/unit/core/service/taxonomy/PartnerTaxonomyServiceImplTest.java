@@ -30,7 +30,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -336,29 +335,28 @@ public class PartnerTaxonomyServiceImplTest {
 
     @Test
     public void matchedTaxonomies() throws Exception {
-        List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
+        String walmartTaxonomies = "Games > Playstation 3 > Jogos para PS3";
 
-        when(taxonomyMappingRepository.findMappingByPartner("zoom", "test", walmartTaxonomies.get(0))).thenReturn("Games > Consoles > PS3");
-        when(taxonomyMappingRepository.findMappingByPartner("zoom", "test", walmartTaxonomies.get(1))).thenReturn("Games > Consoles > PS4");
+        when(taxonomyMappingRepository.findMappingByPartner("zoom", "test", walmartTaxonomies)).thenReturn("Games > Consoles > PS3");
 
         TaxonomiesMatchedTO result = partnerTaxonomyService.matchedPartnerTaxonomies("zoom", "test", walmartTaxonomies);
 
         assertNotNull(result);
-        assertTrue(result.getMatched().get("Games > Playstation 3 > Jogos para PS3").equals("Games > Consoles > PS3"));
-        assertTrue(result.getNonMatched().isEmpty());
+        assertTrue(result.getWalmartTaxonomy().equals(walmartTaxonomies));
+        assertTrue(result.getPartnerTaxonomy().equals("Games > Consoles > PS3"));
     }
 
     @Test
     public void matchedTaxonomiesWithNonMatched() throws Exception {
-        List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
+        String walmartTaxonomies = "Games > Playstation 3 > Jogos para PS3";
 
-        when(taxonomyMappingRepository.findMappingByPartner("zoom", "test", walmartTaxonomies.get(0))).thenReturn("Games > Consoles > PS3");
+        when(taxonomyMappingRepository.findMappingByPartner("zoom", "test", walmartTaxonomies)).thenReturn(null);
 
         TaxonomiesMatchedTO result = partnerTaxonomyService.matchedPartnerTaxonomies("zoom", "test", walmartTaxonomies);
 
         assertNotNull(result);
-        assertTrue(result.getMatched().get("Games > Playstation 3 > Jogos para PS3").equals("Games > Consoles > PS3"));
-        assertFalse(result.getNonMatched().isEmpty());
+        assertTrue(result.getWalmartTaxonomy().equals(walmartTaxonomies));
+        assertNull(result.getPartnerTaxonomy());
     }
 
 }

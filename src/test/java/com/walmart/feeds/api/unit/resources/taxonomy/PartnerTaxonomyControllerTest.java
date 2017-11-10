@@ -25,7 +25,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -138,45 +139,36 @@ public class PartnerTaxonomyControllerTest {
     @Test
     public void matchedTaxonomies() throws Exception {
 
-        List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
-        MatcherRequest request = MatcherRequest.builder().walmartTaxonomies(walmartTaxonomies).build();
+        MatcherRequest request = MatcherRequest.builder().walmartTaxonomy("Games > Playstation 3 > Jogos para PS3").build();
 
-        Map<String, String> matched = new HashMap<>();
-        matched.put(walmartTaxonomies.get(0), "Games > Consoles > PS3");
-        matched.put(walmartTaxonomies.get(1), "Games > Consoles > PS4");
-
-        when(partnerTaxonomyService.matchedPartnerTaxonomies(eq("zoom"), eq("test"), anyList()))
+        when(partnerTaxonomyService.matchedPartnerTaxonomies(eq("zoom"), eq("test-taxonomy"), eq(request.getWalmartTaxonomy())))
                 .thenReturn(TaxonomiesMatchedTO.builder()
-                        .matched(matched)
-                        .nonMatched(new ArrayList<>())
+                        .walmartTaxonomy(request.getWalmartTaxonomy())
+                        .partnerTaxonomy("Games > Consoles > PS3")
                         .build());
 
-        mockMvc.perform(post(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/test/matcher", "zoom")
+        mockMvc.perform(post(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/test-taxonomy/matcher", "zoom")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(MapperUtil.getMapsAsJson(request)))
-                .andExpect(jsonPath("$.nonMatched", Matchers.empty()))
+                .andExpect(jsonPath("$.partnerTaxonomy", Matchers.equalTo("Games > Consoles > PS3")))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void matchedTaxonomiesWithNonMatched() throws Exception {
 
-        List<String> walmartTaxonomies = Arrays.asList("Games > Playstation 3 > Jogos para PS3", "Games > Playstation 4 > Jogos para PS4");
-        MatcherRequest request = MatcherRequest.builder().walmartTaxonomies(walmartTaxonomies).build();
+        MatcherRequest request = MatcherRequest.builder().walmartTaxonomy("Games > Playstation 3 > Jogos para PS3").build();
 
-        Map<String, String> matched = new HashMap<>();
-        matched.put(walmartTaxonomies.get(0), "Games > Consoles > PS3");
-
-        when(partnerTaxonomyService.matchedPartnerTaxonomies(eq("zoom"), eq("test"), anyList()))
+        when(partnerTaxonomyService.matchedPartnerTaxonomies(eq("zoom"), eq("test-taxonomy"), eq(request.getWalmartTaxonomy())))
                 .thenReturn(TaxonomiesMatchedTO.builder()
-                        .matched(matched)
-                        .nonMatched(Arrays.asList(walmartTaxonomies.get(1)))
+                        .walmartTaxonomy(request.getWalmartTaxonomy())
+                        .partnerTaxonomy(null)
                         .build());
 
-        mockMvc.perform(post(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/test/matcher", "zoom")
+        mockMvc.perform(post(PartnerTaxonomyController.V1_PARTNER_TAXONOMY + "/test-taxonomy/matcher", "zoom")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(MapperUtil.getMapsAsJson(request)))
-                .andExpect(jsonPath("$.nonMatched", Matchers.contains("Games > Playstation 4 > Jogos para PS4")))
+                .andExpect(jsonPath("$.partnerTaxonomy", Matchers.nullValue()))
                 .andExpect(status().isOk());
     }
 

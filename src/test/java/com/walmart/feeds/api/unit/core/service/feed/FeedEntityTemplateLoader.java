@@ -17,7 +17,9 @@ import com.walmart.feeds.api.unit.resources.blacklist.taxonomy.TaxonomyBlacklist
 import com.walmart.feeds.api.unit.resources.blacklist.terms.TermsBlackListTemplateLoader;
 import com.walmart.feeds.api.unit.resources.partner.test.template.PartnerTemplateLoader;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FeedEntityTemplateLoader implements TemplateLoader {
 

@@ -176,26 +176,8 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
     }
 
     @Override
-    public TaxonomiesMatchedTO matchedPartnerTaxonomies(String partnerSlug, String slug, List<String> walmartTaxonomies) {
-
-        Map<String, String> matched = new HashMap<>();
-        List<String> nonMatched = new ArrayList<>();
-
-        for (String walmartPath : walmartTaxonomies) {
-
-            String partnerPath = taxonomyMappingRepository.findMappingByPartner(partnerSlug, slug, walmartPath);
-
-            if (partnerPath == null) {
-                nonMatched.add(walmartPath);
-            } else {
-                matched.put(walmartPath, partnerPath);
-            }
-
-        }
-
-        return TaxonomiesMatchedTO.builder()
-                .matched(matched)
-                .nonMatched(nonMatched).build();
-
+    public TaxonomiesMatchedTO matchedPartnerTaxonomies(String partnerSlug, String slug, String walmartTaxonomy) {
+        String partnerTaxonomy = taxonomyMappingRepository.findMappingByPartner(partnerSlug, slug, walmartTaxonomy);
+        return TaxonomiesMatchedTO.builder().partnerTaxonomy(partnerTaxonomy).walmartTaxonomy(walmartTaxonomy).build();
     }
 }
