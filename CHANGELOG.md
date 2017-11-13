@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.1.1](561bfb6...2768064) (10/11/2017)
+## [3.1.2](83ffb60...75a95ee) (13/11/2017)
+- fix(feed-schedule): fix update name/slug - remove job [75a95ee]
+
+## [3.1.1](561bfb6...83ffb60) (10/11/2017)
 - chore(qa): commit to start build [2768064]
 - refactor: Changing user and passowrd from liquibase... Getting from system environment variable. Issue from SEC [1cad934]
 
