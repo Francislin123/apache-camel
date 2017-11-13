@@ -96,8 +96,8 @@ liquibase {
             changeLogFile 'src/main/resources/db/changelog/db.changelog-master.xml'
             url 'jdbc:oracle:thin:@localhost:1521/xe'
             contexts 'local'
-            username "$System.env.FEEDS_DB_USER"
-            password "$System.env.FEEDS_DB_PASSWD"
+            username "FEEDS_ADMIN"
+            password "FEEDS_ADMIN"
         }
 
     }

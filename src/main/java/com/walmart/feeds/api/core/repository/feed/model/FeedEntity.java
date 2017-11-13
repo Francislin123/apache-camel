@@ -119,5 +119,10 @@ public class FeedEntity extends AuditableEntity {
         this.collectionId = collectionId;
         this.cronPattern = cronPattern;
     }
+
+    @Override
+    public String toString() {
+        return "feed [slug=" + slug + "]";
+    }
 }
 

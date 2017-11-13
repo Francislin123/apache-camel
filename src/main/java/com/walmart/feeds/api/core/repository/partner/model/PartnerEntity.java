@@ -59,4 +59,8 @@ public class PartnerEntity extends AuditableEntity {
         return Arrays.asList(partnerships.split(PARTNERSHIP_SEPARATOR));
     }
 
+    @Override
+    public String toString() {
+        return "partner [slug=" + slug + "]";
+    }
 }

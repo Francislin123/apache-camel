@@ -194,6 +194,8 @@ public class FeedServiceImpl implements FeedService {
 
         FeedEntity persistedFeedEntity = feedRepository.findBySlug(feedEntity.getSlug()).orElseThrow(() -> new EntityNotFoundException("FeedEntity not Found"));
 
+        changeScheduleByFeedStatus(false, persistedFeedEntity.getSlug(), persistedFeedEntity.getPartner().getSlug(), persistedFeedEntity.getCronPattern());
+
         PartnerEntity partner = partnerService.findBySlug(feedEntity.getPartner().getSlug());
 
         TemplateEntity template = getTemplate(feedEntity);
