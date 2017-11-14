@@ -15,8 +15,8 @@ management:
     enabled: false
 
 graylog:
-  host: teste
-  port: 1010
+  host: radio.qa.vmcommerce.intra
+  port: 12202
 
 gossip:
   username: ADMIN

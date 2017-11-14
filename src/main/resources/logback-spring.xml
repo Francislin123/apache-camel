@@ -11,13 +11,15 @@
     <springProperty scope="context" name="SWARM_CONTAINER_ID" source="swarm.container.id"/>
     <springProperty scope="context" name="SWARM_SERVICE_NAME" source="swarm.service.name"/>
 
+    <property name="LOGGING_GENERAL_PATTERN"
+              value="[%d{yyyy-MM-dd HH:mm:ss.SSS}] [${APP}] [%-5level] [%marker] [%logger{36}] [%thread] [%msg%n%ex]"/>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+            <pattern>${LOGGING_GENERAL_PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- Appenders -->
     <appender name="GELF" class="de.siegmar.logbackgelf.GelfUdpAppender">
         <graylogHost>${LOGGING_HOST}</graylogHost>
         <graylogPort>${LOGGING_PORT}</graylogPort>
@@ -26,7 +28,7 @@
                 <pattern>%m%nopex</pattern>
             </shortPatternLayout>
             <fullPatternLayout class="ch.qos.logback.classic.PatternLayout">
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ${APP} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                <pattern>${LOGGING_GENERAL_PATTERN}</pattern>
             </fullPatternLayout>
             <staticField>application:${APP}</staticField>
             <staticField>container_id:${SWARM_CONTAINER_ID}</staticField>
@@ -36,7 +38,7 @@
     </appender>
 
     <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="info">
-        <level value="info" />
+        <level value="info"/>
     </logger>
 
     <!-- Loggers -->
