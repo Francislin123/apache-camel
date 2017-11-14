@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.1.3](00fee41...233f35f) (14/11/2017)
+## [3.1.4](166fece...8d8ff4b) (14/11/2017)
+- chore(qa): commit to start build [8d8ff4b]
+
+## [3.1.3](00fee41...166fece) (14/11/2017)
 - refactor(logback) configuration log [233f35f]
 
 ## [3.1.2](83ffb60...00fee41) (13/11/2017)
