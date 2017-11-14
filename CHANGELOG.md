@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.1.2](83ffb60...75a95ee) (13/11/2017)
+## [3.1.3](00fee41...233f35f) (14/11/2017)
+- refactor(logback) configuration log [233f35f]
+
+## [3.1.2](83ffb60...00fee41) (13/11/2017)
 - fix(feed-schedule): fix update name/slug - remove job [75a95ee]
 
 ## [3.1.1](561bfb6...83ffb60) (10/11/2017)
