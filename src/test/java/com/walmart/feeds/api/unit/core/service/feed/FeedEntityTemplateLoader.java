@@ -24,6 +24,7 @@ import java.util.Map;
 public class FeedEntityTemplateLoader implements TemplateLoader {
 
     public static final String FEED_ENTITY = "feed-entity";
+    public static final String FEED_ENTITY_API = "feed-entity-api";
     public static final String FEED_ENTITY_UPDATE_NAME = "feed-entity-updateTermsBlacklist-name";
     public static final String FEED_ENTITY_WITHOUT_TAXONOMY_BLACKLIST = "feed-entity-without-taxonomy-blacklist";
     public static final String FEED_ENTITY_WITH_INVALID_PARTNER_TAXONOMY_BLACKLIST = "feed-entity-with-invalid-partner-taxonomy-blacklist";
@@ -61,6 +62,33 @@ public class FeedEntityTemplateLoader implements TemplateLoader {
             add("utms", utms);
             add("notificationFormat", FeedNotificationFormat.JSON);
             add("notificationMethod", FeedNotificationMethod.FILE);
+            add("type", FeedType.INVENTORY);
+            add("collectionId", 7380L);
+            add("taxonomyBlacklist", blacklistEntity);
+            add("termsBlacklist", termsBlacklists);
+            add("template", template);
+            add("partner", partner);
+            add("partnerTaxonomy", partnerTaxonomy);
+
+        }});
+
+        Fixture.of(FeedEntity.class).addTemplate(FEED_ENTITY_API, new Rule() {{
+
+            TemplateEntity template = TemplateEntity.builder().slug("template").name("default").separator(">").body("default").format("xml").build();
+            PartnerEntity partner = Fixture.from(PartnerEntity.class).gimme(PartnerTemplateLoader.PARTNER_ENTITY);
+            TaxonomyBlacklistEntity blacklistEntity = Fixture.from(TaxonomyBlacklistEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY_BLACKLIST);
+            PartnerTaxonomyEntity partnerTaxonomy = Fixture.from(PartnerTaxonomyEntity.class).gimme(TaxonomyBlacklistTemplateLoader.TAXONOMY);
+            List<TermsBlacklistEntity> termsBlacklists = Fixture.from(TermsBlacklistEntity.class).gimme(1, TermsBlackListTemplateLoader.TERMS_BLACKLIST_REQUEST_VALID);
+
+            Map<String, String> utms = new HashMap<String, String>();
+            utms.put("utm_source", "Google");
+
+            add("name", "Feed test");
+            add("slug", "feed-test");
+            add("active", true);
+            add("utms", utms);
+            add("notificationFormat", FeedNotificationFormat.JSON);
+            add("notificationMethod", FeedNotificationMethod.API);
             add("type", FeedType.INVENTORY);
             add("collectionId", 7380L);
             add("taxonomyBlacklist", blacklistEntity);

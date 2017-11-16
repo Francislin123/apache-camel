@@ -12,6 +12,8 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntit
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
+import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
+import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
 import com.walmart.feeds.api.core.repository.taxonomy.model.PartnerTaxonomyEntity;
@@ -22,6 +24,7 @@ import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.Taxonomy
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TermsBlacklistNotFoundException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.validation.TaxonomyBlacklistPartnerValidator;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
+import com.walmart.feeds.api.core.service.feed.model.FeedNotificationType;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.scheduler.FeedScheduler;
 import com.walmart.feeds.api.core.service.scheduler.FeedSchedulerImpl;
@@ -120,8 +123,10 @@ public class FeedServiceImpl implements FeedService {
         FeedEntity savedFeedEntity = saveFeedWithHistory(newFeed);
 
         LOGGER.info("feedEntity={} message=saved_successfully", savedFeedEntity);
-
-        feedScheduler.createFeedScheduler(savedFeedEntity.getSlug(), savedFeedEntity.getPartner().getSlug(), savedFeedEntity.getCronPattern());
+        if(FeedNotificationMethod.FILE.equals(feedEntity.getNotificationMethod())){
+            LOGGER.info("creating schedule for entity {}", savedFeedEntity);
+            feedScheduler.createFeedScheduler(savedFeedEntity.getSlug(), savedFeedEntity.getPartner().getSlug(), savedFeedEntity.getCronPattern());
+        }
 
         return savedFeedEntity;
     }
@@ -177,7 +182,9 @@ public class FeedServiceImpl implements FeedService {
 
         saveFeedWithHistory(updatedFeed);
 
-        changeScheduleByFeedStatus(active, updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
+        if(FeedNotificationMethod.FILE.equals(updatedFeed.getNotificationMethod())) {
+            changeScheduleByFeedStatus(active, updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
+        }
 
         LOGGER.info("feed={} message=updated_successfully", feedEntity);
     }
@@ -194,7 +201,9 @@ public class FeedServiceImpl implements FeedService {
 
         FeedEntity persistedFeedEntity = feedRepository.findBySlug(feedEntity.getSlug()).orElseThrow(() -> new EntityNotFoundException("FeedEntity not Found"));
 
-        changeScheduleByFeedStatus(false, persistedFeedEntity.getSlug(), persistedFeedEntity.getPartner().getSlug(), persistedFeedEntity.getCronPattern());
+        if(FeedNotificationMethod.FILE.equals(persistedFeedEntity.getNotificationMethod())) {
+            changeScheduleByFeedStatus(false, persistedFeedEntity.getSlug(), persistedFeedEntity.getPartner().getSlug(), persistedFeedEntity.getCronPattern());
+        }
 
         PartnerEntity partner = partnerService.findBySlug(feedEntity.getPartner().getSlug());
 
@@ -231,7 +240,9 @@ public class FeedServiceImpl implements FeedService {
                 .build();
         saveFeedWithHistory(updatedFeed);
 
-        changeScheduleByFeedStatus(updatedFeed.isActive(), updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
+        if(FeedNotificationMethod.FILE.equals(updatedFeed.getNotificationMethod())) {
+            changeScheduleByFeedStatus(updatedFeed.isActive(), updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
+        }
 
         LOGGER.info("feedEntity={} message=update_successfully", feedEntity);
     }
@@ -387,6 +398,7 @@ public class FeedServiceImpl implements FeedService {
     }
 
     private void changeScheduleByFeedStatus(boolean status, String slug, String partnerSlug, String cronPattern){
+
         if (status){
 
             feedScheduler.createFeedScheduler(slug, partnerSlug, cronPattern);

@@ -380,4 +380,54 @@ doNothing().when(feedScheduler).createFeedScheduler(anyString(), anyString(), an
         doAnswer(answer -> {throw new UserException("Error");}).when(productCollectionService).validateCollectionExists(0L);
         feedService.validateFeed("anyPartnerSlug", "someFeedSlug");
     }
+
+    @Test
+    public void testUpdateFeedWithFileNotification() {
+
+        FeedEntity feedEntity = Fixture.from(FeedEntity.class).gimme(FeedEntityTemplateLoader.FEED_ENTITY);
+
+        doNothing().when(productCollectionService).validateCollectionExists(feedEntity.getCollectionId());
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
+        when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
+        when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
+        when(taxonomyBlacklistRepository.findBySlug(feedEntity.getTaxonomyBlacklist().getSlug())).thenReturn(Optional.of(feedEntity.getTaxonomyBlacklist()));
+        when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
+        when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getTermsBlacklist().get(0)));
+        doNothing().when(feedScheduler).createFeedScheduler(anyString(), anyString(), anyString());
+
+        this.feedService.updateFeed(feedEntity);
+
+
+        verify(feedRepository).findBySlug(anyString());
+        verify(feedRepository).saveAndFlush(Mockito.any(FeedEntity.class));
+        verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
+        verify(feedScheduler, times(1)).createFeedScheduler(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    public void testUpdateFeedWithAPINotification() {
+
+        FeedEntity feedEntity = Fixture.from(FeedEntity.class).gimme(FeedEntityTemplateLoader.FEED_ENTITY_API);
+
+        doNothing().when(productCollectionService).validateCollectionExists(feedEntity.getCollectionId());
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
+        when(partnerService.findBySlug(anyString())).thenReturn(feedEntity.getPartner());
+        when(templateRepository.findBySlug("template")).thenReturn(Optional.of(feedEntity.getTemplate()));
+        when(taxonomyBlacklistRepository.findBySlug(feedEntity.getTaxonomyBlacklist().getSlug())).thenReturn(Optional.of(feedEntity.getTaxonomyBlacklist()));
+        when(partnerTaxonomyRepository.findBySlugAndPartner(anyString(), eq(feedEntity.getPartner()))).thenReturn(Optional.of(feedEntity.getPartnerTaxonomy()));
+        when(feedRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity));
+        when(feedRepository.saveAndFlush(any(FeedEntity.class))).thenReturn(feedEntity);
+        when(termsBlackListRepository.findBySlug(anyString())).thenReturn(Optional.of(feedEntity.getTermsBlacklist().get(0)));
+        doNothing().when(feedScheduler).createFeedScheduler(anyString(), anyString(), anyString());
+
+        this.feedService.updateFeed(feedEntity);
+
+
+        verify(feedRepository).findBySlug(anyString());
+        verify(feedRepository).saveAndFlush(Mockito.any(FeedEntity.class));
+        verify(feedHistoryRepository).save(Matchers.any(FeedHistory.class));
+        verify(feedScheduler, times(0)).createFeedScheduler(anyString(), anyString(), anyString());
+    }
 }
