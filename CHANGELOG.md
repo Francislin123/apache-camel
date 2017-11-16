@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.1.4](166fece...8d8ff4b) (14/11/2017)
+## [3.1.5](14c0ff5...9f9b857) (16/11/2017)
+- fix(fileNotificationBug): Fixing bug that create a schedule when file notification is API [9f9b857]
+
+## [3.1.4](166fece...14c0ff5) (14/11/2017)
 - chore(qa): commit to start build [8d8ff4b]
 
 ## [3.1.3](00fee41...166fece) (14/11/2017)
