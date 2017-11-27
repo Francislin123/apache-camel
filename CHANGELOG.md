@@ -3,7 +3,10 @@ documentation](https://confluence.wmxp.com.br/display/DEVTOOLS/Swiss-Knife+2.0#S
 entry.
 
 
-## [3.1.5](14c0ff5...9f9b857) (16/11/2017)
+## [3.1.6](fd90022...51bbe5f) (27/11/2017)
+- refactor(partner-taxonomy-cache): move cache to service layer [51bbe5f]
+
+## [3.1.5](14c0ff5...fd90022) (16/11/2017)
 - fix(fileNotificationBug): Fixing bug that create a schedule when file notification is API [9f9b857]
 
 ## [3.1.4](166fece...14c0ff5) (14/11/2017)
