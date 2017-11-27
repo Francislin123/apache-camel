@@ -6,10 +6,11 @@
 
     <cache alias="taxonomy-mappings">
         <expiry>
-            <ttl unit="minutes">10</ttl>
+            <ttl unit="minutes">30</ttl>
         </expiry>
         <resources>
-            <heap>2000</heap>
+            <heap>10000</heap>
+            <offheap unit="MB">512</offheap>
         </resources>
     </cache>
 

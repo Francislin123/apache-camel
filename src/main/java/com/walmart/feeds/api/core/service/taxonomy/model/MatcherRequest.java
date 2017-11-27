@@ -1,15 +1,15 @@
 package com.walmart.feeds.api.core.service.taxonomy.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.io.Serializable;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MatcherRequest {
+@EqualsAndHashCode
+public class MatcherRequest implements Serializable {
 
     private String walmartTaxonomy;
 

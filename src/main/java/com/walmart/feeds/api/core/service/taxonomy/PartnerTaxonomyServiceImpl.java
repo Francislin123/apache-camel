@@ -15,6 +15,7 @@ import com.walmart.feeds.api.core.service.taxonomy.model.UploadTaxonomyMappingTO
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -123,10 +124,8 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
     public PartnerTaxonomyEntity fetchProcessedPartnerTaxonomy(String partnerSlug, String slug) {
         PartnerEntity partner = partnerService.findBySlug(partnerSlug);
 
-        PartnerTaxonomyEntity entity = partnerTaxonomyRepository.findBySlugAndPartnerAndStatus(slug, partner, ImportStatus.PROCESSED).
+        return partnerTaxonomyRepository.findBySlugAndPartnerAndStatus(slug, partner, ImportStatus.PROCESSED).
                 orElseThrow( () -> new EntityNotFoundException("Partner Taxonomy not found or imported with invalid status"));
-
-        return entity;
     }
 
     @Override
@@ -176,6 +175,7 @@ public class PartnerTaxonomyServiceImpl implements PartnerTaxonomyService {
     }
 
     @Override
+    @Cacheable(value = "taxonomy-mappings")
     public TaxonomiesMatchedTO matchedPartnerTaxonomies(String partnerSlug, String slug, String walmartTaxonomy) {
         String partnerTaxonomy = taxonomyMappingRepository.findMappingByPartner(partnerSlug, slug, walmartTaxonomy);
         return TaxonomiesMatchedTO.builder().partnerTaxonomy(partnerTaxonomy).walmartTaxonomy(walmartTaxonomy).build();

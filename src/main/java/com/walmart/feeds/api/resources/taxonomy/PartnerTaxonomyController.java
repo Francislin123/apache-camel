@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.cache.annotation.CacheResult;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -162,7 +161,6 @@ public class PartnerTaxonomyController {
     @ApiResponses(value = {@ApiResponse(code = 200, message = "Successful match", response = ResponseEntity.class)})
     @RequestMapping(method = RequestMethod.POST, value = "{slug}/matcher",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @CacheResult(cacheName = "taxonomy-mappings")
     public ResponseEntity matchedPartnerTaxonomies(@ValidSlug @PathVariable("partnerSlug") String partnerSlug,
                                                    @PathVariable("slug") String slug, @ValidSlug @RequestBody MatcherRequest request) {
 
