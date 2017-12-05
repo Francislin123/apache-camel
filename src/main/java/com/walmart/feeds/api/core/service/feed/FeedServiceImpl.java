@@ -8,6 +8,7 @@ import com.walmart.feeds.api.core.notifications.SendMailService;
 import com.walmart.feeds.api.core.repository.blacklist.TaxonomyBlacklistRepository;
 import com.walmart.feeds.api.core.repository.blacklist.TermsBlackListRepository;
 import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyBlacklistEntity;
+import com.walmart.feeds.api.core.repository.blacklist.model.TaxonomyOwner;
 import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntity;
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
@@ -394,9 +395,11 @@ public class FeedServiceImpl implements FeedService {
             taxonomyBlacklistService.validateBlacklist(taxonomyBlacklistEntity);
         } catch (UserException ex) {
             LOGGER.error("Starting call to check if taxonomy exists and don't have any products");
-
-            categoryCollectionService.validateTaxonomy(taxonomyBlacklistEntity.getName());
-            sendMailService.sendMail(feedSlug, partnerSlug, "Taxonomy does not exist in the catalog");
+            taxonomyBlacklistEntity.getList().forEach(taxonomy -> {
+                if(taxonomy.getOwner().equals(TaxonomyOwner.WALMART) && !categoryCollectionService.validateTaxonomy(taxonomy.getTaxonomy())){
+                    sendMailService.sendMail(feedSlug, partnerSlug, "Taxonomy does not exist in the catalog");
+                }
+            });
         }
     }
 
