@@ -1,7 +1,7 @@
 package com.walmart.feeds.api.core.service.feed;
 
 /**
- * Created by vn0gshm on 04/12/17.
+ * Created by Francislin Dos Reis on 04/12/17.
  */
 
 import com.walmart.feeds.api.client.categoryCollection.CategoryClient;
