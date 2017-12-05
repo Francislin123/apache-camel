@@ -47,5 +47,4 @@ public class TemplateController {
 
         return ResponseEntity.ok(response);
     }
-
 }

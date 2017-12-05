@@ -12,7 +12,6 @@ import com.walmart.feeds.api.core.repository.blacklist.model.TermsBlacklistEntit
 import com.walmart.feeds.api.core.repository.feed.FeedHistoryRepository;
 import com.walmart.feeds.api.core.repository.feed.FeedRepository;
 import com.walmart.feeds.api.core.repository.feed.model.FeedEntity;
-import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationFormat;
 import com.walmart.feeds.api.core.repository.feed.model.FeedNotificationMethod;
 import com.walmart.feeds.api.core.repository.partner.model.PartnerEntity;
 import com.walmart.feeds.api.core.repository.taxonomy.PartnerTaxonomyRepository;
@@ -24,7 +23,6 @@ import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.Taxonomy
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.exceptions.TermsBlacklistNotFoundException;
 import com.walmart.feeds.api.core.service.blacklist.taxonomy.validation.TaxonomyBlacklistPartnerValidator;
 import com.walmart.feeds.api.core.service.feed.model.FeedHistory;
-import com.walmart.feeds.api.core.service.feed.model.FeedNotificationType;
 import com.walmart.feeds.api.core.service.partner.PartnerService;
 import com.walmart.feeds.api.core.service.scheduler.FeedScheduler;
 import com.walmart.feeds.api.core.service.scheduler.FeedSchedulerImpl;
@@ -77,6 +75,9 @@ public class FeedServiceImpl implements FeedService {
     @Autowired
     private FeedScheduler feedScheduler;
 
+    @Autowired
+    private CategoryCollectionService categoryCollectionService;
+
     @Override
     @Transactional
     public FeedEntity createFeed(FeedEntity feedEntity) {
@@ -123,7 +124,7 @@ public class FeedServiceImpl implements FeedService {
         FeedEntity savedFeedEntity = saveFeedWithHistory(newFeed);
 
         LOGGER.info("feedEntity={} message=saved_successfully", savedFeedEntity);
-        if(FeedNotificationMethod.FILE.equals(feedEntity.getNotificationMethod())){
+        if (FeedNotificationMethod.FILE.equals(feedEntity.getNotificationMethod())) {
             LOGGER.info("creating schedule for entity {}", savedFeedEntity);
             feedScheduler.createFeedScheduler(savedFeedEntity.getSlug(), savedFeedEntity.getPartner().getSlug(), savedFeedEntity.getCronPattern());
         }
@@ -182,7 +183,7 @@ public class FeedServiceImpl implements FeedService {
 
         saveFeedWithHistory(updatedFeed);
 
-        if(FeedNotificationMethod.FILE.equals(updatedFeed.getNotificationMethod())) {
+        if (FeedNotificationMethod.FILE.equals(updatedFeed.getNotificationMethod())) {
             changeScheduleByFeedStatus(active, updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
         }
 
@@ -201,7 +202,7 @@ public class FeedServiceImpl implements FeedService {
 
         FeedEntity persistedFeedEntity = feedRepository.findBySlug(feedEntity.getSlug()).orElseThrow(() -> new EntityNotFoundException("FeedEntity not Found"));
 
-        if(FeedNotificationMethod.FILE.equals(persistedFeedEntity.getNotificationMethod())) {
+        if (FeedNotificationMethod.FILE.equals(persistedFeedEntity.getNotificationMethod())) {
             changeScheduleByFeedStatus(false, persistedFeedEntity.getSlug(), persistedFeedEntity.getPartner().getSlug(), persistedFeedEntity.getCronPattern());
         }
 
@@ -235,12 +236,12 @@ public class FeedServiceImpl implements FeedService {
                 .partnerTaxonomy(partnerTaxonomyEntity)
                 .taxonomyBlacklist(taxonomyBlacklist)
                 .termsBlacklist(getTermsBlacklist(feedEntity))
-                .cronPattern(feedEntity.getCronPattern() == null ? FeedSchedulerImpl.DEFAULT_CRON_INTERVAL : feedEntity.getCronPattern() )
+                .cronPattern(feedEntity.getCronPattern() == null ? FeedSchedulerImpl.DEFAULT_CRON_INTERVAL : feedEntity.getCronPattern())
                 .creationDate(persistedFeedEntity.getCreationDate())
                 .build();
         saveFeedWithHistory(updatedFeed);
 
-        if(FeedNotificationMethod.FILE.equals(updatedFeed.getNotificationMethod())) {
+        if (FeedNotificationMethod.FILE.equals(updatedFeed.getNotificationMethod())) {
             changeScheduleByFeedStatus(updatedFeed.isActive(), updatedFeed.getSlug(), updatedFeed.getPartner().getSlug(), updatedFeed.getCronPattern());
         }
 
@@ -269,7 +270,7 @@ public class FeedServiceImpl implements FeedService {
         }
 
         if (feedEntity.getTaxonomyBlacklist() != null) {
-            validateBlackList(feedEntity.getTaxonomyBlacklist());
+            validateBlackList(feedEntity.getTaxonomyBlacklist(), feedSlug, partnerSlug);
         }
 
         if (sb.length() > 0) {
@@ -387,25 +388,27 @@ public class FeedServiceImpl implements FeedService {
     }
 
     @Async
-    private void validateBlackList(TaxonomyBlacklistEntity taxonomyBlacklistEntity) {
+    public void validateBlackList(TaxonomyBlacklistEntity taxonomyBlacklistEntity, String partnerSlug, String feedSlug) {
         LOGGER.debug("Validating blacklist:  {}", taxonomyBlacklistEntity.getSlug());
         try {
             taxonomyBlacklistService.validateBlacklist(taxonomyBlacklistEntity);
         } catch (UserException ex) {
             LOGGER.error("Starting call to check if taxonomy exists and don't have any products");
-            //TODO PENDENCIA DE ESTORIA PARA BUSCA DA ESTRUTURA COMERCIAL NO CATALOGO
+
+            categoryCollectionService.validateTaxonomy(taxonomyBlacklistEntity.getName());
+            sendMailService.sendMail(feedSlug, partnerSlug, "Taxonomy does not exist in the catalog");
         }
     }
 
-    private void changeScheduleByFeedStatus(boolean status, String slug, String partnerSlug, String cronPattern){
+    private void changeScheduleByFeedStatus(boolean status, String slug, String partnerSlug, String cronPattern) {
 
-        if (status){
+        if (status) {
 
             feedScheduler.createFeedScheduler(slug, partnerSlug, cronPattern);
 
-        }else {
+        } else {
 
-            feedScheduler.deleteJob(slug,partnerSlug);
+            feedScheduler.deleteJob(slug, partnerSlug);
 
         }
     }
