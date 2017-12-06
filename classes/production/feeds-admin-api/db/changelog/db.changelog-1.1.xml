@@ -1,0 +1,106 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="createMailSenderConfig" author="thiago.lima">
+
+        <comment>Creating mail sender configuration table</comment>
+
+        <createTable tableName="mail_conf">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="mail_to" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="mail_conf"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createMailLog" author="thiago.lima">
+
+        <comment>Creating mail log table</comment>
+
+        <createTable tableName="mail_log">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sent_to" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="body_msg" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="mail_log"/>
+        </rollback>
+
+    </changeSet>
+
+
+    <changeSet id="insertDefaultMailConf" author="thiago.lima">
+        <insert tableName="mail_conf" >
+            <column name="id" valueComputed="${uuid_function}"/>
+            <column name="slug" value="default_slug"/>
+            <column name="mail_to" value="gecbrfeeds@wal-mart.com"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="liquibase-docs" id="createProcedureEraseDatabase">
+        <createProcedure catalogName="eraseDatabase"
+                         dbms="h2, oracle"
+                         encoding="utf8"
+                         procedureName="erase database"
+                         relativeToChangelogFile="true"
+                         schemaName="public">
+            CREATE OR REPLACE PROCEDURE clean_database  AS
+            BEGIN
+                DELETE FROM feed_history ;
+                DELETE FROM FIELDS_MAPPING_HISTORY;
+                DELETE FROM MAPPED_FIELD;
+                DELETE FROM FIELDS_MAPPING;
+                DELETE FROM MAIL_LOG;
+                DELETE FROM TAXONOMY_MAPPING_HISTORY;
+                DELETE FROM TAXONOMY_BLACKLIST_HISTORY;
+                DELETE FROM TAXONOMY_BLACKLIST_MAPPING;
+                DELETE FROM TAXONOMY_BLACKLIST;
+                DELETE FROM TAXONOMY_MAPPING;
+                DELETE FROM PARTNER_HISTORY;
+                DELETE FROM PARTNER_TAXONOMY_HISTORY;
+                DELETE FROM PARTNER_TAXONOMY;
+                DELETE FROM PARTNER;
+                DELETE FROM FEED;
+            END;
+        </createProcedure>
+    </changeSet>
+
+    <changeSet author="thiago.lima" id="add-column">
+        <addColumn tableName="feed">
+            <column name="cron_pattern" type="varchar(50)"/>
+        </addColumn>
+
+        <addDefaultValue columnName="cron_pattern"
+                         defaultValue="0 0 0/1 * * ?"
+                         tableName="feed"/>
+    </changeSet>
+
+    <changeSet author="thiago.lima" id="add-column_history">
+        <addColumn tableName="feed_history">
+            <column name="cron_pattern" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

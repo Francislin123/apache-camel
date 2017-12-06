@@ -396,8 +396,9 @@ public class FeedServiceImpl implements FeedService {
         } catch (UserException ex) {
             LOGGER.error("Starting call to check if taxonomy exists and don't have any products");
             taxonomyBlacklistEntity.getList().forEach(taxonomy -> {
-                if(taxonomy.getOwner().equals(TaxonomyOwner.WALMART) && !categoryCollectionService.validateTaxonomy(taxonomy.getTaxonomy())){
-                    sendMailService.sendMail(feedSlug, partnerSlug, "Taxonomy does not exist in the catalog");
+                if (taxonomy.getOwner().equals(TaxonomyOwner.WALMART) && !categoryCollectionService.validateTaxonomy(taxonomy.getTaxonomy())) {
+                    sendMailService.sendMail(feedSlug, partnerSlug, " Taxonomy " +
+                            taxonomyBlacklistEntity.getName() + " does not exist in the catalog " + taxonomy.getTaxonomy());
                 }
             });
         }

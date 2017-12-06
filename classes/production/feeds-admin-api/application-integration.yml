@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    show-sql: true
+  data:
+    elasticsearch:
+      indexes:
+        skus:
+          name: skus-qa
+          type: sku

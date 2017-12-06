@@ -1,0 +1,686 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="createPartnerTable" author="renato.ibanhez">
+
+        <comment>Creating partner table</comment>
+
+        <createTable tableName="partner">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+            <column name="partnerships" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createPartnerHistoryTable" author="renato.ibanhez">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner"/>
+        </preConditions>
+
+        <comment>Creating partner_history table</comment>
+
+        <createTable tableName="partner_history">
+            <column name="history_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)">
+            </column>
+            <column name="partnerships" type="varchar(255)"/>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner_history"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createPartnerTaxonomyTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner"/>
+        </preConditions>
+
+        <comment>Creating Partner Taxonomy table</comment>
+
+        <createTable tableName="partner_taxonomy">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="cs_partner_fk" nullable="false"/>
+            </column>
+            <column name="file_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner_taxonomy"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createPartnerTaxonomyHistoryTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner"/>
+        </preConditions>
+
+        <comment>Creating Partner Taxonomy History table</comment>
+
+        <createTable tableName="partner_taxonomy_history">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="partner_taxonomy_id" type="${uuid_type}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)"/>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="cs_partner_fk" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner_taxonomy_history"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTaxonomyMappingTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner_taxonomy"/>
+        </preConditions>
+
+        <comment>Create Taxonomy Mapping table</comment>
+
+        <createTable tableName="taxonomy_mapping">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="partner_taxonomy_id" type="${uuid_type}"/>
+            <column name="partner_path_id" type="varchar(50)">
+            </column>
+            <column name="walmart_path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="taxonomy_mapping" baseColumnNames="partner_taxonomy_id"
+                                 constraintName="taxonomy_mapping_fk"
+                                 referencedTableName="partner_taxonomy"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"/>
+        <rollback>
+            <dropTable tableName="taxonomy_mapping"/>
+        </rollback>
+
+    </changeSet>
+
+
+    <changeSet id="createTaxonomyMappingHistoryTable" author="thiago.lima">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="partner_taxonomy_history"/>
+        </preConditions>
+
+        <comment>Create EC Association table</comment>
+
+        <createTable tableName="taxonomy_mapping_history">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="partner_taxonomy_id" type="${uuid_type}">
+            </column>
+            <column name="partner_path_id" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="walmart_path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_path" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="taxonomy_mapping_history" baseColumnNames="partner_taxonomy_id"
+                                 constraintName="taxonomy_mapping_history_fk"
+                                 referencedTableName="partner_taxonomy_history"
+                                 onDelete="CASCADE"
+                                 referencedColumnNames="id"/>
+        <rollback>
+            <dropTable tableName="taxonomy_mapping_history"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTaxonomyBlacklistTable" author="adisson.gomes">
+
+        <comment>Create taxonomy blacklist table</comment>
+
+        <createTable tableName="taxonomy_blacklist">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="taxonomy_blacklist"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTaxonomyBlacklistMappingTable" author="adisson.gomes">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="taxonomy_blacklist"/>
+        </preConditions>
+
+        <comment>Create taxonomy blacklist mapping table</comment>
+
+        <createTable tableName="taxonomy_blacklist_mapping">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="taxonomy" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owner" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="taxonomy_blacklist_id" type="${uuid_type}">
+                <constraints foreignKeyName="fk_blacklist"
+                             referencedTableName="taxonomy_blacklist"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="taxonomy_blacklist_mapping" cascadeConstraints="true"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTaxonomyBlacklistTableHistory" author="adisson.gomes">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="taxonomy_blacklist"/>
+        </preConditions>
+
+        <comment>Create taxonomy blacklist history table</comment>
+
+        <createTable tableName="taxonomy_blacklist_history">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="list" type="NCLOB">
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="taxonomy_blacklist_history"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createFeedTemplateTable" author="gabriel.cano">
+        <createTable tableName="feed_template">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="header" type="longvarchar">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="body" type="longvarchar">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="footer" type="longvarchar">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="separator" type="char">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="format" type="varchar(20)">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="language" type="varchar(50)" defaultValue="pt">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="country" type="varchar(50)" defaultValue="BR">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="encoding" type="varchar(20)" defaultValue="UTF-8">
+                <constraints unique="false" nullable="false"/>
+            </column>
+            <column name="number_format" type="varchar(20)" defaultValue="####.##">
+                <constraints unique="false" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createTermsBlackListTable" author="francislin.reis">
+
+        <comment>Creating Terms Black List table</comment>
+
+        <createTable tableName="terms_blacklist">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTermsTable" author="francislin.reis">
+
+        <comment>Creating Terms table</comment>
+
+        <createTable tableName="terms_blacklist_items">
+            <column name="blacklist_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"
+                             foreignKeyName="term_blacklist_fk"
+                             referencedTableName="terms_blacklist"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="term" type="varchar(50)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+
+            <dropTable tableName="partner"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createTermsBlacklistHistoryTable" author="gabriel.cano">
+
+        <comment>Creating Terms Black List History table</comment>
+
+        <createTable tableName="terms_blacklist_history">
+            <column name="history_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="terms_blacklist_items" type="varchar(4000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="partner"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createFeedTable" author="renato.ibanhez">
+
+        <preConditions>
+            <tableExists tableName="feed_template"/>
+            <tableExists tableName="partner"/>
+            <tableExists tableName="partner_taxonomy"/>
+            <tableExists tableName="taxonomy_blacklist"/>
+            <tableExists tableName="terms_blacklist"/>
+        </preConditions>
+
+        <comment>Creating feed table</comment>
+
+        <createTable tableName="feed">
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
+            </column>
+            <column name="template_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_template_fk"/>
+            </column>
+            <column name="partner_taxonomy_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_taxonomy_fk"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_method" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_format" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_url" type="varchar(255)"/>
+            <column name="taxonomy_blacklist_id" type="${uuid_type}">
+                <constraints referencedTableName="taxonomy_blacklist" referencedColumnNames="id"
+                             foreignKeyName="fk_taxonomy_blacklist"/>
+            </column>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="collection_id" type="integer"></column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="partner_id" baseTableName="feed" constraintName="feed_partner_fk"
+                                 referencedColumnNames="id" referencedTableName="partner"/>
+        <addForeignKeyConstraint baseColumnNames="template_id" baseTableName="feed" constraintName="feed_template_fk"
+                                 referencedColumnNames="id" referencedTableName="feed_template"/>
+        <addForeignKeyConstraint baseColumnNames="partner_taxonomy_id" baseTableName="feed"
+                                 constraintName="feed_taxonomy_fk" referencedColumnNames="id"
+                                 referencedTableName="partner_taxonomy"/>
+        <rollback>
+            <dropTable tableName="feed" cascadeConstraints="true"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createFeedHistoryTable" author="renato.ibanhez">
+
+        <preConditions onError="WARN">
+            <tableExists tableName="feed"/>
+        </preConditions>
+
+        <comment>Creating feed_history table</comment>
+        <createTable tableName="feed_history">
+            <column name="history_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="slug" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_partner_fk" nullable="false"/>
+            </column>
+            <column name="template_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_template_fk"/>
+            </column>
+            <column name="partner_taxonomy_id" type="${uuid_type}">
+                <constraints foreignKeyName="feed_taxonomy_fk"/>
+            </column>
+            <column name="name" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_method" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_format" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_url" type="varchar(255)"/>
+            <column name="flag_active" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="update_date" type="datetime" defaultValueComputed="${now}"/>
+            <column name="user_login" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="feed_history"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="createFeedUtmTable" author="renato.ibanhez">
+
+        <preConditions onError="HALT">
+            <tableExists tableName="feed"/>
+        </preConditions>
+
+        <comment>Creating feed_utms table</comment>
+
+        <createTable tableName="feed_utms">
+            <column name="feed_id" type="${uuid_type}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="utm_type" type="varchar(20)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="utm_value" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="feed_utms" baseColumnNames="feed_id" constraintName="fk_feed_utm"
+                                 referencedTableName="feed"
+                                 referencedColumnNames="id"/>
+
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="feed_utms" constraintName="fk_feed_utm"/>
+            <dropTable tableName="feed_utms"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="createTermsAndFeedsTable" author="gabriel.cano">
+
+        <preConditions>
+            <tableExists tableName="terms_blacklist"/>
+            <tableExists tableName="feed"/>
+        </preConditions>
+
+        <comment>Creating Terms And Feeds Table</comment>
+
+        <createTable tableName="terms_feeds">
+
+            <column name="terms_blacklist_id" type="${uuid_type}">
+                <constraints referencedTableName="terms_blacklist" referencedColumnNames="id"
+                             foreignKeyName="fk_terms_blacklist" primaryKey="true"/>
+            </column>
+            <column name="feed_id" type="${uuid_type}">
+                <constraints referencedTableName="feed" referencedColumnNames="id"
+                             foreignKeyName="fk_feed_terms_id" primaryKey="true"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="terms_feeds" cascadeConstraints="true"/>
+        </rollback>
+
+    </changeSet>
+
+    <changeSet id="createGenerationHistoryTable" author="adisson.gomes">
+
+        <comment>Creating Generation History Table</comment>
+
+        <createTable tableName="generation_history">
+
+            <column name="id" type="${uuid_type}">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="file_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="feed_slug" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="partner_slug" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total_skus" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="generation_date" type="datetime" defaultValueComputed="${now}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="generation_history"/>
+        </rollback>
+
+    </changeSet>
+
+</databaseChangeLog>
