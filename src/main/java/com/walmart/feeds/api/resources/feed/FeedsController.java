@@ -79,8 +79,7 @@ public class FeedsController {
 
         FeedEntity savedFeedEntity = feedService.createFeed(feedEntity);
 
-        UriComponents uriComponents =
-                builder.path(V1_FEEDS.concat("/{slug}")).buildAndExpand(partnerSlug, savedFeedEntity.getSlug());
+        UriComponents uriComponents = builder.path(V1_FEEDS.concat("/{slug}")).buildAndExpand(partnerSlug, savedFeedEntity.getSlug());
 
         return ResponseEntity.created(uriComponents.toUri()).build();
 
@@ -166,8 +165,7 @@ public class FeedsController {
                                 .active(f.isActive())
                                 .cronPattern(f.getCronPattern())
                                 .collectionId(f.getCollectionId())
-                                .build()
-                ).collect(Collectors.toList())).build());
+                                .build()).collect(Collectors.toList())).build());
     }
 
     @ApiOperation(value = "Change feed status",
@@ -243,6 +241,7 @@ public class FeedsController {
     private List<TermsBlacklistEntity> getTermsBlacklist(List<String> slugs) {
 
         List<TermsBlacklistEntity> termsBlacklistEntities = new ArrayList<>();
+
         if (slugs == null || slugs.isEmpty()) {
             return termsBlacklistEntities;
         }

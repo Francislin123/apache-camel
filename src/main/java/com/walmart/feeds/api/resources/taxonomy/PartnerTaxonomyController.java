@@ -98,8 +98,7 @@ public class PartnerTaxonomyController {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiOperation(value = "Fetch a taxonomy mapping by slug",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "Fetch a taxonomy mapping by slug", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful fetch", response = ResponseEntity.class),
             @ApiResponse(code = 404, message = "Partner Taxonomy or partner not found")})

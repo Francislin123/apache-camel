@@ -11,3 +11,4 @@ src/.DS_Store
 src/main/resources/.DS_Store
 src/test/.DS_Store
 gradle/*
+/src/main/resources/application-local.yml

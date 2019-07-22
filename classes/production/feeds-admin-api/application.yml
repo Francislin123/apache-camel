@@ -33,7 +33,7 @@ spring:
     show-sql: true
     database-platform: org.hibernate.dialect.Oracle10gDialect
   datasource:
-    url: jdbc:oracle:thin:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF
+    url: jdbc:oracle:thi:@napsao-qa-nix-melf-oracle-1.qa.vmcommerce.intra:1521/MELF
     username: FEEDS_ADMIN
     password: FEEDS_ADMIN
     tomcat:

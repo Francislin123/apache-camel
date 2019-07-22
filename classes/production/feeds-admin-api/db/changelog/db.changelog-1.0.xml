@@ -635,14 +635,10 @@
 
         <createTable tableName="terms_feeds">
 
-            <column name="terms_blacklist_id" type="${uuid_type}">
-                <constraints referencedTableName="terms_blacklist" referencedColumnNames="id"
-                             foreignKeyName="fk_terms_blacklist" primaryKey="true"/>
-            </column>
-            <column name="feed_id" type="${uuid_type}">
-                <constraints referencedTableName="feed" referencedColumnNames="id"
-                             foreignKeyName="fk_feed_terms_id" primaryKey="true"/>
-            </column>
+            <column name="terms_blacklist_id" type="${uuid_type}"><constraints referencedTableName="terms_blacklist" referencedColumnNames="id" foreignKeyName="fk_terms_blacklist" primaryKey="true"/></column>
+
+            <column name="feed_id" type="${uuid_type}"><constraints referencedTableName="feed" referencedColumnNames="id" foreignKeyName="fk_feed_terms_id" primaryKey="true"/></column>
+
         </createTable>
 
         <rollback>

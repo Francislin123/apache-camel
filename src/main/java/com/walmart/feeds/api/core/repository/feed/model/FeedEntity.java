@@ -63,10 +63,7 @@ public class FeedEntity extends AuditableEntity {
     private TaxonomyBlacklistEntity taxonomyBlacklist;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name="terms_feeds",
-            joinColumns = {@JoinColumn(name="feed_id")},
-            inverseJoinColumns = {@JoinColumn(name="terms_blacklist_id")}
-    )
+    @JoinTable(name="terms_feeds", joinColumns = {@JoinColumn(name="feed_id")}, inverseJoinColumns = {@JoinColumn(name="terms_blacklist_id")})
     private List<TermsBlacklistEntity> termsBlacklist;
 
     @ManyToOne
@@ -74,8 +71,7 @@ public class FeedEntity extends AuditableEntity {
 
     @ElementCollection
     @MapKeyColumn(name = "utm_type")
-    @CollectionTable(name = "feed_utms", joinColumns =
-    @JoinColumn(name = "feed_id", referencedColumnName = "id"))
+    @CollectionTable(name = "feed_utms", joinColumns = @JoinColumn(name = "feed_id", referencedColumnName = "id"))
     @Column(name = "utm_value")
     private Map<String, String> utms;
 
@@ -94,7 +90,6 @@ public class FeedEntity extends AuditableEntity {
     }
 
     @Builder
-
     public FeedEntity(LocalDateTime creationDate, LocalDateTime updateDate, String user, UUID id, String slug,
                       String name, PartnerEntity partner, PartnerTaxonomyEntity partnerTaxonomy, FeedType type,
                       FeedNotificationMethod notificationMethod, FeedNotificationFormat notificationFormat,

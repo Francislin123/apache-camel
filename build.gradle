@@ -3,8 +3,6 @@ buildscript {
         jcenter()
         maven { url "http://www.datanucleus.org/downloads/maven2/" }
         maven { url 'https://repo.spring.io/libs-milestone' }
-        maven { url "http://artifactory.vmcommerce.intra/artifactory/libs-release" }
-        maven { url "http://artifactory.vmcommerce.intra/artifactory/libs-snapshot" }
     }
     dependencies {
         classpath 'se.transmode.gradle:gradle-docker:1.2'
@@ -38,8 +36,6 @@ ext {
 repositories {
     mavenLocal()
     maven { url "http://www.datanucleus.org/downloads/maven2/" }
-    maven { url "http://artifactory.vmcommerce.intra/artifactory/libs-release" }
-    maven { url "http://artifactory.vmcommerce.intra/artifactory/libs-snapshot" }
     jcenter()
 }
 
